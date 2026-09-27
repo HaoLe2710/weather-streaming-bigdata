@@ -52,7 +52,7 @@ def _run_topic(slug: str, run_id: str) -> str:
         raise ValueError(
             "run_id must be 1-48 Kafka-safe letters, digits, '_' or '-'."
         )
-    topic_run_id = run_id.lower().replace("-", "_")
+    topic_run_id = run_id.lower()
     return f"weather.bench.{slug}.{topic_run_id}"
 
 
