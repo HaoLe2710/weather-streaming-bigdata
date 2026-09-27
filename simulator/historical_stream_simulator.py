@@ -321,6 +321,7 @@ def run(args):
     delayed_sequence = 0
 
     start_time = time.monotonic()
+    generation_start_time = datetime.now(timezone.utc).isoformat()
 
     last_report_time = (
         start_time
@@ -601,6 +602,8 @@ def run(args):
             delayed_fault,
         )
 
+    generation_end_time = datetime.now(timezone.utc).isoformat()
+    generation_elapsed = time.monotonic() - start_time
 
     print(
         "[KAFKA] flushing producer..."
@@ -703,8 +706,18 @@ def run(args):
         "out_of_order_generated": stats["out_of_order"],
         "requested_replay_rate": args.rate,
         "actual_generation_rate": actual_rate,
+        "actual_generated_msgs_sec": (
+            stats["produced"] / generation_elapsed
+            if generation_elapsed > 0
+            else 0
+        ),
+        "generation_start_time": generation_start_time,
+        "generation_end_time": generation_end_time,
+        "generation_elapsed_seconds": generation_elapsed,
+        "producer_elapsed_seconds": elapsed,
         "duration_seconds": elapsed,
         "producer_remaining": remaining,
+        "producer_flush_remaining": remaining,
         "producer_delivery_complete": remaining == 0,
     }
 

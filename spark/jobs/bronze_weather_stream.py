@@ -2,7 +2,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
-from benchmark_config import BenchmarkConfig
+from benchmark_config import BenchmarkConfig, THROUGHPUT_BASELINE
+from streaming_metrics import make_listener_from_environment, wait_for_stop_signal
 
 
 BENCHMARK_CONFIG = BenchmarkConfig.from_environment()
@@ -47,6 +48,9 @@ TRIGGER_INTERVAL = os.getenv(
     "TRIGGER_INTERVAL"
 )
 
+BENCHMARK_STOP_SIGNAL = os.getenv("BENCHMARK_STOP_SIGNAL")
+QUERY_NAME = os.getenv("QUERY_NAME")
+
 if BENCHMARK_CONFIG is not None:
     BRONZE_PATH = BENCHMARK_CONFIG.paths.bronze
     CHECKPOINT_PATH = BENCHMARK_CONFIG.paths.bronze_checkpoint
@@ -69,6 +73,9 @@ spark = (
 )
 
 spark.sparkContext.setLogLevel("WARN")
+
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+    spark.streams.addListener(make_listener_from_environment("bronze"))
 
 
 kafka_stream = (
@@ -129,6 +136,9 @@ elif TRIGGER_INTERVAL:
         processingTime=TRIGGER_INTERVAL
     )
 
+if QUERY_NAME:
+    writer = writer.queryName(QUERY_NAME)
+
 query = writer.start(
     BRONZE_PATH
 )
@@ -139,9 +149,14 @@ print(
     f"[topic={KAFKA_TOPIC}]"
 )
 
-query.awaitTermination()
-
-if AVAILABLE_NOW:
-    print("Weather Bronze availableNow run completed")
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+    if not BENCHMARK_STOP_SIGNAL:
+        raise ValueError("BENCHMARK_STOP_SIGNAL is required for throughput runs.")
+    wait_for_stop_signal([query], BENCHMARK_STOP_SIGNAL)
+    print("Weather Bronze throughput run drained and stopped")
+else:
+    query.awaitTermination()
+    if AVAILABLE_NOW:
+        print("Weather Bronze availableNow run completed")
 
 spark.stop()

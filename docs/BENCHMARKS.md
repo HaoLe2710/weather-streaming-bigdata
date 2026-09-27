@@ -207,10 +207,153 @@ Get-ChildItem .\results\benchmarks\wm10m -Directory |
 
 ## Load generation versus throughput benchmarking
 
-The replay simulator can generate approximately 1,000 Kafka messages/second
-under its smoke configuration. Load-generation capability is implemented and
-runtime-verified. A controlled system throughput benchmark is NOT STARTED.
-The smoke rate does not measure Spark/Kafka system throughput or scalability.
-Those experiments require input/processed rows per second, Kafka lag, batch
-duration, CPU, memory, end-to-end latency, and saturation measurements. They
-are outside this milestone.
+The replay simulator's earlier approximately 1,019 messages/second result was
+only a load-generation measurement. It did not measure Spark/Kafka throughput.
+The `throughput` scenario below measures the streaming pipeline separately.
+
+## Performance Instrumentation
+
+The fixed baseline runs the run-scoped Kafka topic through the production
+Bronze, Silver, and DLQ streaming jobs. Gold is excluded so this first
+measurement isolates Kafka ingress, Bronze writes, Silver validation, and
+deduplication from aggregation state. Silver's 10-minute watermark and
+`dropDuplicatesWithinWatermark` semantics remain unchanged. All simulator fault
+rates are zero.
+
+```mermaid
+flowchart LR
+  H[Historical Dataset] --> S[Replay Simulator]
+  S --> K[One-partition Kafka topic]
+  K --> B[Bronze Structured Streaming]
+  B --> SI[Silver validation and deduplication]
+  SI --> D[DLQ output]
+  K -. latest offsets .-> M[Metrics collector]
+  B -. Spark progress and replay latency .-> M
+  SI -. Spark progress .-> M
+  W[Docker stats] -. CPU and memory .-> M
+  M --> R[Run-scoped JSON artifacts]
+```
+
+### Fixed configuration
+
+Every run records observed Compose and Spark Master configuration in
+`manifest.json`:
+
+- Kafka 4.3.1, one partition, replication factor 1.
+- One Spark 4.0.4 worker with 4 advertised cores and 4,096 MB worker memory.
+- Bronze and Silver/DLQ run as two concurrent Spark applications. Each requests
+  at most one executor core and 1,024 MB executor memory; each uses one SQL
+  shuffle partition and a one-second processing-time trigger. The manifest
+  captures the active applications reported by the Spark Master REST endpoint.
+- Delta Spark 4.0.0. The benchmark uses client deploy mode and the existing
+  writable `/tmp/spark-ivy` dependency cache.
+- `docker inspect` reports no per-container CPU or memory hard limit for the
+  worker or broker. Resource JSONL preserves Docker's reported memory
+  denominator and separately records a configured container limit as `null`.
+
+This is a single-worker capacity baseline. It does not compare partition counts,
+Spark core allocations, or worker counts.
+
+### Calibration and run sequence
+
+Calibrate the simulator before applying rates to Spark:
+
+```powershell
+.\.venv\Scripts\python.exe benchmark\run_benchmark.py `
+  --scenario throughput --calibrate-load-generator
+```
+
+Calibration runs 10,000 source records at 100, 500, 1,000, 2,000, and 5,000
+requested messages/second, with no Spark queries running. A target passes when
+`actual_generated_msgs_sec` is within ±10% of the requested rate. The tolerance
+allows short-run rate-limiter and producer-flush jitter while rejecting a
+materially different offered load. A pipeline run refuses a target without a
+passing calibration for the same Git commit.
+
+Run a supported rate with two independent repetitions and 50,000 source
+records:
+
+```powershell
+.\.venv\Scripts\python.exe benchmark\run_benchmark.py `
+  --scenario throughput --rate 100 --max-source-events 50000 --repetitions 2
+.\.venv\Scripts\python.exe benchmark\run_benchmark.py `
+  --scenario throughput --rate 500 --max-source-events 50000 --repetitions 2
+.\.venv\Scripts\python.exe benchmark\run_benchmark.py `
+  --scenario throughput --rate 1000 --max-source-events 50000 --repetitions 2
+```
+
+Proceed to 2,000 or 5,000 only when the prior rate is sustainably handled and
+the generator calibration passes. Each run gets a new topic, Delta paths, and
+checkpoints. Topics and run outputs are retained.
+
+### Collected metrics and definitions
+
+- The simulator records requested/actual messages per second, source and
+  produced counts, generation start/end timestamps, generation duration,
+  producer elapsed time, and remaining messages after `flush`.
+- A shared PySpark `StreamingQueryListener` writes lifecycle events and each
+  original `StreamingQueryProgress` object to `spark_progress.jsonl`. It keeps
+  `batchId`, timestamp, `numInputRows`, both rows-per-second fields, the full
+  `durationMs` map, source offsets, state operator details, and other Spark
+  progress fields. The first two micro-batches of each query are marked
+  `warmup_excluded: true` and retained in the raw file; summary averages omit
+  them.
+- Every second, the host samples Kafka's latest/high partition offsets using
+  librdkafka and compares them with the Kafka source `endOffset` in Bronze
+  progress. Lag is `sum(max(0, latest offset - Spark end offset))` over all
+  topic partitions. This is a sampled offset backlog, not a Kafka consumer-group
+  lag. `kafka_lag.jsonl` stores both offset sets and the computed lag; missing
+  offsets remain `null`.
+- Replay latency is measured for every Bronze message as
+  `spark_processing_time - ingestion_time`. `ingestion_time` is assigned when
+  the simulator sends the replay event; `spark_processing_time` is assigned by
+  the Bronze micro-batch. Historical `event_time` is excluded. This measures
+  replay-to-Bronze processing latency, not downstream Silver commit latency or
+  historical event-time lateness. Percentiles use Spark `percentile_approx`
+  with accuracy 10,000.
+- Every second, `docker stats --no-stream` records CPU percent, memory usage,
+  Docker-reported memory limit/denominator, and memory percent for
+  `weather-spark-worker` and `weather-kafka`. `resource_metrics.jsonl` also
+  records the configured hard memory limit when one exists.
+- Duration averages and percentiles use Spark's `durationMs.triggerExecution`;
+  the full per-component duration map remains available in raw progress.
+
+### Sustainability and saturation classification
+
+A run is sustainable only when all produced messages appear in both Bronze
+and Silver source progress, the final sampled Kafka lag is zero, and both Spark
+applications exit normally. The runner waits up to 300 seconds after replay
+for this drain; `--drain-timeout` changes that bound.
+
+- `UNDER_CAPACITY`: sustainable, with peak lag during replay no greater than
+  two one-second trigger intervals of offered data (`2 × requested msg/s`).
+- `NEAR_CAPACITY`: sustainable, but replay-time peak lag exceeds that allowance
+  before draining.
+- `SATURATED`: the drain bound expires or the final backlog remains nonzero,
+  without a Spark/container failure.
+- `FAILED`: a stream, metrics query, or required measurement fails.
+
+This two-trigger allowance is tied to the configured trigger interval rather
+than a guessed absolute row count. `result.json` also reports maximum and final
+lag, replay-time peak lag, throughput, batch duration, latency, resource peaks,
+and reasons for unavailable metrics.
+
+### Run artifacts
+
+Each run is stored under `results/benchmarks/throughput/{run_id}/`:
+
+```text
+manifest.json
+simulator.json
+spark_progress.jsonl
+kafka_lag.jsonl
+resource_metrics.jsonl
+delta_metrics.json
+result.json
+```
+
+Per-rate repetition summaries and simulator calibration summaries are written
+to distinct timestamped directories under
+`results/benchmarks/throughput/experiments/`. The run folders do not overwrite
+earlier evidence. Delta data and checkpoints stay in the Docker volume and are
+not committed.

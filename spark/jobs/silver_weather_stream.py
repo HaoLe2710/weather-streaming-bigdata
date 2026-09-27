@@ -2,8 +2,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
-from benchmark_config import BenchmarkConfig
+from benchmark_config import BenchmarkConfig, THROUGHPUT_BASELINE
 from weather_schema import weather_schema, weather_valid_condition
+from streaming_metrics import make_listener_from_environment, wait_for_stop_signal
 
 
 BENCHMARK_CONFIG = BenchmarkConfig.from_environment()
@@ -48,6 +49,10 @@ TRIGGER_INTERVAL = os.getenv(
     "TRIGGER_INTERVAL"
 )
 
+BENCHMARK_STOP_SIGNAL = os.getenv("BENCHMARK_STOP_SIGNAL")
+SILVER_QUERY_NAME = os.getenv("SILVER_QUERY_NAME")
+DLQ_QUERY_NAME = os.getenv("DLQ_QUERY_NAME")
+
 AVAILABLE_NOW = (
     os.getenv("AVAILABLE_NOW", "false").strip().lower()
     in {"1", "true", "yes"}
@@ -83,6 +88,9 @@ spark = (
 )
 
 spark.sparkContext.setLogLevel("WARN")
+
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+    spark.streams.addListener(make_listener_from_environment("silver"))
 
 
 # ==============================
@@ -220,6 +228,9 @@ silver_writer = (
     )
 )
 
+if SILVER_QUERY_NAME:
+    silver_writer = silver_writer.queryName(SILVER_QUERY_NAME)
+
 silver_query = (
     apply_trigger(
         silver_writer
@@ -243,6 +254,9 @@ invalid_writer = (
         DLQ_CHECKPOINT
     )
 )
+
+if DLQ_QUERY_NAME:
+    invalid_writer = invalid_writer.queryName(DLQ_QUERY_NAME)
 
 invalid_query = (
     apply_trigger(
@@ -274,7 +288,16 @@ print(
 )
 
 
-if AVAILABLE_NOW:
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+    if not BENCHMARK_STOP_SIGNAL:
+        raise ValueError("BENCHMARK_STOP_SIGNAL is required for throughput runs.")
+    wait_for_stop_signal(
+        [silver_query, invalid_query],
+        BENCHMARK_STOP_SIGNAL,
+    )
+    print("Weather Silver throughput run drained and stopped")
+    spark.stop()
+elif AVAILABLE_NOW:
     silver_query.awaitTermination()
     invalid_query.awaitTermination()
     print("Weather Silver availableNow run completed")

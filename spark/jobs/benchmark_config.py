@@ -15,6 +15,7 @@ from typing import Any
 
 B0_CORRECTNESS = "B0_CORRECTNESS"
 KAFKA_WATERMARK_WM10M = "KAFKA_WATERMARK_WM10M"
+THROUGHPUT_BASELINE = "THROUGHPUT_BASELINE"
 
 DEFAULT_DATA_ROOT = "/opt/project/data/benchmark/runs"
 DEFAULT_CHECKPOINT_ROOT = "/opt/project/data/checkpoints/benchmark/runs"
@@ -23,6 +24,7 @@ DEFAULT_RESULTS_ROOT = "/opt/project/results/benchmarks"
 SCENARIO_SLUGS = {
     B0_CORRECTNESS: "b0",
     KAFKA_WATERMARK_WM10M: "wm10m",
+    THROUGHPUT_BASELINE: "throughput",
 }
 
 
@@ -33,13 +35,15 @@ def normalize_scenario(value: str) -> str:
         "B0_CORRECTNESS": B0_CORRECTNESS,
         "WM10M": KAFKA_WATERMARK_WM10M,
         "KAFKA_WATERMARK_WM10M": KAFKA_WATERMARK_WM10M,
+        "THROUGHPUT": THROUGHPUT_BASELINE,
+        "THROUGHPUT_BASELINE": THROUGHPUT_BASELINE,
     }
     try:
         return aliases[normalized]
     except KeyError as exc:
         raise ValueError(
             f"Unsupported benchmark scenario: {value!r}. "
-            "Choose B0_CORRECTNESS or KAFKA_WATERMARK_WM10M."
+            "Choose B0_CORRECTNESS, KAFKA_WATERMARK_WM10M, or THROUGHPUT_BASELINE."
         ) from exc
 
 
@@ -188,7 +192,7 @@ class BenchmarkConfig:
             watermark = watermark or "10 minutes"
             window_duration = None
             max_offsets_per_trigger = None
-        else:
+        elif scenario == KAFKA_WATERMARK_WM10M:
             defaults = {
                 "duplicate_rate": 0.0,
                 "invalid_rate": 0.0,
@@ -211,6 +215,29 @@ class BenchmarkConfig:
             watermark = watermark or "10 minutes"
             window_duration = window_duration or "1 hour"
             max_offsets_per_trigger = max_offsets_per_trigger or 500
+        else:
+            defaults = {
+                "duplicate_rate": 0.0,
+                "invalid_rate": 0.0,
+                "late_rate": 0.0,
+                "out_of_order_rate": 0.0,
+                "late_delay_events": 240,
+                "out_of_order_max_delay": 40,
+            }
+            paths = RunPaths(
+                root=run_root,
+                bronze=data_path("bronze", "weather_raw"),
+                silver=data_path("silver", "weather_clean"),
+                dlq=data_path("silver", "weather_invalid"),
+                gold=None,
+                bronze_checkpoint=checkpoint_path("bronze"),
+                silver_checkpoint=checkpoint_path("silver"),
+                dlq_checkpoint=checkpoint_path("dlq"),
+                gold_checkpoint=None,
+            )
+            watermark = watermark or "10 minutes"
+            window_duration = None
+            max_offsets_per_trigger = None
 
         rates = (
             defaults["duplicate_rate"]
@@ -224,6 +251,8 @@ class BenchmarkConfig:
         )
         if any(rate < 0.0 or rate > 1.0 for rate in rates):
             raise ValueError("Fault rates must be between 0.0 and 1.0.")
+        if scenario == THROUGHPUT_BASELINE and any(rate != 0.0 for rate in rates):
+            raise ValueError("Throughput baseline requires every injected fault rate to be zero.")
 
         return cls(
             scenario=scenario,
@@ -337,7 +366,7 @@ class BenchmarkConfig:
             "GOLD_CHECKPOINT": config.paths.gold_checkpoint,
             "CHECKPOINT_PATH": (
                 config.paths.bronze_checkpoint
-                if scenario == B0_CORRECTNESS
+                if scenario in {B0_CORRECTNESS, THROUGHPUT_BASELINE}
                 else config.paths.gold_checkpoint
             ),
         }
@@ -401,8 +430,17 @@ class BenchmarkConfig:
                 "CHECKPOINT_PATH": self.paths.bronze_checkpoint,
                 "BRONZE_CHECKPOINT": self.paths.bronze_checkpoint,
                 "STARTING_OFFSETS": "earliest",
-                "AVAILABLE_NOW": "true",
+                "AVAILABLE_NOW": "false" if self.scenario == THROUGHPUT_BASELINE else "true",
             })
+            if self.scenario == THROUGHPUT_BASELINE:
+                results_run_root = PurePosixPath(DEFAULT_RESULTS_ROOT) / self.slug / self.run_id
+                environment.update({
+                    "APP_NAME": f"WeatherBronzeStreaming-{self.run_id}",
+                    "TRIGGER_INTERVAL": "1 second",
+                    "SPARK_PROGRESS_PATH": str(results_run_root / "spark_progress_bronze.tmp.jsonl"),
+                    "BENCHMARK_STOP_SIGNAL": str(results_run_root / "stop.signal"),
+                    "QUERY_NAME": f"WeatherBronzeStreaming-{self.run_id}",
+                })
         elif stage == "silver":
             self._require_paths(
                 "bronze", "silver", "dlq", "silver_checkpoint", "dlq_checkpoint"
@@ -413,8 +451,18 @@ class BenchmarkConfig:
                 "DLQ_PATH": self.paths.dlq,
                 "SILVER_CHECKPOINT": self.paths.silver_checkpoint,
                 "DLQ_CHECKPOINT": self.paths.dlq_checkpoint,
-                "AVAILABLE_NOW": "true",
+                "AVAILABLE_NOW": "false" if self.scenario == THROUGHPUT_BASELINE else "true",
             })
+            if self.scenario == THROUGHPUT_BASELINE:
+                results_run_root = PurePosixPath(DEFAULT_RESULTS_ROOT) / self.slug / self.run_id
+                environment.update({
+                    "APP_NAME": f"WeatherSilverStreaming-{self.run_id}",
+                    "TRIGGER_INTERVAL": "1 second",
+                    "SPARK_PROGRESS_PATH": str(results_run_root / "spark_progress_silver.tmp.jsonl"),
+                    "BENCHMARK_STOP_SIGNAL": str(results_run_root / "stop.signal"),
+                    "SILVER_QUERY_NAME": f"WeatherSilverStreaming-{self.run_id}-silver",
+                    "DLQ_QUERY_NAME": f"WeatherSilverStreaming-{self.run_id}-dlq",
+                })
         elif stage == "gold":
             self._require_paths("gold", "gold_checkpoint")
             environment.update({
@@ -439,6 +487,15 @@ class BenchmarkConfig:
                     )
                 self._require_paths("gold")
                 environment["GOLD_PATH"] = self.paths.gold
+        elif stage == "check_throughput":
+            if self.scenario != THROUGHPUT_BASELINE:
+                raise ValueError("Throughput metrics require THROUGHPUT_BASELINE.")
+            self._require_paths("bronze", "silver", "dlq")
+            environment.update({
+                "BRONZE_PATH": self.paths.bronze,
+                "SILVER_PATH": self.paths.silver,
+                "DLQ_PATH": self.paths.dlq,
+            })
         else:
             raise ValueError(f"Unknown Spark benchmark stage: {stage}")
 
