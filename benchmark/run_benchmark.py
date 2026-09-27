@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from urllib.request import urlopen
 import uuid
@@ -23,6 +24,8 @@ sys.path.insert(0, str(JOBS_DIR))
 
 from benchmark_config import (  # noqa: E402
     B0_CORRECTNESS,
+    SCALABILITY_BENCHMARK,
+    SCENARIO_SLUGS,
     THROUGHPUT_BASELINE,
     BenchmarkConfig,
     normalize_scenario,
@@ -40,6 +43,13 @@ from performance_metrics import (  # noqa: E402
     read_jsonl,
     resource_peaks,
     summarize_progress,
+)
+from scalability_metrics import (  # noqa: E402
+    ScalabilityConfig,
+    partition_distribution,
+    scalability_resource_metrics,
+    summarize_progress_percentiles,
+    validate_runtime_allocation,
 )
 from telemetry import DockerResourceSampler, KafkaLagSampler  # noqa: E402
 
@@ -113,6 +123,21 @@ def _require_services() -> None:
             f"{', '.join(missing)}. Start them with: "
             "docker compose up --build -d broker spark-master spark-worker"
         )
+
+
+def _compose_service_containers(service: str) -> list[str]:
+    output = _docker_compose("ps", "-q", service, capture_output=True).stdout
+    container_ids = [line.strip() for line in output.splitlines() if line.strip()]
+    names = []
+    for container_id in container_ids:
+        name = _run(
+            ["docker", "inspect", "--format", "{{.Name}}", container_id],
+            capture_output=True,
+            timeout=15,
+        ).stdout.strip().lstrip("/")
+        if name:
+            names.append(name)
+    return sorted(names)
 
 
 def _compose_images() -> dict:
@@ -233,9 +258,13 @@ def _ensure_topic(config: BenchmarkConfig) -> None:
         config.topic,
         capture_output=True,
     ).stdout
-    if not re.search(r"PartitionCount:\s*1\b", described):
+    if not re.search(
+        rf"PartitionCount:\s*{config.topic_partitions}\b",
+        described,
+    ):
         raise RuntimeError(
-            f"Kafka topic {config.topic} was not created with one partition:\n"
+            f"Kafka topic {config.topic} was not created with "
+            f"{config.topic_partitions} partition(s):\n"
             f"{described}"
         )
 
@@ -292,7 +321,15 @@ def _spark_command(
         "--conf",
         "spark.driver.bindAddress=0.0.0.0",
     ])
-    if fixed_throughput_baseline:
+    if environment.get("BENCHMARK_SCENARIO") == SCALABILITY_BENCHMARK:
+        memory_mb = int(environment.get("SPARK_EXECUTOR_MEMORY_MB", "1024"))
+        command.extend([
+            "--conf", f"spark.cores.max={environment.get('SPARK_CORES_MAX', '1')}",
+            "--conf", f"spark.executor.cores={environment.get('SPARK_EXECUTOR_CORES', '1')}",
+            "--conf", f"spark.executor.memory={memory_mb}m",
+            "--conf", f"spark.sql.shuffle.partitions={environment.get('SPARK_SQL_SHUFFLE_PARTITIONS', '1')}",
+        ])
+    elif fixed_throughput_baseline:
         command.extend([
             "--conf", "spark.cores.max=1",
             "--conf", "spark.executor.cores=1",
@@ -371,7 +408,30 @@ def _wait_for_query_start(
     )
 
 
-def _spark_active_apps(run_id: str) -> dict:
+def _spark_worker_executor_snapshot() -> list[dict]:
+    code = (
+        "import json,urllib.request;"
+        "m=json.load(urllib.request.urlopen('http://spark-master:8080/json/',timeout=3));"
+        "print(json.dumps(["
+        "{'id':p.get('id'),'executors':["
+        "{'id':e.get('id'),'app_id':e.get('appid'),'cores':e.get('cores'),"
+        "'memory_mb':e.get('memory')} for e in p.get('executors',[])]} "
+        "for w in m.get('workers',[]) if w.get('state')=='ALIVE' "
+        "for p in [json.load(urllib.request.urlopen(w['webuiaddress']+'/json/',timeout=3))]"
+        "]))"
+    )
+    completed = _docker_compose(
+        "exec", "-T", "spark-master", "python3", "-c", code,
+        capture_output=True,
+        timeout=15,
+    )
+    result = json.loads(completed.stdout)
+    if not isinstance(result, list):
+        raise ValueError("Spark worker UI did not return a worker list.")
+    return result
+
+
+def _spark_active_apps(run_id: str, *, include_executors: bool = False) -> dict:
     try:
         with urlopen("http://localhost:8080/json/", timeout=3) as response:
             payload = json.loads(response.read().decode("utf-8"))
@@ -392,6 +452,8 @@ def _spark_active_apps(run_id: str) -> dict:
     workers = [
         {
             "id": worker.get("id"),
+            "host": worker.get("host"),
+            "webuiaddress": worker.get("webuiaddress"),
             "state": worker.get("state"),
             "cores_available": worker.get("cores"),
             "cores_used": worker.get("coresused"),
@@ -410,7 +472,116 @@ def _spark_active_apps(run_id: str) -> dict:
         for app in all_apps
         if run_id not in str(app.get("name", ""))
     ]
-    return {"apps": apps, "workers": workers, "other_active_apps": other_apps}
+    result = {"apps": apps, "workers": workers, "other_active_apps": other_apps}
+    if include_executors:
+        try:
+            worker_executor_rows = _spark_worker_executor_snapshot()
+            app_names = {
+                app.get("id"): app.get("name")
+                for app in all_apps
+                if app.get("id") and app.get("name")
+            }
+            executor_by_app: dict[str, list[dict]] = {}
+            executor_by_worker: dict[str, list[dict]] = {}
+            for worker_row in worker_executor_rows:
+                worker_id = str(worker_row.get("id"))
+                worker_executors = []
+                for executor in worker_row.get("executors", []):
+                    app_id = executor.get("app_id")
+                    details = {
+                        "executor_id": executor.get("id"),
+                        "app_id": app_id,
+                        "application": app_names.get(app_id),
+                        "worker_id": worker_id,
+                        "cores": executor.get("cores"),
+                        "memory_mb": executor.get("memory_mb"),
+                    }
+                    worker_executors.append(details)
+                    if details["application"]:
+                        executor_by_app.setdefault(details["application"], []).append(details)
+                executor_by_worker[worker_id] = worker_executors
+            for worker in result["workers"]:
+                worker["executors"] = executor_by_worker.get(str(worker.get("id")), [])
+            for app in result["apps"]:
+                executors = executor_by_app.get(str(app.get("name")), [])
+                app["executors"] = executors
+                app["actual_allocated_cores"] = sum(
+                    int(executor.get("cores") or 0) for executor in executors
+                )
+                app["actual_executor_count"] = len(executors)
+                app["actual_executor_cores"] = [executor.get("cores") for executor in executors]
+                app["actual_executor_memory_mb"] = [executor.get("memory_mb") for executor in executors]
+                app["assigned_worker_ids"] = sorted({executor["worker_id"] for executor in executors})
+        except Exception as exc:
+            result["executor_error"] = f"{type(exc).__name__}: {exc}"
+    return result
+
+
+class SparkClusterSampler:
+    def __init__(self, run_id: str, *, interval_seconds: float = 10.0):
+        self.run_id = run_id
+        self.interval_seconds = interval_seconds
+        self.samples: list[dict] = []
+        self.last_error: str | None = None
+        self._stop = threading.Event()
+        self._thread: threading.Thread | None = None
+
+    def start(self) -> None:
+        self._thread = threading.Thread(
+            target=self._run,
+            name="spark-cluster-sampler",
+            daemon=True,
+        )
+        self._thread.start()
+
+    def stop(self) -> None:
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=15)
+
+    def sample_now(self, *, phase: str = "during_replay") -> None:
+        captured = utc_now()
+        try:
+            observation = _spark_active_apps(self.run_id, include_executors=True)
+            self.samples.append({
+                "captured_at_utc": captured,
+                "phase": phase,
+                "observation": observation,
+            })
+            if observation.get("executor_error"):
+                self.last_error = observation["executor_error"]
+            elif observation.get("error"):
+                self.last_error = observation["error"]
+        except Exception as exc:
+            self.last_error = f"{type(exc).__name__}: {exc}"
+            self.samples.append({"captured_at_utc": captured, "error": self.last_error})
+
+    def _run(self) -> None:
+        while not self._stop.is_set():
+            self.sample_now()
+            self._stop.wait(self.interval_seconds)
+
+
+def _wait_for_scalability_allocation(
+    *,
+    run_id: str,
+    config: ScalabilityConfig,
+    timeout_seconds: float = 90,
+) -> tuple[dict, dict]:
+    deadline = time.monotonic() + timeout_seconds
+    last_observation: dict = {}
+    last_validation: dict = {"passed": False, "errors": ["Spark allocation was not observed."]}
+    while time.monotonic() < deadline:
+        last_observation = _spark_active_apps(run_id, include_executors=True)
+        last_validation = validate_runtime_allocation(
+            last_observation,
+            run_id=run_id,
+            config=config,
+        )
+        if last_validation["passed"]:
+            return last_observation, last_validation
+        time.sleep(1)
+    return last_observation, last_validation
 
 
 def _progress_input_counts(progress_paths: dict[str, Path]) -> dict[str, int]:
@@ -515,12 +686,12 @@ def _spark_offset_summary(rows: list[dict], topic: str) -> dict:
 
 
 def _find_calibration(rate: int, git_commit: str) -> tuple[dict, Path]:
-    experiments_root = REPO_ROOT / RESULTS_ROOT / "throughput" / "experiments"
-    candidates = sorted(
-        experiments_root.glob("*/summary.json"),
-        key=lambda path: path.parent.name,
-        reverse=True,
-    ) if experiments_root.exists() else []
+    candidates = []
+    for namespace in ("throughput", "scalability"):
+        experiments_root = REPO_ROOT / RESULTS_ROOT / namespace / "experiments"
+        if experiments_root.exists():
+            candidates.extend(experiments_root.glob("*/summary.json"))
+    candidates.sort(key=lambda path: path.parent.name, reverse=True)
     for path in candidates:
         try:
             summary = read_json(path)
@@ -553,7 +724,8 @@ def _find_calibration(rate: int, git_commit: str) -> tuple[dict, Path]:
     raise RuntimeError(
         f"No compatible generator calibration for {rate} msg/s is available at "
         f"Git commit {git_commit}; simulator or workload configuration changed. "
-        "Run `python benchmark/run_benchmark.py --scenario throughput --calibrate-load-generator` first."
+        "Run `python benchmark/run_benchmark.py --scenario scalability "
+        "--calibrate-load-generator --calibration-rates " + str(rate) + " first."
     )
 
 
@@ -651,22 +823,29 @@ def run_load_generator_calibration(args) -> int:
     versions = _runtime_versions()
     git_commit = _git_commit()
     experiment_id = _new_run_id()
-    experiment_dir = REPO_ROOT / RESULTS_ROOT / "throughput" / "experiments" / experiment_id
+    scenario = normalize_scenario(args.scenario)
+    if scenario not in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
+        raise ValueError("Load calibration requires throughput or scalability scenario.")
+    experiment_dir = REPO_ROOT / RESULTS_ROOT / SCENARIO_SLUGS[scenario] / "experiments" / experiment_id
     experiment_dir.mkdir(parents=True, exist_ok=False)
     source = Path(args.source).resolve()
     if not source.is_dir():
         raise FileNotFoundError(f"Historical source directory not found: {source}")
     rates = []
     tolerance = 0.10
+    requested_rates = getattr(args, "calibration_rates", None) or (100, 500, 1_000, 2_000, 5_000)
+    if not requested_rates or any(rate <= 0 or rate > 10_000 for rate in requested_rates):
+        raise ValueError("Calibration rates must be positive and no greater than 10,000 msg/s.")
 
-    for requested_rate in (100, 500, 1_000, 2_000, 5_000):
+    for requested_rate in requested_rates:
         run_id = _new_run_id()
         config = BenchmarkConfig.for_scenario(
-            THROUGHPUT_BASELINE,
+            scenario,
             run_id,
             source_record_limit=10_000,
             requested_replay_rate=requested_rate,
             seed=args.seed,
+            experiment_id=experiment_id if scenario == SCALABILITY_BENCHMARK else None,
         )
         run_dir = REPO_ROOT / RESULTS_ROOT / config.slug / config.run_id
         run_dir.mkdir(parents=True, exist_ok=False)
@@ -679,12 +858,14 @@ def run_load_generator_calibration(args) -> int:
             versions=versions,
         )
         manifest["measurement_mode"] = "load_generator_calibration"
-        manifest["throughput_baseline"]["spark_pipeline_executed"] = False
-        manifest["throughput_baseline"]["calibration_tolerance_fraction"] = tolerance
+        infrastructure_key = "scalability" if scenario == SCALABILITY_BENCHMARK else "throughput_baseline"
+        manifest[infrastructure_key]["spark_pipeline_executed"] = False
+        manifest[infrastructure_key]["calibration_tolerance_fraction"] = tolerance
         manifest["artifacts"].pop("spark_progress", None)
         manifest["artifacts"].pop("resource_metrics", None)
         manifest["artifacts"].pop("kafka_lag", None)
         manifest["artifacts"].pop("delta_metrics", None)
+        manifest["artifacts"].pop("spark_cluster_snapshot", None)
         write_json(artifacts["manifest"], manifest)
         print(f"[CALIBRATION] requested={requested_rate} msg/s run_id={run_id}")
 
@@ -709,7 +890,7 @@ def run_load_generator_calibration(args) -> int:
                 and deviation <= tolerance
             )
             result = {
-                "scenario": THROUGHPUT_BASELINE,
+                "scenario": scenario,
                 "run_id": run_id,
                 "git_commit": git_commit,
                 "requested_rate_msgs_sec": requested_rate,
@@ -760,7 +941,7 @@ def run_load_generator_calibration(args) -> int:
             "spark/jobs/benchmark_config.py",
             "benchmark/run_benchmark.py::_simulator_command",
         ],
-        "scenario": THROUGHPUT_BASELINE,
+        "scenario": scenario,
         "source_record_limit": 10_000,
         "fault_rates": {
             "duplicate": 0,
@@ -796,6 +977,8 @@ def _run_throughput_iteration(
     run_dir = REPO_ROOT / RESULTS_ROOT / config.slug / config.run_id
     run_dir.mkdir(parents=True, exist_ok=False)
     artifacts = _artifact_paths(config, run_dir)
+    is_scalability = config.scenario == SCALABILITY_BENCHMARK
+    infrastructure_key = "scalability" if is_scalability else "throughput_baseline"
     manifest = _make_manifest(
         config,
         git_commit=git_commit,
@@ -803,7 +986,11 @@ def _run_throughput_iteration(
         artifact_paths=artifacts,
         versions=versions,
     )
-    manifest["measurement_mode"] = "fixed_configuration_throughput"
+    manifest["measurement_mode"] = (
+        "one_factor_at_a_time_scalability"
+        if is_scalability
+        else "fixed_configuration_throughput"
+    )
     manifest["load_generator_calibration"] = {
         "summary": calibration_path.relative_to(REPO_ROOT).as_posix(),
         "calibrated_rate": calibration.get("requested_rate_msgs_sec"),
@@ -844,8 +1031,11 @@ def _run_throughput_iteration(
     process_return_codes: dict[str, int | None] = {}
     resource_sampler = None
     lag_sampler = None
+    cluster_sampler = None
     simulator_summary = None
     runtime_observation = None
+    runtime_validation = None
+    runtime_allocation_invalid = False
     failure_reason = None
     failure_kind = None
     drain_complete = False
@@ -873,16 +1063,21 @@ def _run_throughput_iteration(
                 versions["spark"],
                 fixed_throughput_baseline=True,
             )
-            manifest["throughput_baseline"]["bronze_delta_initialized_empty_before_streaming"] = True
+            infrastructure = manifest[infrastructure_key]
+            infrastructure["bronze_delta_initialized_empty_before_streaming"] = True
             write_json(artifacts["manifest"], manifest)
-            container_limits = manifest["throughput_baseline"]["docker_container_limits"]
+            container_limits = infrastructure["docker_container_limits"]
+            worker_containers = _compose_service_containers("spark-worker")
+            if not worker_containers:
+                worker_containers = ["weather-spark-worker"]
             resource_sampler = DockerResourceSampler(
                 artifacts["resource_metrics"],
                 interval_seconds=1.0,
                 container_limits=container_limits,
-                host_logical_cpu_count=manifest["throughput_baseline"].get(
+                host_logical_cpu_count=infrastructure.get(
                     "host_logical_cpu_count"
                 ),
+                worker_containers=worker_containers,
             )
             lag_sampler = KafkaLagSampler(
                 artifacts["kafka_lag"],
@@ -909,71 +1104,102 @@ def _run_throughput_iteration(
                 log_paths["silver"],
             )
             _wait_for_query_start(progress_paths, processes, log_paths)
-            runtime_observation = _spark_active_apps(config.run_id)
+            if is_scalability:
+                requested_config = ScalabilityConfig(
+                    partitions=config.topic_partitions,
+                    bronze_cores=config.bronze_cores_max,
+                    silver_cores=config.silver_cores_max,
+                    workers=config.requested_worker_count,
+                    worker_cores_each=config.worker_cores_each,
+                    worker_memory_mb_each=config.worker_memory_mb_each,
+                    executor_cores=config.executor_cores,
+                    executor_memory_mb=config.executor_memory_mb,
+                    shuffle_partitions=config.shuffle_partitions,
+                    trigger_interval=config.trigger_interval,
+                ).validate()
+                runtime_observation, runtime_validation = _wait_for_scalability_allocation(
+                    run_id=config.run_id,
+                    config=requested_config,
+                )
+                runtime_allocation_invalid = not runtime_validation["passed"]
+                manifest["runtime_validation"] = runtime_validation
+            else:
+                runtime_observation = _spark_active_apps(config.run_id)
             manifest["observed_spark_runtime"] = runtime_observation
             runtime_errors = []
+            if is_scalability:
+                runtime_errors.extend((runtime_validation or {}).get("errors", []))
             if runtime_observation.get("error"):
                 runtime_errors.append(runtime_observation["error"])
-            expected_app_names = {
-                f"WeatherBronzeStreaming-{config.run_id}",
-                f"WeatherSilverStreaming-{config.run_id}",
-            }
-            observed_apps = runtime_observation.get("apps", [])
-            observed_app_names = {app.get("name") for app in observed_apps}
-            if observed_app_names != expected_app_names or len(observed_apps) != 2:
-                runtime_errors.append(
-                    "Expected exactly the run-scoped Bronze and Silver streaming applications."
-                )
-            for app in observed_apps:
-                if app.get("cores") != 1:
+            if not is_scalability:
+                expected_app_names = {
+                    f"WeatherBronzeStreaming-{config.run_id}",
+                    f"WeatherSilverStreaming-{config.run_id}",
+                }
+                observed_apps = runtime_observation.get("apps", [])
+                observed_app_names = {app.get("name") for app in observed_apps}
+                if observed_app_names != expected_app_names or len(observed_apps) != 2:
                     runtime_errors.append(
-                        f"{app.get('name')} requested {app.get('cores')} cores; expected 1."
+                        "Expected exactly the run-scoped Bronze and Silver streaming applications."
                     )
-                raw_memory = app.get("memory_per_executor_mb")
-                observed_memory = (
-                    raw_memory
-                    if isinstance(raw_memory, (int, float))
-                    else _memory_to_mb(raw_memory)
-                )
-                if observed_memory != 1024:
+                for app in observed_apps:
+                    if app.get("cores") != 1:
+                        runtime_errors.append(
+                            f"{app.get('name')} requested {app.get('cores')} cores; expected 1."
+                        )
+                    raw_memory = app.get("memory_per_executor_mb")
+                    observed_memory = (
+                        raw_memory
+                        if isinstance(raw_memory, (int, float))
+                        else _memory_to_mb(raw_memory)
+                    )
+                    if observed_memory != 1024:
+                        runtime_errors.append(
+                            f"{app.get('name')} executor memory is {observed_memory} MB; expected 1024 MB."
+                        )
+                workers = [
+                    worker
+                    for worker in runtime_observation.get("workers", [])
+                    if worker.get("state") == "ALIVE"
+                ]
+                if len(workers) != 1:
                     runtime_errors.append(
-                        f"{app.get('name')} executor memory is {observed_memory} MB; expected 1024 MB."
+                        f"Expected one ALIVE Spark worker; observed {len(workers)}."
                     )
-            workers = runtime_observation.get("workers", [])
-            if len(workers) != 1:
-                runtime_errors.append(
-                    f"Expected one Spark worker; observed {len(workers)}."
-                )
-            for worker in workers:
-                if worker.get("state") != "ALIVE":
-                    runtime_errors.append(
-                        f"Spark worker state is {worker.get('state')}; expected ALIVE."
-                    )
-                if worker.get("cores_available") != 4:
-                    runtime_errors.append(
-                        f"Spark worker reports {worker.get('cores_available')} cores; expected 4."
-                    )
-                if worker.get("memory_available_mb") != 4096:
-                    runtime_errors.append(
-                        "Spark worker reports "
-                        f"{worker.get('memory_available_mb')} MB; expected 4096 MB."
-                    )
-            if runtime_observation.get("other_active_apps"):
-                runtime_errors.append("Unrelated Spark applications are active on the master.")
-            manifest["runtime_validation"] = {
-                "passed": not runtime_errors,
-                "errors": runtime_errors,
-                "expected_worker_count": 1,
-                "expected_worker_cores": 4,
-                "expected_worker_memory_mb": 4096,
-                "expected_streaming_app_count": 2,
-                "expected_cores_per_application": 1,
-                "expected_executor_memory_mb_per_application": 1024,
-            }
+                for worker in workers:
+                    if worker.get("state") != "ALIVE":
+                        runtime_errors.append(
+                            f"Spark worker state is {worker.get('state')}; expected ALIVE."
+                        )
+                    if worker.get("cores_available") != 4:
+                        runtime_errors.append(
+                            f"Spark worker reports {worker.get('cores_available')} cores; expected 4."
+                        )
+                    if worker.get("memory_available_mb") != 4096:
+                        runtime_errors.append(
+                            "Spark worker reports "
+                            f"{worker.get('memory_available_mb')} MB; expected 4096 MB."
+                        )
+                if runtime_observation.get("other_active_apps"):
+                    runtime_errors.append("Unrelated Spark applications are active on the master.")
+                manifest["runtime_validation"] = {
+                    "passed": not runtime_errors,
+                    "errors": runtime_errors,
+                    "expected_worker_count": 1,
+                    "expected_worker_cores": 4,
+                    "expected_worker_memory_mb": 4096,
+                    "expected_streaming_app_count": 2,
+                    "expected_cores_per_application": 1,
+                    "expected_executor_memory_mb_per_application": 1024,
+                }
             write_json(artifacts["manifest"], manifest)
             if runtime_errors:
+                if is_scalability:
+                    runtime_allocation_invalid = True
+                    failure_kind = "allocation_mismatch"
+                    failure_reason = "Actual Spark worker/executor allocation does not match the requested scalability configuration."
                 raise RuntimeError(
-                    "Spark runtime does not match the fixed throughput baseline: "
+                    "Spark runtime does not match the requested benchmark allocation: "
                     + "; ".join(runtime_errors)
                     + ". Observed: "
                     + json.dumps(runtime_observation, sort_keys=True)
@@ -983,17 +1209,25 @@ def _run_throughput_iteration(
             manifest["stream_started_at_utc"] = stream_started_at_utc
             write_json(artifacts["manifest"], manifest)
             print(
-                f"[THROUGHPUT] streaming apps started; requested="
+                f"[{'SCALABILITY' if is_scalability else 'THROUGHPUT'}] streaming apps started; requested="
                 f"{config.requested_replay_rate} msg/s, events={config.source_record_limit:,}"
             )
 
-            _run(
-                _simulator_command(config, source, artifacts["simulator"]),
-                timeout=max(
-                    900,
-                    int(config.source_record_limit / max(config.requested_replay_rate, 1) * 3) + 180,
-                ),
-            )
+            if is_scalability:
+                cluster_sampler = SparkClusterSampler(config.run_id)
+                cluster_sampler.sample_now(phase="before_replay")
+                cluster_sampler.start()
+            try:
+                _run(
+                    _simulator_command(config, source, artifacts["simulator"]),
+                    timeout=max(
+                        900,
+                        int(config.source_record_limit / max(config.requested_replay_rate, 1) * 3) + 180,
+                    ),
+                )
+            finally:
+                if cluster_sampler is not None:
+                    cluster_sampler.stop()
             simulator_summary = read_json(artifacts["simulator"])
             simulator_summary["git_commit"] = git_commit
             write_json(artifacts["simulator"], simulator_summary)
@@ -1041,8 +1275,13 @@ def _run_throughput_iteration(
                 )
             lag_sampler.sample_now(timeout_seconds=10)
         except Exception as exc:
-            failure_reason = f"{type(exc).__name__}: {exc}"
-            failure_kind = "run_failure"
+            if is_scalability and runtime_allocation_invalid:
+                errors = (runtime_validation or {}).get("errors", [])
+                failure_reason = "Actual Spark allocation did not match the requested configuration: " + "; ".join(errors)
+                failure_kind = "allocation_mismatch"
+            else:
+                failure_reason = f"{type(exc).__name__}: {exc}"
+                failure_kind = "run_failure"
             for stage, log_path in log_paths.items():
                 log_tails[stage] = _tail_text(log_path)
         finally:
@@ -1063,6 +1302,15 @@ def _run_throughput_iteration(
                 resource_sampler.stop()
             if lag_sampler is not None:
                 lag_sampler.stop()
+            if cluster_sampler is not None:
+                cluster_sampler.stop()
+                write_json(artifacts["spark_cluster_snapshot"], {
+                    "schema_version": 1,
+                    "run_id": config.run_id,
+                    "sampling_interval_seconds": cluster_sampler.interval_seconds,
+                    "samples": cluster_sampler.samples,
+                    "last_error": cluster_sampler.last_error,
+                })
             stop_signal.unlink(missing_ok=True)
             run_finished_monotonic = time.monotonic()
             for stage, log_path in log_paths.items():
@@ -1125,6 +1373,12 @@ def _run_throughput_iteration(
         steady_state_start=analysis["steady_state_start"],
         generation_end_time=analysis["steady_state_end"],
     )
+    progress_percentiles = summarize_progress_percentiles(
+        progress_rows,
+        steady_state_start=analysis["steady_state_start"],
+        generation_end_time=analysis["steady_state_end"],
+    ) if is_scalability else {}
+    resource_scalability = scalability_resource_metrics(resource_samples) if is_scalability else None
     maximum_lag = analysis["production_peak_kafka_to_bronze_lag"]
     final_lag = analysis["final_source_lag"]
     offsets = _spark_offset_summary(progress_rows, config.topic)
@@ -1136,6 +1390,24 @@ def _run_throughput_iteration(
             and row.get("kafka_latest_offsets")
         ),
         {},
+    )
+    final_kafka_low_offsets = next(
+        (
+            row.get("kafka_low_offsets")
+            for row in lag_samples
+            if isinstance(row.get("kafka_low_offsets"), dict)
+            and row.get("kafka_low_offsets")
+        ),
+        {},
+    )
+    partition_counts = {
+        key: max(0, int(offset) - int(final_kafka_low_offsets.get(key, 0)))
+        for key, offset in final_kafka_offsets.items()
+    }
+    partition_metrics = (
+        partition_distribution(partition_counts, config.topic_partitions)
+        if is_scalability
+        else None
     )
     produced = int((simulator_summary or {}).get("kafka_messages", 0))
     bronze_processed = int(progress_summary.get("bronze_input_records", 0))
@@ -1151,10 +1423,24 @@ def _run_throughput_iteration(
         generator_deviation is not None
         and generator_deviation <= float(calibration.get("calibration_tolerance_percent", 10)) / 100
     )
+    correctness_checks = (delta_metrics or {}).get("correctness_checks", {})
+    correctness_passed = bool(
+        delta_metrics
+        and (delta_metrics.get("correctness_passed") is True)
+        and all(correctness_checks.values())
+    )
     capacity = analysis["capacity_classification"]
     capacity_reason = analysis["capacity_reason"]
-    if simulator_summary is not None and not generator_valid:
-        status = "INVALID_GENERATOR"
+    if is_scalability and runtime_allocation_invalid:
+        status = "INVALID_FOR_COMPARISON"
+        capacity = None
+        capacity_reason = "Observed Spark worker/executor allocation differed from the requested scalability configuration."
+    elif is_scalability and delta_metrics is not None and not correctness_passed:
+        status = "INVALID_CORRECTNESS"
+        capacity = None
+        capacity_reason = "Bronze/Silver data correctness checks did not all pass."
+    elif simulator_summary is not None and not generator_valid:
+        status = "LOAD_GENERATOR_LIMITED" if is_scalability else "INVALID_GENERATOR"
         capacity = None
         capacity_reason = "This run's measured generator rate fell outside its calibrated +/-10% band."
     elif capacity == "FAILED":
@@ -1173,13 +1459,28 @@ def _run_throughput_iteration(
         if run_finished_monotonic is not None and stream_started_monotonic is not None
         else None
     )
+    valid_for_comparison = bool(
+        is_scalability
+        and status in {"UNDER_CAPACITY", "NEAR_CAPACITY"}
+        and generator_valid
+        and (runtime_validation or {}).get("passed") is True
+        and correctness_passed
+        and analysis.get("pipeline_completed") is True
+        and final_lag == 0
+        and metrics_error is None
+    )
     result = {
         **analysis,
         "schema_version": 2,
-        "scenario": THROUGHPUT_BASELINE,
+        "scenario": config.scenario,
         "run_id": config.run_id,
+        "experiment_id": config.experiment_id,
+        "config_id": config.config_id,
         "git_commit": git_commit,
         "status": status,
+        "valid_for_comparison": valid_for_comparison,
+        "correctness_passed": correctness_passed,
+        "correctness_checks": correctness_checks,
         "capacity_classification": capacity,
         "capacity_reason": capacity_reason,
         "sustainable": status in {"UNDER_CAPACITY", "NEAR_CAPACITY"},
@@ -1210,6 +1511,11 @@ def _run_throughput_iteration(
         "peak_processed_rows_per_sec": bronze_summary.get("peak_processed_rows_per_sec"),
         "silver_avg_processed_rows_per_sec": silver_summary.get("avg_processed_rows_per_sec"),
         "silver_peak_processed_rows_per_sec": silver_summary.get("peak_processed_rows_per_sec"),
+        "bronze_processed_rate_p50": progress_percentiles.get("bronze", {}).get("processed_rate_p50"),
+        "bronze_processed_rate_p95": progress_percentiles.get("bronze", {}).get("processed_rate_p95"),
+        "silver_processed_rate_p50": progress_percentiles.get("silver", {}).get("processed_rate_p50"),
+        "silver_processed_rate_p95": progress_percentiles.get("silver", {}).get("processed_rate_p95"),
+        "progress_percentile_metrics": progress_percentiles,
         "included_bronze_batches": bronze_summary.get("steady_state_sample_count"),
         "included_silver_batches": silver_summary.get("steady_state_sample_count"),
         "warmup_batches_excluded_per_query": None,
@@ -1225,6 +1531,8 @@ def _run_throughput_iteration(
         "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
         **offsets,
         "final_kafka_latest_offsets": final_kafka_offsets,
+        "final_kafka_low_offsets": final_kafka_low_offsets,
+        "kafka_partition_distribution": partition_metrics,
         "latency_count": analysis["replay_to_bronze_latency_count"],
         "latency_min_ms": analysis["replay_to_bronze_latency_min_ms"],
         "latency_avg_ms": analysis["replay_to_bronze_latency_avg_ms"],
@@ -1240,7 +1548,11 @@ def _run_throughput_iteration(
         "broker_peak_memory_mb": analysis["broker_memory_peak_mb"],
         "resource_sample_count": len(resource_samples),
         "kafka_lag_sample_count": len(lag_samples),
-        "fixed_infrastructure": manifest["throughput_baseline"],
+        "fixed_infrastructure": manifest.get("throughput_baseline"),
+        "scalability_infrastructure": manifest.get("scalability"),
+        "scalability_runtime_validation": runtime_validation,
+        "scalability_resource_metrics": resource_scalability,
+        "spark_cluster_snapshot": artifacts["spark_cluster_snapshot"].relative_to(REPO_ROOT).as_posix() if is_scalability else None,
         "observed_spark_runtime": runtime_observation,
         "stream_process_return_codes": process_return_codes,
         "null_metric_reasons": {
@@ -1277,7 +1589,7 @@ def _run_throughput_iteration(
         manifest["error"] = {"type": failure_kind, "message": failure_reason}
     write_json(artifacts["manifest"], manifest)
     print(
-        f"[THROUGHPUT] run={config.run_id} status={status} "
+        f"[{'SCALABILITY' if is_scalability else 'THROUGHPUT'}] run={config.run_id} status={status} "
         f"processed={int(result['processed_records'] or 0):,} "
         f"max_lag={result['max_kafka_lag']} final_lag={result['final_kafka_lag']}"
     )
@@ -1393,6 +1705,167 @@ def run_throughput_benchmark(args) -> int:
     return 0
 
 
+def run_scalability_benchmark(args) -> int:
+    if args.calibrate_load_generator:
+        return run_load_generator_calibration(args)
+    if args.rate <= 0:
+        raise ValueError("Scalability --rate must be a positive messages/second target.")
+    if args.repetitions <= 0:
+        raise ValueError("--repetitions must be positive.")
+    if args.warmup_seconds < 0:
+        raise ValueError("--warmup-seconds must be zero or greater.")
+    if args.warmup_min_batches < 1:
+        raise ValueError("--warmup-min-batches must be at least one.")
+    if args.drain_timeout <= 0:
+        raise ValueError("--drain-timeout must be positive.")
+
+    source_limit = args.max_source_events if args.max_source_events is not None else 500_000
+    source = Path(args.source).resolve()
+    if not source.is_dir():
+        raise FileNotFoundError(f"Historical source directory not found: {source}")
+    if importlib.util.find_spec("confluent_kafka") is None:
+        raise RuntimeError(
+            "The current Python interpreter lacks confluent-kafka. Install the "
+            "repository dependency with: python -m pip install -r producer/requirements.txt"
+        )
+
+    _require_clean_worktree()
+    _require_services()
+    versions = _runtime_versions()
+    git_commit = _git_commit()
+    calibration, calibration_path = _find_calibration(args.rate, git_commit)
+    experiment_id = args.experiment_id or _new_run_id()
+    validated_config = BenchmarkConfig.for_scenario(
+        SCALABILITY_BENCHMARK,
+        "scalability-validation",
+        source_record_limit=source_limit,
+        requested_replay_rate=args.rate,
+        seed=args.seed,
+        topic_partitions=args.partitions,
+        config_id=args.config_id,
+        experiment_id=experiment_id,
+        workers=args.workers,
+        worker_cores_each=args.worker_cores,
+        worker_memory_mb_each=args.worker_memory_mb,
+        bronze_cores_max=args.bronze_cores,
+        silver_cores_max=args.silver_cores,
+        executor_cores=args.executor_cores,
+        executor_memory_mb=args.executor_memory_mb,
+        shuffle_partitions=args.shuffle_partitions,
+        trigger_interval=args.trigger_interval,
+    )
+    experiment_dir = REPO_ROOT / RESULTS_ROOT / "scalability" / "experiments" / experiment_id
+    experiment_dir.mkdir(parents=True, exist_ok=False)
+    configuration = {
+        "partitions": args.partitions,
+        "workers": args.workers,
+        "worker_cores_each": args.worker_cores,
+        "worker_memory_mb_each": args.worker_memory_mb,
+        "bronze_cores_max": args.bronze_cores,
+        "silver_cores_max": args.silver_cores,
+        "executor_cores": args.executor_cores,
+        "executor_memory_mb": args.executor_memory_mb,
+        "shuffle_partitions": args.shuffle_partitions,
+        "trigger_interval": args.trigger_interval,
+    }
+    experiment_manifest = {
+        "schema_version": 1,
+        "experiment_type": "scalability_configuration_repetitions",
+        "experiment_id": experiment_id,
+        "created_at": utc_now(),
+        "git_commit": git_commit,
+        "scenario": SCALABILITY_BENCHMARK,
+        "config_id": validated_config.config_id,
+        "configuration": configuration,
+        "requested_rate_msgs_sec": args.rate,
+        "source_record_limit": source_limit,
+        "calibration_summary": calibration_path.relative_to(REPO_ROOT).as_posix(),
+    }
+    write_json(experiment_dir / "experiment_manifest.json", experiment_manifest)
+    run_results = []
+    for repetition in range(1, args.repetitions + 1):
+        if args.run_id:
+            run_id = args.run_id if args.repetitions == 1 else f"{args.run_id}-r{repetition}"
+        else:
+            run_id = _new_run_id()
+        config = BenchmarkConfig.for_scenario(
+            SCALABILITY_BENCHMARK,
+            run_id,
+            source_record_limit=source_limit,
+            requested_replay_rate=args.rate,
+            seed=args.seed,
+            topic_partitions=args.partitions,
+            config_id=args.config_id,
+            experiment_id=experiment_id,
+            workers=args.workers,
+            worker_cores_each=args.worker_cores,
+            worker_memory_mb_each=args.worker_memory_mb,
+            bronze_cores_max=args.bronze_cores,
+            silver_cores_max=args.silver_cores,
+            executor_cores=args.executor_cores,
+            executor_memory_mb=args.executor_memory_mb,
+            shuffle_partitions=args.shuffle_partitions,
+            trigger_interval=args.trigger_interval,
+        )
+        print(
+            f"[SCALABILITY] experiment={experiment_id} config={config.config_id} "
+            f"rate={args.rate} repetition={repetition}/{args.repetitions}"
+        )
+        result = _run_throughput_iteration(
+            config=config,
+            source=source,
+            versions=versions,
+            git_commit=git_commit,
+            calibration=calibration,
+            calibration_path=calibration_path,
+            warmup_seconds=args.warmup_seconds,
+            warmup_min_batches=args.warmup_min_batches,
+            drain_timeout_seconds=args.drain_timeout,
+        )
+        run_results.append(result)
+        if result.get("status") in {"FAILED", "INVALID_FOR_COMPARISON", "INVALID_CORRECTNESS", "LOAD_GENERATOR_LIMITED"}:
+            break
+    aggregate = aggregate_scalability_runs(run_results)
+    summary = {
+        "schema_version": 1,
+        "experiment_type": "scalability_configuration_repetitions",
+        "experiment_id": experiment_id,
+        "created_at": utc_now(),
+        "scenario": SCALABILITY_BENCHMARK,
+        "git_commit": git_commit,
+        "configuration": configuration,
+        "config_id": args.config_id or (
+            f"p{args.partitions}-b{args.bronze_cores}-s{args.silver_cores}-w{args.workers}"
+        ),
+        "requested_rate_msgs_sec": args.rate,
+        "source_record_limit": source_limit,
+        "requested_repetitions": args.repetitions,
+        "completed_repetitions": len(run_results),
+        "warmup_policy": {
+            "minimum_warmup_seconds": args.warmup_seconds,
+            "minimum_completed_batches_per_query": args.warmup_min_batches,
+            "steady_state_end_rule": "Simulator generation end; post-replay drain excluded.",
+        },
+        "calibration_summary": calibration_path.relative_to(REPO_ROOT).as_posix(),
+        "runs": [
+            {
+                "run_id": result.get("run_id"),
+                "status": result.get("status"),
+                "valid_for_comparison": result.get("valid_for_comparison"),
+                "result": f"results/benchmarks/scalability/{result.get('run_id')}/result.json",
+            }
+            for result in run_results
+        ],
+        "aggregate": aggregate,
+    }
+    write_json(experiment_dir / "summary.json", summary)
+    print(f"[SCALABILITY] summary={(experiment_dir / 'summary.json').relative_to(REPO_ROOT)}")
+    return 2 if any(
+        result.get("status") in {"FAILED", "INVALID_FOR_COMPARISON", "INVALID_CORRECTNESS", "LOAD_GENERATOR_LIMITED"}
+        for result in run_results
+    ) else 0
+
+
 def _delta_coordinate() -> str:
     match = re.search(
         r"^delta-spark==([0-9]+(?:\.[0-9]+)+)\s*$",
@@ -1432,7 +1905,7 @@ def _artifact_paths(config: BenchmarkConfig, run_dir: Path) -> dict[str, Path]:
         "result": run_dir / "result.json",
         "simulator": run_dir / "simulator.json",
     }
-    if config.scenario == THROUGHPUT_BASELINE:
+    if config.scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
         artifacts.update({
             "spark_progress": run_dir / "spark_progress.jsonl",
             "spark_progress_bronze_temp": run_dir / "spark_progress_bronze.tmp.jsonl",
@@ -1441,6 +1914,8 @@ def _artifact_paths(config: BenchmarkConfig, run_dir: Path) -> dict[str, Path]:
             "kafka_lag": run_dir / "kafka_lag.jsonl",
             "delta_metrics": run_dir / "delta_metrics.json",
         })
+    if config.scenario == SCALABILITY_BENCHMARK:
+        artifacts["spark_cluster_snapshot"] = run_dir / "spark_cluster_snapshot.json"
     return artifacts
 
 
@@ -1523,7 +1998,13 @@ def _throughput_infrastructure(versions: dict[str, str | None]) -> dict:
     worker_environment = worker.get("environment", {})
     worker_cores = int(worker_environment.get("SPARK_WORKER_CORES", 4))
     worker_memory = _memory_to_mb(worker_environment.get("SPARK_WORKER_MEMORY", "4g"))
-    containers = _container_hard_limits(["weather-spark-worker", "weather-kafka"])
+    worker_containers = _compose_service_containers("spark-worker")
+    if not worker_containers:
+        worker_containers = ["weather-spark-worker"]
+    containers = _container_hard_limits([*worker_containers, "weather-kafka"])
+    first_worker_limits = containers.get(worker_containers[0])
+    if first_worker_limits is not None:
+        containers.setdefault("weather-spark-worker", first_worker_limits)
     return {
         "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
         "host_logical_cpu_count": os.cpu_count(),
@@ -1538,9 +2019,10 @@ def _throughput_infrastructure(versions: dict[str, str | None]) -> dict:
             "image": worker.get("image"),
             "version": versions.get("spark"),
             "delta_version": versions.get("delta"),
-            "worker_count": 1,
+            "worker_count": len(worker_containers),
             "worker_cores_available": worker_cores,
             "worker_memory_mb_available": worker_memory,
+            "worker_containers": worker_containers,
             "streaming_applications": 2,
             "executor_cores_per_application": 1,
             "cores_max_per_application": 1,
@@ -1549,7 +2031,7 @@ def _throughput_infrastructure(versions: dict[str, str | None]) -> dict:
             "shuffle_partitions": 1,
             "trigger_interval_seconds": 1,
             "deployment_mode": "client",
-            "configured_container_limits": containers.get("weather-spark-worker"),
+            "configured_container_limits": first_worker_limits,
         },
         "docker_container_limits": containers,
         "resource_sampling": {
@@ -1560,6 +2042,46 @@ def _throughput_infrastructure(versions: dict[str, str | None]) -> dict:
             ),
         },
     }
+
+
+def _scalability_infrastructure(
+    config: BenchmarkConfig,
+    versions: dict[str, str | None],
+) -> dict:
+    infrastructure = _throughput_infrastructure(versions)
+    worker_containers = infrastructure["spark"].get("worker_containers", [])
+    infrastructure["kafka"]["partition_count"] = config.topic_partitions
+    infrastructure["spark"].update({
+        "worker_count_requested": config.requested_worker_count,
+        "worker_count_registered_by_compose": len(worker_containers),
+        "worker_cores_each_requested": config.worker_cores_each,
+        "worker_memory_mb_each_requested": config.worker_memory_mb_each,
+        "bronze_cores_max_requested": config.bronze_cores_max,
+        "silver_cores_max_requested": config.silver_cores_max,
+        "bronze_executor_cores_requested": config.executor_cores,
+        "silver_executor_cores_requested": config.executor_cores,
+        "bronze_executor_memory_mb_requested": config.executor_memory_mb,
+        "silver_executor_memory_mb_requested": config.executor_memory_mb,
+        "total_requested_executor_cores": config.bronze_cores_max + config.silver_cores_max,
+        "shuffle_partitions": config.shuffle_partitions,
+        "trigger_interval": config.trigger_interval,
+        "deployment_mode": "client",
+    })
+    infrastructure["scalability_config"] = {
+        "config_id": config.config_id,
+        "experiment_id": config.experiment_id,
+        "topic_partitions": config.topic_partitions,
+        "workers": config.requested_worker_count,
+        "worker_cores_each": config.worker_cores_each,
+        "worker_memory_mb_each": config.worker_memory_mb_each,
+        "bronze_cores_max": config.bronze_cores_max,
+        "silver_cores_max": config.silver_cores_max,
+        "executor_cores": config.executor_cores,
+        "executor_memory_mb": config.executor_memory_mb,
+        "shuffle_partitions": config.shuffle_partitions,
+        "trigger_interval": config.trigger_interval,
+    }
+    return infrastructure
 
 
 def _make_manifest(
@@ -1607,17 +2129,32 @@ def _make_manifest(
             for name, path in artifact_paths.items()
             if name in {"spark_progress", "resource_metrics", "kafka_lag", "delta_metrics"}
         })
+    elif config.scenario == SCALABILITY_BENCHMARK:
+        manifest["scalability"] = _scalability_infrastructure(config, versions)
+        manifest["measurement_mode"] = "one_factor_at_a_time_scalability"
+        manifest["artifacts"].update({
+            name: path.relative_to(REPO_ROOT).as_posix()
+            for name, path in artifact_paths.items()
+            if name in {
+                "spark_progress", "resource_metrics", "kafka_lag", "delta_metrics",
+                "spark_cluster_snapshot",
+            }
+        })
     return manifest
 
 
 def run_benchmark(args) -> int:
     scenario = normalize_scenario(args.scenario)
+    if args.rate is None:
+        args.rate = 5_000 if scenario == SCALABILITY_BENCHMARK else 1_000
     if args.max_source_events is not None and args.max_source_events <= 0:
         raise ValueError("--max-source-events must be a positive integer.")
     if scenario == THROUGHPUT_BASELINE:
         return run_throughput_benchmark(args)
+    if scenario == SCALABILITY_BENCHMARK:
+        return run_scalability_benchmark(args)
     if args.calibrate_load_generator:
-        raise ValueError("--calibrate-load-generator requires --scenario throughput.")
+        raise ValueError("--calibrate-load-generator requires a performance scenario.")
     run_id = args.run_id or _new_run_id()
     config = BenchmarkConfig.for_scenario(
         scenario,
@@ -1738,13 +2275,13 @@ def run_benchmark(args) -> int:
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Run an isolated correctness or fixed-configuration throughput benchmark."
+        description="Run a correctness, fixed-throughput, or scalability benchmark."
     )
     parser.add_argument(
         "--scenario",
         required=True,
-        choices=("b0", "wm10m", "throughput"),
-        help="b0 correctness, wm10m correctness, or the fixed throughput baseline.",
+        choices=("b0", "wm10m", "throughput", "scalability"),
+        help="b0 correctness, wm10m correctness, fixed throughput, or scalability.",
     )
     parser.add_argument(
         "--run-id",
@@ -1765,7 +2302,7 @@ def parse_args():
     parser.add_argument(
         "--rate",
         type=int,
-        default=1_000,
+        default=None,
         help="Requested simulator message rate; this is load generation, not throughput measurement.",
     )
     parser.add_argument(
@@ -1802,6 +2339,19 @@ def parse_args():
         default=300.0,
         help="Maximum seconds to wait after replay ends for Bronze/Silver and Kafka lag to drain.",
     )
+    parser.add_argument("--partitions", type=int, default=1, help="Kafka partitions for a scalability run.")
+    parser.add_argument("--bronze-cores", type=int, default=1, help="spark.cores.max for Bronze.")
+    parser.add_argument("--silver-cores", type=int, default=1, help="spark.cores.max for Silver.")
+    parser.add_argument("--workers", type=int, default=1, help="Expected Spark worker count.")
+    parser.add_argument("--worker-cores", type=int, default=4, help="Cores available on each Spark worker.")
+    parser.add_argument("--worker-memory-mb", type=int, default=4096, help="Memory available on each Spark worker, in MiB.")
+    parser.add_argument("--executor-cores", type=int, default=1, help="spark.executor.cores requested by each streaming app.")
+    parser.add_argument("--executor-memory-mb", type=int, default=1024, help="spark.executor.memory requested by each streaming app, in MiB.")
+    parser.add_argument("--shuffle-partitions", type=int, default=1, help="spark.sql.shuffle.partitions.")
+    parser.add_argument("--trigger-interval", default="1 second", help="Structured Streaming trigger interval.")
+    parser.add_argument("--config-id", default=None, help="Optional canonical pP-bB-sS-wW ID, validated against supplied dimensions.")
+    parser.add_argument("--experiment-id", default=None, help="Optional experiment group ID.")
+    parser.add_argument("--calibration-rates", nargs="+", type=int, default=None, help="Optional simulator calibration targets (maximum 10,000 msg/s).")
     return parser.parse_args()
 
 

@@ -5,14 +5,13 @@ import os
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-from benchmark_config import THROUGHPUT_BASELINE, BenchmarkConfig, write_json
-from weather_schema import weather_schema
+from benchmark_config import SCALABILITY_BENCHMARK, THROUGHPUT_BASELINE, BenchmarkConfig, write_json
+from weather_schema import weather_schema, weather_valid_condition
 
 
-config = BenchmarkConfig.from_environment(
-    required=True,
-    expected_scenario=THROUGHPUT_BASELINE,
-)
+config = BenchmarkConfig.from_environment(required=True)
+if config.scenario not in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
+    raise ValueError("Delta metrics require a streaming performance scenario.")
 result_path = os.environ["RESULT_PATH"]
 
 spark = (
@@ -68,6 +67,20 @@ bronze_count = bronze.count()
 silver_count = silver.count()
 dlq_count = dlq.count()
 latency_count = int(latency["latency_count"])
+duplicate_event_groups = (
+    silver.groupBy("event_id")
+    .count()
+    .filter(F.col("count") > 1)
+    .count()
+)
+quality_violations = silver.filter(~weather_valid_condition()).count()
+correctness_checks = {
+    "bronze_matches_expected": bronze_count == config.source_record_limit,
+    "silver_matches_expected": silver_count == config.source_record_limit,
+    "dlq_is_empty": dlq_count == 0,
+    "duplicate_event_groups_are_empty": duplicate_event_groups == 0,
+    "quality_violations_are_empty": quality_violations == 0,
+}
 
 result = {
     "run_id": config.run_id,
@@ -75,6 +88,11 @@ result = {
     "bronze_records": bronze_count,
     "silver_records": silver_count,
     "dlq_records": dlq_count,
+    "expected_source_records": config.source_record_limit,
+    "duplicate_event_groups": duplicate_event_groups,
+    "quality_violations": quality_violations,
+    "correctness_checks": correctness_checks,
+    "correctness_passed": all(correctness_checks.values()),
     "replay_to_bronze_latency_count": latency_count,
     "replay_to_bronze_latency_missing_records": bronze_count - latency_count,
     "replay_to_bronze_latency_min_ms": latency["latency_min_ms"],

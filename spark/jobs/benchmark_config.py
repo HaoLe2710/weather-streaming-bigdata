@@ -16,6 +16,7 @@ from typing import Any
 B0_CORRECTNESS = "B0_CORRECTNESS"
 KAFKA_WATERMARK_WM10M = "KAFKA_WATERMARK_WM10M"
 THROUGHPUT_BASELINE = "THROUGHPUT_BASELINE"
+SCALABILITY_BENCHMARK = "SCALABILITY_BENCHMARK"
 
 DEFAULT_DATA_ROOT = "/opt/project/data/benchmark/runs"
 DEFAULT_CHECKPOINT_ROOT = "/opt/project/data/checkpoints/benchmark/runs"
@@ -25,6 +26,7 @@ SCENARIO_SLUGS = {
     B0_CORRECTNESS: "b0",
     KAFKA_WATERMARK_WM10M: "wm10m",
     THROUGHPUT_BASELINE: "throughput",
+    SCALABILITY_BENCHMARK: "scalability",
 }
 
 
@@ -37,13 +39,15 @@ def normalize_scenario(value: str) -> str:
         "KAFKA_WATERMARK_WM10M": KAFKA_WATERMARK_WM10M,
         "THROUGHPUT": THROUGHPUT_BASELINE,
         "THROUGHPUT_BASELINE": THROUGHPUT_BASELINE,
+        "SCALABILITY": SCALABILITY_BENCHMARK,
+        "SCALABILITY_BENCHMARK": SCALABILITY_BENCHMARK,
     }
     try:
         return aliases[normalized]
     except KeyError as exc:
         raise ValueError(
             f"Unsupported benchmark scenario: {value!r}. "
-            "Choose B0_CORRECTNESS, KAFKA_WATERMARK_WM10M, or THROUGHPUT_BASELINE."
+            "Choose B0_CORRECTNESS, KAFKA_WATERMARK_WM10M, THROUGHPUT_BASELINE, or SCALABILITY_BENCHMARK."
         ) from exc
 
 
@@ -105,6 +109,17 @@ class BenchmarkConfig:
     watermark: str | None
     window_duration: str | None
     max_offsets_per_trigger: int | None
+    config_id: str | None = None
+    experiment_id: str | None = None
+    requested_worker_count: int = 1
+    worker_cores_each: int = 4
+    worker_memory_mb_each: int = 4096
+    bronze_cores_max: int = 1
+    silver_cores_max: int = 1
+    executor_cores: int = 1
+    executor_memory_mb: int = 1024
+    shuffle_partitions: int = 1
+    trigger_interval: str = "1 second"
 
     @property
     def slug(self) -> str:
@@ -131,6 +146,18 @@ class BenchmarkConfig:
         watermark: str | None = None,
         window_duration: str | None = None,
         max_offsets_per_trigger: int | None = None,
+        topic_partitions: int = 1,
+        config_id: str | None = None,
+        experiment_id: str | None = None,
+        workers: int = 1,
+        worker_cores_each: int = 4,
+        worker_memory_mb_each: int = 4096,
+        bronze_cores_max: int = 1,
+        silver_cores_max: int = 1,
+        executor_cores: int = 1,
+        executor_memory_mb: int = 1024,
+        shuffle_partitions: int = 1,
+        trigger_interval: str = "1 second",
     ) -> "BenchmarkConfig":
         scenario = normalize_scenario(scenario)
         if source_record_limit <= 0:
@@ -143,6 +170,54 @@ class BenchmarkConfig:
             raise ValueError("late_delay_events must be zero or greater.")
         if out_of_order_max_delay is not None and out_of_order_max_delay <= 0:
             raise ValueError("out_of_order_max_delay must be positive.")
+        requested_resources = {
+            "topic_partitions": topic_partitions,
+            "workers": workers,
+            "worker_cores_each": worker_cores_each,
+            "worker_memory_mb_each": worker_memory_mb_each,
+            "bronze_cores_max": bronze_cores_max,
+            "silver_cores_max": silver_cores_max,
+            "executor_cores": executor_cores,
+            "executor_memory_mb": executor_memory_mb,
+            "shuffle_partitions": shuffle_partitions,
+        }
+        invalid_resources = [
+            name for name, value in requested_resources.items()
+            if not isinstance(value, int) or isinstance(value, bool) or value <= 0
+        ]
+        if invalid_resources:
+            raise ValueError(
+                "Scalability resource settings must be positive integers: "
+                + ", ".join(invalid_resources)
+            )
+        if not trigger_interval.strip():
+            raise ValueError("trigger_interval must not be empty.")
+        if scenario == SCALABILITY_BENCHMARK:
+            if bronze_cores_max + silver_cores_max > workers * worker_cores_each:
+                raise ValueError("Combined application core caps exceed available Spark worker cores.")
+            expected_config_id = (
+                f"p{topic_partitions}-b{bronze_cores_max}-s{silver_cores_max}-w{workers}"
+            )
+            config_id = config_id or expected_config_id
+            if config_id != expected_config_id:
+                raise ValueError(
+                    f"config_id must match requested resources: expected {expected_config_id!r}."
+                )
+        elif any((
+            topic_partitions != 1,
+            workers != 1,
+            worker_cores_each != 4,
+            worker_memory_mb_each != 4096,
+            bronze_cores_max != 1,
+            silver_cores_max != 1,
+            executor_cores != 1,
+            executor_memory_mb != 1024,
+            shuffle_partitions != 1,
+            trigger_interval != "1 second",
+            config_id is not None,
+            experiment_id is not None,
+        )):
+            raise ValueError("Resource overrides are only supported for the scalability scenario.")
         slug = SCENARIO_SLUGS[scenario]
         topic = topic or _run_topic(slug, run_id)
         expected_topic = _run_topic(slug, run_id)
@@ -251,14 +326,14 @@ class BenchmarkConfig:
         )
         if any(rate < 0.0 or rate > 1.0 for rate in rates):
             raise ValueError("Fault rates must be between 0.0 and 1.0.")
-        if scenario == THROUGHPUT_BASELINE and any(rate != 0.0 for rate in rates):
-            raise ValueError("Throughput baseline requires every injected fault rate to be zero.")
+        if scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK} and any(rate != 0.0 for rate in rates):
+            raise ValueError("Performance benchmarks require every injected fault rate to be zero.")
 
         return cls(
             scenario=scenario,
             run_id=run_id,
             topic=topic,
-            topic_partitions=1,
+            topic_partitions=topic_partitions,
             paths=paths,
             source_record_limit=source_record_limit,
             requested_replay_rate=requested_replay_rate,
@@ -291,6 +366,17 @@ class BenchmarkConfig:
             watermark=watermark,
             window_duration=window_duration,
             max_offsets_per_trigger=max_offsets_per_trigger,
+            config_id=config_id,
+            experiment_id=experiment_id,
+            requested_worker_count=workers,
+            worker_cores_each=worker_cores_each,
+            worker_memory_mb_each=worker_memory_mb_each,
+            bronze_cores_max=bronze_cores_max,
+            silver_cores_max=silver_cores_max,
+            executor_cores=executor_cores,
+            executor_memory_mb=executor_memory_mb,
+            shuffle_partitions=shuffle_partitions,
+            trigger_interval=trigger_interval,
         )
 
     @classmethod
@@ -343,6 +429,18 @@ class BenchmarkConfig:
             max_offsets_per_trigger=_optional_int(
                 "MAX_OFFSETS_PER_TRIGGER"
             ),
+            topic_partitions=int(os.getenv("TOPIC_PARTITIONS", "1")),
+            config_id=os.getenv("CONFIG_ID") or None,
+            experiment_id=os.getenv("EXPERIMENT_ID") or None,
+            workers=int(os.getenv("SPARK_WORKER_COUNT", "1")),
+            worker_cores_each=int(os.getenv("SPARK_WORKER_CORES_EACH", "4")),
+            worker_memory_mb_each=int(os.getenv("SPARK_WORKER_MEMORY_MB_EACH", "4096")),
+            bronze_cores_max=int(os.getenv("BRONZE_CORES_MAX", "1")),
+            silver_cores_max=int(os.getenv("SILVER_CORES_MAX", "1")),
+            executor_cores=int(os.getenv("SPARK_EXECUTOR_CORES", "1")),
+            executor_memory_mb=int(os.getenv("SPARK_EXECUTOR_MEMORY_MB", "1024")),
+            shuffle_partitions=int(os.getenv("SPARK_SQL_SHUFFLE_PARTITIONS", "1")),
+            trigger_interval=os.getenv("TRIGGER_INTERVAL", "1 second"),
         )
 
         expected_paths = {
@@ -366,7 +464,7 @@ class BenchmarkConfig:
             "GOLD_CHECKPOINT": config.paths.gold_checkpoint,
             "CHECKPOINT_PATH": (
                 config.paths.bronze_checkpoint
-                if scenario in {B0_CORRECTNESS, THROUGHPUT_BASELINE}
+                if scenario in {B0_CORRECTNESS, THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}
                 else config.paths.gold_checkpoint
             ),
         }
@@ -414,6 +512,27 @@ class BenchmarkConfig:
             "LATE_DELAY_EVENTS": str(self.late_delay_events),
             "OUT_OF_ORDER_MAX_DELAY": str(self.out_of_order_max_delay),
         }
+        if self.scenario == SCALABILITY_BENCHMARK:
+            stage_cores = (
+                self.bronze_cores_max if stage == "bronze"
+                else self.silver_cores_max if stage == "silver"
+                else 1
+            )
+            environment.update({
+                "CONFIG_ID": self.config_id or "",
+                "EXPERIMENT_ID": self.experiment_id or "",
+                "TOPIC_PARTITIONS": str(self.topic_partitions),
+                "SPARK_WORKER_COUNT": str(self.requested_worker_count),
+                "SPARK_WORKER_CORES_EACH": str(self.worker_cores_each),
+                "SPARK_WORKER_MEMORY_MB_EACH": str(self.worker_memory_mb_each),
+                "BRONZE_CORES_MAX": str(self.bronze_cores_max),
+                "SILVER_CORES_MAX": str(self.silver_cores_max),
+                "SPARK_CORES_MAX": str(stage_cores),
+                "SPARK_EXECUTOR_CORES": str(self.executor_cores),
+                "SPARK_EXECUTOR_MEMORY_MB": str(self.executor_memory_mb),
+                "SPARK_SQL_SHUFFLE_PARTITIONS": str(self.shuffle_partitions),
+                "TRIGGER_INTERVAL": self.trigger_interval,
+            })
         if self.watermark:
             environment["WATERMARK_DELAY"] = self.watermark
         if self.window_duration:
@@ -430,13 +549,13 @@ class BenchmarkConfig:
                 "CHECKPOINT_PATH": self.paths.bronze_checkpoint,
                 "BRONZE_CHECKPOINT": self.paths.bronze_checkpoint,
                 "STARTING_OFFSETS": "earliest",
-                "AVAILABLE_NOW": "false" if self.scenario == THROUGHPUT_BASELINE else "true",
+                "AVAILABLE_NOW": "false" if self.scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK} else "true",
             })
-            if self.scenario == THROUGHPUT_BASELINE:
+            if self.scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
                 results_run_root = PurePosixPath(DEFAULT_RESULTS_ROOT) / self.slug / self.run_id
                 environment.update({
                     "APP_NAME": f"WeatherBronzeStreaming-{self.run_id}",
-                    "TRIGGER_INTERVAL": "1 second",
+                    "TRIGGER_INTERVAL": self.trigger_interval,
                     "SPARK_PROGRESS_PATH": str(results_run_root / "spark_progress_bronze.tmp.jsonl"),
                     "BENCHMARK_STOP_SIGNAL": str(results_run_root / "stop.signal"),
                     "QUERY_NAME": f"WeatherBronzeStreaming-{self.run_id}",
@@ -451,13 +570,13 @@ class BenchmarkConfig:
                 "DLQ_PATH": self.paths.dlq,
                 "SILVER_CHECKPOINT": self.paths.silver_checkpoint,
                 "DLQ_CHECKPOINT": self.paths.dlq_checkpoint,
-                "AVAILABLE_NOW": "false" if self.scenario == THROUGHPUT_BASELINE else "true",
+                "AVAILABLE_NOW": "false" if self.scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK} else "true",
             })
-            if self.scenario == THROUGHPUT_BASELINE:
+            if self.scenario in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
                 results_run_root = PurePosixPath(DEFAULT_RESULTS_ROOT) / self.slug / self.run_id
                 environment.update({
                     "APP_NAME": f"WeatherSilverStreaming-{self.run_id}",
-                    "TRIGGER_INTERVAL": "1 second",
+                    "TRIGGER_INTERVAL": self.trigger_interval,
                     "SPARK_PROGRESS_PATH": str(results_run_root / "spark_progress_silver.tmp.jsonl"),
                     "BENCHMARK_STOP_SIGNAL": str(results_run_root / "stop.signal"),
                     "SILVER_QUERY_NAME": f"WeatherSilverStreaming-{self.run_id}-silver",
@@ -488,8 +607,8 @@ class BenchmarkConfig:
                 self._require_paths("gold")
                 environment["GOLD_PATH"] = self.paths.gold
         elif stage == "check_throughput":
-            if self.scenario != THROUGHPUT_BASELINE:
-                raise ValueError("Throughput metrics require THROUGHPUT_BASELINE.")
+            if self.scenario not in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
+                raise ValueError("Streaming throughput metrics require a performance scenario.")
             self._require_paths("bronze", "silver", "dlq")
             environment.update({
                 "BRONZE_PATH": self.paths.bronze,
@@ -518,7 +637,7 @@ class BenchmarkConfig:
                 )
 
     def simulator_defaults(self) -> dict[str, Any]:
-        return {
+        defaults = {
             "scenario": self.scenario,
             "run_id": self.run_id,
             "topic": self.topic,
@@ -536,6 +655,22 @@ class BenchmarkConfig:
             "window_duration": self.window_duration,
             "max_offsets_per_trigger": self.max_offsets_per_trigger,
         }
+        if self.scenario == SCALABILITY_BENCHMARK:
+            defaults["scalability"] = {
+                "config_id": self.config_id,
+                "experiment_id": self.experiment_id,
+                "topic_partitions": self.topic_partitions,
+                "workers": self.requested_worker_count,
+                "worker_cores_each": self.worker_cores_each,
+                "worker_memory_mb_each": self.worker_memory_mb_each,
+                "bronze_cores_max": self.bronze_cores_max,
+                "silver_cores_max": self.silver_cores_max,
+                "executor_cores": self.executor_cores,
+                "executor_memory_mb": self.executor_memory_mb,
+                "shuffle_partitions": self.shuffle_partitions,
+                "trigger_interval": self.trigger_interval,
+            }
+        return defaults
 
 
 def _optional_float(name: str) -> float | None:

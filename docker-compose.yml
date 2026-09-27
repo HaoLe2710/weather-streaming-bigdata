@@ -78,9 +78,6 @@ services:
     build:
       context: .
       dockerfile: spark/Dockerfile
-    container_name: weather-spark-worker
-    hostname: spark-worker
-
     command:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.worker.Worker
@@ -93,9 +90,6 @@ services:
 
     depends_on:
       - spark-master
-
-    ports:
-      - "8081:8081"
 
     volumes:
       - ./spark:/opt/project/spark

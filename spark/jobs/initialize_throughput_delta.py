@@ -12,13 +12,12 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from benchmark_config import THROUGHPUT_BASELINE, BenchmarkConfig
+from benchmark_config import SCALABILITY_BENCHMARK, THROUGHPUT_BASELINE, BenchmarkConfig
 
 
-config = BenchmarkConfig.from_environment(
-    required=True,
-    expected_scenario=THROUGHPUT_BASELINE,
-)
+config = BenchmarkConfig.from_environment(required=True)
+if config.scenario not in {THROUGHPUT_BASELINE, SCALABILITY_BENCHMARK}:
+    raise ValueError("Delta initialization requires a streaming performance scenario.")
 
 spark = (
     SparkSession.builder

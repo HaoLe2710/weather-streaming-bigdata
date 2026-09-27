@@ -67,12 +67,14 @@ class DockerResourceSampler:
         configured_memory_limits_mb: dict[str, float | None] | None = None,
         container_limits: dict[str, dict[str, Any]] | None = None,
         host_logical_cpu_count: int | None = None,
+        worker_containers: list[str] | None = None,
     ):
         self.path = Path(output_path)
         self.interval_seconds = interval_seconds
         self.configured_memory_limits_mb = configured_memory_limits_mb or {}
         self.container_limits = container_limits or {}
         self.host_logical_cpu_count = host_logical_cpu_count
+        self.worker_containers = list(worker_containers or ["weather-spark-worker"])
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._lock = threading.Lock()
@@ -90,8 +92,17 @@ class DockerResourceSampler:
 
     def _run(self) -> None:
         containers = {
-            "weather-spark-worker": "spark_worker",
-            "weather-kafka": "kafka_broker",
+            name: {
+                "service": "spark_worker",
+                "metric_name": "weather-spark-worker" if index == 0 else f"spark-worker-{index + 1}",
+                "worker_index": index + 1,
+            }
+            for index, name in enumerate(self.worker_containers)
+        }
+        containers["weather-kafka"] = {
+            "service": "kafka_broker",
+            "metric_name": "weather-kafka",
+            "worker_index": None,
         }
         while not self._stop.is_set():
             captured = _utc_now()
@@ -112,9 +123,10 @@ class DockerResourceSampler:
                         continue
                     payload = json.loads(line)
                     name = payload.get("Name") or payload.get("Container")
-                    service = containers.get(name)
-                    if not service:
+                    definition = containers.get(name)
+                    if not definition:
                         continue
+                    service = definition["service"]
                     usage_mb, reported_limit_mb = _parse_memory_usage(payload.get("MemUsage", ""))
                     cpu_text = str(payload.get("CPUPerc", "")).rstrip("%")
                     memory_text = str(payload.get("MemPerc", "")).rstrip("%")
@@ -141,8 +153,10 @@ class DockerResourceSampler:
                     )
                     _append_jsonl(self.path, {
                         "timestamp_utc": captured,
-                        "container": name,
+                        "container": definition["metric_name"],
+                        "container_name": name,
                         "service": service,
+                        "worker_index": definition["worker_index"],
                         "cpu_percent": cpu_percent,
                         "memory_usage_mb": usage_mb,
                         "memory_limit_mb": reported_limit_mb,

@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
-from benchmark_config import BenchmarkConfig, THROUGHPUT_BASELINE
+from benchmark_config import BenchmarkConfig, SCALABILITY_BENCHMARK, THROUGHPUT_BASELINE
 from streaming_metrics import make_listener_from_environment, wait_for_stop_signal
 
 
@@ -74,7 +74,10 @@ spark = (
 
 spark.sparkContext.setLogLevel("WARN")
 
-if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario in {
+    THROUGHPUT_BASELINE,
+    SCALABILITY_BENCHMARK,
+}:
     spark.streams.addListener(make_listener_from_environment("bronze"))
 
 
@@ -149,7 +152,10 @@ print(
     f"[topic={KAFKA_TOPIC}]"
 )
 
-if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario == THROUGHPUT_BASELINE:
+if BENCHMARK_CONFIG is not None and BENCHMARK_CONFIG.scenario in {
+    THROUGHPUT_BASELINE,
+    SCALABILITY_BENCHMARK,
+}:
     if not BENCHMARK_STOP_SIGNAL:
         raise ValueError("BENCHMARK_STOP_SIGNAL is required for throughput runs.")
     wait_for_stop_signal([query], BENCHMARK_STOP_SIGNAL)
