@@ -18,6 +18,8 @@ class BenchmarkRunnerLifecycleTests(unittest.TestCase):
                 {
                     "run_id": "run-1",
                     "valid_for_comparison": True,
+                    "avg_processed_rows_per_sec": 123.0,
+                    "silver_avg_processed_rows_per_sec": 150.0,
                     "pipeline_sustainable_rate": 123.0,
                 }
             ]
