@@ -142,19 +142,19 @@ def _persist_experiment(
     )
     baseline = config_summaries.get("p1-b1-s1-w1", {})
     base_rate = baseline.get("pipeline_rate_median")
-    baseline_cores = 2
+    baseline_cores = baseline.get("actual_allocated_cores_median")
     for config_id, summary in config_summaries.items():
         # Dimensions are canonical in config_id and retained with each result.
         sample = next((row for row in config_results[config_id] if row.get("scalability_infrastructure")), {})
         requested = ((sample.get("scalability_infrastructure") or {}).get("scalability_config") or {})
-        app_cores = (requested.get("bronze_cores_max") or 0) + (requested.get("silver_cores_max") or 0)
+        actual_cores = summary.get("actual_allocated_cores_median")
         summary["scalability_metrics_vs_control"] = compute_scalability_metrics(
             baseline_rate=base_rate,
             candidate_rate=summary.get("pipeline_rate_median"),
             baseline_cores=baseline_cores,
-            candidate_cores=app_cores or None,
+            candidate_cores=actual_cores,
         )
-        if config_id != "p1-b1-s1-w1" and app_cores == baseline_cores:
+        if config_id != "p1-b1-s1-w1" and actual_cores == baseline_cores:
             summary["scalability_metrics_vs_control"]["scaling_efficiency"] = None
             summary["scalability_metrics_vs_control"]["compute_multiplier"] = None
         summary["configuration"] = requested

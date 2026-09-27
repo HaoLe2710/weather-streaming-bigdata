@@ -167,7 +167,6 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
         "silver_processed_rate_p50": "silver_processed_rate_p50",
         "silver_processed_rate_p95": "silver_processed_rate_p95",
         "silver_processed_rate_peak": "silver_peak_processed_rows_per_sec",
-        "pipeline_rate": "pipeline_sustainable_rate",
         "startup_lag_peak": "startup_peak_kafka_to_bronze_lag",
         "steady_lag_avg": "steady_state_avg_kafka_to_bronze_lag",
         "steady_lag_p95": "steady_state_p95_kafka_to_bronze_lag",
@@ -178,11 +177,37 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
         "latency_p99_ms": "replay_to_bronze_latency_p99_ms",
         "drain_seconds": "drain_seconds",
     }
+    bronze_stage_rates = [_stage_rate_value(run, "bronze") for run in metric_runs]
+    silver_stage_rates = [_stage_rate_value(run, "silver") for run in metric_runs]
     metrics: dict[str, dict[str, float | None]] = {}
     for label, key in fields.items():
-        values = [_number_value(run.get(key)) for run in metric_runs]
+        if label == "bronze_processed_rate_avg":
+            values = bronze_stage_rates
+        elif label == "silver_processed_rate_avg":
+            values = silver_stage_rates
+        else:
+            values = [_number_value(run.get(key)) for run in metric_runs]
         numeric = [value for value in values if value is not None]
         metrics[label] = _statistics(numeric)
+
+    stages_complete = bool(metric_runs) and all(
+        bronze is not None and silver is not None
+        for bronze, silver in zip(bronze_stage_rates, silver_stage_rates)
+    )
+    stage_statistics = ("mean", "median", "min", "max")
+    metrics["pipeline_rate"] = {
+        statistic: (
+            min(
+                metrics["bronze_processed_rate_avg"][statistic],
+                metrics["silver_processed_rate_avg"][statistic],
+            )
+            if stages_complete
+            and metrics["bronze_processed_rate_avg"][statistic] is not None
+            and metrics["silver_processed_rate_avg"][statistic] is not None
+            else None
+        )
+        for statistic in stage_statistics
+    }
 
     worker_cpu = [
         _nested_number(run, "scalability_resource_metrics", "cluster_aggregate", "cpu_p95_percent")
@@ -226,8 +251,16 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
         "run_ids": [run.get("run_id") for run in runs],
         "statuses": [run.get("status") for run in runs],
         "capacity_classifications": classifications,
+        "pipeline_rate_definition": (
+            "minimum of the aggregated steady-state Bronze and Silver processed rates; "
+            "both stages must have positive finite rates in every included comparison run"
+        ),
         "metrics": metrics,
     }
+    if not stages_complete:
+        aggregate["pipeline_rate_unavailable_reason"] = (
+            "At least one included comparison run is missing a positive finite Bronze or Silver rate."
+        )
     for label, summary in metrics.items():
         aggregate[f"{label}_mean"] = summary["mean"]
         aggregate[f"{label}_median"] = summary["median"]
@@ -532,6 +565,17 @@ def _nested_number(value: dict[str, Any], *path: str) -> float | None:
             return None
         current = current.get(key)
     return _number_value(current)
+
+
+def _stage_rate_value(run: dict[str, Any], stage: str) -> float | None:
+    keys = {
+        "bronze": ("bronze_processed_rate_avg", "avg_processed_rows_per_sec"),
+        "silver": ("silver_processed_rate_avg", "silver_avg_processed_rows_per_sec"),
+    }
+    canonical_key, legacy_key = keys[stage]
+    raw_value = run[canonical_key] if canonical_key in run else run.get(legacy_key)
+    value = _number_value(raw_value)
+    return value if _positive(value) else None
 
 
 def _number_value(value: Any) -> float | None:

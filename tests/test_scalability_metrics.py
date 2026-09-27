@@ -72,7 +72,9 @@ class ScalabilityMetricsTests(unittest.TestCase):
                 "valid_for_comparison": True,
                 "status": "UNDER_CAPACITY",
                 "capacity_classification": "UNDER_CAPACITY",
-                "pipeline_sustainable_rate": 120,
+                "avg_processed_rows_per_sec": 120,
+                "silver_avg_processed_rows_per_sec": 130,
+                "pipeline_sustainable_rate": 999,
                 "actual_generated_msgs_sec": 100,
                 "replay_to_bronze_latency_p95_ms": 50,
                 "steady_state_p95_kafka_to_bronze_lag": 0,
@@ -102,7 +104,9 @@ class ScalabilityMetricsTests(unittest.TestCase):
                 "valid_for_comparison": True,
                 "status": "NEAR_CAPACITY",
                 "capacity_classification": "NEAR_CAPACITY",
-                "pipeline_sustainable_rate": 100,
+                "avg_processed_rows_per_sec": 100,
+                "silver_avg_processed_rows_per_sec": 110,
+                "pipeline_sustainable_rate": 1,
                 "actual_generated_msgs_sec": 100,
                 "replay_to_bronze_latency_p95_ms": None,
                 "steady_state_p95_kafka_to_bronze_lag": 20,
@@ -126,6 +130,8 @@ class ScalabilityMetricsTests(unittest.TestCase):
                 "run_id": "valid",
                 "valid_for_comparison": True,
                 "actual_generated_msgs_sec": 5000,
+                "avg_processed_rows_per_sec": 5100,
+                "silver_avg_processed_rows_per_sec": 4900,
                 "pipeline_sustainable_rate": 4900,
             },
             {
@@ -133,6 +139,8 @@ class ScalabilityMetricsTests(unittest.TestCase):
                 "valid_for_comparison": False,
                 "status": "LOAD_GENERATOR_LIMITED",
                 "actual_generated_msgs_sec": 3000,
+                "avg_processed_rows_per_sec": 3000,
+                "silver_avg_processed_rows_per_sec": 3100,
                 "pipeline_sustainable_rate": 9000,
             },
         ])
@@ -140,6 +148,68 @@ class ScalabilityMetricsTests(unittest.TestCase):
         self.assertEqual(aggregate["valid_run_count"], 1)
         self.assertEqual(aggregate["metrics_scope"], "valid_runs")
         self.assertEqual(aggregate["pipeline_rate_median"], 4900)
+
+    def test_pipeline_rate_uses_minimum_of_aggregated_stage_rates(self):
+        cases = [
+            (9000, 8500, 8500),
+            (8000, 9500, 8000),
+        ]
+        for bronze, silver, expected in cases:
+            with self.subTest(bronze=bronze, silver=silver):
+                aggregate = aggregate_scalability_runs([{
+                    "valid_for_comparison": True,
+                    "avg_processed_rows_per_sec": bronze,
+                    "silver_avg_processed_rows_per_sec": silver,
+                    "pipeline_sustainable_rate": 100_000,
+                }])
+                self.assertEqual(aggregate["pipeline_rate_mean"], expected)
+                self.assertEqual(aggregate["pipeline_rate_median"], expected)
+
+    def test_pipeline_rate_is_null_if_either_stage_is_missing_or_invalid(self):
+        cases = [
+            {
+                "valid_for_comparison": True,
+                "silver_avg_processed_rows_per_sec": 8500,
+                "pipeline_sustainable_rate": 8000,
+            },
+            {
+                "valid_for_comparison": True,
+                "avg_processed_rows_per_sec": 9000,
+                "silver_avg_processed_rows_per_sec": float("nan"),
+                "pipeline_sustainable_rate": 8000,
+            },
+        ]
+        for run in cases:
+            with self.subTest(run=run):
+                aggregate = aggregate_scalability_runs([run])
+                self.assertIsNone(aggregate["pipeline_rate_mean"])
+                self.assertIsNone(aggregate["pipeline_rate_median"])
+
+    def test_speedup_uses_pipeline_rate_when_bronze_increases(self):
+        baseline = aggregate_scalability_runs([{
+            "valid_for_comparison": True,
+            "avg_processed_rows_per_sec": 8800,
+            "silver_avg_processed_rows_per_sec": 9000,
+            "pipeline_sustainable_rate": 8800,
+        }])
+        candidate = aggregate_scalability_runs([{
+            "valid_for_comparison": True,
+            "avg_processed_rows_per_sec": 9000,
+            "silver_avg_processed_rows_per_sec": 6000,
+            "pipeline_sustainable_rate": 9000,
+        }])
+
+        metrics = compute_scalability_metrics(
+            baseline_rate=baseline["pipeline_rate_median"],
+            candidate_rate=candidate["pipeline_rate_median"],
+            baseline_cores=2,
+            candidate_cores=2,
+        )
+
+        self.assertEqual(baseline["pipeline_rate_median"], 8800)
+        self.assertEqual(candidate["pipeline_rate_median"], 6000)
+        self.assertAlmostEqual(metrics["speedup"], 6000 / 8800)
+        self.assertLess(metrics["speedup"], 1)
 
     def test_best_partition_uses_median_then_latency_and_partition_tiebreaks(self):
         summaries = {
