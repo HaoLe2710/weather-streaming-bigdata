@@ -303,11 +303,24 @@ of 100, 500, and 1,000 msg/s. The table reports repetition means; throughput
 rates are averaged over non-warm-up Bronze progress batches, and latency is
 replay-to-Bronze processing latency.
 
-| Requested rate (msg/s) | Mean processed rate (rows/s) | Mean replay peak lag | Mean latency p50 / p95 / p99 | Mean drain (s) | Repetitions |
-| ---: | ---: | ---: | :--- | ---: | :--- |
-| 100 | 106.60 | 2,299 | 355 ms / 3.603 s / 13.150 s | 7.98 | 2/2 `NEAR_CAPACITY` |
-| 500 | 554.72 | 11,299 | 1.651 s / 12.135 s / 16.136 s | 13.34 | 2/2 `NEAR_CAPACITY` |
-| 1,000 | 1,115.80 | 22,300 | 2.580 s / 15.095 s / 17.096 s | 9.79 | 2/2 `NEAR_CAPACITY` |
+| Requested rate (msg/s) | Mean processed rate (rows/s) | Mean replay peak lag | Mean p95 batch (ms) | Mean latency p50 / p95 / p99 | Mean drain (s) | Repetitions |
+| ---: | ---: | ---: | ---: | :--- | ---: | :--- |
+| 100 | 106.60 | 2,299 | 4,127 | 355 ms / 3.603 s / 13.150 s | 7.98 | 2/2 `NEAR_CAPACITY` |
+| 500 | 554.72 | 11,299 | 5,236 | 1.651 s / 12.135 s / 16.136 s | 13.34 | 2/2 `NEAR_CAPACITY` |
+| 1,000 | 1,115.80 | 22,300 | 5,489 | 2.580 s / 15.095 s / 17.096 s | 9.79 | 2/2 `NEAR_CAPACITY` |
+
+Docker peak samples across the two repetitions at each rate were:
+
+| Requested rate (msg/s) | Spark worker CPU (%) | Spark worker memory (MiB) | Kafka broker CPU (%) | Kafka broker memory (MiB) |
+| ---: | :--- | :--- | :--- | :--- |
+| 100 | 566.00–776.99 | 2,560.0–2,884.6 | 21.06–33.31 | 983.2–998.4 |
+| 500 | 723.37–723.72 | 2,271.2–2,343.9 | 20.04–43.34 | 634.6–648.6 |
+| 1,000 | 703.28–762.40 | 1,879.0–1,913.9 | 6.67–25.34 | 649.0–656.5 |
+
+The worker and broker had no Docker CPU or memory hard limits. Docker worker
+CPU peaks above 100% reflect use of multiple host cores; they are not a
+container quota percentage. Memory values are sampled usage, not configured
+limits.
 
 All six runs wrote 50,000 Bronze and 50,000 Silver records, zero DLQ records,
 and ended with zero sampled Kafka lag. Each was classified `NEAR_CAPACITY`
