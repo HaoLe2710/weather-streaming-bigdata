@@ -677,15 +677,34 @@ def _wait_for_stream_drain(
 
 
 def _stop_stream_processes(
-    processes: dict[str, subprocess.Popen], stop_signal: Path, timeout_seconds: float = 90.0
+    processes: dict[str, subprocess.Popen],
+    stop_signal: Path,
+    *,
+    run_id: str,
+    timeout_seconds: float = 90.0,
 ) -> dict[str, int | None]:
     stop_signal.parent.mkdir(parents=True, exist_ok=True)
     stop_signal.touch(exist_ok=True)
     deadline = time.monotonic() + timeout_seconds
-    while time.monotonic() < deadline and any(
-        process.poll() is None for process in processes.values()
-    ):
-        time.sleep(0.25)
+    next_app_poll = 0.0
+    observation: dict = {}
+    while True:
+        now = time.monotonic()
+        if now >= next_app_poll:
+            observation = _spark_active_apps(run_id)
+            next_app_poll = now + 1.0
+        launchers_running = any(
+            process.poll() is None for process in processes.values()
+        )
+        apps_known_stopped = (
+            not observation.get("error") and not observation.get("apps")
+        )
+        if not launchers_running and apps_known_stopped:
+            break
+        if now >= deadline:
+            break
+        time.sleep(min(0.25, max(0.0, deadline - now)))
+
     for process in processes.values():
         if process.poll() is None:
             if os.name == "nt":
@@ -714,7 +733,21 @@ def _stop_stream_processes(
             else:
                 process.kill()
             return_codes[stage] = process.wait(timeout=15)
-    return return_codes
+
+    verify_deadline = time.monotonic() + 5.0
+    while True:
+        observation = _spark_active_apps(run_id)
+        if not observation.get("error") and not observation.get("apps"):
+            return return_codes
+        if time.monotonic() >= verify_deadline:
+            details = observation.get("error") or json.dumps(
+                observation.get("apps", []), sort_keys=True
+            )
+            raise RuntimeError(
+                "Spark applications for this run remained active after the stop signal: "
+                + details
+            )
+        time.sleep(0.25)
 
 
 def _merge_progress_files(
@@ -1107,6 +1140,8 @@ def _run_throughput_iteration(
     runtime_allocation_invalid = False
     failure_reason = None
     failure_kind = None
+    stream_shutdown_confirmed = False
+    spark_shutdown_observation = None
     drain_complete = False
     drain_seconds = None
     stream_started_monotonic = None
@@ -1370,13 +1405,38 @@ def _run_throughput_iteration(
                 except Exception as exc:
                     log_tails["kafka_lag_sampler"] = f"{type(exc).__name__}: {exc}"
             try:
-                process_return_codes = _stop_stream_processes(processes, stop_signal)
+                process_return_codes = _stop_stream_processes(
+                    processes,
+                    stop_signal,
+                    run_id=config.run_id,
+                )
+                spark_shutdown_observation = _spark_active_apps(config.run_id)
+                stream_shutdown_confirmed = bool(
+                    not spark_shutdown_observation.get("error")
+                    and not spark_shutdown_observation.get("apps")
+                    and all(code is not None for code in process_return_codes.values())
+                )
+                if not stream_shutdown_confirmed:
+                    raise RuntimeError(
+                        "Spark Master did not confirm that this run's applications stopped."
+                    )
             except Exception as exc:
                 process_return_codes = {
                     stage: process.poll() for stage, process in processes.items()
                 }
-                failure_reason = failure_reason or f"Stream shutdown failed: {type(exc).__name__}: {exc}"
+                shutdown_error = f"Stream shutdown failed: {type(exc).__name__}: {exc}"
+                failure_reason = (
+                    f"{failure_reason}; {shutdown_error}"
+                    if failure_reason
+                    else shutdown_error
+                )
                 failure_kind = "stream_failure"
+                spark_shutdown_observation = _spark_active_apps(config.run_id)
+                stream_shutdown_confirmed = bool(
+                    not spark_shutdown_observation.get("error")
+                    and not spark_shutdown_observation.get("apps")
+                    and all(code is not None for code in process_return_codes.values())
+                )
             if resource_sampler is not None:
                 resource_sampler.stop()
             if lag_sampler is not None:
@@ -1390,7 +1450,8 @@ def _run_throughput_iteration(
                     "samples": cluster_sampler.samples,
                     "last_error": cluster_sampler.last_error,
                 })
-            stop_signal.unlink(missing_ok=True)
+            if stream_shutdown_confirmed:
+                stop_signal.unlink(missing_ok=True)
             run_finished_monotonic = time.monotonic()
             for stage, log_path in log_paths.items():
                 if log_path.exists():
@@ -1524,6 +1585,10 @@ def _run_throughput_iteration(
         status = "INVALID_FOR_COMPARISON"
         capacity = None
         capacity_reason = "Observed Spark worker/executor allocation differed from the requested scalability configuration."
+    elif not stream_shutdown_confirmed:
+        status = "FAILED"
+        capacity = "FAILED"
+        capacity_reason = "Spark streaming applications or their launchers did not stop cleanly."
     elif is_scalability and generator_limit_reason is not None:
         status = "LOAD_GENERATOR_LIMITED"
         capacity = None
@@ -1561,6 +1626,7 @@ def _run_throughput_iteration(
         and analysis.get("pipeline_completed") is True
         and final_lag == 0
         and metrics_error is None
+        and stream_shutdown_confirmed
     )
     result = {
         **analysis,
@@ -1649,6 +1715,8 @@ def _run_throughput_iteration(
         "spark_cluster_snapshot": artifacts["spark_cluster_snapshot"].relative_to(REPO_ROOT).as_posix() if is_scalability else None,
         "observed_spark_runtime": runtime_observation,
         "stream_process_return_codes": process_return_codes,
+        "stream_shutdown_confirmed": stream_shutdown_confirmed,
+        "spark_shutdown_observation": spark_shutdown_observation,
         "temporary_log_cleanup_error": temporary_log_cleanup_error,
         "null_metric_reasons": {
             "latency": metrics_error or (
@@ -1680,6 +1748,9 @@ def _run_throughput_iteration(
     manifest["status"] = status
     manifest["finished_at"] = utc_now()
     manifest["result_metrics"] = result
+    manifest["stream_shutdown_confirmed"] = stream_shutdown_confirmed
+    manifest["stop_signal_retained"] = bool(stop_signal.exists())
+    manifest["spark_shutdown_observation"] = spark_shutdown_observation
     if failure_reason:
         manifest["error"] = {"type": failure_kind, "message": failure_reason}
     if temporary_log_cleanup_error:

@@ -90,13 +90,48 @@ class BenchmarkRunnerLifecycleTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             stop_signal = Path(temp_dir) / "stop.signal"
-            with patch.object(run_benchmark.subprocess, "run", side_effect=taskkill) as run:
+            with patch.object(
+                run_benchmark.subprocess, "run", side_effect=taskkill
+            ) as run, patch.object(
+                run_benchmark, "_spark_active_apps", return_value={"apps": []}
+            ):
                 result = run_benchmark._stop_stream_processes(
-                    {"silver": process}, stop_signal, timeout_seconds=0
+                    {"silver": process},
+                    stop_signal,
+                    run_id="test-run",
+                    timeout_seconds=0,
                 )
 
         self.assertEqual(result, {"silver": 1})
         self.assertEqual(run.call_args.args[0], ["taskkill", "/PID", "4321", "/T", "/F"])
+
+    def test_shutdown_waits_for_spark_master_to_release_the_run(self):
+        class FinishedProcess:
+            pid = 1234
+
+            def poll(self):
+                return 0
+
+            def wait(self, timeout=None):
+                return 0
+
+        observation = {"apps": [{"id": "app-test", "name": "WeatherSilver-test"}]}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            stop_signal = Path(temp_dir) / "stop.signal"
+            with patch.object(
+                run_benchmark,
+                "_spark_active_apps",
+                side_effect=[observation, {"apps": []}, {"apps": []}],
+            ) as inspect_master:
+                result = run_benchmark._stop_stream_processes(
+                    {"silver": FinishedProcess()},
+                    stop_signal,
+                    run_id="test",
+                    timeout_seconds=3,
+                )
+
+        self.assertEqual(result, {"silver": 0})
+        self.assertEqual(inspect_master.call_count, 3)
 
 
 if __name__ == "__main__":
