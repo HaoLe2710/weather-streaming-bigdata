@@ -47,6 +47,7 @@ from performance_metrics import (  # noqa: E402
 )
 from scalability_metrics import (  # noqa: E402
     ScalabilityConfig,
+    aggregate_scalability_runs,
     partition_distribution,
     scalability_resource_metrics,
     summarize_progress_percentiles,

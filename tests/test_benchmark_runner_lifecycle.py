@@ -12,6 +12,20 @@ import run_benchmark  # noqa: E402
 
 
 class BenchmarkRunnerLifecycleTests(unittest.TestCase):
+    def test_scalability_cli_can_aggregate_run_results(self):
+        aggregate = run_benchmark.aggregate_scalability_runs(
+            [
+                {
+                    "run_id": "run-1",
+                    "valid_for_comparison": True,
+                    "pipeline_sustainable_rate": 123.0,
+                }
+            ]
+        )
+
+        self.assertEqual(aggregate["run_count"], 1)
+        self.assertEqual(aggregate["pipeline_rate_mean"], 123.0)
+
     def test_compose_exec_uses_direct_binary_when_available(self):
         with patch.object(run_benchmark.shutil, "which", return_value="docker-compose"):
             self.assertEqual(run_benchmark._compose_exec_prefix(), ["docker-compose"])
