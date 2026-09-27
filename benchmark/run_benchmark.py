@@ -237,6 +237,8 @@ def _spark_submit(
         "spark://spark-master:7077",
         "--deploy-mode",
         "client",
+        "--conf",
+        "spark.jars.ivy=/tmp/spark-ivy",
         "--packages",
         ",".join([
             _delta_coordinate(),

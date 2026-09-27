@@ -166,7 +166,9 @@ load-generation metric only.
 The runner uses Spark's `availableNow` trigger for bounded Bronze/Silver
 benchmark jobs. Live jobs keep their existing continuous-trigger behavior.
 Delta Spark 4.0.0 is pinned for the Spark 4.x image; the same version is used
-for its Python package and the Maven artifact resolved by `spark-submit`.
+for its Python package and the Maven artifact resolved by `spark-submit`. Spark
+resolves the Delta and Kafka connector packages into `/tmp/spark-ivy`, which is
+writable by the container user.
 
 ## Run artifacts
 
