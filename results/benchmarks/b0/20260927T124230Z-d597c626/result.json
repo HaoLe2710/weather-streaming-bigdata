@@ -1,0 +1,64 @@
+{
+  "assertions": {
+    "all_injected_invalid_events_reached_dlq": true,
+    "bronze_fault_distribution_matches_simulator": true,
+    "dlq_contains_only_injected_invalid_events": true,
+    "kafka_message_count_matches_bronze": true,
+    "observed_duplicates_removed_match_injected_duplicates": true,
+    "silver_contains_all_valid_nonduplicate_events": true,
+    "silver_dlq_and_removed_duplicates_conserve_bronze": true,
+    "silver_has_no_duplicate_event_id_groups": true,
+    "silver_quality_violation_count_is_zero": true,
+    "simulator_flush_completed": true,
+    "source_fault_categories_sum_to_source_records": true
+  },
+  "git_commit": "6ec91ee6a7363e5b621f643b8e578b6decedef33",
+  "input_reference_path": "/opt/project/results/benchmarks/b0/20260927T124230Z-d597c626/simulator.json",
+  "kafka_topic": "weather.bench.b0.20260927t124230z-d597c626",
+  "metrics": {
+    "bronze_fault_distribution": {
+      "DUPLICATE": 195,
+      "INVALID": 97,
+      "LATE": 490,
+      "NORMAL": 8892,
+      "OUT_OF_ORDER": 521
+    },
+    "bronze_records": 10195,
+    "dlq_fault_distribution": {
+      "INVALID": 97
+    },
+    "dlq_records": 97,
+    "duplicate_event_id_groups": 0,
+    "duplicates_generated": 195,
+    "duplicates_removed": 195,
+    "invalid_generated": 97,
+    "invalid_routed_to_dlq": 97,
+    "kafka_messages": 10195,
+    "late_generated": 490,
+    "normal_generated": 8892,
+    "out_of_order_generated": 521,
+    "quality_violation_count": 0,
+    "silver_fault_distribution": {
+      "LATE": 490,
+      "NORMAL": 8892,
+      "OUT_OF_ORDER": 521
+    },
+    "silver_records": 9903,
+    "source_records": 10000
+  },
+  "paths": {
+    "bronze": "/opt/project/data/benchmark/runs/b0/20260927T124230Z-d597c626/bronze/weather_raw",
+    "bronze_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T124230Z-d597c626/bronze",
+    "dlq": "/opt/project/data/benchmark/runs/b0/20260927T124230Z-d597c626/silver/weather_invalid",
+    "dlq_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T124230Z-d597c626/dlq",
+    "gold": null,
+    "gold_checkpoint": null,
+    "root": "/opt/project/data/benchmark/runs/b0/20260927T124230Z-d597c626",
+    "silver": "/opt/project/data/benchmark/runs/b0/20260927T124230Z-d597c626/silver/weather_clean",
+    "silver_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T124230Z-d597c626/silver"
+  },
+  "run_id": "20260927T124230Z-d597c626",
+  "scenario": "B0_CORRECTNESS",
+  "schema_version": 1,
+  "status": "PASS"
+}
