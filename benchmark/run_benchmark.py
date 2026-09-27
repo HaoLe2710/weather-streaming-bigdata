@@ -63,7 +63,7 @@ def _git_commit() -> str:
 
 def _require_clean_worktree() -> None:
     status = _run(
-        ["git", "status", "--porcelain"],
+        ["git", "status", "--porcelain", "--untracked-files=all"],
         capture_output=True,
     ).stdout.strip()
     code_paths = [
