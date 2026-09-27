@@ -1,0 +1,128 @@
+services:
+
+  broker:
+    image: apache/kafka:4.3.1
+    container_name: weather-kafka
+    hostname: broker
+
+    ports:
+      - "9092:9092"
+
+    environment:
+      HOME: /tmp
+      KAFKA_NODE_ID: 1
+
+      KAFKA_PROCESS_ROLES: "broker,controller"
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT_HOST://localhost:9092,PLAINTEXT://broker:19092"
+
+      KAFKA_LISTENERS: "CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT://:19092"
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker:29093"
+
+      CLUSTER_ID: "4L6g3nShT-eMCtK--X86sw"
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_REPLICATION_FACTOR: 1
+
+      KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: 1
+
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+
+    
+
+
+  spark-master:
+    image: apache/spark:4.0.4-scala2.13-java17-python3-r-ubuntu
+    container_name: weather-spark-master
+    hostname: spark-master
+
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+
+    environment:
+      HOME: /tmp
+      SPARK_MASTER_HOST: spark-master
+
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+
+    volumes:
+      - ./spark:/opt/project/spark
+      - ./historical:/opt/project/historical
+      - ./data:/opt/project/history-data
+      - weather-data:/opt/project/data
+
+
+  spark-worker:
+    image: apache/spark:4.0.4-scala2.13-java17-python3-r-ubuntu
+    container_name: weather-spark-worker
+    hostname: spark-worker
+
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+
+    environment:
+      HOME: /tmp
+      SPARK_WORKER_CORES: 4
+      SPARK_WORKER_MEMORY: 4g
+
+    depends_on:
+      - spark-master
+
+    ports:
+      - "8081:8081"
+
+    volumes:
+      - ./spark:/opt/project/spark
+      - ./historical:/opt/project/historical
+      - ./data:/opt/project/history-data
+      - weather-data:/opt/project/data
+
+  historical-downloader:
+    image: python:3.12-slim
+    container_name: weather-historical-downloader
+
+    working_dir: /opt/project
+
+    volumes:
+      - ./historical:/opt/project/historical
+      - ./data:/opt/project/history-data
+
+    command: sleep infinity
+
+  stream-simulator:
+    image: python:3.12-slim
+    container_name: weather-stream-simulator
+
+    working_dir: /opt/project
+
+    volumes:
+      - ./simulator:/opt/project/simulator
+      - ./data:/opt/project/history-data:ro
+
+    command: sleep infinity
+
+    depends_on:
+      - broker
+
+volumes:
+  weather-data:
+

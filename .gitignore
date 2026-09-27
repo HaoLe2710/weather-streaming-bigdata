@@ -1,0 +1,69 @@
+# =========================
+# GitNexus
+# =========================
+.gitnexus/
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# =========================
+# Environment / secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# IDE
+# =========================
+.idea/
+.vscode/
+*.iml
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs / temporary files
+# =========================
+*.log
+*.tmp
+*.temp
+.cache/
+
+# =========================
+# Spark
+# =========================
+spark-warehouse/
+metastore_db/
+derby.log
+
+# =========================
+# Runtime / generated data
+# =========================
+data/
+results/
+
+# =========================
+# Local benchmark artifacts
+# =========================
+benchmark-results/
+checkpoints/
+
+# =========================
+# Node
+# =========================
+node_modules/
+AGENTS.md
+CLAUDE.md
+.claude
