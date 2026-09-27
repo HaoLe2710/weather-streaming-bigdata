@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "experiment_type": "scalability_configuration_repetitions",
+  "experiment_id": "20260927T160742Z-2f7a95d7",
+  "created_at": "2026-09-27T16:07:42+00:00",
+  "git_commit": "4cf6c45e399680fc976a790c2c55911fa74e653c",
+  "scenario": "SCALABILITY_BENCHMARK",
+  "status": "FAILED_RESOURCE_LIMIT",
+  "config_id": "p3-b2-s2-w1",
+  "configuration": {
+    "bronze_cores_max": 2,
+    "executor_cores": 1,
+    "executor_memory_mb": 1024,
+    "partitions": 3,
+    "shuffle_partitions": 1,
+    "silver_cores_max": 2,
+    "trigger_interval": "1 second",
+    "worker_cores_each": 4,
+    "worker_memory_mb_each": 4096,
+    "workers": 1
+  },
+  "requested_rate_msgs_sec": 8000,
+  "source_record_limit": 800000,
+  "requested_repetitions": 2,
+  "attempted_repetitions": 1,
+  "completed_repetitions": 1,
+  "valid_run_count": 0,
+  "metrics_scope": "no_valid_comparison_runs",
+  "runs": [
+    {
+      "run_id": "20260927T160742Z-6cd589c1",
+      "status": "FAILED",
+      "valid_for_comparison": false,
+      "result": "results/benchmarks/scalability/20260927T160742Z-6cd589c1/result.json"
+    }
+  ],
+  "resource_safety_interruption": "results/benchmarks/scalability/experiments/20260927T160742Z-2f7a95d7/resource_safety_interruption.json",
+  "diagnostic_only": {
+    "actual_generated_msgs_sec": 7999.912696953858,
+    "produced_messages": 800000,
+    "bronze_processed_rate_avg": 9078.81511607816,
+    "silver_processed_rate_avg": 9111.387605003176,
+    "pipeline_sustainable_rate": null,
+    "pipeline_rate_reason": "No correctness-complete valid repetition; partial stage rates are retained only in the raw result artifact and are excluded from comparison.",
+    "spark_end_offsets_by_partition": {
+      "0": 200000,
+      "1": 440000,
+      "2": 160000
+    },
+    "partition_min_records": 160000,
+    "partition_max_records": 440000,
+    "partition_mean_records": 266666.6666666667,
+    "partition_imbalance_ratio": 1.65,
+    "actual_allocation_passed": true,
+    "actual_allocation_by_stage": {
+      "WeatherBronzeStreaming": 2,
+      "WeatherSilverStreaming": 2
+    },
+    "worker_id": "worker-20260927123744-172.18.0.4-35099",
+    "correctness_passed": false,
+    "final_kafka_to_bronze_lag": 0,
+    "stream_shutdown_confirmed": true
+  }
+}

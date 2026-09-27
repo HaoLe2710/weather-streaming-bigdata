@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "20260927T160742Z-6cd589c1",
+  "experiment_id": "20260927T160742Z-2f7a95d7",
+  "classification": "ABORTED_FOR_HOST_MEMORY_SAFETY",
+  "observations": {
+    "classification": "ABORTED_FOR_HOST_MEMORY_SAFETY",
+    "reason": "Host free physical memory fell to 331 MiB during the first P3-B2-S2-W1 attempt. The benchmark process was interrupted; its two run-scoped Spark apps were then stopped by exact app ID. No unrelated containers were stopped.",
+    "host_total_memory_mib": 14188,
+    "host_free_memory_mib": {
+      "before_run": 3707,
+      "during_run_low": 331,
+      "immediately_after_interrupt": 351,
+      "after_spark_app_cleanup": 1693,
+      "idle_samples_after_cleanup": [
+        5553,
+        5475,
+        5282
+      ]
+    },
+    "docker_memory_limit_gib": 6.698,
+    "docker_stats_during_pressure": {
+      "spark_worker_gib": 1.748,
+      "spark_master_gib": 1.74,
+      "kafka_mib": 791
+    },
+    "docker_stats_peak_observed_before_cleanup": {
+      "spark_worker_gib": 2.99,
+      "spark_master_gib": 1.994,
+      "kafka_mib": 801.5
+    },
+    "spark_apps_stopped": [
+      {
+        "app_id": "app-20260927160811-0238",
+        "name": "WeatherBronzeStreaming-20260927T160742Z-6cd589c1"
+      },
+      {
+        "app_id": "app-20260927160811-0239",
+        "name": "WeatherSilverStreaming-20260927T160742Z-6cd589c1"
+      }
+    ],
+    "actual_allocation_verified": {
+      "workers": 1,
+      "bronze_cores": 2,
+      "silver_cores": 2,
+      "total_cores": 4,
+      "executors_per_stage": 2,
+      "executor_cores": 1,
+      "executor_memory_mb": 1024
+    },
+    "comparison_eligible": false,
+    "broker_container_remained_running": true
+  },
+  "source_complete": true,
+  "run_status": "FAILED",
+  "valid_for_comparison": false,
+  "error": "OSError: [Errno 22] Invalid argument",
+  "stream_shutdown_confirmed": true
+}
