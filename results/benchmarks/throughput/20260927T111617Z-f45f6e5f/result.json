@@ -1,0 +1,394 @@
+{
+  "actual_generated_msgs_sec": 1999.9668805477231,
+  "actual_generation_rate_including_flush": 1998.2256275964203,
+  "actual_rate": 1999.9668805477231,
+  "analysis_schema_version": 2,
+  "avg_batch_duration_ms": 2847.25,
+  "avg_input_rows_per_sec": 2001.0119399999708,
+  "avg_processed_rows_per_sec": 2097.4231928042677,
+  "batch_duration_components": {
+    "addBatch": {
+      "avg_ms": 2744.25,
+      "max_ms": 2861.0,
+      "p95_ms": 2856.5
+    },
+    "commitOffsets": {
+      "avg_ms": 41.75,
+      "max_ms": 46.0,
+      "p95_ms": 45.25
+    },
+    "getBatch": {
+      "avg_ms": 0.25,
+      "max_ms": 1.0,
+      "p95_ms": 0.8499999999999996
+    },
+    "latestOffset": {
+      "avg_ms": 6.5,
+      "max_ms": 7.0,
+      "p95_ms": 7.0
+    },
+    "queryPlanning": {
+      "avg_ms": 8.25,
+      "max_ms": 11.0,
+      "p95_ms": 10.549999999999999
+    },
+    "triggerExecution": {
+      "avg_ms": 2847.25,
+      "max_ms": 2973.0,
+      "p95_ms": 2967.3
+    },
+    "walCommit": {
+      "avg_ms": 43.75,
+      "max_ms": 52.0,
+      "p95_ms": 50.8
+    }
+  },
+  "broker_cpu_avg": 3.505714285714286,
+  "broker_cpu_p50": 3.55,
+  "broker_cpu_p95": 5.716,
+  "broker_cpu_peak": 9.3,
+  "broker_memory_avg_mb": 830.2535714285714,
+  "broker_memory_p50_mb": 830.25,
+  "broker_memory_p95_mb": 831.1,
+  "broker_memory_peak_mb": 831.8,
+  "broker_peak_cpu_percent": 9.3,
+  "broker_peak_memory_mb": 831.8,
+  "bronze_avg_input_rows_per_sec": 2001.0119399999708,
+  "bronze_batch_avg_ms": 2847.25,
+  "bronze_batch_max_ms": 2973.0,
+  "bronze_batch_p95_ms": 2967.3,
+  "bronze_completion_time": "2026-09-27T11:17:45.832+00:00",
+  "bronze_input_records": 100000,
+  "bronze_processed_rate_avg": 2097.4231928042677,
+  "bronze_processed_rate_p50": 2040.363963190197,
+  "bronze_processed_rate_p95": 2292.2773587841025,
+  "bronze_processed_rate_peak": 2332.814930015552,
+  "bronze_records": 100000,
+  "bronze_steady_state_batches": 4,
+  "capacity_classification": "UNDER_CAPACITY",
+  "capacity_reason": "The pipeline completed; steady-state lag was stable or declining, the bottleneck kept at least 95% of offered rate, and drain time stayed within policy.",
+  "container_cpu_period_us": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpu_quota": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpu_quota_us": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpuset": {
+    "broker": null,
+    "worker": null
+  },
+  "container_limit_recording": {
+    "broker": {
+      "cpu_quota": "recorded",
+      "cpuset": "recorded",
+      "memory_limit": "recorded"
+    },
+    "worker": {
+      "cpu_quota": "recorded",
+      "cpuset": "recorded",
+      "memory_limit": "recorded"
+    }
+  },
+  "container_memory_limit_mb": {
+    "broker": null,
+    "worker": null
+  },
+  "dlq_output_records": 0,
+  "drain_complete": true,
+  "drain_seconds": 12.546759499993641,
+  "duration_definition": "First streaming query start through confirmed drain and clean stream shutdown.",
+  "duration_seconds": 65.68795230000978,
+  "errors": {
+    "kafka_lag_sampler": null,
+    "metrics": null,
+    "resource_sampler": null,
+    "run": null,
+    "spark_log_tails": {
+      "bronze": "26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:36739/jars/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:36739/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:36739/jars/io.delta_delta-storage-4.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:36739/jars/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:36739/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:36739/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:36739/jars/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:36739/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:36739/jars/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:36739/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:36739/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:36739/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:36739/jars/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:36739/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:36739/files/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/io.delta_delta-spark_2.13-4.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:36739/files/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:36739/files/io.delta_delta-storage-4.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/io.delta_delta-storage-4.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:36739/files/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.antlr_antlr4-runtime-4.13.1.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:36739/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:36739/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:36739/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.kafka_kafka-clients-3.9.1.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:36739/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/com.google.code.findbugs_jsr305-3.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:36739/files/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.commons_commons-pool2-2.12.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:36739/files/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790507801109\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:36739/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1790507801109\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.lz4_lz4-java-1.8.0.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:36739/files/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790507801109\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:36739/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790507801109\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:36739/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790507801109\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-380fb9b9-22fd-458a-aac5-83d304a71c5f/userFiles-818e5152-27cd-4cc9-8241-0cc8cfa31b6c/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 11:16:42 INFO SecurityManager: Changing view acls to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 11:16:42 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 11:16:42 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 27 ms (0 ms spent in bootstraps)\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927111642-0059\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927111642-0059/0 on worker-20260927075255-172.18.0.4-36797 (172.18.0.4:36797) with 1 core(s)\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927111642-0059/0 on hostPort 172.18.0.4:36797 with 1 core(s), 1024.0 MiB RAM\n26/09/27 11:16:42 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 40707.\n26/09/27 11:16:42 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:40707\n26/09/27 11:16:42 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 11:16:42 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 40707, None)\n26/09/27 11:16:42 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:40707 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 40707, None)\n26/09/27 11:16:42 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 40707, None)\n26/09/27 11:16:42 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 40707, None)\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927111642-0059/0 is now RUNNING\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 11:16:45 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:38234) with ID 0, ResourceProfileId 0\n26/09/27 11:16:45 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:45999 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 45999, None)\n26/09/27 11:16:48 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Bronze Streaming started [topic=weather.bench.throughput.20260927t111617z-f45f6e5f]\n26/09/27 11:16:51 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 11:17:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 19016 milliseconds\n26/09/27 11:17:14 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6246 milliseconds\n26/09/27 11:17:17 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3732 milliseconds\n26/09/27 11:17:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3161 milliseconds\n26/09/27 11:17:24 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3074 milliseconds\n26/09/27 11:17:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2910 milliseconds\n26/09/27 11:17:29 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2936 milliseconds\n26/09/27 11:17:32 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2975 milliseconds\n26/09/27 11:17:35 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2573 milliseconds\n26/09/27 11:17:42 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6926 milliseconds\n26/09/27 11:17:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3235 milliseconds\n26/09/27 11:17:52 WARN DAGScheduler: Failed to cancel job group 3c2361d1-7fcb-4001-9fbd-3b58fcb437a1. Cannot find active jobs for it.\n26/09/27 11:17:52 WARN DAGScheduler: Failed to cancel job group 3c2361d1-7fcb-4001-9fbd-3b58fcb437a1. Cannot find active jobs for it.\nWeather Bronze throughput run drained and stopped",
+      "silver": "26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:40727/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:40727/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:40727/jars/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:40727/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:40727/files/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/io.delta_delta-spark_2.13-4.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:40727/files/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:40727/files/io.delta_delta-storage-4.0.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/io.delta_delta-storage-4.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:40727/files/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.antlr_antlr4-runtime-4.13.1.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:40727/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:40727/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:40727/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.kafka_kafka-clients-3.9.1.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:40727/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/com.google.code.findbugs_jsr305-3.0.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:40727/files/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.commons_commons-pool2-2.12.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:40727/files/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:40727/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.lz4_lz4-java-1.8.0.jar\n26/09/27 11:16:41 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:40727/files/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790507801115\n26/09/27 11:16:41 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:40727/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790507801115\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 11:16:42 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:40727/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790507801115\n26/09/27 11:16:42 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-4e6fac22-6457-4c07-b91f-6c32465cd7ff/userFiles-18758885-b0a3-4a78-ac1c-15c4a9ad1ffd/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 11:16:42 INFO SecurityManager: Changing view acls to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 11:16:42 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 11:16:42 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 11:16:42 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 34 ms (0 ms spent in bootstraps)\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927111642-0060\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927111642-0060/0 on worker-20260927075255-172.18.0.4-36797 (172.18.0.4:36797) with 1 core(s)\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927111642-0060/0 on hostPort 172.18.0.4:36797 with 1 core(s), 1024.0 MiB RAM\n26/09/27 11:16:42 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 33071.\n26/09/27 11:16:42 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:33071\n26/09/27 11:16:42 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 11:16:42 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 33071, None)\n26/09/27 11:16:42 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:33071 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 33071, None)\n26/09/27 11:16:42 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 33071, None)\n26/09/27 11:16:42 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 33071, None)\n26/09/27 11:16:42 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927111642-0060/0 is now RUNNING\n26/09/27 11:16:42 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 11:16:45 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:53628) with ID 0, ResourceProfileId 0\n26/09/27 11:16:46 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:43949 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 43949, None)\n26/09/27 11:16:48 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\n26/09/27 11:16:49 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Silver Streaming started\nSilver Query: 68b01085-de22-40f7-9a77-e46da38fdb4a WeatherSilverStreaming-20260927T111617Z-f45f6e5f-silver True\nInvalid Query: 75615ebd-95fc-44c2-a78a-9057ac19ca5d WeatherSilverStreaming-20260927T111617Z-f45f6e5f-dlq True\n26/09/27 11:16:50 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 11:17:08 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 19498 milliseconds\n26/09/27 11:17:08 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 19671 milliseconds\n26/09/27 11:17:16 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 7416 milliseconds\n26/09/27 11:17:17 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 8374 milliseconds\n26/09/27 11:17:23 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 7153 milliseconds\n26/09/27 11:17:26 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 9207 milliseconds\n26/09/27 11:17:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 8167 milliseconds\n26/09/27 11:17:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6934 milliseconds\n26/09/27 11:17:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5859 milliseconds\n26/09/27 11:17:38 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5198 milliseconds\n26/09/27 11:17:40 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3681 milliseconds\n26/09/27 11:17:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4290 milliseconds\n26/09/27 11:17:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6969 milliseconds\n26/09/27 11:17:48 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3106 milliseconds\n26/09/27 11:17:49 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3055 milliseconds\n26/09/27 11:17:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2374 milliseconds\n26/09/27 11:17:52 WARN DAGScheduler: Failed to cancel job group e45a3807-7b7d-47f8-ab26-54d388c3910f. Cannot find active jobs for it.\n26/09/27 11:17:52 WARN DAGScheduler: Failed to cancel job group e0d5f0a3-9e72-4c6d-973e-69cc228e2db1. Cannot find active jobs for it.\n26/09/27 11:17:52 WARN DAGScheduler: Failed to cancel job group e0d5f0a3-9e72-4c6d-973e-69cc228e2db1. Cannot find active jobs for it.\nWeather Silver throughput run drained and stopped\n26/09/27 11:17:52 WARN TaskSetManager: Lost task 33.0 in stage 80.0 (TID 1011) (172.18.0.4 executor 0): TaskKilled (Stage cancelled: [SPARK_JOB_CANCELLED] Job 39 cancelled Query WeatherSilverStreaming-20260927T111617Z-f45f6e5f-silver [id = 68b01085-de22-40f7-9a77-e46da38fdb4a, runId = e45a3807-7b7d-47f8-ab26-54d388c3910f] was stopped SQLSTATE: XXKDA)"
+    }
+  },
+  "final_kafka_lag": 0,
+  "final_kafka_latest_offsets": {
+    "weather.bench.throughput.20260927t111617z-f45f6e5f:0": 100000
+  },
+  "final_kafka_to_bronze_lag": 0,
+  "final_source_lag": 0,
+  "fixed_infrastructure": {
+    "bronze_delta_initialized_empty_before_streaming": true,
+    "docker_container_limits": {
+      "weather-kafka": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-spark-worker": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      }
+    },
+    "host_logical_cpu_count": 12,
+    "kafka": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "image": "apache/kafka:4.3.1",
+      "partition_count": 1,
+      "replication_factor": 1,
+      "version": "4.3.1"
+    },
+    "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+    "resource_sampling": {
+      "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+      "hard_container_memory_limit_configured": false
+    },
+    "spark": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "cores_max_per_application": 1,
+      "delta_version": "4.0.0",
+      "deployment_mode": "client",
+      "executor_cores_per_application": 1,
+      "executor_memory_mb_per_application": 1024,
+      "image": "weather-spark:4.0.4-delta4.0.0",
+      "shuffle_partitions": 1,
+      "streaming_applications": 2,
+      "total_requested_executor_cores": 2,
+      "trigger_interval_seconds": 1,
+      "version": "4.0.4",
+      "worker_cores_available": 4,
+      "worker_count": 1,
+      "worker_memory_mb_available": 4096
+    }
+  },
+  "generation_elapsed_seconds": 50.00082800001837,
+  "generator_calibrated": true,
+  "generator_deviation_percent": 0.0016559726138439148,
+  "git_commit": "5656ee2d3e78b29e3f2cf710ea742e52b742d9b3",
+  "host_logical_cpu_count": 12,
+  "included_bronze_batches": 4,
+  "included_silver_batches": 3,
+  "input_records": 100000,
+  "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
+  "kafka_lag_sample_count": 78,
+  "kafka_partition_count": 1,
+  "kafka_to_bronze_lag_sample_count": 47,
+  "kafka_topic": "weather.bench.throughput.20260927t111617z-f45f6e5f",
+  "latency_avg_ms": 4891.540875990048,
+  "latency_count": 100000,
+  "latency_definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used. This is not Silver completion latency.",
+  "latency_max_ms": 18543.66,
+  "latency_measurements_complete": true,
+  "latency_min_ms": 62.264,
+  "latency_p50_ms": 2853.669,
+  "latency_p95_ms": 15947.602,
+  "latency_p99_ms": 17947.856,
+  "latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+  "max_batch_duration_ms": 2973.0,
+  "max_kafka_lag": 48600,
+  "max_kafka_lag_during_production": 48600,
+  "max_kafka_to_bronze_lag": 48600,
+  "null_metric_reasons": {
+    "kafka_lag": null,
+    "latency": null,
+    "resources": null
+  },
+  "observed_spark_runtime": {
+    "apps": [
+      {
+        "cores": 1,
+        "id": "app-20260927111642-0059",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherBronzeStreaming-20260927T111617Z-f45f6e5f",
+        "state": "RUNNING"
+      },
+      {
+        "cores": 1,
+        "id": "app-20260927111642-0060",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherSilverStreaming-20260927T111617Z-f45f6e5f",
+        "state": "RUNNING"
+      }
+    ],
+    "other_active_apps": [],
+    "workers": [
+      {
+        "cores_available": 4,
+        "cores_used": 2,
+        "id": "worker-20260927075255-172.18.0.4-36797",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 2048,
+        "state": "ALIVE"
+      }
+    ]
+  },
+  "p95_batch_duration_ms": 2967.3,
+  "peak_input_rows_per_sec": 2042.9009193054137,
+  "peak_processed_rows_per_sec": 2332.814930015552,
+  "pipeline_bottleneck_stage": "bronze",
+  "pipeline_completed": true,
+  "pipeline_completion_check": {
+    "bronze_count_matches_produced": true,
+    "bronze_progress_reached_expected": true,
+    "drain_complete_from_progress": true,
+    "final_kafka_to_bronze_source_lag_zero": true,
+    "silver_count_matches_produced": true,
+    "silver_progress_reached_expected": true,
+    "stream_queries_completed_cleanly": true
+  },
+  "pipeline_completion_time": "2026-09-27T11:17:51.086+00:00",
+  "pipeline_drain_seconds": 11.781679,
+  "pipeline_sustainable_rate": 2097.4231928042677,
+  "processed_records": 100000,
+  "produced_messages": 100000,
+  "producer_elapsed_seconds": 50.04439870000351,
+  "producer_flush_remaining": 0,
+  "production_peak_kafka_to_bronze_lag": 48600,
+  "replay_duration_seconds": 50.000804,
+  "replay_to_bronze_latency_avg_ms": 4891.540875990048,
+  "replay_to_bronze_latency_count": 100000,
+  "replay_to_bronze_latency_definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used. This is not Silver completion latency.",
+  "replay_to_bronze_latency_max_ms": 18543.66,
+  "replay_to_bronze_latency_min_ms": 62.264,
+  "replay_to_bronze_latency_ms": {
+    "avg_ms": 4891.540875990048,
+    "count": 100000,
+    "definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used. This is not Silver completion latency.",
+    "max_ms": 18543.66,
+    "min_ms": 62.264,
+    "p50_ms": 2853.669,
+    "p95_ms": 15947.602,
+    "p99_ms": 17947.856,
+    "percentile_method": "Spark percentile_approx, accuracy=10000"
+  },
+  "replay_to_bronze_latency_p50_ms": 2853.669,
+  "replay_to_bronze_latency_p95_ms": 15947.602,
+  "replay_to_bronze_latency_p99_ms": 17947.856,
+  "replay_to_bronze_latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+  "requested_rate": 2000,
+  "requested_rate_msgs_sec": 2000,
+  "resource_measurements_complete": true,
+  "resource_sample_count": 56,
+  "resource_statistics": {
+    "weather-kafka": {
+      "container_cpu_period_us": null,
+      "container_cpu_quota_cores": null,
+      "container_cpu_quota_us": null,
+      "container_cpuset": null,
+      "container_memory_limit_mb": null,
+      "cpu_avg_percent": 3.505714285714286,
+      "cpu_p50_percent": 3.55,
+      "cpu_p95_percent": 5.716,
+      "cpu_peak_percent": 9.3,
+      "host_logical_cpu_count": 12,
+      "memory_avg_mb": 830.2535714285714,
+      "memory_p50_mb": 830.25,
+      "memory_p95_mb": 831.1,
+      "memory_peak_mb": 831.8,
+      "sample_count": 28
+    },
+    "weather-spark-worker": {
+      "container_cpu_period_us": null,
+      "container_cpu_quota_cores": null,
+      "container_cpu_quota_us": null,
+      "container_cpuset": null,
+      "container_memory_limit_mb": null,
+      "cpu_avg_percent": 275.29357142857145,
+      "cpu_p50_percent": 282.51,
+      "cpu_p95_percent": 575.1869999999999,
+      "cpu_peak_percent": 718.4,
+      "host_logical_cpu_count": 12,
+      "memory_avg_mb": 1477.4971428571428,
+      "memory_p50_mb": 1645.056,
+      "memory_p95_mb": 2054.144,
+      "memory_peak_mb": 2056.192,
+      "sample_count": 28
+    }
+  },
+  "run_id": "20260927T111617Z-f45f6e5f",
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 2,
+  "silver_avg_input_rows_per_sec": 3276.3526037948504,
+  "silver_avg_processed_rows_per_sec": 3744.171176003427,
+  "silver_batch_avg_ms": 7110.666666666667,
+  "silver_batch_max_ms": 9205.0,
+  "silver_batch_p95_ms": 8977.6,
+  "silver_completion_time": "2026-09-27T11:17:51.086+00:00",
+  "silver_input_records": 100000,
+  "silver_output_records": 100000,
+  "silver_peak_processed_rows_per_sec": 3997.827267789245,
+  "silver_processed_rate_avg": 3744.171176003427,
+  "silver_processed_rate_p50": 3808.974174000866,
+  "silver_processed_rate_p95": 3978.941958410407,
+  "silver_processed_rate_peak": 3997.827267789245,
+  "silver_records": 100000,
+  "silver_steady_state_batches": 3,
+  "spark_end_offsets": {
+    "weather.bench.throughput.20260927t111617z-f45f6e5f:0": 100000
+  },
+  "spark_start_offsets": {
+    "weather.bench.throughput.20260927t111617z-f45f6e5f:0": 399
+  },
+  "spark_worker_peak_cpu_percent": 718.4,
+  "spark_worker_peak_memory_mb": 2056.192,
+  "startup_peak_kafka_to_bronze_lag": 48600,
+  "status": "UNDER_CAPACITY",
+  "steady_state_avg_kafka_to_bronze_lag": 9476.923076923076,
+  "steady_state_end": "2026-09-27T11:17:39.304+00:00",
+  "steady_state_final_kafka_to_bronze_lag": 12000,
+  "steady_state_lag_sample_count": 13,
+  "steady_state_lag_slope_records_per_sec": -40.36056433523165,
+  "steady_state_measurements_complete": true,
+  "steady_state_p95_kafka_to_bronze_lag": 11880.0,
+  "steady_state_peak_kafka_to_bronze_lag": 12000,
+  "steady_state_progress_sample_count": 7,
+  "steady_state_sample_count": {
+    "bronze_progress": 4,
+    "kafka_to_bronze_lag": 13,
+    "silver_progress": 3
+  },
+  "steady_state_start": "2026-09-27T11:17:26.611+00:00",
+  "stream_drain_complete": true,
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "sustainable": true,
+  "warmup_batches_excluded_per_query": null,
+  "warmup_policy": {
+    "minimum_completed_batches_per_query": 3,
+    "minimum_warmup_seconds": 15.0,
+    "name": "elapsed_time_and_completed_batches",
+    "steady_state_end_rule": "Simulator generation_end_time; post-replay drain is excluded.",
+    "steady_state_start_rule": "Later of warmup_start plus minimum_warmup_seconds, the minimum completed-batch cutoff for each main query, and replay start."
+  },
+  "warmup_start": "2026-09-27T11:16:48.859+00:00",
+  "worker_cpu_avg": 275.29357142857145,
+  "worker_cpu_p50": 282.51,
+  "worker_cpu_p95": 575.1869999999999,
+  "worker_cpu_peak": 718.4,
+  "worker_memory_avg_mb": 1477.4971428571428,
+  "worker_memory_p50_mb": 1645.056,
+  "worker_memory_p95_mb": 2054.144,
+  "worker_memory_peak_mb": 2056.192
+}

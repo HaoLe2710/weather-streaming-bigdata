@@ -1,0 +1,87 @@
+{
+  "aggregate": {
+    "actual_rate": 1999.9687584893823,
+    "batch_duration_mean_ms": 2794.875,
+    "broker_cpu_avg": 3.605,
+    "broker_cpu_p50": 3.4524999999999997,
+    "broker_cpu_p95": 6.528499999999999,
+    "broker_cpu_peak": 10.620000000000001,
+    "broker_memory_avg_mb": 826.6428571428571,
+    "broker_memory_p50_mb": 825.925,
+    "broker_memory_p95_mb": 829.5325,
+    "broker_memory_peak_mb": 830.0,
+    "bronze_batch_p95_ms": 3019.85,
+    "bronze_processed_rate_avg": 2060.0019506758367,
+    "bronze_processed_rate_p50": 2002.6305120151803,
+    "bronze_processed_rate_p95": 2319.243402063503,
+    "bronze_processed_rate_peak": 2358.2567537428777,
+    "capacity_classification": "NEAR_CAPACITY",
+    "capacity_classifications": [
+      "NEAR_CAPACITY",
+      "UNDER_CAPACITY"
+    ],
+    "latency_p50_mean_ms": 2804.1814999999997,
+    "latency_p95_mean_ms": 15952.235,
+    "latency_p99_mean_ms": 17952.4915,
+    "max_lag_mean": 48799.5,
+    "pipeline_drain_seconds": 11.1035415,
+    "pipeline_sustainable_rate": 2060.0019506758367,
+    "processed_rate_mean": 2060.0019506758367,
+    "replay_to_bronze_latency_p50_ms": 2804.1814999999997,
+    "replay_to_bronze_latency_p95_ms": 15952.235,
+    "replay_to_bronze_latency_p99_ms": 17952.4915,
+    "requested_rate": 2000,
+    "run_count": 2,
+    "run_ids": [
+      "20260927T111414Z-c80a6503",
+      "20260927T111617Z-f45f6e5f"
+    ],
+    "silver_batch_p95_ms": 8884.45,
+    "silver_processed_rate_avg": 3623.5325476508306,
+    "silver_processed_rate_p50": 3566.466120495703,
+    "silver_processed_rate_p95": 4026.615056282116,
+    "silver_processed_rate_peak": 4077.74271581394,
+    "startup_peak_kafka_to_bronze_lag": 48799.5,
+    "steady_state_avg_kafka_to_bronze_lag": 9421.39010989011,
+    "steady_state_lag_slope_records_per_sec": 44.693018781643346,
+    "steady_state_p95_kafka_to_bronze_lag": 12490.0,
+    "steady_state_peak_kafka_to_bronze_lag": 13200.0,
+    "worker_cpu_avg": 286.98285714285714,
+    "worker_cpu_p50": 284.585,
+    "worker_cpu_p95": 597.106,
+    "worker_cpu_peak": 753.51,
+    "worker_memory_avg_mb": 1496.912857142857,
+    "worker_memory_p50_mb": 1684.48,
+    "worker_memory_p95_mb": 2126.3104,
+    "worker_memory_peak_mb": 2127.8720000000003
+  },
+  "calibration_summary": "results/benchmarks/throughput/experiments/20260927T093322Z-12167143/summary.json",
+  "completed_repetitions": 2,
+  "created_at": "2026-09-27T11:18:22+00:00",
+  "drain_timeout_seconds": 300.0,
+  "experiment_id": "20260927T111414Z-548a979e",
+  "experiment_type": "throughput_repetitions",
+  "git_commit": "5656ee2d3e78b29e3f2cf710ea742e52b742d9b3",
+  "requested_repetitions": 2,
+  "runs": [
+    {
+      "result": "results/benchmarks/throughput/20260927T111414Z-c80a6503/result.json",
+      "run_id": "20260927T111414Z-c80a6503",
+      "status": "NEAR_CAPACITY"
+    },
+    {
+      "result": "results/benchmarks/throughput/20260927T111617Z-f45f6e5f/result.json",
+      "run_id": "20260927T111617Z-f45f6e5f",
+      "status": "UNDER_CAPACITY"
+    }
+  ],
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 2,
+  "source_record_limit": 100000,
+  "warmup_policy": {
+    "minimum_completed_batches_per_query": 3,
+    "minimum_warmup_seconds": 15.0,
+    "steady_state_end_rule": "Simulator generation end; post-replay drain excluded.",
+    "steady_state_start_rule": "Later of elapsed warm-up and completed-batch cutoffs for both main queries."
+  }
+}
