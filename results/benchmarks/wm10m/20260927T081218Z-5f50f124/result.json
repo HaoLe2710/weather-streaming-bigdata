@@ -1,0 +1,45 @@
+{
+  "assertions": {
+    "duplicate_gold_keys_are_zero": true,
+    "gold_does_not_accept_more_than_input": true,
+    "kafka_input_count_matches_simulator": true,
+    "late_drop_count_is_nonnegative": true,
+    "late_events_are_present_for_measurement": true,
+    "no_invalid_duplicate_or_out_of_order_generation": true,
+    "no_unexpected_fault_categories": true,
+    "normal_and_late_counts_match_reference": true,
+    "normal_and_late_drops_reconcile_to_total": true,
+    "normal_events_are_fully_preserved": true,
+    "simulator_flush_completed": true
+  },
+  "git_commit": "edf6198c5b29c779484d7df79eb143d8e2f3d025",
+  "gold_path": "/opt/project/data/benchmark/runs/wm10m/20260927T081218Z-5f50f124/gold/weather_window_1h",
+  "input_reference_path": "/opt/project/results/benchmarks/wm10m/20260927T081218Z-5f50f124/simulator.json",
+  "kafka_topic": "weather.bench.wm10m.20260927t081218z-5f50f124",
+  "metrics": {
+    "duplicate_gold_keys": 0,
+    "gold_accepted_observations": 9107,
+    "gold_fault_distribution": {
+      "LATE": 60,
+      "NORMAL": 9047
+    },
+    "input_fault_distribution": {
+      "LATE": 953,
+      "NORMAL": 9047
+    },
+    "input_observations": 10000,
+    "late_accepted": 60,
+    "late_drop_rate": 93.7041,
+    "late_dropped": 893,
+    "late_generated": 953,
+    "normal_accepted": 9047,
+    "normal_dropped": 0,
+    "normal_generated": 9047,
+    "normal_preservation_rate": 100.0,
+    "total_dropped": 893
+  },
+  "run_id": "20260927T081218Z-5f50f124",
+  "scenario": "KAFKA_WATERMARK_WM10M",
+  "schema_version": 1,
+  "status": "PASS"
+}

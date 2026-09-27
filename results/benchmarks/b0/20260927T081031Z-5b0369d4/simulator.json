@@ -1,0 +1,18 @@
+{
+  "actual_generation_rate": 1018.8102043618321,
+  "duplicates_generated": 195,
+  "duration_seconds": 10.006770600011805,
+  "git_commit": "edf6198c5b29c779484d7df79eb143d8e2f3d025",
+  "invalid_generated": 97,
+  "kafka_messages": 10195,
+  "late_generated": 490,
+  "normal_generated": 8892,
+  "out_of_order_generated": 521,
+  "producer_delivery_complete": true,
+  "producer_remaining": 0,
+  "requested_replay_rate": 1000,
+  "run_id": "20260927T081031Z-5b0369d4",
+  "scenario": "B0_CORRECTNESS",
+  "source_records": 10000,
+  "topic": "weather.bench.b0.20260927t081031z-5b0369d4"
+}
