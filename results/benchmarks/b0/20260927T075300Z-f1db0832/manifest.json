@@ -1,0 +1,66 @@
+{
+  "artifacts": {
+    "input_reference": "results/benchmarks/b0/20260927T075300Z-f1db0832/simulator.json",
+    "manifest": "results/benchmarks/b0/20260927T075300Z-f1db0832/manifest.json",
+    "result": "results/benchmarks/b0/20260927T075300Z-f1db0832/result.json"
+  },
+  "checkpoints": {
+    "bronze": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze",
+    "dlq": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/dlq",
+    "gold": null,
+    "silver": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/silver"
+  },
+  "created_at": "2026-09-27T07:53:02+00:00",
+  "error": {
+    "message": "Command '['docker', 'compose', 'exec', '-T', '-e', 'AVAILABLE_NOW=true', '-e', 'BENCHMARK_CHECKPOINT_ROOT=/opt/project/data/checkpoints/benchmark/runs', '-e', 'BENCHMARK_DATA_ROOT=/opt/project/data/benchmark/runs', '-e', 'BENCHMARK_SCENARIO=B0_CORRECTNESS', '-e', 'BRONZE_CHECKPOINT=/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze', '-e', 'BRONZE_PATH=/opt/project/data/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze/weather_raw', '-e', 'CHECKPOINT_PATH=/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze', '-e', 'DUPLICATE_RATE=0.02', '-e', 'INVALID_RATE=0.01', '-e', 'KAFKA_BOOTSTRAP_SERVERS=broker:19092', '-e', 'KAFKA_TOPIC=weather.bench.b0.20260927t075300z_f1db0832', '-e', 'LATE_DELAY_EVENTS=240', '-e', 'LATE_RATE=0.05', '-e', 'OUT_OF_ORDER_MAX_DELAY=40', '-e', 'OUT_OF_ORDER_RATE=0.05', '-e', 'REQUESTED_REPLAY_RATE=1000', '-e', 'RUN_ID=20260927T075300Z-f1db0832', '-e', 'SEED=42', '-e', 'SOURCE_RECORD_LIMIT=10000', '-e', 'STARTING_OFFSETS=earliest', '-e', 'WATERMARK_DELAY=10 minutes', 'spark-master', '/opt/spark/bin/spark-submit', '--master', 'spark://spark-master:7077', '--deploy-mode', 'client', '--packages', 'io.delta:delta-spark_2.13:4.0.0,org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.4', '--conf', 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension', '--conf', 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog', '--conf', 'spark.sql.session.timeZone=UTC', '--conf', 'spark.driver.host=spark-master', '--conf', 'spark.driver.bindAddress=0.0.0.0', '/opt/project/spark/jobs/bronze_weather_stream.py']' returned non-zero exit status 1.",
+    "type": "CalledProcessError"
+  },
+  "finished_at": "2026-09-27T07:53:28+00:00",
+  "git_commit": "9e6fe7c7f909197f7a367af5cb717830bfeffdb4",
+  "kafka": {
+    "partition_count": 1,
+    "topic": "weather.bench.b0.20260927t075300z_f1db0832"
+  },
+  "parameters": {
+    "duplicate_rate": 0.02,
+    "invalid_rate": 0.01,
+    "late_delay_events": 240,
+    "late_rate": 0.05,
+    "max_offsets_per_trigger": null,
+    "out_of_order_max_delay": 40,
+    "out_of_order_rate": 0.05,
+    "requested_replay_rate": 1000,
+    "run_id": "20260927T075300Z-f1db0832",
+    "scenario": "B0_CORRECTNESS",
+    "seed": 42,
+    "source_record_limit": 10000,
+    "topic": "weather.bench.b0.20260927t075300z_f1db0832",
+    "topic_partitions": 1,
+    "watermark": "10 minutes",
+    "window_duration": null
+  },
+  "paths": {
+    "bronze": "/opt/project/data/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze/weather_raw",
+    "bronze_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/bronze",
+    "dlq": "/opt/project/data/benchmark/runs/b0/20260927T075300Z-f1db0832/silver/weather_invalid",
+    "dlq_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/dlq",
+    "gold": null,
+    "gold_checkpoint": null,
+    "root": "/opt/project/data/benchmark/runs/b0/20260927T075300Z-f1db0832",
+    "silver": "/opt/project/data/benchmark/runs/b0/20260927T075300Z-f1db0832/silver/weather_clean",
+    "silver_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/20260927T075300Z-f1db0832/silver"
+  },
+  "run_id": "20260927T075300Z-f1db0832",
+  "scenario": "B0_CORRECTNESS",
+  "schema_version": 1,
+  "software_versions": {
+    "delta": "4.0.0",
+    "kafka": "4.3.1",
+    "spark": "4.0.4"
+  },
+  "source": {
+    "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+    "record_limit": 10000
+  },
+  "status": "FAILED"
+}
