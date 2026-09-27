@@ -335,42 +335,51 @@ The original 1,000 msg/s replay had only four or five steady-state Bronze
 samples. Two longer 100,000-record repetitions provided 50 seconds of offered
 load and were classified `UNDER_CAPACITY`. Since this rate remained
 sustainable, two 100,000-record repetitions were measured at 2,000 msg/s.
-Both completed and drained, so the conditional 5,000 msg/s step used 250,000
-records per repetition to retain 50 seconds of offered load. All runs kept the
-fixed configuration above and used zero fault injection.
+Both completed and drained, so the conditional 5,000 msg/s step first used
+250,000 records per repetition. Those runs retained 50 seconds of offered
+load but only 8–9 seconds after the warm-up cutoff, leaving just 2 Bronze and
+1 Silver steady-state progress samples. They were repeated at 500,000 records
+per repetition; those 100-second replays provided 51.9 and 59.5 seconds of
+steady-state data. All runs kept the fixed configuration above and used zero
+fault injection.
 
 | Requested (records × reps) | Actual (msg/s) | Bronze / Silver (rows/s) | Startup peak lag | Steady avg / p95 / peak lag | Lag slope (records/s) | Drain (s) | Replay→Bronze p50 / p95 / p99 | Per-run classes | Aggregate |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- | :--- | :--- |
 | 1,000 (100k × 2) | 999.995 | 1,121.32 / 1,254.46 | 24,800 | 4,553 / 8,500 / 10,000 | -28.23 | 9.36 | 1.779 s / 14.007 s / 18.009 s | UNDER / UNDER | `UNDER_CAPACITY` |
 | 2,000 (100k × 2) | 1,999.969 | 2,060.00 / 3,623.53 | 48,800 | 9,421 / 12,490 / 13,200 | 44.69 | 11.10 | 2.804 s / 15.952 s / 17.952 s | NEAR / UNDER | `NEAR_CAPACITY` |
-| 5,000 (250k × 2) | 4,999.945 | 4,967.38 / 6,411.23 | 120,599 | 23,856 / 31,200 / 32,400 | 1,000.01 | 13.55 | 2.833 s / 15.587 s / 17.588 s | NEAR / NEAR | `NEAR_CAPACITY` |
+| 5,000 (500k × 2) | 4,999.959 | 5,378.08 / 6,289.22 | 138,899 | 31,684 / 52,480 / 59,600 | 91.45 | 17.00 | 2.371 s / 15.330 s / 19.366 s | UNDER / NEAR | `NEAR_CAPACITY` |
 
 Both repetitions at each extended rate wrote all expected Bronze and Silver
 records, ended with zero Kafka-to-Bronze source lag, and drained after replay.
 The 2,000 msg/s runs differed: one was `NEAR_CAPACITY` and one
-`UNDER_CAPACITY`, so their aggregate is reported as `NEAR_CAPACITY`. At 5,000
-msg/s, both runs were `NEAR_CAPACITY`; the steady-state source backlog rose by
-about 1,000 records/s even though the finite replay drained in about 14
-seconds. Bronze throughput averaged about 99.35% of the actual offered rate.
-This is strong near-capacity evidence, but it does not meet the documented
-`SATURATED` rule, which also requires the pipeline rate to fall below 90% of
-the offered rate when the lag slope is high.
+`UNDER_CAPACITY`, so their aggregate is reported as `NEAR_CAPACITY`. In the
+longer 5,000 msg/s runs, the steady-state windows contained 14/6 and 14/7
+Bronze/Silver progress samples plus 51 and 59 Kafka lag samples. One run was
+`UNDER_CAPACITY` and one was `NEAR_CAPACITY`; their aggregate is therefore
+`NEAR_CAPACITY`. The mean lag slope was 91 records/s, close to the 2% offered
+rate threshold, and the mean pipeline throughput exceeded the actual offered
+rate. Both runs drained in about 17 seconds. The earlier 250,000-record runs
+showed roughly 1,000 records/s lag growth, but their short qualified window
+made them unsuitable as the primary capacity estimate; their raw artifacts
+remain available for comparison.
 
 | Requested | Worker CPU avg / p95 / peak (%) | Worker RAM avg / p95 / peak (MiB) | Broker CPU avg / p95 / peak (%) | Broker RAM avg / p95 / peak (MiB) |
 | ---: | :--- | :--- | :--- | :--- |
 | 1,000 (100k × 2) | 255.63 / 505.20 / 697.75 | 1,725.13 / 2,284.75 / 2,297.86 | 4.05 / 6.09 / 40.03 | 804.00 / 807.16 / 807.50 |
 | 2,000 (100k × 2) | 286.98 / 597.11 / 753.51 | 1,496.91 / 2,126.31 / 2,127.87 | 3.61 / 6.53 / 10.62 | 826.64 / 829.53 / 830.00 |
-| 5,000 (250k × 2) | 292.71 / 675.80 / 783.61 | 1,637.89 / 2,265.24 / 2,268.16 | 5.26 / 10.81 / 12.70 | 838.61 / 844.02 / 853.90 |
+| 5,000 (500k × 2) | 261.72 / 502.19 / 758.28 | 1,884.72 / 2,473.65 / 2,493.44 | 8.10 / 17.05 / 46.19 | 850.65 / 856.60 / 860.05 |
 
 The longer 1,000 msg/s evidence shows the earlier 50,000-record `NEAR_CAPACITY`
 classification was inconclusive: the extended repetitions are
 `UNDER_CAPACITY`. The measured fixed-configuration region is therefore
 `UNDER_CAPACITY` through 1,000 msg/s, with `NEAR_CAPACITY` behavior appearing
-by 2,000 msg/s and pronounced backlog growth at 5,000 msg/s. No run met the
-strict `SATURATED` classification through 5,000 msg/s; this milestone stops
-here without extrapolating to a higher rate or changing infrastructure.
+by 2,000 msg/s. At 5,000 msg/s the longer repetitions are mixed between
+`UNDER_CAPACITY` and `NEAR_CAPACITY`, with the aggregate remaining
+`NEAR_CAPACITY`. No run met the strict `SATURATED` classification through
+5,000 msg/s; this milestone stops here without extrapolating to a higher rate
+or changing infrastructure.
 
-Raw telemetry and per-run outputs are retained with the [`1,000 msg/s extended`](../results/benchmarks/throughput/experiments/20260927T110751Z-9942215f/summary.json), [`2,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T111414Z-548a979e/summary.json), and [`5,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T111912Z-318a4d6e/summary.json) experiment summaries.
+Raw telemetry and per-run outputs are retained with the [`1,000 msg/s extended`](../results/benchmarks/throughput/experiments/20260927T110751Z-9942215f/summary.json), [`2,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T111414Z-548a979e/summary.json), and [`5,000 msg/s extended`](../results/benchmarks/throughput/experiments/20260927T112854Z-96904d6c/summary.json) experiment summaries. The initial [`5,000 msg/s 250,000-record runs`](../results/benchmarks/throughput/experiments/20260927T111912Z-318a4d6e/summary.json) remain saved with their sample-count limitation.
 
 ### Metrics, steady-state selection, and completion
 
@@ -444,10 +453,12 @@ python benchmark/reanalyze_throughput.py --rates 100,500,1000
 ```
 
 For high rates, use enough records to provide at least 30–60 seconds of input.
-Examples are 100,000 records at 1,000 or 2,000 msg/s and 250,000 records at
-5,000 msg/s. Keep all infrastructure and other workload settings fixed. This
-milestone measured 2,000 and 5,000 only after the preceding rate completed and
-drained; do not treat these examples as a reason to test beyond 5,000.
+Examples are 100,000 records at 1,000 or 2,000 msg/s and 500,000 records at
+5,000 msg/s when a 250,000-record replay leaves too little qualified
+steady-state time after warm-up. Keep all infrastructure and other workload
+settings fixed. This milestone measured 2,000 and 5,000 only after the
+preceding rate completed and drained; do not treat these examples as a reason
+to test beyond 5,000.
 
 ### Run artifacts
 
