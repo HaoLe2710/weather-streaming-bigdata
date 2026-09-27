@@ -1,0 +1,14 @@
+{
+  "run_id": "20260927T133306Z-092624e3",
+  "config_id": "p1-b4-s4-w2",
+  "status": "ABORTED_BEFORE_RESULT_PERSISTENCE",
+  "observed_issue": "TemporaryDirectory cleanup raised WinError 32 while a docker-compose.exe Spark streaming command was still alive",
+  "orphan_process_pid": 13964,
+  "orphan_process_command": "WeatherSilverStreaming-20260927T133306Z-092624e3",
+  "producer_flush_remaining": 150201,
+  "diagnostic_logs": [
+    "diagnostics/spark-bronze.log",
+    "diagnostics/spark-silver.log"
+  ],
+  "note": "This attempt is preserved as diagnostic evidence and is not a valid throughput measurement."
+}

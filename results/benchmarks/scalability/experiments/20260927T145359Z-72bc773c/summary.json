@@ -1,0 +1,42 @@
+{
+  "calibration_source_files": [
+    "simulator/historical_stream_simulator.py",
+    "spark/jobs/benchmark_config.py",
+    "benchmark/run_benchmark.py::_simulator_command"
+  ],
+  "calibration_source_signature": "63b88e6a47ba64e601417cfad690784302b97e230c754ca8de5cfc59fa93e991",
+  "created_at": "2026-09-27T14:54:16+00:00",
+  "experiment_id": "20260927T145359Z-72bc773c",
+  "experiment_type": "load_generator_calibration",
+  "fault_rates": {
+    "duplicate": 0,
+    "invalid": 0,
+    "late": 0,
+    "out_of_order": 0
+  },
+  "git_commit": "d34607085f9ca9f3060b9b6bfa46fc3c6c20e48f",
+  "rates": [
+    {
+      "actual_generated_msgs_sec": 7996.7008810987145,
+      "actual_generation_rate_including_flush": 948.0638937795393,
+      "calibrated": true,
+      "calibration_tolerance_percent": 10.0,
+      "deviation_percent": 0.04123898626606888,
+      "generation_elapsed_seconds": 1.2505156999977771,
+      "git_commit": "d34607085f9ca9f3060b9b6bfa46fc3c6c20e48f",
+      "produced_messages": 10000,
+      "producer_elapsed_seconds": 10.547812300006626,
+      "producer_flush_remaining": 0,
+      "requested_rate_msgs_sec": 8000,
+      "run_id": "20260927T145359Z-7b7d1a66",
+      "scenario": "SCALABILITY_BENCHMARK",
+      "source_records": 10000,
+      "system_throughput_measured": false
+    }
+  ],
+  "scenario": "SCALABILITY_BENCHMARK",
+  "schema_version": 2,
+  "source_record_limit": 10000,
+  "tolerance_fraction": 0.1,
+  "tolerance_reason": "A 10% band accepts short-run rate-limiter and producer-flush jitter while rejecting a materially different offered workload."
+}

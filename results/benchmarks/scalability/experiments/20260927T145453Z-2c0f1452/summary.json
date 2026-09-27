@@ -1,0 +1,388 @@
+{
+  "aggregate": {
+    "actual_allocated_cores_max": 2.0,
+    "actual_allocated_cores_mean": 2.0,
+    "actual_allocated_cores_median": 2.0,
+    "actual_allocated_cores_min": 2.0,
+    "actual_rate_max": 7999.960048200313,
+    "actual_rate_mean": 7999.958988210095,
+    "actual_rate_median": 7999.958988210095,
+    "actual_rate_min": 7999.9579282198765,
+    "bronze_processed_rate_avg_max": 8993.959087205527,
+    "bronze_processed_rate_avg_mean": 8855.039994011397,
+    "bronze_processed_rate_avg_median": 8855.039994011397,
+    "bronze_processed_rate_avg_min": 8716.120900817265,
+    "bronze_processed_rate_p50_max": 8255.31914893617,
+    "bronze_processed_rate_p50_mean": 8176.547165725084,
+    "bronze_processed_rate_p50_median": 8176.547165725084,
+    "bronze_processed_rate_p50_min": 8097.775182513996,
+    "bronze_processed_rate_p95_max": 19496.71810294498,
+    "bronze_processed_rate_p95_mean": 18383.27968639312,
+    "bronze_processed_rate_p95_median": 18383.27968639312,
+    "bronze_processed_rate_p95_min": 17269.84126984127,
+    "bronze_processed_rate_peak_max": 19876.288659793816,
+    "bronze_processed_rate_peak_mean": 19771.40640770794,
+    "bronze_processed_rate_peak_median": 19771.40640770794,
+    "bronze_processed_rate_peak_min": 19666.52415562206,
+    "capacity_classifications": [
+      "UNDER_CAPACITY",
+      "UNDER_CAPACITY"
+    ],
+    "drain_seconds_max": 15.577596099989023,
+    "drain_seconds_mean": 14.57668779999949,
+    "drain_seconds_median": 14.57668779999949,
+    "drain_seconds_min": 13.575779500009958,
+    "drain_time_mean": 14.57668779999949,
+    "kafka_cpu_avg_percent_max": 15.804166666666667,
+    "kafka_cpu_avg_percent_mean": 14.311583333333335,
+    "kafka_cpu_avg_percent_median": 14.311583333333335,
+    "kafka_cpu_avg_percent_min": 12.819,
+    "kafka_cpu_p95_percent_max": 47.79799999999997,
+    "kafka_cpu_p95_percent_mean": 45.25499999999995,
+    "kafka_cpu_p95_percent_median": 45.25499999999995,
+    "kafka_cpu_p95_percent_min": 42.71199999999994,
+    "kafka_cpu_peak_percent_max": 99.11,
+    "kafka_cpu_peak_percent_mean": 96.24000000000001,
+    "kafka_cpu_peak_percent_median": 96.24000000000001,
+    "kafka_cpu_peak_percent_min": 93.37,
+    "kafka_memory_avg_mb_max": 1060.5866666666666,
+    "kafka_memory_avg_mb_mean": 1057.6021333333333,
+    "kafka_memory_avg_mb_median": 1057.6021333333333,
+    "kafka_memory_avg_mb_min": 1054.6176,
+    "kafka_memory_p95_mb_max": 1074.432,
+    "kafka_memory_p95_mb_mean": 1072.5376,
+    "kafka_memory_p95_mb_median": 1072.5376,
+    "kafka_memory_p95_mb_min": 1070.6432,
+    "kafka_memory_peak_mb_max": 1079.296,
+    "kafka_memory_peak_mb_mean": 1075.2,
+    "kafka_memory_peak_mb_median": 1075.2,
+    "kafka_memory_peak_mb_min": 1071.104,
+    "lag_slope_max": -207.10492969505788,
+    "lag_slope_mean": -279.5370787161296,
+    "lag_slope_median": -279.5370787161296,
+    "lag_slope_min": -351.96922773720127,
+    "latency_p50_ms_max": 2013.234,
+    "latency_p50_ms_mean": 1909.1615,
+    "latency_p50_ms_median": 1909.1615,
+    "latency_p50_ms_min": 1805.089,
+    "latency_p95_mean": 11238.7455,
+    "latency_p95_ms_max": 11292.636,
+    "latency_p95_ms_mean": 11238.7455,
+    "latency_p95_ms_median": 11238.7455,
+    "latency_p95_ms_min": 11184.855,
+    "latency_p99_ms_max": 15269.154,
+    "latency_p99_ms_mean": 15217.39,
+    "latency_p99_ms_median": 15217.39,
+    "latency_p99_ms_min": 15165.626,
+    "metrics": {
+      "actual_allocated_cores": {
+        "max": 2.0,
+        "mean": 2.0,
+        "median": 2.0,
+        "min": 2.0
+      },
+      "actual_rate": {
+        "max": 7999.960048200313,
+        "mean": 7999.958988210095,
+        "median": 7999.958988210095,
+        "min": 7999.9579282198765
+      },
+      "bronze_processed_rate_avg": {
+        "max": 8993.959087205527,
+        "mean": 8855.039994011397,
+        "median": 8855.039994011397,
+        "min": 8716.120900817265
+      },
+      "bronze_processed_rate_p50": {
+        "max": 8255.31914893617,
+        "mean": 8176.547165725084,
+        "median": 8176.547165725084,
+        "min": 8097.775182513996
+      },
+      "bronze_processed_rate_p95": {
+        "max": 19496.71810294498,
+        "mean": 18383.27968639312,
+        "median": 18383.27968639312,
+        "min": 17269.84126984127
+      },
+      "bronze_processed_rate_peak": {
+        "max": 19876.288659793816,
+        "mean": 19771.40640770794,
+        "median": 19771.40640770794,
+        "min": 19666.52415562206
+      },
+      "drain_seconds": {
+        "max": 15.577596099989023,
+        "mean": 14.57668779999949,
+        "median": 14.57668779999949,
+        "min": 13.575779500009958
+      },
+      "kafka_cpu_avg_percent": {
+        "max": 15.804166666666667,
+        "mean": 14.311583333333335,
+        "median": 14.311583333333335,
+        "min": 12.819
+      },
+      "kafka_cpu_p95_percent": {
+        "max": 47.79799999999997,
+        "mean": 45.25499999999995,
+        "median": 45.25499999999995,
+        "min": 42.71199999999994
+      },
+      "kafka_cpu_peak_percent": {
+        "max": 99.11,
+        "mean": 96.24000000000001,
+        "median": 96.24000000000001,
+        "min": 93.37
+      },
+      "kafka_memory_avg_mb": {
+        "max": 1060.5866666666666,
+        "mean": 1057.6021333333333,
+        "median": 1057.6021333333333,
+        "min": 1054.6176
+      },
+      "kafka_memory_p95_mb": {
+        "max": 1074.432,
+        "mean": 1072.5376,
+        "median": 1072.5376,
+        "min": 1070.6432
+      },
+      "kafka_memory_peak_mb": {
+        "max": 1079.296,
+        "mean": 1075.2,
+        "median": 1075.2,
+        "min": 1071.104
+      },
+      "lag_slope": {
+        "max": -207.10492969505788,
+        "mean": -279.5370787161296,
+        "median": -279.5370787161296,
+        "min": -351.96922773720127
+      },
+      "latency_p50_ms": {
+        "max": 2013.234,
+        "mean": 1909.1615,
+        "median": 1909.1615,
+        "min": 1805.089
+      },
+      "latency_p95_ms": {
+        "max": 11292.636,
+        "mean": 11238.7455,
+        "median": 11238.7455,
+        "min": 11184.855
+      },
+      "latency_p99_ms": {
+        "max": 15269.154,
+        "mean": 15217.39,
+        "median": 15217.39,
+        "min": 15165.626
+      },
+      "pipeline_rate": {
+        "max": 8993.959087205527,
+        "mean": 8855.039994011397,
+        "median": 8855.039994011397,
+        "min": 8716.120900817265
+      },
+      "silver_processed_rate_avg": {
+        "max": 9078.653894025032,
+        "mean": 9042.53333056885,
+        "median": 9042.53333056885,
+        "min": 9006.412767112666
+      },
+      "silver_processed_rate_p50": {
+        "max": 9101.226254499474,
+        "mean": 9030.990422179835,
+        "median": 9030.990422179835,
+        "min": 8960.754589860198
+      },
+      "silver_processed_rate_p95": {
+        "max": 10576.315036165313,
+        "mean": 10445.943082213798,
+        "median": 10445.943082213798,
+        "min": 10315.571128262281
+      },
+      "silver_processed_rate_peak": {
+        "max": 10777.819129140305,
+        "mean": 10560.942276571921,
+        "median": 10560.942276571921,
+        "min": 10344.065424003536
+      },
+      "startup_lag_peak": {
+        "max": 184999.0,
+        "mean": 182499.0,
+        "median": 182499.0,
+        "min": 179999.0
+      },
+      "steady_lag_avg": {
+        "max": 42080.71929824561,
+        "mean": 40486.88384267119,
+        "median": 40486.88384267119,
+        "min": 38893.04838709677
+      },
+      "steady_lag_p95": {
+        "max": 76480.0,
+        "mean": 71470.0,
+        "median": 71470.0,
+        "min": 66459.99999999999
+      },
+      "steady_lag_peak": {
+        "max": 85000.0,
+        "mean": 82500.0,
+        "median": 82500.0,
+        "min": 80000.0
+      },
+      "worker_cpu_avg_percent": {
+        "max": 257.59125,
+        "mean": 255.580725,
+        "median": 255.580725,
+        "min": 253.5702
+      },
+      "worker_cpu_p95_percent": {
+        "max": 518.7969999999998,
+        "mean": 488.3734999999998,
+        "median": 488.3734999999998,
+        "min": 457.9499999999998
+      },
+      "worker_cpu_peak_percent": {
+        "max": 705.98,
+        "mean": 702.5450000000001,
+        "median": 702.5450000000001,
+        "min": 699.11
+      },
+      "worker_memory_avg_mb": {
+        "max": 1767.1451200000001,
+        "mean": 1710.5251016666666,
+        "median": 1710.5251016666666,
+        "min": 1653.9050833333333
+      },
+      "worker_memory_p95_mb": {
+        "max": 2267.6992,
+        "mean": 2231.3984,
+        "median": 2231.3984,
+        "min": 2195.0976
+      },
+      "worker_memory_peak_mb": {
+        "max": 2272.256,
+        "mean": 2269.184,
+        "median": 2269.184,
+        "min": 2266.112
+      }
+    },
+    "metrics_scope": "valid_runs",
+    "pipeline_rate_max": 8993.959087205527,
+    "pipeline_rate_mean": 8855.039994011397,
+    "pipeline_rate_median": 8855.039994011397,
+    "pipeline_rate_min": 8716.120900817265,
+    "run_count": 2,
+    "run_ids": [
+      "20260927T145453Z-0fe7d813",
+      "20260927T145802Z-de6423ab"
+    ],
+    "silver_processed_rate_avg_max": 9078.653894025032,
+    "silver_processed_rate_avg_mean": 9042.53333056885,
+    "silver_processed_rate_avg_median": 9042.53333056885,
+    "silver_processed_rate_avg_min": 9006.412767112666,
+    "silver_processed_rate_p50_max": 9101.226254499474,
+    "silver_processed_rate_p50_mean": 9030.990422179835,
+    "silver_processed_rate_p50_median": 9030.990422179835,
+    "silver_processed_rate_p50_min": 8960.754589860198,
+    "silver_processed_rate_p95_max": 10576.315036165313,
+    "silver_processed_rate_p95_mean": 10445.943082213798,
+    "silver_processed_rate_p95_median": 10445.943082213798,
+    "silver_processed_rate_p95_min": 10315.571128262281,
+    "silver_processed_rate_peak_max": 10777.819129140305,
+    "silver_processed_rate_peak_mean": 10560.942276571921,
+    "silver_processed_rate_peak_median": 10560.942276571921,
+    "silver_processed_rate_peak_min": 10344.065424003536,
+    "startup_lag_peak_max": 184999.0,
+    "startup_lag_peak_mean": 182499.0,
+    "startup_lag_peak_median": 182499.0,
+    "startup_lag_peak_min": 179999.0,
+    "statuses": [
+      "UNDER_CAPACITY",
+      "UNDER_CAPACITY"
+    ],
+    "steady_lag_avg_max": 42080.71929824561,
+    "steady_lag_avg_mean": 40486.88384267119,
+    "steady_lag_avg_median": 40486.88384267119,
+    "steady_lag_avg_min": 38893.04838709677,
+    "steady_lag_p95_max": 76480.0,
+    "steady_lag_p95_mean": 71470.0,
+    "steady_lag_p95_median": 71470.0,
+    "steady_lag_p95_min": 66459.99999999999,
+    "steady_lag_peak_max": 85000.0,
+    "steady_lag_peak_mean": 82500.0,
+    "steady_lag_peak_median": 82500.0,
+    "steady_lag_peak_min": 80000.0,
+    "valid_run_count": 2,
+    "worker_cpu_avg_percent_max": 257.59125,
+    "worker_cpu_avg_percent_mean": 255.580725,
+    "worker_cpu_avg_percent_median": 255.580725,
+    "worker_cpu_avg_percent_min": 253.5702,
+    "worker_cpu_p95_mean": 488.3734999999998,
+    "worker_cpu_p95_percent_max": 518.7969999999998,
+    "worker_cpu_p95_percent_mean": 488.3734999999998,
+    "worker_cpu_p95_percent_median": 488.3734999999998,
+    "worker_cpu_p95_percent_min": 457.9499999999998,
+    "worker_cpu_peak_percent_max": 705.98,
+    "worker_cpu_peak_percent_mean": 702.5450000000001,
+    "worker_cpu_peak_percent_median": 702.5450000000001,
+    "worker_cpu_peak_percent_min": 699.11,
+    "worker_memory_avg_mb_max": 1767.1451200000001,
+    "worker_memory_avg_mb_mean": 1710.5251016666666,
+    "worker_memory_avg_mb_median": 1710.5251016666666,
+    "worker_memory_avg_mb_min": 1653.9050833333333,
+    "worker_memory_p95_mb_max": 2267.6992,
+    "worker_memory_p95_mb_mean": 2231.3984,
+    "worker_memory_p95_mb_median": 2231.3984,
+    "worker_memory_p95_mb_min": 2195.0976,
+    "worker_memory_p95_mean_mb": 2231.3984,
+    "worker_memory_peak_mb_max": 2272.256,
+    "worker_memory_peak_mb_mean": 2269.184,
+    "worker_memory_peak_mb_median": 2269.184,
+    "worker_memory_peak_mb_min": 2266.112
+  },
+  "calibration_summary": "results/benchmarks/scalability/experiments/20260927T145359Z-72bc773c/summary.json",
+  "completed_repetitions": 2,
+  "config_id": "p1-b1-s1-w1",
+  "configuration": {
+    "bronze_cores_max": 1,
+    "executor_cores": 1,
+    "executor_memory_mb": 1024,
+    "partitions": 1,
+    "shuffle_partitions": 1,
+    "silver_cores_max": 1,
+    "trigger_interval": "1 second",
+    "worker_cores_each": 4,
+    "worker_memory_mb_each": 4096,
+    "workers": 1
+  },
+  "created_at": "2026-09-27T15:01:07+00:00",
+  "experiment_id": "20260927T145453Z-2c0f1452",
+  "experiment_type": "scalability_configuration_repetitions",
+  "git_commit": "d34607085f9ca9f3060b9b6bfa46fc3c6c20e48f",
+  "requested_rate_msgs_sec": 8000,
+  "requested_repetitions": 2,
+  "runs": [
+    {
+      "result": "results/benchmarks/scalability/20260927T145453Z-0fe7d813/result.json",
+      "run_id": "20260927T145453Z-0fe7d813",
+      "status": "UNDER_CAPACITY",
+      "valid_for_comparison": true
+    },
+    {
+      "result": "results/benchmarks/scalability/20260927T145802Z-de6423ab/result.json",
+      "run_id": "20260927T145802Z-de6423ab",
+      "status": "UNDER_CAPACITY",
+      "valid_for_comparison": true
+    }
+  ],
+  "scenario": "SCALABILITY_BENCHMARK",
+  "schema_version": 1,
+  "source_record_limit": 800000,
+  "warmup_policy": {
+    "minimum_completed_batches_per_query": 3,
+    "minimum_warmup_seconds": 15.0,
+    "steady_state_end_rule": "Simulator generation end; post-replay drain excluded."
+  }
+}

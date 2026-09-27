@@ -1,0 +1,2235 @@
+{
+  "schema_version": 1,
+  "experiment_id": "20260927T152924Z-988f7da5",
+  "experiment_type": "three_repetition_final_validation_aggregation",
+  "scenario": "SCALABILITY_BENCHMARK",
+  "status": "COMPLETE",
+  "created_at": "2026-09-27T15:29:24+00:00",
+  "updated_at": "2026-09-27T15:29:24+00:00",
+  "git_commit": "d34607085f9ca9f3060b9b6bfa46fc3c6c20e48f",
+  "primary_matrix_experiment": "results/benchmarks/scalability/experiments/20260927T140207Z-101f56f0",
+  "rate_msgs_sec": 5000,
+  "source_records": 500000,
+  "config_summaries": {
+    "p1-b1-s1-w1": {
+      "configuration": {
+        "partitions": 1,
+        "bronze_cores_max": 1,
+        "silver_cores_max": 1,
+        "workers": 1
+      },
+      "run_count": 3,
+      "valid_run_count": 3,
+      "run_ids": [
+        "20260927T140220Z-f64cbc77",
+        "20260927T140524Z-7940b6d6",
+        "20260927T151729Z-74766b7e"
+      ],
+      "run_artifacts": [
+        {
+          "run_id": "20260927T140220Z-f64cbc77",
+          "result": "results/benchmarks/scalability/20260927T140220Z-f64cbc77/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T140220Z-f64cbc77/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T140220Z-f64cbc77/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T140524Z-7940b6d6",
+          "result": "results/benchmarks/scalability/20260927T140524Z-7940b6d6/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T140524Z-7940b6d6/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T140524Z-7940b6d6/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T151729Z-74766b7e",
+          "result": "results/benchmarks/scalability/20260927T151729Z-74766b7e/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T151729Z-74766b7e/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T151729Z-74766b7e/spark_cluster_snapshot.json"
+        }
+      ],
+      "aggregate": {
+        "run_count": 3,
+        "valid_run_count": 3,
+        "metrics_scope": "valid_runs",
+        "run_ids": [
+          "20260927T140220Z-f64cbc77",
+          "20260927T140524Z-7940b6d6",
+          "20260927T151729Z-74766b7e"
+        ],
+        "statuses": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "capacity_classifications": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "metrics": {
+          "actual_rate": {
+            "mean": 4999.969718528507,
+            "median": 4999.973935136765,
+            "min": 4999.959085334669,
+            "max": 4999.976135114086
+          },
+          "bronze_processed_rate_avg": {
+            "mean": 5581.761482418153,
+            "median": 5562.454932340948,
+            "min": 5532.335990121712,
+            "max": 5650.493524791797
+          },
+          "bronze_processed_rate_p50": {
+            "mean": 5100.324355596828,
+            "median": 5096.011816838995,
+            "min": 4986.235233067375,
+            "max": 5218.726016884114
+          },
+          "bronze_processed_rate_p95": {
+            "mean": 11054.016502269267,
+            "median": 11787.346827464076,
+            "min": 9366.947268977558,
+            "max": 12007.755410366166
+          },
+          "bronze_processed_rate_peak": {
+            "mean": 12280.957975585332,
+            "median": 12233.285917496443,
+            "min": 11351.706036745407,
+            "max": 13257.881972514146
+          },
+          "silver_processed_rate_avg": {
+            "mean": 6895.564780088081,
+            "median": 6881.691295242612,
+            "min": 6107.9300214134355,
+            "max": 7697.073023608195
+          },
+          "silver_processed_rate_p50": {
+            "mean": 6342.575045128851,
+            "median": 6067.056945183609,
+            "min": 6047.828124203535,
+            "max": 6912.8400659994095
+          },
+          "silver_processed_rate_p95": {
+            "mean": 10155.187484674627,
+            "median": 9595.943715768775,
+            "min": 8086.6559862244085,
+            "max": 12782.962752030699
+          },
+          "silver_processed_rate_peak": {
+            "mean": 10788.20601043799,
+            "median": 10054.536440257807,
+            "min": 8671.047827674334,
+            "max": 13639.033763381829
+          },
+          "pipeline_rate": {
+            "mean": 5581.761482418153,
+            "median": 5562.454932340948,
+            "min": 5532.335990121712,
+            "max": 5650.493524791797
+          },
+          "startup_lag_peak": {
+            "mean": 176448.66666666666,
+            "median": 180399.0,
+            "min": 120599.0,
+            "max": 228348.0
+          },
+          "steady_lag_avg": {
+            "mean": 24850.136409068193,
+            "median": 25341.120689655174,
+            "min": 22713.636363636364,
+            "max": 26495.652173913044
+          },
+          "steady_lag_p95": {
+            "mean": 43536.666666666664,
+            "median": 43419.99999999999,
+            "min": 39240.0,
+            "max": 47950.0
+          },
+          "steady_lag_peak": {
+            "mean": 47733.333333333336,
+            "median": 48000.0,
+            "min": 44800.0,
+            "max": 50400.0
+          },
+          "lag_slope": {
+            "mean": -191.12945680138816,
+            "median": -225.35145638476536,
+            "min": -250.25968864855867,
+            "max": -97.77722537084048
+          },
+          "latency_p50_ms": {
+            "mean": 2378.8506666666667,
+            "median": 2071.839,
+            "min": 1954.999,
+            "max": 3109.714
+          },
+          "latency_p95_ms": {
+            "mean": 25591.938666666665,
+            "median": 26283.607,
+            "min": 12852.475,
+            "max": 37639.734
+          },
+          "latency_p99_ms": {
+            "mean": 28947.644,
+            "median": 30318.726,
+            "min": 16884.524,
+            "max": 39639.682
+          },
+          "drain_seconds": {
+            "mean": 12.898920466667429,
+            "median": 12.564611599984346,
+            "min": 12.060682000010274,
+            "max": 14.071467800007667
+          },
+          "worker_cpu_p95_percent": {
+            "mean": 549.9104999999995,
+            "median": 569.0874999999999,
+            "min": 500.03599999999943,
+            "max": 580.6079999999993
+          },
+          "worker_memory_p95_mb": {
+            "mean": 2183.4922666666666,
+            "median": 2153.4208,
+            "min": 2081.1776,
+            "max": 2315.8784
+          },
+          "actual_allocated_cores": {
+            "mean": 2.0,
+            "median": 2.0,
+            "min": 2.0,
+            "max": 2.0
+          },
+          "worker_cpu_avg_percent": {
+            "mean": 245.7329560778212,
+            "median": 235.4240425531915,
+            "min": 228.56836734693877,
+            "max": 273.20645833333333
+          },
+          "worker_cpu_peak_percent": {
+            "mean": 788.1566666666666,
+            "median": 795.76,
+            "min": 766.48,
+            "max": 802.23
+          },
+          "worker_memory_avg_mb": {
+            "mean": 1641.6169991315676,
+            "median": 1688.5330000000001,
+            "min": 1523.2609361702127,
+            "max": 1713.0570612244899
+          },
+          "worker_memory_peak_mb": {
+            "mean": 2198.1866666666665,
+            "median": 2158.592,
+            "min": 2117.632,
+            "max": 2318.336
+          },
+          "kafka_cpu_avg_percent": {
+            "mean": 11.08672417016452,
+            "median": 12.179591836734694,
+            "min": 5.607872340425532,
+            "max": 15.472708333333333
+          },
+          "kafka_cpu_p95_percent": {
+            "mean": 37.80449999999997,
+            "median": 31.635999999999996,
+            "min": 11.457999999999991,
+            "max": 70.31949999999992
+          },
+          "kafka_cpu_peak_percent": {
+            "mean": 157.47,
+            "median": 208.14,
+            "min": 51.91,
+            "max": 212.36
+          },
+          "kafka_memory_avg_mb": {
+            "mean": 960.5913352390602,
+            "median": 1030.5928333333334,
+            "min": 806.1787234042554,
+            "max": 1045.002448979592
+          },
+          "kafka_memory_p95_mb": {
+            "mean": 972.9316,
+            "median": 1047.552,
+            "min": 814.27,
+            "max": 1056.9728
+          },
+          "kafka_memory_peak_mb": {
+            "mean": 1010.1786666666667,
+            "median": 1094.656,
+            "min": 814.6,
+            "max": 1121.28
+          }
+        },
+        "actual_rate_mean": 4999.969718528507,
+        "actual_rate_median": 4999.973935136765,
+        "actual_rate_min": 4999.959085334669,
+        "actual_rate_max": 4999.976135114086,
+        "bronze_processed_rate_avg_mean": 5581.761482418153,
+        "bronze_processed_rate_avg_median": 5562.454932340948,
+        "bronze_processed_rate_avg_min": 5532.335990121712,
+        "bronze_processed_rate_avg_max": 5650.493524791797,
+        "bronze_processed_rate_p50_mean": 5100.324355596828,
+        "bronze_processed_rate_p50_median": 5096.011816838995,
+        "bronze_processed_rate_p50_min": 4986.235233067375,
+        "bronze_processed_rate_p50_max": 5218.726016884114,
+        "bronze_processed_rate_p95_mean": 11054.016502269267,
+        "bronze_processed_rate_p95_median": 11787.346827464076,
+        "bronze_processed_rate_p95_min": 9366.947268977558,
+        "bronze_processed_rate_p95_max": 12007.755410366166,
+        "bronze_processed_rate_peak_mean": 12280.957975585332,
+        "bronze_processed_rate_peak_median": 12233.285917496443,
+        "bronze_processed_rate_peak_min": 11351.706036745407,
+        "bronze_processed_rate_peak_max": 13257.881972514146,
+        "silver_processed_rate_avg_mean": 6895.564780088081,
+        "silver_processed_rate_avg_median": 6881.691295242612,
+        "silver_processed_rate_avg_min": 6107.9300214134355,
+        "silver_processed_rate_avg_max": 7697.073023608195,
+        "silver_processed_rate_p50_mean": 6342.575045128851,
+        "silver_processed_rate_p50_median": 6067.056945183609,
+        "silver_processed_rate_p50_min": 6047.828124203535,
+        "silver_processed_rate_p50_max": 6912.8400659994095,
+        "silver_processed_rate_p95_mean": 10155.187484674627,
+        "silver_processed_rate_p95_median": 9595.943715768775,
+        "silver_processed_rate_p95_min": 8086.6559862244085,
+        "silver_processed_rate_p95_max": 12782.962752030699,
+        "silver_processed_rate_peak_mean": 10788.20601043799,
+        "silver_processed_rate_peak_median": 10054.536440257807,
+        "silver_processed_rate_peak_min": 8671.047827674334,
+        "silver_processed_rate_peak_max": 13639.033763381829,
+        "pipeline_rate_mean": 5581.761482418153,
+        "pipeline_rate_median": 5562.454932340948,
+        "pipeline_rate_min": 5532.335990121712,
+        "pipeline_rate_max": 5650.493524791797,
+        "startup_lag_peak_mean": 176448.66666666666,
+        "startup_lag_peak_median": 180399.0,
+        "startup_lag_peak_min": 120599.0,
+        "startup_lag_peak_max": 228348.0,
+        "steady_lag_avg_mean": 24850.136409068193,
+        "steady_lag_avg_median": 25341.120689655174,
+        "steady_lag_avg_min": 22713.636363636364,
+        "steady_lag_avg_max": 26495.652173913044,
+        "steady_lag_p95_mean": 43536.666666666664,
+        "steady_lag_p95_median": 43419.99999999999,
+        "steady_lag_p95_min": 39240.0,
+        "steady_lag_p95_max": 47950.0,
+        "steady_lag_peak_mean": 47733.333333333336,
+        "steady_lag_peak_median": 48000.0,
+        "steady_lag_peak_min": 44800.0,
+        "steady_lag_peak_max": 50400.0,
+        "lag_slope_mean": -191.12945680138816,
+        "lag_slope_median": -225.35145638476536,
+        "lag_slope_min": -250.25968864855867,
+        "lag_slope_max": -97.77722537084048,
+        "latency_p50_ms_mean": 2378.8506666666667,
+        "latency_p50_ms_median": 2071.839,
+        "latency_p50_ms_min": 1954.999,
+        "latency_p50_ms_max": 3109.714,
+        "latency_p95_ms_mean": 25591.938666666665,
+        "latency_p95_ms_median": 26283.607,
+        "latency_p95_ms_min": 12852.475,
+        "latency_p95_ms_max": 37639.734,
+        "latency_p99_ms_mean": 28947.644,
+        "latency_p99_ms_median": 30318.726,
+        "latency_p99_ms_min": 16884.524,
+        "latency_p99_ms_max": 39639.682,
+        "drain_seconds_mean": 12.898920466667429,
+        "drain_seconds_median": 12.564611599984346,
+        "drain_seconds_min": 12.060682000010274,
+        "drain_seconds_max": 14.071467800007667,
+        "worker_cpu_p95_percent_mean": 549.9104999999995,
+        "worker_cpu_p95_percent_median": 569.0874999999999,
+        "worker_cpu_p95_percent_min": 500.03599999999943,
+        "worker_cpu_p95_percent_max": 580.6079999999993,
+        "worker_memory_p95_mb_mean": 2183.4922666666666,
+        "worker_memory_p95_mb_median": 2153.4208,
+        "worker_memory_p95_mb_min": 2081.1776,
+        "worker_memory_p95_mb_max": 2315.8784,
+        "actual_allocated_cores_mean": 2.0,
+        "actual_allocated_cores_median": 2.0,
+        "actual_allocated_cores_min": 2.0,
+        "actual_allocated_cores_max": 2.0,
+        "worker_cpu_avg_percent_mean": 245.7329560778212,
+        "worker_cpu_avg_percent_median": 235.4240425531915,
+        "worker_cpu_avg_percent_min": 228.56836734693877,
+        "worker_cpu_avg_percent_max": 273.20645833333333,
+        "worker_cpu_peak_percent_mean": 788.1566666666666,
+        "worker_cpu_peak_percent_median": 795.76,
+        "worker_cpu_peak_percent_min": 766.48,
+        "worker_cpu_peak_percent_max": 802.23,
+        "worker_memory_avg_mb_mean": 1641.6169991315676,
+        "worker_memory_avg_mb_median": 1688.5330000000001,
+        "worker_memory_avg_mb_min": 1523.2609361702127,
+        "worker_memory_avg_mb_max": 1713.0570612244899,
+        "worker_memory_peak_mb_mean": 2198.1866666666665,
+        "worker_memory_peak_mb_median": 2158.592,
+        "worker_memory_peak_mb_min": 2117.632,
+        "worker_memory_peak_mb_max": 2318.336,
+        "kafka_cpu_avg_percent_mean": 11.08672417016452,
+        "kafka_cpu_avg_percent_median": 12.179591836734694,
+        "kafka_cpu_avg_percent_min": 5.607872340425532,
+        "kafka_cpu_avg_percent_max": 15.472708333333333,
+        "kafka_cpu_p95_percent_mean": 37.80449999999997,
+        "kafka_cpu_p95_percent_median": 31.635999999999996,
+        "kafka_cpu_p95_percent_min": 11.457999999999991,
+        "kafka_cpu_p95_percent_max": 70.31949999999992,
+        "kafka_cpu_peak_percent_mean": 157.47,
+        "kafka_cpu_peak_percent_median": 208.14,
+        "kafka_cpu_peak_percent_min": 51.91,
+        "kafka_cpu_peak_percent_max": 212.36,
+        "kafka_memory_avg_mb_mean": 960.5913352390602,
+        "kafka_memory_avg_mb_median": 1030.5928333333334,
+        "kafka_memory_avg_mb_min": 806.1787234042554,
+        "kafka_memory_avg_mb_max": 1045.002448979592,
+        "kafka_memory_p95_mb_mean": 972.9316,
+        "kafka_memory_p95_mb_median": 1047.552,
+        "kafka_memory_p95_mb_min": 814.27,
+        "kafka_memory_p95_mb_max": 1056.9728,
+        "kafka_memory_peak_mb_mean": 1010.1786666666667,
+        "kafka_memory_peak_mb_median": 1094.656,
+        "kafka_memory_peak_mb_min": 814.6,
+        "kafka_memory_peak_mb_max": 1121.28,
+        "latency_p95_mean": 25591.938666666665,
+        "drain_time_mean": 12.898920466667429,
+        "worker_cpu_p95_mean": 549.9104999999995,
+        "worker_memory_p95_mean_mb": 2183.4922666666666
+      },
+      "scaling_vs_control": {
+        "speedup": 1.0,
+        "compute_multiplier": 1.0,
+        "scaling_efficiency": 1.0,
+        "candidate_rows_per_core": 2781.227466170474
+      },
+      "pipeline_rows_per_actual_allocated_core": 2781.227466170474,
+      "spark_runtime_evidence": [
+        {
+          "run_id": "20260927T140220Z-f64cbc77",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140245-0149",
+                    "application": "WeatherSilverStreaming-20260927T140220Z-f64cbc77",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927140245-0149",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T140220Z-f64cbc77",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140245-0148",
+                    "application": "WeatherBronzeStreaming-20260927T140220Z-f64cbc77",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927140245-0148",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T140220Z-f64cbc77",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140245-0149",
+                    "application": "WeatherSilverStreaming-20260927T140220Z-f64cbc77",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927140245-0148",
+                    "application": "WeatherBronzeStreaming-20260927T140220Z-f64cbc77",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T140524Z-7940b6d6",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140549-0152",
+                    "application": "WeatherBronzeStreaming-20260927T140524Z-7940b6d6",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927140549-0152",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T140524Z-7940b6d6",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140549-0153",
+                    "application": "WeatherSilverStreaming-20260927T140524Z-7940b6d6",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927140549-0153",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T140524Z-7940b6d6",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927140549-0152",
+                    "application": "WeatherBronzeStreaming-20260927T140524Z-7940b6d6",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927140549-0153",
+                    "application": "WeatherSilverStreaming-20260927T140524Z-7940b6d6",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T151729Z-74766b7e",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927151753-0223",
+                    "application": "WeatherBronzeStreaming-20260927T151729Z-74766b7e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927151753-0223",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T151729Z-74766b7e",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927151753-0224",
+                    "application": "WeatherSilverStreaming-20260927T151729Z-74766b7e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927151753-0224",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T151729Z-74766b7e",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927151753-0224",
+                    "application": "WeatherSilverStreaming-20260927T151729Z-74766b7e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927151753-0223",
+                    "application": "WeatherBronzeStreaming-20260927T151729Z-74766b7e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 0,
+                "executors": [],
+                "host": "172.18.0.5",
+                "id": "worker-20260927150758-172.18.0.5-39537",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 0,
+                "state": "DEAD",
+                "webuiaddress": "http://172.18.0.5:8081"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "p1-b2-s1-w1": {
+      "configuration": {
+        "partitions": 1,
+        "bronze_cores_max": 2,
+        "silver_cores_max": 1,
+        "workers": 1
+      },
+      "run_count": 3,
+      "valid_run_count": 3,
+      "run_ids": [
+        "20260927T141810Z-322e9ac1",
+        "20260927T142118Z-9a543683",
+        "20260927T152036Z-3a0c5f5e"
+      ],
+      "run_artifacts": [
+        {
+          "run_id": "20260927T141810Z-322e9ac1",
+          "result": "results/benchmarks/scalability/20260927T141810Z-322e9ac1/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T141810Z-322e9ac1/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T141810Z-322e9ac1/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T142118Z-9a543683",
+          "result": "results/benchmarks/scalability/20260927T142118Z-9a543683/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T142118Z-9a543683/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T142118Z-9a543683/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T152036Z-3a0c5f5e",
+          "result": "results/benchmarks/scalability/20260927T152036Z-3a0c5f5e/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T152036Z-3a0c5f5e/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T152036Z-3a0c5f5e/spark_cluster_snapshot.json"
+        }
+      ],
+      "aggregate": {
+        "run_count": 3,
+        "valid_run_count": 3,
+        "metrics_scope": "valid_runs",
+        "run_ids": [
+          "20260927T141810Z-322e9ac1",
+          "20260927T142118Z-9a543683",
+          "20260927T152036Z-3a0c5f5e"
+        ],
+        "statuses": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "capacity_classifications": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "metrics": {
+          "actual_rate": {
+            "mean": 4999.973413476782,
+            "median": 4999.97384513702,
+            "min": 4999.969105189935,
+            "max": 4999.977290103391
+          },
+          "bronze_processed_rate_avg": {
+            "mean": 5583.175175249364,
+            "median": 5565.139609605626,
+            "min": 5454.9856826530695,
+            "max": 5729.400233489395
+          },
+          "bronze_processed_rate_p50": {
+            "mean": 5035.757291854715,
+            "median": 4975.323324743634,
+            "min": 4938.271604938272,
+            "max": 5193.676945882238
+          },
+          "bronze_processed_rate_p95": {
+            "mean": 10812.093148694828,
+            "median": 11252.771790260922,
+            "min": 9818.693279524461,
+            "max": 11364.814376299102
+          },
+          "bronze_processed_rate_peak": {
+            "mean": 12616.66275873268,
+            "median": 12630.480167014613,
+            "min": 12348.993288590604,
+            "max": 12870.514820592824
+          },
+          "silver_processed_rate_avg": {
+            "mean": 6897.774396084738,
+            "median": 6402.556813825799,
+            "min": 6186.097850219927,
+            "max": 8104.668524208489
+          },
+          "silver_processed_rate_p50": {
+            "mean": 7004.862221020693,
+            "median": 6561.85919343814,
+            "min": 6550.519267731194,
+            "max": 7902.208201892745
+          },
+          "silver_processed_rate_p95": {
+            "mean": 8079.883144196633,
+            "median": 6950.391424520327,
+            "min": 6865.840273036917,
+            "max": 10423.417735032655
+          },
+          "silver_processed_rate_peak": {
+            "mean": 8209.659056558665,
+            "median": 6977.78774960736,
+            "min": 6947.6372924648795,
+            "max": 10703.552127603756
+          },
+          "pipeline_rate": {
+            "mean": 5583.175175249364,
+            "median": 5565.139609605626,
+            "min": 5454.9856826530695,
+            "max": 5729.400233489395
+          },
+          "startup_lag_peak": {
+            "mean": 156132.33333333334,
+            "median": 127599.0,
+            "min": 109799.0,
+            "max": 230999.0
+          },
+          "steady_lag_avg": {
+            "mean": 19682.901960784315,
+            "median": 19873.78947368421,
+            "min": 17610.21052631579,
+            "max": 21564.70588235294
+          },
+          "steady_lag_p95": {
+            "mean": 36839.99999999999,
+            "median": 36799.99999999999,
+            "min": 33639.999999999985,
+            "max": 40080.0
+          },
+          "steady_lag_peak": {
+            "mean": 42133.333333333336,
+            "median": 43600.0,
+            "min": 38000.0,
+            "max": 44800.0
+          },
+          "lag_slope": {
+            "mean": -325.6274084654684,
+            "median": -228.4132516098317,
+            "min": -547.7523919683936,
+            "max": -200.7165818181801
+          },
+          "latency_p50_ms": {
+            "mean": 1723.7153333333333,
+            "median": 1527.409,
+            "min": 1287.978,
+            "max": 2355.759
+          },
+          "latency_p95_ms": {
+            "mean": 20345.345666666668,
+            "median": 13606.95,
+            "min": 11625.106,
+            "max": 35803.981
+          },
+          "latency_p99_ms": {
+            "mean": 24379.459333333332,
+            "median": 17641.053,
+            "min": 15659.24,
+            "max": 39838.085
+          },
+          "drain_seconds": {
+            "mean": 13.577921233333958,
+            "median": 14.082744700019248,
+            "min": 11.560464000009233,
+            "max": 15.090554999973392
+          },
+          "worker_cpu_p95_percent": {
+            "mean": 699.1223333333331,
+            "median": 711.7569999999997,
+            "min": 672.4449999999996,
+            "max": 713.165
+          },
+          "worker_memory_p95_mb": {
+            "mean": 2928.4181333333336,
+            "median": 2934.784,
+            "min": 2898.5856000000003,
+            "max": 2951.8848
+          },
+          "actual_allocated_cores": {
+            "mean": 3.0,
+            "median": 3.0,
+            "min": 3.0,
+            "max": 3.0
+          },
+          "worker_cpu_avg_percent": {
+            "mean": 333.785431501182,
+            "median": 334.6639583333333,
+            "min": 296.15893617021277,
+            "max": 370.53340000000003
+          },
+          "worker_cpu_peak_percent": {
+            "mean": 941.2533333333333,
+            "median": 906.26,
+            "min": 882.65,
+            "max": 1034.85
+          },
+          "worker_memory_avg_mb": {
+            "mean": 2169.5218902600473,
+            "median": 2210.0968333333335,
+            "min": 2070.7179574468087,
+            "max": 2227.75088
+          },
+          "worker_memory_peak_mb": {
+            "mean": 2943.3173333333334,
+            "median": 2957.312,
+            "min": 2905.088,
+            "max": 2967.552
+          },
+          "kafka_cpu_avg_percent": {
+            "mean": 5.041947458628842,
+            "median": 5.4284,
+            "min": 4.077234042553192,
+            "max": 5.620208333333333
+          },
+          "kafka_cpu_p95_percent": {
+            "mean": 8.809666666666665,
+            "median": 8.9285,
+            "min": 8.026999999999996,
+            "max": 9.4735
+          },
+          "kafka_cpu_peak_percent": {
+            "mean": 21.436666666666667,
+            "median": 20.57,
+            "min": 15.46,
+            "max": 28.28
+          },
+          "kafka_memory_avg_mb": {
+            "mean": 877.8616034751773,
+            "median": 853.5723404255319,
+            "min": 789.04375,
+            "max": 990.96872
+          },
+          "kafka_memory_p95_mb": {
+            "mean": 938.7547333333333,
+            "median": 894.18,
+            "min": 826.8649999999999,
+            "max": 1095.2192
+          },
+          "kafka_memory_peak_mb": {
+            "mean": 941.384,
+            "median": 898.4,
+            "min": 827.0,
+            "max": 1098.752
+          }
+        },
+        "actual_rate_mean": 4999.973413476782,
+        "actual_rate_median": 4999.97384513702,
+        "actual_rate_min": 4999.969105189935,
+        "actual_rate_max": 4999.977290103391,
+        "bronze_processed_rate_avg_mean": 5583.175175249364,
+        "bronze_processed_rate_avg_median": 5565.139609605626,
+        "bronze_processed_rate_avg_min": 5454.9856826530695,
+        "bronze_processed_rate_avg_max": 5729.400233489395,
+        "bronze_processed_rate_p50_mean": 5035.757291854715,
+        "bronze_processed_rate_p50_median": 4975.323324743634,
+        "bronze_processed_rate_p50_min": 4938.271604938272,
+        "bronze_processed_rate_p50_max": 5193.676945882238,
+        "bronze_processed_rate_p95_mean": 10812.093148694828,
+        "bronze_processed_rate_p95_median": 11252.771790260922,
+        "bronze_processed_rate_p95_min": 9818.693279524461,
+        "bronze_processed_rate_p95_max": 11364.814376299102,
+        "bronze_processed_rate_peak_mean": 12616.66275873268,
+        "bronze_processed_rate_peak_median": 12630.480167014613,
+        "bronze_processed_rate_peak_min": 12348.993288590604,
+        "bronze_processed_rate_peak_max": 12870.514820592824,
+        "silver_processed_rate_avg_mean": 6897.774396084738,
+        "silver_processed_rate_avg_median": 6402.556813825799,
+        "silver_processed_rate_avg_min": 6186.097850219927,
+        "silver_processed_rate_avg_max": 8104.668524208489,
+        "silver_processed_rate_p50_mean": 7004.862221020693,
+        "silver_processed_rate_p50_median": 6561.85919343814,
+        "silver_processed_rate_p50_min": 6550.519267731194,
+        "silver_processed_rate_p50_max": 7902.208201892745,
+        "silver_processed_rate_p95_mean": 8079.883144196633,
+        "silver_processed_rate_p95_median": 6950.391424520327,
+        "silver_processed_rate_p95_min": 6865.840273036917,
+        "silver_processed_rate_p95_max": 10423.417735032655,
+        "silver_processed_rate_peak_mean": 8209.659056558665,
+        "silver_processed_rate_peak_median": 6977.78774960736,
+        "silver_processed_rate_peak_min": 6947.6372924648795,
+        "silver_processed_rate_peak_max": 10703.552127603756,
+        "pipeline_rate_mean": 5583.175175249364,
+        "pipeline_rate_median": 5565.139609605626,
+        "pipeline_rate_min": 5454.9856826530695,
+        "pipeline_rate_max": 5729.400233489395,
+        "startup_lag_peak_mean": 156132.33333333334,
+        "startup_lag_peak_median": 127599.0,
+        "startup_lag_peak_min": 109799.0,
+        "startup_lag_peak_max": 230999.0,
+        "steady_lag_avg_mean": 19682.901960784315,
+        "steady_lag_avg_median": 19873.78947368421,
+        "steady_lag_avg_min": 17610.21052631579,
+        "steady_lag_avg_max": 21564.70588235294,
+        "steady_lag_p95_mean": 36839.99999999999,
+        "steady_lag_p95_median": 36799.99999999999,
+        "steady_lag_p95_min": 33639.999999999985,
+        "steady_lag_p95_max": 40080.0,
+        "steady_lag_peak_mean": 42133.333333333336,
+        "steady_lag_peak_median": 43600.0,
+        "steady_lag_peak_min": 38000.0,
+        "steady_lag_peak_max": 44800.0,
+        "lag_slope_mean": -325.6274084654684,
+        "lag_slope_median": -228.4132516098317,
+        "lag_slope_min": -547.7523919683936,
+        "lag_slope_max": -200.7165818181801,
+        "latency_p50_ms_mean": 1723.7153333333333,
+        "latency_p50_ms_median": 1527.409,
+        "latency_p50_ms_min": 1287.978,
+        "latency_p50_ms_max": 2355.759,
+        "latency_p95_ms_mean": 20345.345666666668,
+        "latency_p95_ms_median": 13606.95,
+        "latency_p95_ms_min": 11625.106,
+        "latency_p95_ms_max": 35803.981,
+        "latency_p99_ms_mean": 24379.459333333332,
+        "latency_p99_ms_median": 17641.053,
+        "latency_p99_ms_min": 15659.24,
+        "latency_p99_ms_max": 39838.085,
+        "drain_seconds_mean": 13.577921233333958,
+        "drain_seconds_median": 14.082744700019248,
+        "drain_seconds_min": 11.560464000009233,
+        "drain_seconds_max": 15.090554999973392,
+        "worker_cpu_p95_percent_mean": 699.1223333333331,
+        "worker_cpu_p95_percent_median": 711.7569999999997,
+        "worker_cpu_p95_percent_min": 672.4449999999996,
+        "worker_cpu_p95_percent_max": 713.165,
+        "worker_memory_p95_mb_mean": 2928.4181333333336,
+        "worker_memory_p95_mb_median": 2934.784,
+        "worker_memory_p95_mb_min": 2898.5856000000003,
+        "worker_memory_p95_mb_max": 2951.8848,
+        "actual_allocated_cores_mean": 3.0,
+        "actual_allocated_cores_median": 3.0,
+        "actual_allocated_cores_min": 3.0,
+        "actual_allocated_cores_max": 3.0,
+        "worker_cpu_avg_percent_mean": 333.785431501182,
+        "worker_cpu_avg_percent_median": 334.6639583333333,
+        "worker_cpu_avg_percent_min": 296.15893617021277,
+        "worker_cpu_avg_percent_max": 370.53340000000003,
+        "worker_cpu_peak_percent_mean": 941.2533333333333,
+        "worker_cpu_peak_percent_median": 906.26,
+        "worker_cpu_peak_percent_min": 882.65,
+        "worker_cpu_peak_percent_max": 1034.85,
+        "worker_memory_avg_mb_mean": 2169.5218902600473,
+        "worker_memory_avg_mb_median": 2210.0968333333335,
+        "worker_memory_avg_mb_min": 2070.7179574468087,
+        "worker_memory_avg_mb_max": 2227.75088,
+        "worker_memory_peak_mb_mean": 2943.3173333333334,
+        "worker_memory_peak_mb_median": 2957.312,
+        "worker_memory_peak_mb_min": 2905.088,
+        "worker_memory_peak_mb_max": 2967.552,
+        "kafka_cpu_avg_percent_mean": 5.041947458628842,
+        "kafka_cpu_avg_percent_median": 5.4284,
+        "kafka_cpu_avg_percent_min": 4.077234042553192,
+        "kafka_cpu_avg_percent_max": 5.620208333333333,
+        "kafka_cpu_p95_percent_mean": 8.809666666666665,
+        "kafka_cpu_p95_percent_median": 8.9285,
+        "kafka_cpu_p95_percent_min": 8.026999999999996,
+        "kafka_cpu_p95_percent_max": 9.4735,
+        "kafka_cpu_peak_percent_mean": 21.436666666666667,
+        "kafka_cpu_peak_percent_median": 20.57,
+        "kafka_cpu_peak_percent_min": 15.46,
+        "kafka_cpu_peak_percent_max": 28.28,
+        "kafka_memory_avg_mb_mean": 877.8616034751773,
+        "kafka_memory_avg_mb_median": 853.5723404255319,
+        "kafka_memory_avg_mb_min": 789.04375,
+        "kafka_memory_avg_mb_max": 990.96872,
+        "kafka_memory_p95_mb_mean": 938.7547333333333,
+        "kafka_memory_p95_mb_median": 894.18,
+        "kafka_memory_p95_mb_min": 826.8649999999999,
+        "kafka_memory_p95_mb_max": 1095.2192,
+        "kafka_memory_peak_mb_mean": 941.384,
+        "kafka_memory_peak_mb_median": 898.4,
+        "kafka_memory_peak_mb_min": 827.0,
+        "kafka_memory_peak_mb_max": 1098.752,
+        "latency_p95_mean": 20345.345666666668,
+        "drain_time_mean": 13.577921233333958,
+        "worker_cpu_p95_mean": 699.1223333333331,
+        "worker_memory_p95_mean_mb": 2928.4181333333336
+      },
+      "scaling_vs_control": {
+        "speedup": 1.0004826425197746,
+        "compute_multiplier": 1.5,
+        "scaling_efficiency": 0.6669884283465164,
+        "candidate_rows_per_core": 1855.0465365352086
+      },
+      "pipeline_rows_per_actual_allocated_core": 1855.0465365352086,
+      "spark_runtime_evidence": [
+        {
+          "run_id": "20260927T141810Z-322e9ac1",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927141836-0168",
+                    "application": "WeatherBronzeStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927141836-0168",
+                    "application": "WeatherBronzeStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927141836-0168",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T141810Z-322e9ac1",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927141836-0169",
+                    "application": "WeatherSilverStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927141836-0169",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T141810Z-322e9ac1",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 3,
+                "executors": [
+                  {
+                    "app_id": "app-20260927141836-0169",
+                    "application": "WeatherSilverStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927141836-0168",
+                    "application": "WeatherBronzeStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927141836-0168",
+                    "application": "WeatherBronzeStreaming-20260927T141810Z-322e9ac1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 3072,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T142118Z-9a543683",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927142143-0173",
+                    "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927142143-0173",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927142143-0172",
+                    "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927142143-0172",
+                    "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927142143-0172",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 3,
+                "executors": [
+                  {
+                    "app_id": "app-20260927142143-0172",
+                    "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927142143-0173",
+                    "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927142143-0172",
+                    "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 3072,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T152036Z-3a0c5f5e",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152059-0228",
+                    "application": "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927152059-0228",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152059-0227",
+                    "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927152059-0227",
+                    "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927152059-0227",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 3,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152059-0227",
+                    "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927152059-0228",
+                    "application": "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927152059-0227",
+                    "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 3072,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 0,
+                "executors": [],
+                "host": "172.18.0.5",
+                "id": "worker-20260927150758-172.18.0.5-39537",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 0,
+                "state": "DEAD",
+                "webuiaddress": "http://172.18.0.5:8081"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "p1-b2-s1-w2": {
+      "configuration": {
+        "partitions": 1,
+        "bronze_cores_max": 2,
+        "silver_cores_max": 1,
+        "workers": 2
+      },
+      "run_count": 3,
+      "valid_run_count": 3,
+      "run_ids": [
+        "20260927T143050Z-e1e896f1",
+        "20260927T143416Z-31bf938c",
+        "20260927T152358Z-022a43e5"
+      ],
+      "run_artifacts": [
+        {
+          "run_id": "20260927T143050Z-e1e896f1",
+          "result": "results/benchmarks/scalability/20260927T143050Z-e1e896f1/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T143050Z-e1e896f1/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T143050Z-e1e896f1/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T143416Z-31bf938c",
+          "result": "results/benchmarks/scalability/20260927T143416Z-31bf938c/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T143416Z-31bf938c/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T143416Z-31bf938c/spark_cluster_snapshot.json"
+        },
+        {
+          "run_id": "20260927T152358Z-022a43e5",
+          "result": "results/benchmarks/scalability/20260927T152358Z-022a43e5/result.json",
+          "manifest": "results/benchmarks/scalability/20260927T152358Z-022a43e5/manifest.json",
+          "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T152358Z-022a43e5/spark_cluster_snapshot.json"
+        }
+      ],
+      "aggregate": {
+        "run_count": 3,
+        "valid_run_count": 3,
+        "metrics_scope": "valid_runs",
+        "run_ids": [
+          "20260927T143050Z-e1e896f1",
+          "20260927T143416Z-31bf938c",
+          "20260927T152358Z-022a43e5"
+        ],
+        "statuses": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "capacity_classifications": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "metrics": {
+          "actual_rate": {
+            "mean": 4999.9691268575725,
+            "median": 4999.969680184364,
+            "min": 4999.966805219366,
+            "max": 4999.970895168988
+          },
+          "bronze_processed_rate_avg": {
+            "mean": 5529.457406674052,
+            "median": 5459.152219285862,
+            "min": 5449.6310382611455,
+            "max": 5679.58896247515
+          },
+          "bronze_processed_rate_p50": {
+            "mean": 5150.284311214259,
+            "median": 5252.686032630322,
+            "min": 4892.966360856269,
+            "max": 5305.200540156186
+          },
+          "bronze_processed_rate_p95": {
+            "mean": 10538.253828658924,
+            "median": 10943.275942655297,
+            "min": 9544.400610667419,
+            "max": 11127.084932654057
+          },
+          "bronze_processed_rate_peak": {
+            "mean": 11261.64798548588,
+            "median": 11556.982343499198,
+            "min": 10387.398893146019,
+            "max": 11840.562719812428
+          },
+          "silver_processed_rate_avg": {
+            "mean": 6190.681858159403,
+            "median": 6314.846608980408,
+            "min": 5800.142432774189,
+            "max": 6457.0565327236145
+          },
+          "silver_processed_rate_p50": {
+            "mean": 6746.647860183244,
+            "median": 6752.763489110211,
+            "min": 6292.006292006292,
+            "max": 7195.17379943323
+          },
+          "silver_processed_rate_p95": {
+            "mean": 7415.3750642209025,
+            "median": 7314.956754908345,
+            "min": 6834.151931472521,
+            "max": 8097.016506281841
+          },
+          "silver_processed_rate_peak": {
+            "mean": 7506.051593317954,
+            "median": 7566.902491541065,
+            "min": 6843.1950917350005,
+            "max": 8108.057196677798
+          },
+          "pipeline_rate": {
+            "mean": 5529.457406674052,
+            "median": 5459.152219285862,
+            "min": 5449.6310382611455,
+            "max": 5679.58896247515
+          },
+          "startup_lag_peak": {
+            "mean": 174528.66666666666,
+            "median": 175999.0,
+            "min": 157399.0,
+            "max": 190188.0
+          },
+          "steady_lag_avg": {
+            "mean": 21368.008865248226,
+            "median": 20325.0,
+            "min": 15518.75,
+            "max": 28260.27659574468
+          },
+          "steady_lag_p95": {
+            "mean": 39656.666666666664,
+            "median": 36750.0,
+            "min": 25940.0,
+            "max": 56279.99999999999
+          },
+          "steady_lag_peak": {
+            "mean": 45800.0,
+            "median": 44000.0,
+            "min": 28600.0,
+            "max": 64800.0
+          },
+          "lag_slope": {
+            "mean": -182.5088001565781,
+            "median": -174.78040236731277,
+            "min": -404.71951944285183,
+            "max": 31.97352134043026
+          },
+          "latency_p50_ms": {
+            "mean": 1868.5343333333333,
+            "median": 1859.794,
+            "min": 1594.533,
+            "max": 2151.276
+          },
+          "latency_p95_ms": {
+            "mean": 24568.492000000002,
+            "median": 26196.741,
+            "min": 18191.48,
+            "max": 29317.255
+          },
+          "latency_p99_ms": {
+            "mean": 28243.680333333334,
+            "median": 30230.645,
+            "min": 22227.89,
+            "max": 32272.506
+          },
+          "drain_seconds": {
+            "mean": 12.229796933330363,
+            "median": 12.063865400006762,
+            "min": 8.54559049999807,
+            "max": 16.079934899986256
+          },
+          "worker_cpu_p95_percent": {
+            "mean": 722.85,
+            "median": 744.7900000000001,
+            "min": 627.99,
+            "max": 795.77
+          },
+          "worker_memory_p95_mb": {
+            "mean": 3021.2415333333333,
+            "median": 2994.1760000000004,
+            "min": 2912.7126,
+            "max": 3156.836
+          },
+          "actual_allocated_cores": {
+            "mean": 3.0,
+            "median": 3.0,
+            "min": 3.0,
+            "max": 3.0
+          },
+          "worker_cpu_avg_percent": {
+            "mean": 333.975044345898,
+            "median": 323.54219512195124,
+            "min": 319.439756097561,
+            "max": 358.9431818181818
+          },
+          "worker_cpu_peak_percent": {
+            "mean": 961.36,
+            "median": 1021.05,
+            "min": 820.22,
+            "max": 1042.81
+          },
+          "worker_memory_avg_mb": {
+            "mean": 2239.694379157428,
+            "median": 2260.591024390244,
+            "min": 2170.1384545454544,
+            "max": 2288.3536585365855
+          },
+          "worker_memory_peak_mb": {
+            "mean": 3063.133333333333,
+            "median": 3028.268,
+            "min": 2998.272,
+            "max": 3162.86
+          },
+          "kafka_cpu_avg_percent": {
+            "mean": 10.175336289726534,
+            "median": 8.321707317073171,
+            "min": 4.969756097560976,
+            "max": 17.234545454545454
+          },
+          "kafka_cpu_p95_percent": {
+            "mean": 31.457833333333337,
+            "median": 37.69,
+            "min": 12.33,
+            "max": 44.35350000000001
+          },
+          "kafka_cpu_peak_percent": {
+            "mean": 119.20666666666666,
+            "median": 43.38,
+            "min": 24.31,
+            "max": 289.93
+          },
+          "kafka_memory_avg_mb": {
+            "mean": 737.8514781966002,
+            "median": 742.6536585365853,
+            "min": 725.4227272727272,
+            "max": 745.4780487804878
+          },
+          "kafka_memory_p95_mb": {
+            "mean": 768.3066666666666,
+            "median": 769.12,
+            "min": 763.4,
+            "max": 772.4
+          },
+          "kafka_memory_peak_mb": {
+            "mean": 772.0666666666667,
+            "median": 775.2,
+            "min": 764.3,
+            "max": 776.7
+          }
+        },
+        "actual_rate_mean": 4999.9691268575725,
+        "actual_rate_median": 4999.969680184364,
+        "actual_rate_min": 4999.966805219366,
+        "actual_rate_max": 4999.970895168988,
+        "bronze_processed_rate_avg_mean": 5529.457406674052,
+        "bronze_processed_rate_avg_median": 5459.152219285862,
+        "bronze_processed_rate_avg_min": 5449.6310382611455,
+        "bronze_processed_rate_avg_max": 5679.58896247515,
+        "bronze_processed_rate_p50_mean": 5150.284311214259,
+        "bronze_processed_rate_p50_median": 5252.686032630322,
+        "bronze_processed_rate_p50_min": 4892.966360856269,
+        "bronze_processed_rate_p50_max": 5305.200540156186,
+        "bronze_processed_rate_p95_mean": 10538.253828658924,
+        "bronze_processed_rate_p95_median": 10943.275942655297,
+        "bronze_processed_rate_p95_min": 9544.400610667419,
+        "bronze_processed_rate_p95_max": 11127.084932654057,
+        "bronze_processed_rate_peak_mean": 11261.64798548588,
+        "bronze_processed_rate_peak_median": 11556.982343499198,
+        "bronze_processed_rate_peak_min": 10387.398893146019,
+        "bronze_processed_rate_peak_max": 11840.562719812428,
+        "silver_processed_rate_avg_mean": 6190.681858159403,
+        "silver_processed_rate_avg_median": 6314.846608980408,
+        "silver_processed_rate_avg_min": 5800.142432774189,
+        "silver_processed_rate_avg_max": 6457.0565327236145,
+        "silver_processed_rate_p50_mean": 6746.647860183244,
+        "silver_processed_rate_p50_median": 6752.763489110211,
+        "silver_processed_rate_p50_min": 6292.006292006292,
+        "silver_processed_rate_p50_max": 7195.17379943323,
+        "silver_processed_rate_p95_mean": 7415.3750642209025,
+        "silver_processed_rate_p95_median": 7314.956754908345,
+        "silver_processed_rate_p95_min": 6834.151931472521,
+        "silver_processed_rate_p95_max": 8097.016506281841,
+        "silver_processed_rate_peak_mean": 7506.051593317954,
+        "silver_processed_rate_peak_median": 7566.902491541065,
+        "silver_processed_rate_peak_min": 6843.1950917350005,
+        "silver_processed_rate_peak_max": 8108.057196677798,
+        "pipeline_rate_mean": 5529.457406674052,
+        "pipeline_rate_median": 5459.152219285862,
+        "pipeline_rate_min": 5449.6310382611455,
+        "pipeline_rate_max": 5679.58896247515,
+        "startup_lag_peak_mean": 174528.66666666666,
+        "startup_lag_peak_median": 175999.0,
+        "startup_lag_peak_min": 157399.0,
+        "startup_lag_peak_max": 190188.0,
+        "steady_lag_avg_mean": 21368.008865248226,
+        "steady_lag_avg_median": 20325.0,
+        "steady_lag_avg_min": 15518.75,
+        "steady_lag_avg_max": 28260.27659574468,
+        "steady_lag_p95_mean": 39656.666666666664,
+        "steady_lag_p95_median": 36750.0,
+        "steady_lag_p95_min": 25940.0,
+        "steady_lag_p95_max": 56279.99999999999,
+        "steady_lag_peak_mean": 45800.0,
+        "steady_lag_peak_median": 44000.0,
+        "steady_lag_peak_min": 28600.0,
+        "steady_lag_peak_max": 64800.0,
+        "lag_slope_mean": -182.5088001565781,
+        "lag_slope_median": -174.78040236731277,
+        "lag_slope_min": -404.71951944285183,
+        "lag_slope_max": 31.97352134043026,
+        "latency_p50_ms_mean": 1868.5343333333333,
+        "latency_p50_ms_median": 1859.794,
+        "latency_p50_ms_min": 1594.533,
+        "latency_p50_ms_max": 2151.276,
+        "latency_p95_ms_mean": 24568.492000000002,
+        "latency_p95_ms_median": 26196.741,
+        "latency_p95_ms_min": 18191.48,
+        "latency_p95_ms_max": 29317.255,
+        "latency_p99_ms_mean": 28243.680333333334,
+        "latency_p99_ms_median": 30230.645,
+        "latency_p99_ms_min": 22227.89,
+        "latency_p99_ms_max": 32272.506,
+        "drain_seconds_mean": 12.229796933330363,
+        "drain_seconds_median": 12.063865400006762,
+        "drain_seconds_min": 8.54559049999807,
+        "drain_seconds_max": 16.079934899986256,
+        "worker_cpu_p95_percent_mean": 722.85,
+        "worker_cpu_p95_percent_median": 744.7900000000001,
+        "worker_cpu_p95_percent_min": 627.99,
+        "worker_cpu_p95_percent_max": 795.77,
+        "worker_memory_p95_mb_mean": 3021.2415333333333,
+        "worker_memory_p95_mb_median": 2994.1760000000004,
+        "worker_memory_p95_mb_min": 2912.7126,
+        "worker_memory_p95_mb_max": 3156.836,
+        "actual_allocated_cores_mean": 3.0,
+        "actual_allocated_cores_median": 3.0,
+        "actual_allocated_cores_min": 3.0,
+        "actual_allocated_cores_max": 3.0,
+        "worker_cpu_avg_percent_mean": 333.975044345898,
+        "worker_cpu_avg_percent_median": 323.54219512195124,
+        "worker_cpu_avg_percent_min": 319.439756097561,
+        "worker_cpu_avg_percent_max": 358.9431818181818,
+        "worker_cpu_peak_percent_mean": 961.36,
+        "worker_cpu_peak_percent_median": 1021.05,
+        "worker_cpu_peak_percent_min": 820.22,
+        "worker_cpu_peak_percent_max": 1042.81,
+        "worker_memory_avg_mb_mean": 2239.694379157428,
+        "worker_memory_avg_mb_median": 2260.591024390244,
+        "worker_memory_avg_mb_min": 2170.1384545454544,
+        "worker_memory_avg_mb_max": 2288.3536585365855,
+        "worker_memory_peak_mb_mean": 3063.133333333333,
+        "worker_memory_peak_mb_median": 3028.268,
+        "worker_memory_peak_mb_min": 2998.272,
+        "worker_memory_peak_mb_max": 3162.86,
+        "kafka_cpu_avg_percent_mean": 10.175336289726534,
+        "kafka_cpu_avg_percent_median": 8.321707317073171,
+        "kafka_cpu_avg_percent_min": 4.969756097560976,
+        "kafka_cpu_avg_percent_max": 17.234545454545454,
+        "kafka_cpu_p95_percent_mean": 31.457833333333337,
+        "kafka_cpu_p95_percent_median": 37.69,
+        "kafka_cpu_p95_percent_min": 12.33,
+        "kafka_cpu_p95_percent_max": 44.35350000000001,
+        "kafka_cpu_peak_percent_mean": 119.20666666666666,
+        "kafka_cpu_peak_percent_median": 43.38,
+        "kafka_cpu_peak_percent_min": 24.31,
+        "kafka_cpu_peak_percent_max": 289.93,
+        "kafka_memory_avg_mb_mean": 737.8514781966002,
+        "kafka_memory_avg_mb_median": 742.6536585365853,
+        "kafka_memory_avg_mb_min": 725.4227272727272,
+        "kafka_memory_avg_mb_max": 745.4780487804878,
+        "kafka_memory_p95_mb_mean": 768.3066666666666,
+        "kafka_memory_p95_mb_median": 769.12,
+        "kafka_memory_p95_mb_min": 763.4,
+        "kafka_memory_p95_mb_max": 772.4,
+        "kafka_memory_peak_mb_mean": 772.0666666666667,
+        "kafka_memory_peak_mb_median": 775.2,
+        "kafka_memory_peak_mb_min": 764.3,
+        "kafka_memory_peak_mb_max": 776.7,
+        "latency_p95_mean": 24568.492000000002,
+        "drain_time_mean": 12.229796933330363,
+        "worker_cpu_p95_mean": 722.85,
+        "worker_memory_p95_mean_mb": 3021.2415333333333
+      },
+      "scaling_vs_control": {
+        "speedup": 0.9814285752762744,
+        "compute_multiplier": 1.5,
+        "scaling_efficiency": 0.6542857168508496,
+        "candidate_rows_per_core": 1819.7174064286207
+      },
+      "pipeline_rows_per_actual_allocated_core": 1819.7174064286207,
+      "spark_runtime_evidence": [
+        {
+          "run_id": "20260927T143050Z-e1e896f1",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099",
+                  "worker-20260927143048-172.18.0.5-42865"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143120-0184",
+                    "application": "WeatherBronzeStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  },
+                  {
+                    "app_id": "app-20260927143120-0184",
+                    "application": "WeatherBronzeStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927143120-0184",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T143050Z-e1e896f1",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927143048-172.18.0.5-42865"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143120-0185",
+                    "application": "WeatherSilverStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  }
+                ],
+                "id": "app-20260927143120-0185",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T143050Z-e1e896f1",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143120-0184",
+                    "application": "WeatherBronzeStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  },
+                  {
+                    "app_id": "app-20260927143120-0185",
+                    "application": "WeatherSilverStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  }
+                ],
+                "host": "172.18.0.5",
+                "id": "worker-20260927143048-172.18.0.5-42865",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.5:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143120-0184",
+                    "application": "WeatherBronzeStreaming-20260927T143050Z-e1e896f1",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 1024,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T143416Z-31bf938c",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099",
+                  "worker-20260927143048-172.18.0.5-42865"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143444-0188",
+                    "application": "WeatherBronzeStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  },
+                  {
+                    "app_id": "app-20260927143444-0188",
+                    "application": "WeatherBronzeStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "id": "app-20260927143444-0188",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T143416Z-31bf938c",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927143048-172.18.0.5-42865"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143444-0189",
+                    "application": "WeatherSilverStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  }
+                ],
+                "id": "app-20260927143444-0189",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T143416Z-31bf938c",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143444-0189",
+                    "application": "WeatherSilverStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  },
+                  {
+                    "app_id": "app-20260927143444-0188",
+                    "application": "WeatherBronzeStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927143048-172.18.0.5-42865"
+                  }
+                ],
+                "host": "172.18.0.5",
+                "id": "worker-20260927143048-172.18.0.5-42865",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.5:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927143444-0188",
+                    "application": "WeatherBronzeStreaming-20260927T143416Z-31bf938c",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 1024,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              }
+            ]
+          }
+        },
+        {
+          "run_id": "20260927T152358Z-022a43e5",
+          "observation": {
+            "apps": [
+              {
+                "actual_allocated_cores": 2,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null,
+                  null
+                ],
+                "actual_executor_count": 2,
+                "actual_executor_memory_mb": [
+                  1024,
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927123744-172.18.0.4-35099",
+                  "worker-20260927152346-172.18.0.5-40831"
+                ],
+                "cores": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152425-0232",
+                    "application": "WeatherBronzeStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  },
+                  {
+                    "app_id": "app-20260927152425-0232",
+                    "application": "WeatherBronzeStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927152346-172.18.0.5-40831"
+                  }
+                ],
+                "id": "app-20260927152425-0232",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherBronzeStreaming-20260927T152358Z-022a43e5",
+                "state": "RUNNING"
+              },
+              {
+                "actual_allocated_cores": 1,
+                "actual_allocated_cores_source": "spark_master_active_apps.cores",
+                "actual_executor_cores": [
+                  null
+                ],
+                "actual_executor_count": 1,
+                "actual_executor_memory_mb": [
+                  1024
+                ],
+                "assigned_worker_ids": [
+                  "worker-20260927152346-172.18.0.5-40831"
+                ],
+                "cores": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152425-0231",
+                    "application": "WeatherSilverStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927152346-172.18.0.5-40831"
+                  }
+                ],
+                "id": "app-20260927152425-0231",
+                "memory_per_executor_mb": 1024,
+                "name": "WeatherSilverStreaming-20260927T152358Z-022a43e5",
+                "state": "RUNNING"
+              }
+            ],
+            "other_active_apps": [],
+            "workers": [
+              {
+                "cores_available": 4,
+                "cores_used": 1,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152425-0232",
+                    "application": "WeatherBronzeStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927123744-172.18.0.4-35099"
+                  }
+                ],
+                "host": "172.18.0.4",
+                "id": "worker-20260927123744-172.18.0.4-35099",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 1024,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.4:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 0,
+                "executors": [],
+                "host": "172.18.0.5",
+                "id": "worker-20260927150758-172.18.0.5-39537",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 0,
+                "state": "DEAD",
+                "webuiaddress": "http://172.18.0.5:8081"
+              },
+              {
+                "cores_available": 4,
+                "cores_used": 2,
+                "executors": [
+                  {
+                    "app_id": "app-20260927152425-0231",
+                    "application": "WeatherSilverStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 0,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927152346-172.18.0.5-40831"
+                  },
+                  {
+                    "app_id": "app-20260927152425-0232",
+                    "application": "WeatherBronzeStreaming-20260927T152358Z-022a43e5",
+                    "cores": null,
+                    "executor_id": 1,
+                    "memory_mb": 1024,
+                    "worker_id": "worker-20260927152346-172.18.0.5-40831"
+                  }
+                ],
+                "host": "172.18.0.5",
+                "id": "worker-20260927152346-172.18.0.5-40831",
+                "memory_available_mb": 4096,
+                "memory_used_mb": 2048,
+                "state": "ALIVE",
+                "webuiaddress": "http://172.18.0.5:8081"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "comparison_method": "Median of three valid independent runs per final configuration. Two repetitions are from the primary matrix; the third is a separate final-validation run. No historical raw runs are overwritten.",
+  "selection": {
+    "best_measured_single_worker_at_5000": "p1-b2-s1-w1",
+    "best_measured_two_worker_at_5000": "p1-b2-s1-w2",
+    "interpretation": "5k differences are small and mostly input-limited; use 8k targeted stress evidence and resource efficiency before recommending a configuration."
+  }
+}

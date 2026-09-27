@@ -1,0 +1,23 @@
+{
+  "actual_generated_msgs_sec": 4999.858733991017,
+  "actual_generation_rate": 3817.536436022685,
+  "duplicates_generated": 0,
+  "duration_seconds": 130.97451939998427,
+  "generation_elapsed_seconds": 100.00282540000626,
+  "generation_end_time": "2026-09-27T14:39:48.330348+00:00",
+  "generation_start_time": "2026-09-27T14:38:08.327591+00:00",
+  "invalid_generated": 0,
+  "kafka_messages": 500000,
+  "late_generated": 0,
+  "normal_generated": 500000,
+  "out_of_order_generated": 0,
+  "producer_delivery_complete": false,
+  "producer_elapsed_seconds": 130.97451939998427,
+  "producer_flush_remaining": 212201,
+  "producer_remaining": 212201,
+  "requested_replay_rate": 5000,
+  "run_id": "20260927T143724Z-9b276c28",
+  "scenario": "SCALABILITY_BENCHMARK",
+  "source_records": 500000,
+  "topic": "weather.bench.scalability.20260927t143724z-9b276c28"
+}

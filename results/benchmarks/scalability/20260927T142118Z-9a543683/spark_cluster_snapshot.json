@@ -1,0 +1,1273 @@
+{
+  "last_error": null,
+  "run_id": "20260927T142118Z-9a543683",
+  "samples": [
+    {
+      "captured_at_utc": "2026-09-27T14:21:52+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "before_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:21:53+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:03+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:14+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:24+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:35+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:45+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:22:56+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:23:06+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:23:17+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    },
+    {
+      "captured_at_utc": "2026-09-27T14:23:28+00:00",
+      "observation": {
+        "apps": [
+          {
+            "actual_allocated_cores": 1,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null
+            ],
+            "actual_executor_count": 1,
+            "actual_executor_memory_mb": [
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 1,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0173",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          },
+          {
+            "actual_allocated_cores": 2,
+            "actual_allocated_cores_source": "spark_master_active_apps.cores",
+            "actual_executor_cores": [
+              null,
+              null
+            ],
+            "actual_executor_count": 2,
+            "actual_executor_memory_mb": [
+              1024,
+              1024
+            ],
+            "assigned_worker_ids": [
+              "worker-20260927123744-172.18.0.4-35099"
+            ],
+            "cores": 2,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "id": "app-20260927142143-0172",
+            "memory_per_executor_mb": 1024,
+            "name": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+            "state": "RUNNING"
+          }
+        ],
+        "other_active_apps": [],
+        "workers": [
+          {
+            "cores_available": 4,
+            "cores_used": 3,
+            "executors": [
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0173",
+                "application": "WeatherSilverStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 0,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              },
+              {
+                "app_id": "app-20260927142143-0172",
+                "application": "WeatherBronzeStreaming-20260927T142118Z-9a543683",
+                "cores": null,
+                "executor_id": 1,
+                "memory_mb": 1024,
+                "worker_id": "worker-20260927123744-172.18.0.4-35099"
+              }
+            ],
+            "host": "172.18.0.4",
+            "id": "worker-20260927123744-172.18.0.4-35099",
+            "memory_available_mb": 4096,
+            "memory_used_mb": 3072,
+            "state": "ALIVE",
+            "webuiaddress": "http://172.18.0.4:8081"
+          }
+        ]
+      },
+      "phase": "during_replay"
+    }
+  ],
+  "sampling_interval_seconds": 10.0,
+  "schema_version": 1
+}

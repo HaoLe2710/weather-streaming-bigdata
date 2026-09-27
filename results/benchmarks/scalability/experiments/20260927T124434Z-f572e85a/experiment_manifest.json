@@ -1,0 +1,1176 @@
+{
+  "calibrations": [
+    {
+      "actual_rate_msgs_sec": 4998.370281398101,
+      "calibrated": true,
+      "deviation_percent": 0.0325943720379837,
+      "rate_msgs_sec": 5000,
+      "summary": "results/benchmarks/scalability/experiments/20260927T124411Z-25cfb4ef/summary.json"
+    }
+  ],
+  "config_summaries": {
+    "p1-b1-s1-w1": {
+      "actual_allocated_cores_max": 0.0,
+      "actual_allocated_cores_mean": 0.0,
+      "actual_allocated_cores_median": 0.0,
+      "actual_allocated_cores_min": 0.0,
+      "actual_rate_max": null,
+      "actual_rate_mean": null,
+      "actual_rate_median": null,
+      "actual_rate_min": null,
+      "bronze_processed_rate_avg_max": 0.0,
+      "bronze_processed_rate_avg_mean": 0.0,
+      "bronze_processed_rate_avg_median": 0.0,
+      "bronze_processed_rate_avg_min": 0.0,
+      "bronze_processed_rate_p50_max": 0.0,
+      "bronze_processed_rate_p50_mean": 0.0,
+      "bronze_processed_rate_p50_median": 0.0,
+      "bronze_processed_rate_p50_min": 0.0,
+      "bronze_processed_rate_p95_max": 0.0,
+      "bronze_processed_rate_p95_mean": 0.0,
+      "bronze_processed_rate_p95_median": 0.0,
+      "bronze_processed_rate_p95_min": 0.0,
+      "bronze_processed_rate_peak_max": 0.0,
+      "bronze_processed_rate_peak_mean": 0.0,
+      "bronze_processed_rate_peak_median": 0.0,
+      "bronze_processed_rate_peak_min": 0.0,
+      "capacity_classifications": [
+        null
+      ],
+      "configuration": {
+        "bronze_cores_max": 1,
+        "config_id": "p1-b1-s1-w1",
+        "executor_cores": 1,
+        "executor_memory_mb": 1024,
+        "experiment_id": "20260927T124434Z-f572e85a",
+        "shuffle_partitions": 1,
+        "silver_cores_max": 1,
+        "topic_partitions": 1,
+        "trigger_interval": "1 second",
+        "worker_cores_each": 4,
+        "worker_memory_mb_each": 4096,
+        "workers": 1
+      },
+      "drain_seconds_max": null,
+      "drain_seconds_mean": null,
+      "drain_seconds_median": null,
+      "drain_seconds_min": null,
+      "drain_time_mean": null,
+      "kafka_cpu_avg_percent_max": 1.7166666666666668,
+      "kafka_cpu_avg_percent_mean": 1.7166666666666668,
+      "kafka_cpu_avg_percent_median": 1.7166666666666668,
+      "kafka_cpu_avg_percent_min": 1.7166666666666668,
+      "kafka_cpu_p95_percent_max": 2.5610000000000017,
+      "kafka_cpu_p95_percent_mean": 2.5610000000000017,
+      "kafka_cpu_p95_percent_median": 2.5610000000000017,
+      "kafka_cpu_p95_percent_min": 2.5610000000000017,
+      "kafka_cpu_peak_percent_max": 3.64,
+      "kafka_cpu_peak_percent_mean": 3.64,
+      "kafka_cpu_peak_percent_median": 3.64,
+      "kafka_cpu_peak_percent_min": 3.64,
+      "kafka_memory_avg_mb_max": 803.1102564102564,
+      "kafka_memory_avg_mb_mean": 803.1102564102564,
+      "kafka_memory_avg_mb_median": 803.1102564102564,
+      "kafka_memory_avg_mb_min": 803.1102564102564,
+      "kafka_memory_p95_mb_max": 803.4,
+      "kafka_memory_p95_mb_mean": 803.4,
+      "kafka_memory_p95_mb_median": 803.4,
+      "kafka_memory_p95_mb_min": 803.4,
+      "kafka_memory_peak_mb_max": 803.4,
+      "kafka_memory_peak_mb_mean": 803.4,
+      "kafka_memory_peak_mb_median": 803.4,
+      "kafka_memory_peak_mb_min": 803.4,
+      "lag_slope_max": null,
+      "lag_slope_mean": null,
+      "lag_slope_median": null,
+      "lag_slope_min": null,
+      "latency_p50_ms_max": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_median": null,
+      "latency_p50_ms_min": null,
+      "latency_p95_mean": null,
+      "latency_p95_ms_max": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_median": null,
+      "latency_p95_ms_min": null,
+      "latency_p99_ms_max": null,
+      "latency_p99_ms_mean": null,
+      "latency_p99_ms_median": null,
+      "latency_p99_ms_min": null,
+      "metrics": {
+        "actual_allocated_cores": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "actual_rate": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_avg": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_p50": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_p95": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "drain_seconds": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_cpu_avg_percent": {
+          "max": 1.7166666666666668,
+          "mean": 1.7166666666666668,
+          "median": 1.7166666666666668,
+          "min": 1.7166666666666668
+        },
+        "kafka_cpu_p95_percent": {
+          "max": 2.5610000000000017,
+          "mean": 2.5610000000000017,
+          "median": 2.5610000000000017,
+          "min": 2.5610000000000017
+        },
+        "kafka_cpu_peak_percent": {
+          "max": 3.64,
+          "mean": 3.64,
+          "median": 3.64,
+          "min": 3.64
+        },
+        "kafka_memory_avg_mb": {
+          "max": 803.1102564102564,
+          "mean": 803.1102564102564,
+          "median": 803.1102564102564,
+          "min": 803.1102564102564
+        },
+        "kafka_memory_p95_mb": {
+          "max": 803.4,
+          "mean": 803.4,
+          "median": 803.4,
+          "min": 803.4
+        },
+        "kafka_memory_peak_mb": {
+          "max": 803.4,
+          "mean": 803.4,
+          "median": 803.4,
+          "min": 803.4
+        },
+        "lag_slope": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p50_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p95_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p99_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "pipeline_rate": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_avg": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_p50": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_p95": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "startup_lag_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "steady_lag_avg": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_p95": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_cpu_avg_percent": {
+          "max": 104.74230769230769,
+          "mean": 104.74230769230769,
+          "median": 104.74230769230769,
+          "min": 104.74230769230769
+        },
+        "worker_cpu_p95_percent": {
+          "max": 654.2240000000002,
+          "mean": 654.2240000000002,
+          "median": 654.2240000000002,
+          "min": 654.2240000000002
+        },
+        "worker_cpu_peak_percent": {
+          "max": 752.71,
+          "mean": 752.71,
+          "median": 752.71,
+          "min": 752.71
+        },
+        "worker_memory_avg_mb": {
+          "max": 1309.5452307692308,
+          "mean": 1309.5452307692308,
+          "median": 1309.5452307692308,
+          "min": 1309.5452307692308
+        },
+        "worker_memory_p95_mb": {
+          "max": 1547.264,
+          "mean": 1547.264,
+          "median": 1547.264,
+          "min": 1547.264
+        },
+        "worker_memory_peak_mb": {
+          "max": 1547.264,
+          "mean": 1547.264,
+          "median": 1547.264,
+          "min": 1547.264
+        }
+      },
+      "metrics_scope": "all_attempts_no_valid_comparison_run",
+      "pipeline_rate_max": 0.0,
+      "pipeline_rate_mean": 0.0,
+      "pipeline_rate_median": 0.0,
+      "pipeline_rate_min": 0.0,
+      "run_count": 1,
+      "run_ids": [
+        "20260927T124435Z-56de65dc"
+      ],
+      "scalability_metrics_vs_control": {
+        "candidate_rows_per_core": 0.0,
+        "compute_multiplier": 1.0,
+        "scaling_efficiency": null,
+        "speedup": null
+      },
+      "silver_processed_rate_avg_max": 0.0,
+      "silver_processed_rate_avg_mean": 0.0,
+      "silver_processed_rate_avg_median": 0.0,
+      "silver_processed_rate_avg_min": 0.0,
+      "silver_processed_rate_p50_max": 0.0,
+      "silver_processed_rate_p50_mean": 0.0,
+      "silver_processed_rate_p50_median": 0.0,
+      "silver_processed_rate_p50_min": 0.0,
+      "silver_processed_rate_p95_max": 0.0,
+      "silver_processed_rate_p95_mean": 0.0,
+      "silver_processed_rate_p95_median": 0.0,
+      "silver_processed_rate_p95_min": 0.0,
+      "silver_processed_rate_peak_max": 0.0,
+      "silver_processed_rate_peak_mean": 0.0,
+      "silver_processed_rate_peak_median": 0.0,
+      "silver_processed_rate_peak_min": 0.0,
+      "startup_lag_peak_max": 0.0,
+      "startup_lag_peak_mean": 0.0,
+      "startup_lag_peak_median": 0.0,
+      "startup_lag_peak_min": 0.0,
+      "statuses": [
+        "INVALID_FOR_COMPARISON"
+      ],
+      "steady_lag_avg_max": null,
+      "steady_lag_avg_mean": null,
+      "steady_lag_avg_median": null,
+      "steady_lag_avg_min": null,
+      "steady_lag_p95_max": null,
+      "steady_lag_p95_mean": null,
+      "steady_lag_p95_median": null,
+      "steady_lag_p95_min": null,
+      "steady_lag_peak_max": null,
+      "steady_lag_peak_mean": null,
+      "steady_lag_peak_median": null,
+      "steady_lag_peak_min": null,
+      "throughput_per_allocated_core": null,
+      "valid_run_count": 0,
+      "worker_core_capacity_multiplier": 1.0,
+      "worker_cpu_avg_percent_max": 104.74230769230769,
+      "worker_cpu_avg_percent_mean": 104.74230769230769,
+      "worker_cpu_avg_percent_median": 104.74230769230769,
+      "worker_cpu_avg_percent_min": 104.74230769230769,
+      "worker_cpu_p95_mean": 654.2240000000002,
+      "worker_cpu_p95_percent_max": 654.2240000000002,
+      "worker_cpu_p95_percent_mean": 654.2240000000002,
+      "worker_cpu_p95_percent_median": 654.2240000000002,
+      "worker_cpu_p95_percent_min": 654.2240000000002,
+      "worker_cpu_peak_percent_max": 752.71,
+      "worker_cpu_peak_percent_mean": 752.71,
+      "worker_cpu_peak_percent_median": 752.71,
+      "worker_cpu_peak_percent_min": 752.71,
+      "worker_memory_avg_mb_max": 1309.5452307692308,
+      "worker_memory_avg_mb_mean": 1309.5452307692308,
+      "worker_memory_avg_mb_median": 1309.5452307692308,
+      "worker_memory_avg_mb_min": 1309.5452307692308,
+      "worker_memory_p95_mb_max": 1547.264,
+      "worker_memory_p95_mb_mean": 1547.264,
+      "worker_memory_p95_mb_median": 1547.264,
+      "worker_memory_p95_mb_min": 1547.264,
+      "worker_memory_p95_mean_mb": 1547.264,
+      "worker_memory_peak_mb_max": 1547.264,
+      "worker_memory_peak_mb_mean": 1547.264,
+      "worker_memory_peak_mb_median": 1547.264,
+      "worker_memory_peak_mb_min": 1547.264
+    },
+    "p3-b1-s1-w1": {
+      "actual_allocated_cores_max": 0.0,
+      "actual_allocated_cores_mean": 0.0,
+      "actual_allocated_cores_median": 0.0,
+      "actual_allocated_cores_min": 0.0,
+      "actual_rate_max": null,
+      "actual_rate_mean": null,
+      "actual_rate_median": null,
+      "actual_rate_min": null,
+      "bronze_processed_rate_avg_max": 0.0,
+      "bronze_processed_rate_avg_mean": 0.0,
+      "bronze_processed_rate_avg_median": 0.0,
+      "bronze_processed_rate_avg_min": 0.0,
+      "bronze_processed_rate_p50_max": 0.0,
+      "bronze_processed_rate_p50_mean": 0.0,
+      "bronze_processed_rate_p50_median": 0.0,
+      "bronze_processed_rate_p50_min": 0.0,
+      "bronze_processed_rate_p95_max": 0.0,
+      "bronze_processed_rate_p95_mean": 0.0,
+      "bronze_processed_rate_p95_median": 0.0,
+      "bronze_processed_rate_p95_min": 0.0,
+      "bronze_processed_rate_peak_max": 0.0,
+      "bronze_processed_rate_peak_mean": 0.0,
+      "bronze_processed_rate_peak_median": 0.0,
+      "bronze_processed_rate_peak_min": 0.0,
+      "capacity_classifications": [
+        null
+      ],
+      "configuration": {
+        "bronze_cores_max": 1,
+        "config_id": "p3-b1-s1-w1",
+        "executor_cores": 1,
+        "executor_memory_mb": 1024,
+        "experiment_id": "20260927T124434Z-f572e85a",
+        "shuffle_partitions": 1,
+        "silver_cores_max": 1,
+        "topic_partitions": 3,
+        "trigger_interval": "1 second",
+        "worker_cores_each": 4,
+        "worker_memory_mb_each": 4096,
+        "workers": 1
+      },
+      "drain_seconds_max": null,
+      "drain_seconds_mean": null,
+      "drain_seconds_median": null,
+      "drain_seconds_min": null,
+      "drain_time_mean": null,
+      "kafka_cpu_avg_percent_max": 2.022894736842105,
+      "kafka_cpu_avg_percent_mean": 2.022894736842105,
+      "kafka_cpu_avg_percent_median": 2.022894736842105,
+      "kafka_cpu_avg_percent_min": 2.022894736842105,
+      "kafka_cpu_p95_percent_max": 3.048,
+      "kafka_cpu_p95_percent_mean": 3.048,
+      "kafka_cpu_p95_percent_median": 3.048,
+      "kafka_cpu_p95_percent_min": 3.048,
+      "kafka_cpu_peak_percent_max": 5.05,
+      "kafka_cpu_peak_percent_mean": 5.05,
+      "kafka_cpu_peak_percent_median": 5.05,
+      "kafka_cpu_peak_percent_min": 5.05,
+      "kafka_memory_avg_mb_max": 803.7078947368421,
+      "kafka_memory_avg_mb_mean": 803.7078947368421,
+      "kafka_memory_avg_mb_median": 803.7078947368421,
+      "kafka_memory_avg_mb_min": 803.7078947368421,
+      "kafka_memory_p95_mb_max": 804.0,
+      "kafka_memory_p95_mb_mean": 804.0,
+      "kafka_memory_p95_mb_median": 804.0,
+      "kafka_memory_p95_mb_min": 804.0,
+      "kafka_memory_peak_mb_max": 804.0,
+      "kafka_memory_peak_mb_mean": 804.0,
+      "kafka_memory_peak_mb_median": 804.0,
+      "kafka_memory_peak_mb_min": 804.0,
+      "lag_slope_max": null,
+      "lag_slope_mean": null,
+      "lag_slope_median": null,
+      "lag_slope_min": null,
+      "latency_p50_ms_max": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_median": null,
+      "latency_p50_ms_min": null,
+      "latency_p95_mean": null,
+      "latency_p95_ms_max": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_median": null,
+      "latency_p95_ms_min": null,
+      "latency_p99_ms_max": null,
+      "latency_p99_ms_mean": null,
+      "latency_p99_ms_median": null,
+      "latency_p99_ms_min": null,
+      "metrics": {
+        "actual_allocated_cores": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "actual_rate": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_avg": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_p50": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_p95": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "bronze_processed_rate_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "drain_seconds": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_cpu_avg_percent": {
+          "max": 2.022894736842105,
+          "mean": 2.022894736842105,
+          "median": 2.022894736842105,
+          "min": 2.022894736842105
+        },
+        "kafka_cpu_p95_percent": {
+          "max": 3.048,
+          "mean": 3.048,
+          "median": 3.048,
+          "min": 3.048
+        },
+        "kafka_cpu_peak_percent": {
+          "max": 5.05,
+          "mean": 5.05,
+          "median": 5.05,
+          "min": 5.05
+        },
+        "kafka_memory_avg_mb": {
+          "max": 803.7078947368421,
+          "mean": 803.7078947368421,
+          "median": 803.7078947368421,
+          "min": 803.7078947368421
+        },
+        "kafka_memory_p95_mb": {
+          "max": 804.0,
+          "mean": 804.0,
+          "median": 804.0,
+          "min": 804.0
+        },
+        "kafka_memory_peak_mb": {
+          "max": 804.0,
+          "mean": 804.0,
+          "median": 804.0,
+          "min": 804.0
+        },
+        "lag_slope": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p50_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p95_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p99_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "pipeline_rate": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_avg": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_p50": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_p95": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "silver_processed_rate_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "startup_lag_peak": {
+          "max": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "min": 0.0
+        },
+        "steady_lag_avg": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_p95": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_cpu_avg_percent": {
+          "max": 101.70210526315789,
+          "mean": 101.70210526315789,
+          "median": 101.70210526315789,
+          "min": 101.70210526315789
+        },
+        "worker_cpu_p95_percent": {
+          "max": 501.2379999999996,
+          "mean": 501.2379999999996,
+          "median": 501.2379999999996,
+          "min": 501.2379999999996
+        },
+        "worker_cpu_peak_percent": {
+          "max": 792.82,
+          "mean": 792.82,
+          "median": 792.82,
+          "min": 792.82
+        },
+        "worker_memory_avg_mb": {
+          "max": 1278.0373684210526,
+          "mean": 1278.0373684210526,
+          "median": 1278.0373684210526,
+          "min": 1278.0373684210526
+        },
+        "worker_memory_p95_mb": {
+          "max": 1516.544,
+          "mean": 1516.544,
+          "median": 1516.544,
+          "min": 1516.544
+        },
+        "worker_memory_peak_mb": {
+          "max": 1516.544,
+          "mean": 1516.544,
+          "median": 1516.544,
+          "min": 1516.544
+        }
+      },
+      "metrics_scope": "all_attempts_no_valid_comparison_run",
+      "pipeline_rate_max": 0.0,
+      "pipeline_rate_mean": 0.0,
+      "pipeline_rate_median": 0.0,
+      "pipeline_rate_min": 0.0,
+      "run_count": 1,
+      "run_ids": [
+        "20260927T124638Z-607c7af2"
+      ],
+      "scalability_metrics_vs_control": {
+        "candidate_rows_per_core": 0.0,
+        "compute_multiplier": null,
+        "scaling_efficiency": null,
+        "speedup": null
+      },
+      "silver_processed_rate_avg_max": 0.0,
+      "silver_processed_rate_avg_mean": 0.0,
+      "silver_processed_rate_avg_median": 0.0,
+      "silver_processed_rate_avg_min": 0.0,
+      "silver_processed_rate_p50_max": 0.0,
+      "silver_processed_rate_p50_mean": 0.0,
+      "silver_processed_rate_p50_median": 0.0,
+      "silver_processed_rate_p50_min": 0.0,
+      "silver_processed_rate_p95_max": 0.0,
+      "silver_processed_rate_p95_mean": 0.0,
+      "silver_processed_rate_p95_median": 0.0,
+      "silver_processed_rate_p95_min": 0.0,
+      "silver_processed_rate_peak_max": 0.0,
+      "silver_processed_rate_peak_mean": 0.0,
+      "silver_processed_rate_peak_median": 0.0,
+      "silver_processed_rate_peak_min": 0.0,
+      "startup_lag_peak_max": 0.0,
+      "startup_lag_peak_mean": 0.0,
+      "startup_lag_peak_median": 0.0,
+      "startup_lag_peak_min": 0.0,
+      "statuses": [
+        "INVALID_FOR_COMPARISON"
+      ],
+      "steady_lag_avg_max": null,
+      "steady_lag_avg_mean": null,
+      "steady_lag_avg_median": null,
+      "steady_lag_avg_min": null,
+      "steady_lag_p95_max": null,
+      "steady_lag_p95_mean": null,
+      "steady_lag_p95_median": null,
+      "steady_lag_p95_min": null,
+      "steady_lag_peak_max": null,
+      "steady_lag_peak_mean": null,
+      "steady_lag_peak_median": null,
+      "steady_lag_peak_min": null,
+      "throughput_per_allocated_core": null,
+      "valid_run_count": 0,
+      "worker_core_capacity_multiplier": 1.0,
+      "worker_cpu_avg_percent_max": 101.70210526315789,
+      "worker_cpu_avg_percent_mean": 101.70210526315789,
+      "worker_cpu_avg_percent_median": 101.70210526315789,
+      "worker_cpu_avg_percent_min": 101.70210526315789,
+      "worker_cpu_p95_mean": 501.2379999999996,
+      "worker_cpu_p95_percent_max": 501.2379999999996,
+      "worker_cpu_p95_percent_mean": 501.2379999999996,
+      "worker_cpu_p95_percent_median": 501.2379999999996,
+      "worker_cpu_p95_percent_min": 501.2379999999996,
+      "worker_cpu_peak_percent_max": 792.82,
+      "worker_cpu_peak_percent_mean": 792.82,
+      "worker_cpu_peak_percent_median": 792.82,
+      "worker_cpu_peak_percent_min": 792.82,
+      "worker_memory_avg_mb_max": 1278.0373684210526,
+      "worker_memory_avg_mb_mean": 1278.0373684210526,
+      "worker_memory_avg_mb_median": 1278.0373684210526,
+      "worker_memory_avg_mb_min": 1278.0373684210526,
+      "worker_memory_p95_mb_max": 1516.544,
+      "worker_memory_p95_mb_mean": 1516.544,
+      "worker_memory_p95_mb_median": 1516.544,
+      "worker_memory_p95_mb_min": 1516.544,
+      "worker_memory_p95_mean_mb": 1516.544,
+      "worker_memory_peak_mb_max": 1516.544,
+      "worker_memory_peak_mb_mean": 1516.544,
+      "worker_memory_peak_mb_median": 1516.544,
+      "worker_memory_peak_mb_min": 1516.544
+    },
+    "p6-b1-s1-w1": {
+      "actual_allocated_cores_max": null,
+      "actual_allocated_cores_mean": null,
+      "actual_allocated_cores_median": null,
+      "actual_allocated_cores_min": null,
+      "actual_rate_max": null,
+      "actual_rate_mean": null,
+      "actual_rate_median": null,
+      "actual_rate_min": null,
+      "bronze_processed_rate_avg_max": null,
+      "bronze_processed_rate_avg_mean": null,
+      "bronze_processed_rate_avg_median": null,
+      "bronze_processed_rate_avg_min": null,
+      "bronze_processed_rate_p50_max": null,
+      "bronze_processed_rate_p50_mean": null,
+      "bronze_processed_rate_p50_median": null,
+      "bronze_processed_rate_p50_min": null,
+      "bronze_processed_rate_p95_max": null,
+      "bronze_processed_rate_p95_mean": null,
+      "bronze_processed_rate_p95_median": null,
+      "bronze_processed_rate_p95_min": null,
+      "bronze_processed_rate_peak_max": null,
+      "bronze_processed_rate_peak_mean": null,
+      "bronze_processed_rate_peak_median": null,
+      "bronze_processed_rate_peak_min": null,
+      "capacity_classifications": [
+        "FAILED"
+      ],
+      "configuration": {
+        "bronze_cores_max": 1,
+        "config_id": "p6-b1-s1-w1",
+        "executor_cores": 1,
+        "executor_memory_mb": 1024,
+        "experiment_id": "20260927T124434Z-f572e85a",
+        "shuffle_partitions": 1,
+        "silver_cores_max": 1,
+        "topic_partitions": 6,
+        "trigger_interval": "1 second",
+        "worker_cores_each": 4,
+        "worker_memory_mb_each": 4096,
+        "workers": 1
+      },
+      "drain_seconds_max": null,
+      "drain_seconds_mean": null,
+      "drain_seconds_median": null,
+      "drain_seconds_min": null,
+      "drain_time_mean": null,
+      "kafka_cpu_avg_percent_max": null,
+      "kafka_cpu_avg_percent_mean": null,
+      "kafka_cpu_avg_percent_median": null,
+      "kafka_cpu_avg_percent_min": null,
+      "kafka_cpu_p95_percent_max": null,
+      "kafka_cpu_p95_percent_mean": null,
+      "kafka_cpu_p95_percent_median": null,
+      "kafka_cpu_p95_percent_min": null,
+      "kafka_cpu_peak_percent_max": null,
+      "kafka_cpu_peak_percent_mean": null,
+      "kafka_cpu_peak_percent_median": null,
+      "kafka_cpu_peak_percent_min": null,
+      "kafka_memory_avg_mb_max": null,
+      "kafka_memory_avg_mb_mean": null,
+      "kafka_memory_avg_mb_median": null,
+      "kafka_memory_avg_mb_min": null,
+      "kafka_memory_p95_mb_max": null,
+      "kafka_memory_p95_mb_mean": null,
+      "kafka_memory_p95_mb_median": null,
+      "kafka_memory_p95_mb_min": null,
+      "kafka_memory_peak_mb_max": null,
+      "kafka_memory_peak_mb_mean": null,
+      "kafka_memory_peak_mb_median": null,
+      "kafka_memory_peak_mb_min": null,
+      "lag_slope_max": null,
+      "lag_slope_mean": null,
+      "lag_slope_median": null,
+      "lag_slope_min": null,
+      "latency_p50_ms_max": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_median": null,
+      "latency_p50_ms_min": null,
+      "latency_p95_mean": null,
+      "latency_p95_ms_max": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_median": null,
+      "latency_p95_ms_min": null,
+      "latency_p99_ms_max": null,
+      "latency_p99_ms_mean": null,
+      "latency_p99_ms_median": null,
+      "latency_p99_ms_min": null,
+      "metrics": {
+        "actual_allocated_cores": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "actual_rate": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_avg": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_p50": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_p95": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "bronze_processed_rate_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "drain_seconds": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_cpu_avg_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_cpu_p95_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_cpu_peak_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_memory_avg_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_memory_p95_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "kafka_memory_peak_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "lag_slope": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p50_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p95_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "latency_p99_ms": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "pipeline_rate": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "silver_processed_rate_avg": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "silver_processed_rate_p50": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "silver_processed_rate_p95": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "silver_processed_rate_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "startup_lag_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_avg": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_p95": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "steady_lag_peak": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_cpu_avg_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_cpu_p95_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_cpu_peak_percent": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_memory_avg_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_memory_p95_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        },
+        "worker_memory_peak_mb": {
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null
+        }
+      },
+      "metrics_scope": "all_attempts_no_valid_comparison_run",
+      "pipeline_rate_max": null,
+      "pipeline_rate_mean": null,
+      "pipeline_rate_median": null,
+      "pipeline_rate_min": null,
+      "run_count": 1,
+      "run_ids": [
+        "20260927T124845Z-875f5061"
+      ],
+      "scalability_metrics_vs_control": {
+        "candidate_rows_per_core": null,
+        "compute_multiplier": null,
+        "scaling_efficiency": null,
+        "speedup": null
+      },
+      "silver_processed_rate_avg_max": null,
+      "silver_processed_rate_avg_mean": null,
+      "silver_processed_rate_avg_median": null,
+      "silver_processed_rate_avg_min": null,
+      "silver_processed_rate_p50_max": null,
+      "silver_processed_rate_p50_mean": null,
+      "silver_processed_rate_p50_median": null,
+      "silver_processed_rate_p50_min": null,
+      "silver_processed_rate_p95_max": null,
+      "silver_processed_rate_p95_mean": null,
+      "silver_processed_rate_p95_median": null,
+      "silver_processed_rate_p95_min": null,
+      "silver_processed_rate_peak_max": null,
+      "silver_processed_rate_peak_mean": null,
+      "silver_processed_rate_peak_median": null,
+      "silver_processed_rate_peak_min": null,
+      "startup_lag_peak_max": null,
+      "startup_lag_peak_mean": null,
+      "startup_lag_peak_median": null,
+      "startup_lag_peak_min": null,
+      "statuses": [
+        "FAILED"
+      ],
+      "steady_lag_avg_max": null,
+      "steady_lag_avg_mean": null,
+      "steady_lag_avg_median": null,
+      "steady_lag_avg_min": null,
+      "steady_lag_p95_max": null,
+      "steady_lag_p95_mean": null,
+      "steady_lag_p95_median": null,
+      "steady_lag_p95_min": null,
+      "steady_lag_peak_max": null,
+      "steady_lag_peak_mean": null,
+      "steady_lag_peak_median": null,
+      "steady_lag_peak_min": null,
+      "throughput_per_allocated_core": null,
+      "valid_run_count": 0,
+      "worker_core_capacity_multiplier": 1.0,
+      "worker_cpu_avg_percent_max": null,
+      "worker_cpu_avg_percent_mean": null,
+      "worker_cpu_avg_percent_median": null,
+      "worker_cpu_avg_percent_min": null,
+      "worker_cpu_p95_mean": null,
+      "worker_cpu_p95_percent_max": null,
+      "worker_cpu_p95_percent_mean": null,
+      "worker_cpu_p95_percent_median": null,
+      "worker_cpu_p95_percent_min": null,
+      "worker_cpu_peak_percent_max": null,
+      "worker_cpu_peak_percent_mean": null,
+      "worker_cpu_peak_percent_median": null,
+      "worker_cpu_peak_percent_min": null,
+      "worker_memory_avg_mb_max": null,
+      "worker_memory_avg_mb_mean": null,
+      "worker_memory_avg_mb_median": null,
+      "worker_memory_avg_mb_min": null,
+      "worker_memory_p95_mb_max": null,
+      "worker_memory_p95_mb_mean": null,
+      "worker_memory_p95_mb_median": null,
+      "worker_memory_p95_mb_min": null,
+      "worker_memory_p95_mean_mb": null,
+      "worker_memory_peak_mb_max": null,
+      "worker_memory_peak_mb_mean": null,
+      "worker_memory_peak_mb_median": null,
+      "worker_memory_peak_mb_min": null
+    }
+  },
+  "created_at": "2026-09-27T12:44:34+00:00",
+  "dataset_policy": "Existing 20-location historical source retained; Gold excluded.",
+  "error": {
+    "message": "No valid Kafka partition configuration is available for selection.",
+    "type": "ValueError"
+  },
+  "experiment_id": "20260927T124434Z-f572e85a",
+  "experiment_type": "kafka_spark_scalability_ofat",
+  "final_repetitions": 3,
+  "final_worker_state": {
+    "compose_containers": [
+      "weather-streaming-bigdata-spark-worker-1"
+    ],
+    "requested_count": 1,
+    "workers": [
+      {
+        "cores_available": 4,
+        "cores_used": 0,
+        "host": "172.18.0.4",
+        "id": "worker-20260927123744-172.18.0.4-35099",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 0,
+        "state": "ALIVE",
+        "webuiaddress": "http://172.18.0.4:8081"
+      }
+    ]
+  },
+  "git_commit": "6ec91ee6a7363e5b621f643b8e578b6decedef33",
+  "high_stress_config_summaries": {},
+  "physical_topology_limitation": "All Docker workers share one physical host; this measures logical containerized scale-out.",
+  "primary_rate_msgs_sec": 5000,
+  "repetitions_per_configuration": 2,
+  "run_count": 3,
+  "runs": [
+    {
+      "config_id": "p1-b1-s1-w1",
+      "result": "results/benchmarks/scalability/20260927T124435Z-56de65dc/result.json",
+      "run_id": "20260927T124435Z-56de65dc",
+      "status": "INVALID_FOR_COMPARISON",
+      "valid_for_comparison": false
+    },
+    {
+      "config_id": "p3-b1-s1-w1",
+      "result": "results/benchmarks/scalability/20260927T124638Z-607c7af2/result.json",
+      "run_id": "20260927T124638Z-607c7af2",
+      "status": "INVALID_FOR_COMPARISON",
+      "valid_for_comparison": false
+    },
+    {
+      "config_id": "p6-b1-s1-w1",
+      "result": "results/benchmarks/scalability/20260927T124845Z-875f5061/result.json",
+      "run_id": "20260927T124845Z-875f5061",
+      "status": "FAILED",
+      "valid_for_comparison": false
+    }
+  ],
+  "scenario": "SCALABILITY_BENCHMARK",
+  "schema_version": 1,
+  "selected_partition_config": null,
+  "selected_single_worker_config": null,
+  "selected_two_worker_config": null,
+  "software_versions": {
+    "delta": "4.0.0",
+    "kafka": "4.3.1",
+    "spark": "4.0.4"
+  },
+  "source": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+  "source_records": 500000,
+  "stage_status": {
+    "A_partitions": "COMPLETE",
+    "B_cores": "PENDING",
+    "C_workers": "PENDING",
+    "D_final_validation": "PENDING",
+    "higher_stress": "NOT_REQUIRED_YET"
+  },
+  "status": "FAILED",
+  "updated_at": "2026-09-27T12:48:49+00:00"
+}

@@ -1,0 +1,191 @@
+{
+  "artifacts": {
+    "input_reference": "results/benchmarks/scalability/20260927T144732Z-552bca76/simulator.json",
+    "manifest": "results/benchmarks/scalability/20260927T144732Z-552bca76/manifest.json",
+    "result": "results/benchmarks/scalability/20260927T144732Z-552bca76/result.json"
+  },
+  "checkpoints": {
+    "bronze": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/bronze",
+    "dlq": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/dlq",
+    "gold": null,
+    "silver": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/silver"
+  },
+  "created_at": "2026-09-27T14:47:32+00:00",
+  "finished_at": "2026-09-27T14:47:49+00:00",
+  "git_commit": "3d05ce9dbcdb1f8003d1fb6ccdf1540000d8d5c5",
+  "kafka": {
+    "partition_count": 1,
+    "topic": "weather.bench.scalability.20260927t144732z-552bca76"
+  },
+  "measurement_mode": "load_generator_calibration",
+  "parameters": {
+    "duplicate_rate": 0.0,
+    "invalid_rate": 0.0,
+    "late_delay_events": 240,
+    "late_rate": 0.0,
+    "max_offsets_per_trigger": null,
+    "out_of_order_max_delay": 40,
+    "out_of_order_rate": 0.0,
+    "requested_replay_rate": 8000,
+    "run_id": "20260927T144732Z-552bca76",
+    "scalability": {
+      "bronze_cores_max": 1,
+      "config_id": "p1-b1-s1-w1",
+      "executor_cores": 1,
+      "executor_memory_mb": 1024,
+      "experiment_id": "20260927T144732Z-d4f79fa0",
+      "shuffle_partitions": 1,
+      "silver_cores_max": 1,
+      "topic_partitions": 1,
+      "trigger_interval": "1 second",
+      "worker_cores_each": 4,
+      "worker_memory_mb_each": 4096,
+      "workers": 1
+    },
+    "scenario": "SCALABILITY_BENCHMARK",
+    "seed": 42,
+    "source_record_limit": 10000,
+    "topic": "weather.bench.scalability.20260927t144732z-552bca76",
+    "topic_partitions": 1,
+    "watermark": "10 minutes",
+    "window_duration": null
+  },
+  "paths": {
+    "bronze": "/opt/project/data/benchmark/runs/scalability/20260927T144732Z-552bca76/bronze/weather_raw",
+    "bronze_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/bronze",
+    "dlq": "/opt/project/data/benchmark/runs/scalability/20260927T144732Z-552bca76/silver/weather_invalid",
+    "dlq_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/dlq",
+    "gold": null,
+    "gold_checkpoint": null,
+    "root": "/opt/project/data/benchmark/runs/scalability/20260927T144732Z-552bca76",
+    "silver": "/opt/project/data/benchmark/runs/scalability/20260927T144732Z-552bca76/silver/weather_clean",
+    "silver_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/scalability/20260927T144732Z-552bca76/silver"
+  },
+  "result_metrics": {
+    "actual_generated_msgs_sec": 7999.518109084819,
+    "actual_generation_rate_including_flush": 926.4134510054799,
+    "calibrated": true,
+    "calibration_tolerance_percent": 10.0,
+    "deviation_percent": 0.0060236364397610485,
+    "generation_elapsed_seconds": 1.2500752999912947,
+    "git_commit": "3d05ce9dbcdb1f8003d1fb6ccdf1540000d8d5c5",
+    "produced_messages": 10000,
+    "producer_elapsed_seconds": 10.794316499988781,
+    "producer_flush_remaining": 0,
+    "requested_rate_msgs_sec": 8000,
+    "run_id": "20260927T144732Z-552bca76",
+    "scenario": "SCALABILITY_BENCHMARK",
+    "source_records": 10000,
+    "system_throughput_measured": false
+  },
+  "run_id": "20260927T144732Z-552bca76",
+  "scalability": {
+    "calibration_tolerance_fraction": 0.1,
+    "docker_container_limits": {
+      "weather-kafka": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-spark-worker": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-streaming-bigdata-spark-worker-1": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      }
+    },
+    "host_logical_cpu_count": 12,
+    "kafka": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "image": "apache/kafka:4.3.1",
+      "partition_count": 1,
+      "replication_factor": 1,
+      "version": "4.3.1"
+    },
+    "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+    "resource_sampling": {
+      "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+      "hard_container_memory_limit_configured": false
+    },
+    "scalability_config": {
+      "bronze_cores_max": 1,
+      "config_id": "p1-b1-s1-w1",
+      "executor_cores": 1,
+      "executor_memory_mb": 1024,
+      "experiment_id": "20260927T144732Z-d4f79fa0",
+      "shuffle_partitions": 1,
+      "silver_cores_max": 1,
+      "topic_partitions": 1,
+      "trigger_interval": "1 second",
+      "worker_cores_each": 4,
+      "worker_memory_mb_each": 4096,
+      "workers": 1
+    },
+    "spark": {
+      "bronze_cores_max_requested": 1,
+      "bronze_executor_cores_requested": 1,
+      "bronze_executor_memory_mb_requested": 1024,
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "cores_max_per_application": 1,
+      "delta_version": "4.0.0",
+      "deployment_mode": "client",
+      "executor_cores_per_application": 1,
+      "executor_memory_mb_per_application": 1024,
+      "image": "weather-spark:4.0.4-delta4.0.0",
+      "shuffle_partitions": 1,
+      "silver_cores_max_requested": 1,
+      "silver_executor_cores_requested": 1,
+      "silver_executor_memory_mb_requested": 1024,
+      "streaming_applications": 2,
+      "total_requested_executor_cores": 2,
+      "trigger_interval": "1 second",
+      "trigger_interval_seconds": 1,
+      "version": "4.0.4",
+      "worker_containers": [
+        "weather-streaming-bigdata-spark-worker-1"
+      ],
+      "worker_cores_available": 4,
+      "worker_cores_each_requested": 4,
+      "worker_count": 1,
+      "worker_count_registered_by_compose": 1,
+      "worker_count_requested": 1,
+      "worker_memory_mb_available": 4096,
+      "worker_memory_mb_each_requested": 4096
+    },
+    "spark_pipeline_executed": false
+  },
+  "scenario": "SCALABILITY_BENCHMARK",
+  "schema_version": 1,
+  "software_versions": {
+    "delta": "4.0.0",
+    "kafka": "4.3.1",
+    "spark": "4.0.4"
+  },
+  "source": {
+    "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+    "record_limit": 10000
+  },
+  "status": "CALIBRATED"
+}

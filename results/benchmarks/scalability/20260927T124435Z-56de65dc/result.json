@@ -1,0 +1,704 @@
+{
+  "actual_generated_msgs_sec": null,
+  "actual_generation_rate_including_flush": null,
+  "actual_rate": null,
+  "analysis_schema_version": 2,
+  "avg_batch_duration_ms": 18810.0,
+  "avg_input_rows_per_sec": 0.0,
+  "avg_processed_rows_per_sec": 0.0,
+  "batch_duration_components": {
+    "addBatch": {
+      "avg_ms": 17386.0,
+      "max_ms": 17386.0,
+      "p95_ms": 17386.0
+    },
+    "commitOffsets": {
+      "avg_ms": 223.0,
+      "max_ms": 223.0,
+      "p95_ms": 223.0
+    },
+    "getBatch": {
+      "avg_ms": 21.0,
+      "max_ms": 21.0,
+      "p95_ms": 21.0
+    },
+    "latestOffset": {
+      "avg_ms": 611.0,
+      "max_ms": 611.0,
+      "p95_ms": 611.0
+    },
+    "queryPlanning": {
+      "avg_ms": 491.0,
+      "max_ms": 491.0,
+      "p95_ms": 491.0
+    },
+    "triggerExecution": {
+      "avg_ms": 18810.0,
+      "max_ms": 18810.0,
+      "p95_ms": 18810.0
+    },
+    "walCommit": {
+      "avg_ms": 54.0,
+      "max_ms": 54.0,
+      "p95_ms": 54.0
+    }
+  },
+  "broker_cpu_avg": 1.7166666666666668,
+  "broker_cpu_p50": 1.6,
+  "broker_cpu_p95": 2.5610000000000013,
+  "broker_cpu_peak": 3.64,
+  "broker_memory_avg_mb": 803.1102564102564,
+  "broker_memory_p50_mb": 803.1,
+  "broker_memory_p95_mb": 803.4,
+  "broker_memory_peak_mb": 803.4,
+  "broker_peak_cpu_percent": 3.64,
+  "broker_peak_memory_mb": 803.4,
+  "bronze_avg_input_rows_per_sec": 0.0,
+  "bronze_batch_avg_ms": 18810.0,
+  "bronze_batch_max_ms": 18810.0,
+  "bronze_batch_p95_ms": 18810.0,
+  "bronze_completion_time": null,
+  "bronze_input_records": 0,
+  "bronze_processed_rate_avg": 0.0,
+  "bronze_processed_rate_p50": 0.0,
+  "bronze_processed_rate_p95": 0.0,
+  "bronze_processed_rate_peak": 0.0,
+  "bronze_records": null,
+  "bronze_steady_state_batches": 1,
+  "capacity_classification": null,
+  "capacity_reason": "Observed Spark worker/executor allocation differed from the requested scalability configuration.",
+  "config_id": "p1-b1-s1-w1",
+  "container_cpu_period_us": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpu_quota": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpu_quota_us": {
+    "broker": null,
+    "worker": null
+  },
+  "container_cpuset": {
+    "broker": null,
+    "worker": null
+  },
+  "container_limit_recording": {
+    "broker": {
+      "cpu_quota": "not_recorded",
+      "cpuset": "not_recorded",
+      "memory_limit": "not_recorded"
+    },
+    "worker": {
+      "cpu_quota": "not_recorded",
+      "cpuset": "not_recorded",
+      "memory_limit": "not_recorded"
+    }
+  },
+  "container_memory_limit_mb": {
+    "broker": null,
+    "worker": null
+  },
+  "correctness_checks": {},
+  "correctness_passed": false,
+  "dlq_output_records": null,
+  "drain_complete": false,
+  "drain_seconds": null,
+  "duration_definition": "First streaming query start through confirmed drain and clean stream shutdown.",
+  "duration_seconds": null,
+  "errors": {
+    "kafka_lag_sampler": null,
+    "metrics": null,
+    "resource_sampler": null,
+    "run": "Actual Spark allocation did not match the requested configuration: WeatherBronzeStreaming-20260927T124435Z-56de65dc requested 1 cores but has 0 allocated.; WeatherBronzeStreaming-20260927T124435Z-56de65dc has an executor with unexpected core width.; WeatherSilverStreaming-20260927T124435Z-56de65dc requested 1 cores but has 0 allocated.; WeatherSilverStreaming-20260927T124435Z-56de65dc has an executor with unexpected core width.",
+    "spark_log_tails": {
+      "bronze": "26/09/27 12:44:59 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 12:44:59 INFO Utils: Successfully started service 'sparkDriver' on port 39775.\n26/09/27 12:44:59 INFO SparkEnv: Registering MapOutputTracker\n26/09/27 12:44:59 INFO SparkEnv: Registering BlockManagerMaster\n26/09/27 12:44:59 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information\n26/09/27 12:44:59 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up\n26/09/27 12:44:59 INFO SparkEnv: Registering BlockManagerMasterHeartbeat\n26/09/27 12:44:59 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-254e47fe-10c5-4a8f-bdb8-6efeb1e64dbe\n26/09/27 12:44:59 INFO SparkEnv: Registering OutputCommitCoordinator\n26/09/27 12:44:59 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI\n26/09/27 12:45:00 INFO Utils: Successfully started service 'SparkUI' on port 4040.\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:39775/jars/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:39775/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:39775/jars/io.delta_delta-storage-4.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:39775/jars/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:39775/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:39775/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:39775/jars/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:39775/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:39775/jars/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:39775/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:39775/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:39775/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:39775/jars/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:39775/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:39775/files/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/io.delta_delta-spark_2.13-4.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:39775/files/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:39775/files/io.delta_delta-storage-4.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/io.delta_delta-storage-4.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:39775/files/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.antlr_antlr4-runtime-4.13.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:39775/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:39775/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:39775/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.kafka_kafka-clients-3.9.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:39775/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/com.google.code.findbugs_jsr305-3.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:39775/files/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.commons_commons-pool2-2.12.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:39775/files/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:39775/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.lz4_lz4-java-1.8.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:39775/files/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:39775/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:39775/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790513099352\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-3de5ff37-fc64-4801-963d-57e75d9eb655/userFiles-1876aa39-c31c-4956-863d-3ef928d4a9f6/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 12:45:00 INFO SecurityManager: Changing view acls to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 12:45:00 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 12:45:00 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 26 ms (0 ms spent in bootstraps)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927124500-0082\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927124500-0082/0 on worker-20260927123744-172.18.0.4-35099 (172.18.0.4:35099) with 1 core(s)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927124500-0082/0 on hostPort 172.18.0.4:35099 with 1 core(s), 1024.0 MiB RAM\n26/09/27 12:45:00 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 45643.\n26/09/27 12:45:00 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:45643\n26/09/27 12:45:00 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 12:45:00 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 45643, None)\n26/09/27 12:45:00 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:45643 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 45643, None)\n26/09/27 12:45:00 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 45643, None)\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927124500-0082/0 is now RUNNING\n26/09/27 12:45:00 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 45643, None)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 12:45:03 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:53282) with ID 0, ResourceProfileId 0\n26/09/27 12:45:06 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Bronze Streaming started [topic=weather.bench.scalability.20260927t124435z-56de65dc]\n26/09/27 12:45:09 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 12:45:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 18836 milliseconds\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group acc36827-495e-40dc-955d-eba1d2741f1b. Cannot find active jobs for it.\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group acc36827-495e-40dc-955d-eba1d2741f1b. Cannot find active jobs for it.\nWeather Bronze throughput run drained and stopped",
+      "silver": "26/09/27 12:45:00 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.\n26/09/27 12:45:00 INFO Utils: Successfully started service 'SparkUI' on port 4041.\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:38211/jars/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:38211/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:38211/jars/io.delta_delta-storage-4.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:38211/jars/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:38211/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:38211/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:38211/jars/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:38211/jars/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:38211/jars/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:38211/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:38211/jars/org.lz4_lz4-java-1.8.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:38211/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:38211/jars/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added JAR file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:38211/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar at spark://spark-master:38211/files/io.delta_delta-spark_2.13-4.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-spark_2.13-4.0.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/io.delta_delta-spark_2.13-4.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:38211/files/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.4.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar at spark://spark-master:38211/files/io.delta_delta-storage-4.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/io.delta_delta-storage-4.0.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/io.delta_delta-storage-4.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar at spark://spark-master:38211/files/org.antlr_antlr4-runtime-4.13.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.antlr_antlr4-runtime-4.13.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:38211/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:38211/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:38211/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.kafka_kafka-clients-3.9.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:38211/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/com.google.code.findbugs_jsr305-3.0.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:38211/files/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.commons_commons-pool2-2.12.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:38211/files/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:38211/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.lz4_lz4-java-1.8.0.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:38211/files/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:38211/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 12:45:00 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:38211/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790513099349\n26/09/27 12:45:00 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-488e8251-8e8d-4cfe-8c12-b34679395ab5/userFiles-208c797c-2836-4220-87d0-1986c72f41e1/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 12:45:00 INFO SecurityManager: Changing view acls to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 12:45:00 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 12:45:00 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 12:45:00 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 32 ms (0 ms spent in bootstraps)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927124500-0083\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927124500-0083/0 on worker-20260927123744-172.18.0.4-35099 (172.18.0.4:35099) with 1 core(s)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927124500-0083/0 on hostPort 172.18.0.4:35099 with 1 core(s), 1024.0 MiB RAM\n26/09/27 12:45:00 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 40369.\n26/09/27 12:45:00 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:40369\n26/09/27 12:45:00 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 12:45:00 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 40369, None)\n26/09/27 12:45:00 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927124500-0083/0 is now RUNNING\n26/09/27 12:45:00 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:40369 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 40369, None)\n26/09/27 12:45:00 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 40369, None)\n26/09/27 12:45:00 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 40369, None)\n26/09/27 12:45:00 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 12:45:03 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:49700) with ID 0, ResourceProfileId 0\n26/09/27 12:45:04 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:37569 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 37569, None)\n26/09/27 12:45:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\n26/09/27 12:45:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Silver Streaming started\nSilver Query: c166f7f9-e7c8-4360-bd9d-ebda9896f5c7 WeatherSilverStreaming-20260927T124435Z-56de65dc-silver True\nInvalid Query: c7589c57-0d78-49b9-b1ae-5a60b8c377d6 WeatherSilverStreaming-20260927T124435Z-56de65dc-dlq True\n26/09/27 12:45:08 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 12:45:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 20033 milliseconds\n26/09/27 12:45:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 20260 milliseconds\n26/09/27 12:45:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5512 milliseconds\n26/09/27 12:45:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6100 milliseconds\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group 8a8e5bdf-ee41-4be5-8070-34b3e7926ebd. Cannot find active jobs for it.\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group 8a8e5bdf-ee41-4be5-8070-34b3e7926ebd. Cannot find active jobs for it.\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group 5803d92e-fde8-48a5-9eb0-ff3a5b3ca57b. Cannot find active jobs for it.\n26/09/27 12:46:37 WARN DAGScheduler: Failed to cancel job group 5803d92e-fde8-48a5-9eb0-ff3a5b3ca57b. Cannot find active jobs for it.\nWeather Silver throughput run drained and stopped"
+    }
+  },
+  "experiment_id": "20260927T124434Z-f572e85a",
+  "final_kafka_lag": 0,
+  "final_kafka_latest_offsets": {
+    "weather.bench.scalability.20260927t124435z-56de65dc:0": 0
+  },
+  "final_kafka_low_offsets": {
+    "weather.bench.scalability.20260927t124435z-56de65dc:0": 0
+  },
+  "final_kafka_to_bronze_lag": 0,
+  "final_source_lag": 0,
+  "fixed_infrastructure": null,
+  "generation_elapsed_seconds": null,
+  "generator_calibrated": false,
+  "generator_deviation_percent": null,
+  "git_commit": "6ec91ee6a7363e5b621f643b8e578b6decedef33",
+  "host_logical_cpu_count": 12,
+  "included_bronze_batches": 1,
+  "included_silver_batches": 2,
+  "input_records": null,
+  "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
+  "kafka_lag_sample_count": 102,
+  "kafka_partition_count": 1,
+  "kafka_partition_distribution": {
+    "max_partition_records": 0,
+    "mean_partition_records": 0,
+    "min_partition_records": 0,
+    "partition_imbalance_ratio": null,
+    "records_per_partition": {
+      "0": 0
+    }
+  },
+  "kafka_to_bronze_lag_sample_count": 72,
+  "kafka_topic": "weather.bench.scalability.20260927t124435z-56de65dc",
+  "latency_avg_ms": null,
+  "latency_count": null,
+  "latency_definition": null,
+  "latency_max_ms": null,
+  "latency_measurements_complete": false,
+  "latency_min_ms": null,
+  "latency_p50_ms": null,
+  "latency_p95_ms": null,
+  "latency_p99_ms": null,
+  "latency_percentile_method": null,
+  "max_batch_duration_ms": 18810.0,
+  "max_kafka_lag": 0,
+  "max_kafka_lag_during_production": 0,
+  "max_kafka_to_bronze_lag": 0,
+  "null_metric_reasons": {
+    "kafka_lag": null,
+    "latency": "Latency was measured for 0 of 0 produced messages.",
+    "resources": null
+  },
+  "observed_spark_runtime": {
+    "apps": [
+      {
+        "actual_allocated_cores": 0,
+        "actual_executor_cores": [
+          null
+        ],
+        "actual_executor_count": 1,
+        "actual_executor_memory_mb": [
+          1024
+        ],
+        "assigned_worker_ids": [
+          "worker-20260927123744-172.18.0.4-35099"
+        ],
+        "cores": 1,
+        "executors": [
+          {
+            "app_id": "app-20260927124500-0082",
+            "application": "WeatherBronzeStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          }
+        ],
+        "id": "app-20260927124500-0082",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherBronzeStreaming-20260927T124435Z-56de65dc",
+        "state": "RUNNING"
+      },
+      {
+        "actual_allocated_cores": 0,
+        "actual_executor_cores": [
+          null
+        ],
+        "actual_executor_count": 1,
+        "actual_executor_memory_mb": [
+          1024
+        ],
+        "assigned_worker_ids": [
+          "worker-20260927123744-172.18.0.4-35099"
+        ],
+        "cores": 1,
+        "executors": [
+          {
+            "app_id": "app-20260927124500-0083",
+            "application": "WeatherSilverStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          }
+        ],
+        "id": "app-20260927124500-0083",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherSilverStreaming-20260927T124435Z-56de65dc",
+        "state": "RUNNING"
+      }
+    ],
+    "other_active_apps": [],
+    "workers": [
+      {
+        "cores_available": 4,
+        "cores_used": 0,
+        "executors": [],
+        "host": "172.18.0.4",
+        "id": "worker-20260927075255-172.18.0.4-36797",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 0,
+        "state": "DEAD",
+        "webuiaddress": "http://172.18.0.4:8081"
+      },
+      {
+        "cores_available": 4,
+        "cores_used": 0,
+        "executors": [],
+        "host": "172.18.0.5",
+        "id": "worker-20260927123744-172.18.0.5-36773",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 0,
+        "state": "DEAD",
+        "webuiaddress": "http://172.18.0.5:8081"
+      },
+      {
+        "cores_available": 4,
+        "cores_used": 2,
+        "executors": [
+          {
+            "app_id": "app-20260927124500-0082",
+            "application": "WeatherBronzeStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          },
+          {
+            "app_id": "app-20260927124500-0083",
+            "application": "WeatherSilverStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          }
+        ],
+        "host": "172.18.0.4",
+        "id": "worker-20260927123744-172.18.0.4-35099",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 2048,
+        "state": "ALIVE",
+        "webuiaddress": "http://172.18.0.4:8081"
+      }
+    ]
+  },
+  "p95_batch_duration_ms": 18810.0,
+  "peak_input_rows_per_sec": 0.0,
+  "peak_processed_rows_per_sec": 0.0,
+  "pipeline_bottleneck_stage": "bronze",
+  "pipeline_completed": false,
+  "pipeline_completion_check": {
+    "bronze_count_matches_produced": false,
+    "bronze_progress_reached_expected": false,
+    "drain_complete_from_progress": false,
+    "final_kafka_to_bronze_source_lag_zero": true,
+    "silver_count_matches_produced": false,
+    "silver_progress_reached_expected": false,
+    "stream_queries_completed_cleanly": true
+  },
+  "pipeline_completion_time": null,
+  "pipeline_drain_seconds": null,
+  "pipeline_sustainable_rate": 0.0,
+  "processed_records": 0,
+  "produced_messages": 0,
+  "producer_elapsed_seconds": null,
+  "producer_flush_remaining": null,
+  "production_peak_kafka_to_bronze_lag": 0,
+  "progress_percentile_metrics": {
+    "bronze": {
+      "batch_duration_avg_ms": 18810.0,
+      "batch_duration_max_ms": 18810.0,
+      "batch_duration_p95_ms": 18810.0,
+      "processed_rate_p50": 0.0,
+      "processed_rate_p95": 0.0,
+      "sample_count": 1
+    },
+    "silver": {
+      "batch_duration_avg_ms": 12882.5,
+      "batch_duration_max_ms": 20254.0,
+      "batch_duration_p95_ms": 19516.85,
+      "processed_rate_p50": 0.0,
+      "processed_rate_p95": 0.0,
+      "sample_count": 2
+    }
+  },
+  "replay_duration_seconds": null,
+  "replay_to_bronze_latency_avg_ms": null,
+  "replay_to_bronze_latency_count": null,
+  "replay_to_bronze_latency_definition": null,
+  "replay_to_bronze_latency_max_ms": null,
+  "replay_to_bronze_latency_min_ms": null,
+  "replay_to_bronze_latency_ms": {
+    "avg_ms": null,
+    "count": null,
+    "definition": null,
+    "max_ms": null,
+    "min_ms": null,
+    "p50_ms": null,
+    "p95_ms": null,
+    "p99_ms": null,
+    "percentile_method": null
+  },
+  "replay_to_bronze_latency_p50_ms": null,
+  "replay_to_bronze_latency_p95_ms": null,
+  "replay_to_bronze_latency_p99_ms": null,
+  "replay_to_bronze_latency_percentile_method": null,
+  "requested_rate": 5000,
+  "requested_rate_msgs_sec": 5000,
+  "resource_measurements_complete": true,
+  "resource_sample_count": 78,
+  "resource_statistics": {
+    "weather-kafka": {
+      "container_cpu_period_us": null,
+      "container_cpu_quota_cores": null,
+      "container_cpu_quota_us": null,
+      "container_cpuset": null,
+      "container_memory_limit_mb": null,
+      "cpu_avg_percent": 1.7166666666666668,
+      "cpu_p50_percent": 1.6,
+      "cpu_p95_percent": 2.5610000000000013,
+      "cpu_peak_percent": 3.64,
+      "host_logical_cpu_count": 12,
+      "memory_avg_mb": 803.1102564102564,
+      "memory_p50_mb": 803.1,
+      "memory_p95_mb": 803.4,
+      "memory_peak_mb": 803.4,
+      "sample_count": 39
+    },
+    "weather-spark-worker": {
+      "container_cpu_period_us": null,
+      "container_cpu_quota_cores": null,
+      "container_cpu_quota_us": null,
+      "container_cpuset": null,
+      "container_memory_limit_mb": null,
+      "cpu_avg_percent": 104.7423076923077,
+      "cpu_p50_percent": 1.18,
+      "cpu_p95_percent": 654.2240000000002,
+      "cpu_peak_percent": 752.71,
+      "host_logical_cpu_count": 12,
+      "memory_avg_mb": 1309.5452307692308,
+      "memory_p50_mb": 1533.952,
+      "memory_p95_mb": 1547.264,
+      "memory_peak_mb": 1547.264,
+      "sample_count": 39
+    }
+  },
+  "run_id": "20260927T124435Z-56de65dc",
+  "scalability_infrastructure": {
+    "bronze_delta_initialized_empty_before_streaming": true,
+    "docker_container_limits": {
+      "weather-kafka": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-spark-worker": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-streaming-bigdata-spark-worker-1": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      }
+    },
+    "host_logical_cpu_count": 12,
+    "kafka": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "image": "apache/kafka:4.3.1",
+      "partition_count": 1,
+      "replication_factor": 1,
+      "version": "4.3.1"
+    },
+    "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+    "resource_sampling": {
+      "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+      "hard_container_memory_limit_configured": false
+    },
+    "scalability_config": {
+      "bronze_cores_max": 1,
+      "config_id": "p1-b1-s1-w1",
+      "executor_cores": 1,
+      "executor_memory_mb": 1024,
+      "experiment_id": "20260927T124434Z-f572e85a",
+      "shuffle_partitions": 1,
+      "silver_cores_max": 1,
+      "topic_partitions": 1,
+      "trigger_interval": "1 second",
+      "worker_cores_each": 4,
+      "worker_memory_mb_each": 4096,
+      "workers": 1
+    },
+    "spark": {
+      "bronze_cores_max_requested": 1,
+      "bronze_executor_cores_requested": 1,
+      "bronze_executor_memory_mb_requested": 1024,
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_cpu_period_us": null,
+        "configured_cpu_quota_us": null,
+        "configured_cpuset_cpus": null,
+        "configured_memory_limit_mb": null
+      },
+      "cores_max_per_application": 1,
+      "delta_version": "4.0.0",
+      "deployment_mode": "client",
+      "executor_cores_per_application": 1,
+      "executor_memory_mb_per_application": 1024,
+      "image": "weather-spark:4.0.4-delta4.0.0",
+      "shuffle_partitions": 1,
+      "silver_cores_max_requested": 1,
+      "silver_executor_cores_requested": 1,
+      "silver_executor_memory_mb_requested": 1024,
+      "streaming_applications": 2,
+      "total_requested_executor_cores": 2,
+      "trigger_interval": "1 second",
+      "trigger_interval_seconds": 1,
+      "version": "4.0.4",
+      "worker_containers": [
+        "weather-streaming-bigdata-spark-worker-1"
+      ],
+      "worker_cores_available": 4,
+      "worker_cores_each_requested": 4,
+      "worker_count": 1,
+      "worker_count_registered_by_compose": 1,
+      "worker_count_requested": 1,
+      "worker_memory_mb_available": 4096,
+      "worker_memory_mb_each_requested": 4096
+    }
+  },
+  "scalability_resource_metrics": {
+    "cluster_aggregate": {
+      "cpu_avg_percent": 104.74230769230769,
+      "cpu_p50_percent": 1.18,
+      "cpu_p95_percent": 654.2240000000002,
+      "cpu_peak_percent": 752.71,
+      "memory_avg_mb": 1309.5452307692308,
+      "memory_p50_mb": 1533.952,
+      "memory_p95_mb": 1547.264,
+      "memory_peak_mb": 1547.264,
+      "sample_count": 39
+    },
+    "cluster_aggregate_cpu_definition": "sum of per-worker Docker CPU percent at each sample timestamp",
+    "cluster_aggregate_memory_definition": "sum of per-worker resident memory at each sample timestamp",
+    "cluster_worker_count": 1,
+    "kafka_broker": {
+      "cpu_avg_percent": 1.7166666666666668,
+      "cpu_p50_percent": 1.6,
+      "cpu_p95_percent": 2.5610000000000017,
+      "cpu_peak_percent": 3.64,
+      "memory_avg_mb": 803.1102564102564,
+      "memory_p50_mb": 803.1,
+      "memory_p95_mb": 803.4,
+      "memory_peak_mb": 803.4,
+      "sample_count": 39
+    },
+    "per_worker": {
+      "weather-streaming-bigdata-spark-worker-1": {
+        "cpu_avg_percent": 104.74230769230769,
+        "cpu_p50_percent": 1.18,
+        "cpu_p95_percent": 654.2240000000002,
+        "cpu_peak_percent": 752.71,
+        "memory_avg_mb": 1309.5452307692308,
+        "memory_p50_mb": 1533.952,
+        "memory_p95_mb": 1547.264,
+        "memory_peak_mb": 1547.264,
+        "sample_count": 39
+      }
+    }
+  },
+  "scalability_runtime_validation": {
+    "actual_allocated_cores_by_app": {
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc": 0,
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc": 0
+    },
+    "actual_allocated_cores_total": 0,
+    "assigned_worker_ids": [
+      "worker-20260927123744-172.18.0.4-35099"
+    ],
+    "dead_worker_ids": [
+      "worker-20260927075255-172.18.0.4-36797",
+      "worker-20260927123744-172.18.0.5-36773"
+    ],
+    "errors": [
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc requested 1 cores but has 0 allocated.",
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc has an executor with unexpected core width.",
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc requested 1 cores but has 0 allocated.",
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc has an executor with unexpected core width."
+    ],
+    "executor_count_by_app": {
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc": 1,
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc": 1
+    },
+    "executor_details_by_app": {
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc": [
+        {
+          "app_id": "app-20260927124500-0082",
+          "application": "WeatherBronzeStreaming-20260927T124435Z-56de65dc",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ],
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc": [
+        {
+          "app_id": "app-20260927124500-0083",
+          "application": "WeatherSilverStreaming-20260927T124435Z-56de65dc",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ]
+    },
+    "executor_workers_by_app": {
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc": [
+        "worker-20260927123744-172.18.0.4-35099"
+      ],
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc": [
+        "worker-20260927123744-172.18.0.4-35099"
+      ]
+    },
+    "expected_cores_by_app": {
+      "WeatherBronzeStreaming-20260927T124435Z-56de65dc": 1,
+      "WeatherSilverStreaming-20260927T124435Z-56de65dc": 1
+    },
+    "passed": false,
+    "registered_worker_records": [
+      {
+        "cores_available": 4,
+        "cores_used": 0,
+        "executors": [],
+        "host": "172.18.0.4",
+        "id": "worker-20260927075255-172.18.0.4-36797",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 0,
+        "state": "DEAD",
+        "webuiaddress": "http://172.18.0.4:8081"
+      },
+      {
+        "cores_available": 4,
+        "cores_used": 0,
+        "executors": [],
+        "host": "172.18.0.5",
+        "id": "worker-20260927123744-172.18.0.5-36773",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 0,
+        "state": "DEAD",
+        "webuiaddress": "http://172.18.0.5:8081"
+      },
+      {
+        "cores_available": 4,
+        "cores_used": 2,
+        "executors": [
+          {
+            "app_id": "app-20260927124500-0082",
+            "application": "WeatherBronzeStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          },
+          {
+            "app_id": "app-20260927124500-0083",
+            "application": "WeatherSilverStreaming-20260927T124435Z-56de65dc",
+            "cores": null,
+            "executor_id": 0,
+            "memory_mb": 1024,
+            "worker_id": "worker-20260927123744-172.18.0.4-35099"
+          }
+        ],
+        "host": "172.18.0.4",
+        "id": "worker-20260927123744-172.18.0.4-35099",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 2048,
+        "state": "ALIVE",
+        "webuiaddress": "http://172.18.0.4:8081"
+      }
+    ],
+    "unrelated_active_app_count": 0,
+    "worker_count": 1,
+    "worker_ids": [
+      "worker-20260927123744-172.18.0.4-35099"
+    ]
+  },
+  "scenario": "SCALABILITY_BENCHMARK",
+  "schema_version": 2,
+  "silver_avg_input_rows_per_sec": 0.0,
+  "silver_avg_processed_rows_per_sec": 0.0,
+  "silver_batch_avg_ms": 12882.5,
+  "silver_batch_max_ms": 20254.0,
+  "silver_batch_p95_ms": 19516.85,
+  "silver_completion_time": null,
+  "silver_input_records": 0,
+  "silver_output_records": null,
+  "silver_peak_processed_rows_per_sec": 0.0,
+  "silver_processed_rate_avg": 0.0,
+  "silver_processed_rate_p50": 0.0,
+  "silver_processed_rate_p95": 0.0,
+  "silver_processed_rate_peak": 0.0,
+  "silver_records": null,
+  "silver_steady_state_batches": 2,
+  "spark_cluster_snapshot": "results/benchmarks/scalability/20260927T124435Z-56de65dc/spark_cluster_snapshot.json",
+  "spark_end_offsets": {
+    "weather.bench.scalability.20260927t124435z-56de65dc:0": 0
+  },
+  "spark_start_offsets": {},
+  "spark_worker_peak_cpu_percent": 752.71,
+  "spark_worker_peak_memory_mb": 1547.264,
+  "startup_peak_kafka_to_bronze_lag": 0,
+  "status": "INVALID_FOR_COMPARISON",
+  "steady_state_avg_kafka_to_bronze_lag": null,
+  "steady_state_end": null,
+  "steady_state_final_kafka_to_bronze_lag": null,
+  "steady_state_lag_sample_count": 0,
+  "steady_state_lag_slope_records_per_sec": null,
+  "steady_state_measurements_complete": false,
+  "steady_state_p95_kafka_to_bronze_lag": null,
+  "steady_state_peak_kafka_to_bronze_lag": null,
+  "steady_state_progress_sample_count": 0,
+  "steady_state_sample_count": {
+    "bronze_progress": 0,
+    "kafka_to_bronze_lag": 0,
+    "silver_progress": 0
+  },
+  "steady_state_start": null,
+  "stream_drain_complete": false,
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "sustainable": false,
+  "valid_for_comparison": false,
+  "warmup_batches_excluded_per_query": null,
+  "warmup_policy": {
+    "minimum_completed_batches_per_query": 3,
+    "minimum_warmup_seconds": 30.0,
+    "name": "elapsed_time_and_completed_batches",
+    "steady_state_end_rule": "Simulator generation_end_time; post-replay drain is excluded.",
+    "steady_state_start_rule": "Later of warmup_start plus minimum_warmup_seconds, the minimum completed-batch cutoff for each main query, and replay start."
+  },
+  "warmup_start": "2026-09-27T12:45:06.793+00:00",
+  "worker_cpu_avg": 104.7423076923077,
+  "worker_cpu_p50": 1.18,
+  "worker_cpu_p95": 654.2240000000002,
+  "worker_cpu_peak": 752.71,
+  "worker_memory_avg_mb": 1309.5452307692308,
+  "worker_memory_p50_mb": 1533.952,
+  "worker_memory_p95_mb": 1547.264,
+  "worker_memory_peak_mb": 1547.264
+}
