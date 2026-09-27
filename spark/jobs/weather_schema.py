@@ -4,6 +4,26 @@ from pyspark.sql.types import (
     StringType,
     DoubleType,
 )
+from pyspark.sql import functions as F
+
+
+def weather_valid_condition():
+    """Return the shared core weather-record validation predicate.
+
+    Keep this predicate aligned with the live Silver quality contract so
+    benchmark jobs do not accept records that production would reject.
+    """
+    return (
+        F.col("event_id").isNotNull()
+        & F.col("location_id").isNotNull()
+        & F.col("event_time").isNotNull()
+        & F.col("temperature_c").between(-90.0, 60.0)
+        & F.col("humidity_pct").between(0.0, 100.0)
+        & F.col("precipitation_mm").isNotNull()
+        & (F.col("precipitation_mm") >= 0)
+        & F.col("latitude").between(-90.0, 90.0)
+        & F.col("longitude").between(-180.0, 180.0)
+    )
 
 
 weather_schema = StructType([

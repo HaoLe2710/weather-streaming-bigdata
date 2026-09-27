@@ -2,11 +2,19 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
+from benchmark_config import BenchmarkConfig
+
+
+BENCHMARK_CONFIG = BenchmarkConfig.from_environment()
+
 
 PATH = os.getenv(
     "BRONZE_PATH",
     "/opt/project/data/benchmark/bronze/weather_raw"
 )
+
+if BENCHMARK_CONFIG is not None:
+    PATH = BENCHMARK_CONFIG.paths.bronze
 
 
 spark = (

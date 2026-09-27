@@ -4,7 +4,17 @@ from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-from weather_schema import weather_schema
+from benchmark_config import (
+    BenchmarkConfig,
+    KAFKA_WATERMARK_WM10M,
+)
+from weather_schema import weather_schema, weather_valid_condition
+
+
+BENCHMARK_CONFIG = BenchmarkConfig.from_environment(
+    required=True,
+    expected_scenario=KAFKA_WATERMARK_WM10M,
+)
 
 
 KAFKA_BOOTSTRAP_SERVERS = os.getenv(
@@ -14,42 +24,34 @@ KAFKA_BOOTSTRAP_SERVERS = os.getenv(
 
 KAFKA_TOPIC = os.getenv(
     "KAFKA_TOPIC",
-    "weather.replay.wm10m"
+    BENCHMARK_CONFIG.topic,
 )
 
-GOLD_PATH = os.getenv(
-    "GOLD_PATH",
-    "/opt/project/data/benchmark/wm10m/gold_kafka/weather_window_1h"
-)
+GOLD_PATH = BENCHMARK_CONFIG.paths.gold
 
-CHECKPOINT_PATH = os.getenv(
-    "CHECKPOINT_PATH",
-    "/opt/project/data/checkpoints/benchmark_wm10m_gold_kafka"
-)
+CHECKPOINT_PATH = BENCHMARK_CONFIG.paths.gold_checkpoint
 
-RUN_ID = os.getenv(
-    "RUN_ID"
-)
+RUN_ID = BENCHMARK_CONFIG.run_id
 
 WATERMARK_DELAY = os.getenv(
     "WATERMARK_DELAY",
-    "10 minutes"
+    BENCHMARK_CONFIG.watermark,
 )
 
 WINDOW_DURATION = os.getenv(
     "WINDOW_DURATION",
-    "1 hour"
+    BENCHMARK_CONFIG.window_duration,
 )
 
 MAX_OFFSETS_PER_TRIGGER = os.getenv(
     "MAX_OFFSETS_PER_TRIGGER",
-    "500"
+    str(BENCHMARK_CONFIG.max_offsets_per_trigger),
 )
 
 
 spark = (
     SparkSession.builder
-    .appName("WeatherGoldKafkaWatermarkBenchmark")
+    .appName(f"WeatherGoldKafkaWatermarkBenchmark-{RUN_ID}")
     .config("spark.sql.session.timeZone", "UTC")
     .getOrCreate()
 )
@@ -125,17 +127,7 @@ if RUN_ID:
 
 valid = (
     parsed
-    .filter(
-        F.col("event_id").isNotNull()
-        & F.col("location_id").isNotNull()
-        & F.col("event_time").isNotNull()
-        & F.col("temperature_c").between(-90, 60)
-        & F.col("humidity_pct").between(0, 100)
-        & (
-            F.col("precipitation_mm").isNotNull()
-            & (F.col("precipitation_mm") >= 0)
-        )
-    )
+    .filter(weather_valid_condition())
 )
 
 

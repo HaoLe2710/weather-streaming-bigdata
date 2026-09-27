@@ -52,7 +52,6 @@ derby.log
 # Runtime / generated data
 # =========================
 data/
-results/
 
 # =========================
 # Local benchmark artifacts

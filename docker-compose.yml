@@ -46,7 +46,10 @@ services:
 
 
   spark-master:
-    image: apache/spark:4.0.4-scala2.13-java17-python3-r-ubuntu
+    image: weather-spark:4.0.4-delta4.0.0
+    build:
+      context: .
+      dockerfile: spark/Dockerfile
     container_name: weather-spark-master
     hostname: spark-master
 
@@ -66,11 +69,15 @@ services:
       - ./spark:/opt/project/spark
       - ./historical:/opt/project/historical
       - ./data:/opt/project/history-data
+      - ./results:/opt/project/results
       - weather-data:/opt/project/data
 
 
   spark-worker:
-    image: apache/spark:4.0.4-scala2.13-java17-python3-r-ubuntu
+    image: weather-spark:4.0.4-delta4.0.0
+    build:
+      context: .
+      dockerfile: spark/Dockerfile
     container_name: weather-spark-worker
     hostname: spark-worker
 
@@ -94,6 +101,7 @@ services:
       - ./spark:/opt/project/spark
       - ./historical:/opt/project/historical
       - ./data:/opt/project/history-data
+      - ./results:/opt/project/results
       - weather-data:/opt/project/data
 
   historical-downloader:

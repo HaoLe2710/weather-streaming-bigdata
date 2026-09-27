@@ -1,0 +1,13 @@
+.git
+.gitnexus
+.venv
+venv
+env
+data
+results
+benchmark-results
+checkpoints
+node_modules
+__pycache__
+*.py[cod]
+*.log

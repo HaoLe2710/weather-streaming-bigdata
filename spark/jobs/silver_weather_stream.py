@@ -2,7 +2,11 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
-from weather_schema import weather_schema
+from benchmark_config import BenchmarkConfig
+from weather_schema import weather_schema, weather_valid_condition
+
+
+BENCHMARK_CONFIG = BenchmarkConfig.from_environment()
 
 
 APP_NAME = os.getenv(
@@ -44,7 +48,22 @@ TRIGGER_INTERVAL = os.getenv(
     "TRIGGER_INTERVAL"
 )
 
+AVAILABLE_NOW = (
+    os.getenv("AVAILABLE_NOW", "false").strip().lower()
+    in {"1", "true", "yes"}
+)
+
+if BENCHMARK_CONFIG is not None:
+    BRONZE_PATH = BENCHMARK_CONFIG.paths.bronze
+    SILVER_PATH = BENCHMARK_CONFIG.paths.silver
+    SILVER_CHECKPOINT = BENCHMARK_CONFIG.paths.silver_checkpoint
+    DLQ_PATH = BENCHMARK_CONFIG.paths.dlq
+    DLQ_CHECKPOINT = BENCHMARK_CONFIG.paths.dlq_checkpoint
+
 def apply_trigger(writer):
+
+    if AVAILABLE_NOW:
+        return writer.trigger(availableNow=True)
 
     if TRIGGER_INTERVAL:
         return writer.trigger(
@@ -144,40 +163,7 @@ validated = (
     weather
     .withColumn(
         "is_valid",
-
-        (
-            F.col("event_id").isNotNull()
-            &
-            F.col("location_id").isNotNull()
-            &
-            F.col("event_time").isNotNull()
-            &
-            F.col("temperature_c").between(
-                -90.0,
-                60.0
-            )
-            &
-            F.col("humidity_pct").between(
-                0.0,
-                100.0
-            )
-            &
-            (
-                F.col("precipitation_mm").isNotNull()
-                &
-                (F.col("precipitation_mm") >= 0)
-            )
-            &
-            F.col("latitude").between(
-                -90.0,
-                90.0
-            )
-            &
-            F.col("longitude").between(
-                -180.0,
-                180.0
-            )
-        )
+        weather_valid_condition()
     )
 )
 
@@ -288,27 +274,33 @@ print(
 )
 
 
-while True:
-    if not silver_query.isActive:
-        print("ERROR: Silver query stopped")
+if AVAILABLE_NOW:
+    silver_query.awaitTermination()
+    invalid_query.awaitTermination()
+    print("Weather Silver availableNow run completed")
+    spark.stop()
+else:
+    while True:
+        if not silver_query.isActive:
+            print("ERROR: Silver query stopped")
+            print(
+                "Silver exception:",
+                silver_query.exception()
+            )
+            break
+
+        if not invalid_query.isActive:
+            print("ERROR: Invalid/DLQ query stopped")
+            print(
+                "Invalid exception:",
+                invalid_query.exception()
+            )
+            break
+
         print(
-            "Silver exception:",
-            silver_query.exception()
+            "STATUS | "
+            f"silver={silver_query.isActive} | "
+            f"invalid={invalid_query.isActive}"
         )
-        break
 
-    if not invalid_query.isActive:
-        print("ERROR: Invalid/DLQ query stopped")
-        print(
-            "Invalid exception:",
-            invalid_query.exception()
-        )
-        break
-
-    print(
-        "STATUS | "
-        f"silver={silver_query.isActive} | "
-        f"invalid={invalid_query.isActive}"
-    )
-
-    time.sleep(5)
+        time.sleep(5)

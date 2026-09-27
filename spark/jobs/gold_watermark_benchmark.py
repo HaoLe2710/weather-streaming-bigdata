@@ -1,3 +1,10 @@
+"""DEPRECATED diagnostic: invalidated physical-Delta-order experiment.
+
+This job reads Silver Delta files and does not preserve the original Kafka
+arrival order. Use gold_kafka_watermark_benchmark.py for the current
+Kafka-direct watermark benchmark.
+"""
+
 import os
 
 from delta.tables import DeltaTable

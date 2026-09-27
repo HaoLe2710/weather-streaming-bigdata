@@ -2,6 +2,11 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 import os
 
+from benchmark_config import BenchmarkConfig
+
+
+BENCHMARK_CONFIG = BenchmarkConfig.from_environment()
+
 
 KAFKA_BOOTSTRAP_SERVERS = os.getenv(
     "KAFKA_BOOTSTRAP_SERVERS",
@@ -28,6 +33,11 @@ STARTING_OFFSETS = os.getenv(
     "latest"
 )
 
+AVAILABLE_NOW = (
+    os.getenv("AVAILABLE_NOW", "false").strip().lower()
+    in {"1", "true", "yes"}
+)
+
 APP_NAME = os.getenv(
     "APP_NAME",
     "WeatherBronzeStreaming"
@@ -36,6 +46,12 @@ APP_NAME = os.getenv(
 TRIGGER_INTERVAL = os.getenv(
     "TRIGGER_INTERVAL"
 )
+
+if BENCHMARK_CONFIG is not None:
+    BRONZE_PATH = BENCHMARK_CONFIG.paths.bronze
+    CHECKPOINT_PATH = BENCHMARK_CONFIG.paths.bronze_checkpoint
+    KAFKA_TOPIC = BENCHMARK_CONFIG.topic
+    STARTING_OFFSETS = "earliest"
 
 print("========== BRONZE CONFIG ==========")
 print(f"App Name        : {APP_NAME}")
@@ -106,7 +122,9 @@ writer = (
     )
 )
 
-if TRIGGER_INTERVAL:
+if AVAILABLE_NOW:
+    writer = writer.trigger(availableNow=True)
+elif TRIGGER_INTERVAL:
     writer = writer.trigger(
         processingTime=TRIGGER_INTERVAL
     )
@@ -122,3 +140,8 @@ print(
 )
 
 query.awaitTermination()
+
+if AVAILABLE_NOW:
+    print("Weather Bronze availableNow run completed")
+
+spark.stop()

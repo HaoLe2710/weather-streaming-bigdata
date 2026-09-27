@@ -265,7 +265,7 @@ def run(args):
     )
 
     run_id = str(
-        uuid.uuid4()
+        args.run_id or uuid.uuid4()
     )
 
     producer = Producer({
@@ -301,6 +301,7 @@ def run(args):
         "source": 0,
         "produced": 0,
 
+        "normal": 0,
         "duplicate": 0,
         "invalid": 0,
         "late": 0,
@@ -515,6 +516,10 @@ def run(args):
 
         else:
 
+            stats[
+                "normal"
+            ] += 1
+
             emit(
                 record,
                 "NORMAL",
@@ -685,6 +690,38 @@ def run(args):
         "===================================="
     )
 
+    summary = {
+        "scenario": args.scenario,
+        "run_id": run_id,
+        "topic": args.topic,
+        "source_records": stats["source"],
+        "kafka_messages": stats["produced"],
+        "normal_generated": stats["normal"],
+        "duplicates_generated": stats["duplicate"],
+        "invalid_generated": stats["invalid"],
+        "late_generated": stats["late"],
+        "out_of_order_generated": stats["out_of_order"],
+        "requested_replay_rate": args.rate,
+        "actual_generation_rate": actual_rate,
+        "duration_seconds": elapsed,
+        "producer_remaining": remaining,
+        "producer_delivery_complete": remaining == 0,
+    }
+
+    if args.summary_json:
+        summary_path = Path(args.summary_json)
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = summary_path.with_suffix(
+            summary_path.suffix + ".tmp"
+        )
+        temporary_path.write_text(
+            json.dumps(summary, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        temporary_path.replace(summary_path)
+
+    return summary
+
 
 # =========================================================
 # CLI
@@ -707,6 +744,22 @@ def parse_args():
     parser.add_argument(
         "--topic",
         default="weather.replay",
+    )
+
+    parser.add_argument(
+        "--scenario",
+        default=None,
+    )
+
+    parser.add_argument(
+        "--run-id",
+        default=None,
+    )
+
+    parser.add_argument(
+        "--summary-json",
+        default=None,
+        help="Optional machine-readable simulator summary path.",
     )
 
     parser.add_argument(
@@ -792,4 +845,9 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    run(args)
+    result = run(args)
+    if not result["producer_delivery_complete"]:
+        raise SystemExit(
+            "Kafka producer could not flush every queued message: "
+            f"{result['producer_remaining']} message(s) remain."
+        )
