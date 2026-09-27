@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -80,6 +81,43 @@ def _docker_compose(*args, capture_output=False, timeout=900):
         capture_output=capture_output,
         timeout=timeout,
     )
+
+
+def _compose_exec_prefix() -> list[str]:
+    """Prefer the Compose executable directly so Windows does not orphan its CLI plugin."""
+    executable = shutil.which("docker-compose")
+    return [executable] if executable else ["docker", "compose"]
+
+
+def _scalability_generator_limit_reason(
+    simulator_summary: dict | None,
+    *,
+    generator_rate_valid: bool,
+) -> str | None:
+    if simulator_summary is None:
+        return None
+    if simulator_summary.get("producer_delivery_complete") is not True:
+        remaining = simulator_summary.get("producer_flush_remaining")
+        detail = f"; queued messages remaining={remaining}" if remaining is not None else ""
+        return f"Simulator could not flush every queued Kafka message{detail}."
+    if not generator_rate_valid:
+        return "This run's measured generator rate fell outside its calibrated +/-10% band."
+    return None
+
+
+def _cleanup_temporary_directory(path: Path, attempts: int = 4) -> str | None:
+    delays = (0.1, 0.25, 0.5, 1.0)
+    for attempt in range(attempts):
+        try:
+            shutil.rmtree(path)
+            return None
+        except FileNotFoundError:
+            return None
+        except OSError as exc:
+            if attempt + 1 == attempts:
+                return f"{type(exc).__name__}: {exc}"
+            time.sleep(delays[min(attempt, len(delays) - 1)])
+    return None
 
 
 def _git_commit() -> str:
@@ -293,7 +331,7 @@ def _spark_command(
     *,
     fixed_throughput_baseline: bool = False,
 ) -> list[str]:
-    command = ["docker", "compose", "exec", "-T"]
+    command = [*_compose_exec_prefix(), "exec", "-T"]
     for name, value in sorted(environment.items()):
         command.extend(["-e", f"{name}={value}"])
     command.extend([
@@ -650,13 +688,31 @@ def _stop_stream_processes(
         time.sleep(0.25)
     for process in processes.values():
         if process.poll() is None:
-            process.terminate()
+            if os.name == "nt":
+                subprocess.run(
+                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                    timeout=15,
+                )
+            else:
+                process.terminate()
     return_codes = {}
     for stage, process in processes.items():
         try:
             return_codes[stage] = process.wait(timeout=15)
         except subprocess.TimeoutExpired:
-            process.kill()
+            if os.name == "nt":
+                subprocess.run(
+                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                    timeout=15,
+                )
+            else:
+                process.kill()
             return_codes[stage] = process.wait(timeout=15)
     return return_codes
 
@@ -1060,8 +1116,12 @@ def _run_throughput_iteration(
     metrics_error = None
     log_tails = {}
 
-    with tempfile.TemporaryDirectory(prefix="weather-throughput-") as temp_dir:
+    temporary_log_dir = None
+    with tempfile.TemporaryDirectory(
+        prefix="weather-throughput-", ignore_cleanup_errors=True
+    ) as temp_dir:
         temp_root = Path(temp_dir)
+        temporary_log_dir = temp_root
         log_paths = {
             "bronze": temp_root / "spark-bronze.log",
             "silver": temp_root / "spark-silver.log",
@@ -1292,6 +1352,12 @@ def _run_throughput_iteration(
                 errors = (runtime_validation or {}).get("errors", [])
                 failure_reason = "Actual Spark allocation did not match the requested configuration: " + "; ".join(errors)
                 failure_kind = "allocation_mismatch"
+            elif is_scalability and simulator_summary is not None and simulator_summary.get("producer_delivery_complete") is not True:
+                failure_reason = _scalability_generator_limit_reason(
+                    simulator_summary,
+                    generator_rate_valid=False,
+                )
+                failure_kind = "load_generator_limited"
             else:
                 failure_reason = f"{type(exc).__name__}: {exc}"
                 failure_kind = "run_failure"
@@ -1354,6 +1420,12 @@ def _run_throughput_iteration(
             metrics_error = f"{type(exc).__name__}: {exc}"
             for stage, log_path in log_paths.items():
                 log_tails[f"{stage}_metrics"] = _tail_text(log_path)
+
+    temporary_log_cleanup_error = (
+        _cleanup_temporary_directory(temporary_log_dir)
+        if temporary_log_dir is not None
+        else None
+    )
 
     lag_samples = read_jsonl(artifacts["kafka_lag"])
     resource_samples = read_jsonl(artifacts["resource_metrics"])
@@ -1444,10 +1516,18 @@ def _run_throughput_iteration(
     )
     capacity = analysis["capacity_classification"]
     capacity_reason = analysis["capacity_reason"]
+    generator_limit_reason = _scalability_generator_limit_reason(
+        simulator_summary,
+        generator_rate_valid=generator_valid,
+    ) if is_scalability else None
     if is_scalability and runtime_allocation_invalid:
         status = "INVALID_FOR_COMPARISON"
         capacity = None
         capacity_reason = "Observed Spark worker/executor allocation differed from the requested scalability configuration."
+    elif is_scalability and generator_limit_reason is not None:
+        status = "LOAD_GENERATOR_LIMITED"
+        capacity = None
+        capacity_reason = generator_limit_reason
     elif is_scalability and delta_metrics is not None and not correctness_passed:
         status = "INVALID_CORRECTNESS"
         capacity = None
@@ -1504,6 +1584,7 @@ def _run_throughput_iteration(
         "generator_calibrated": generator_valid,
         "input_records": (simulator_summary or {}).get("source_records"),
         "produced_messages": produced,
+        "producer_delivery_complete": (simulator_summary or {}).get("producer_delivery_complete"),
         "bronze_records": bronze_delta if delta_metrics else None,
         "processed_records": silver_processed,
         "silver_output_records": (delta_metrics or {}).get("silver_records"),
@@ -1568,6 +1649,7 @@ def _run_throughput_iteration(
         "spark_cluster_snapshot": artifacts["spark_cluster_snapshot"].relative_to(REPO_ROOT).as_posix() if is_scalability else None,
         "observed_spark_runtime": runtime_observation,
         "stream_process_return_codes": process_return_codes,
+        "temporary_log_cleanup_error": temporary_log_cleanup_error,
         "null_metric_reasons": {
             "latency": metrics_error or (
                 f"Latency was measured for {analysis['replay_to_bronze_latency_count'] or 0} "
@@ -1600,6 +1682,8 @@ def _run_throughput_iteration(
     manifest["result_metrics"] = result
     if failure_reason:
         manifest["error"] = {"type": failure_kind, "message": failure_reason}
+    if temporary_log_cleanup_error:
+        manifest["temporary_log_cleanup_error"] = temporary_log_cleanup_error
     write_json(artifacts["manifest"], manifest)
     print(
         f"[{'SCALABILITY' if is_scalability else 'THROUGHPUT'}] run={config.run_id} status={status} "

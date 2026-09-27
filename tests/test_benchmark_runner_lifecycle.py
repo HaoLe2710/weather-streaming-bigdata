@@ -1,0 +1,103 @@
+import sys
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "benchmark"))
+
+import run_benchmark  # noqa: E402
+
+
+class BenchmarkRunnerLifecycleTests(unittest.TestCase):
+    def test_compose_exec_uses_direct_binary_when_available(self):
+        with patch.object(run_benchmark.shutil, "which", return_value="docker-compose"):
+            self.assertEqual(run_benchmark._compose_exec_prefix(), ["docker-compose"])
+
+    def test_compose_exec_falls_back_to_docker_plugin(self):
+        with patch.object(run_benchmark.shutil, "which", return_value=None):
+            self.assertEqual(run_benchmark._compose_exec_prefix(), ["docker", "compose"])
+
+    def test_incomplete_producer_delivery_is_generator_limited(self):
+        reason = run_benchmark._scalability_generator_limit_reason(
+            {
+                "producer_delivery_complete": False,
+                "producer_flush_remaining": 150_201,
+            },
+            generator_rate_valid=True,
+        )
+        self.assertEqual(
+            reason,
+            "Simulator could not flush every queued Kafka message; queued messages remaining=150201.",
+        )
+
+    def test_calibrated_delivery_has_no_generator_limit_reason(self):
+        self.assertIsNone(
+            run_benchmark._scalability_generator_limit_reason(
+                {"producer_delivery_complete": True},
+                generator_rate_valid=True,
+            )
+        )
+
+    def test_generator_rate_outside_calibration_is_limited(self):
+        reason = run_benchmark._scalability_generator_limit_reason(
+            {"producer_delivery_complete": True},
+            generator_rate_valid=False,
+        )
+        self.assertIn("outside its calibrated", reason)
+
+    def test_temporary_directory_cleanup_retries_transient_windows_lock(self):
+        with tempfile.TemporaryDirectory() as parent:
+            target = Path(parent) / "run-logs"
+            target.mkdir()
+            (target / "spark.log").write_text("complete", encoding="utf-8")
+            remove = run_benchmark.shutil.rmtree
+            outcomes = [PermissionError("file is temporarily held"), None]
+
+            def flaky_remove(path):
+                outcome = outcomes.pop(0)
+                if outcome is not None:
+                    raise outcome
+                remove(path)
+
+            with patch.object(run_benchmark.shutil, "rmtree", side_effect=flaky_remove), patch.object(
+                run_benchmark.time, "sleep"
+            ):
+                self.assertIsNone(run_benchmark._cleanup_temporary_directory(target))
+            self.assertFalse(target.exists())
+
+    @unittest.skipUnless(run_benchmark.os.name == "nt", "Windows process tree handling")
+    def test_windows_shutdown_kills_the_compose_process_tree(self):
+        class FakeProcess:
+            pid = 4321
+            return_code = None
+
+            def poll(self):
+                return self.return_code
+
+            def wait(self, timeout=None):
+                if self.return_code is None:
+                    raise run_benchmark.subprocess.TimeoutExpired("docker-compose", timeout)
+                return self.return_code
+
+        process = FakeProcess()
+
+        def taskkill(command, **kwargs):
+            process.return_code = 1
+            return run_benchmark.subprocess.CompletedProcess(command, 1)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            stop_signal = Path(temp_dir) / "stop.signal"
+            with patch.object(run_benchmark.subprocess, "run", side_effect=taskkill) as run:
+                result = run_benchmark._stop_stream_processes(
+                    {"silver": process}, stop_signal, timeout_seconds=0
+                )
+
+        self.assertEqual(result, {"silver": 1})
+        self.assertEqual(run.call_args.args[0], ["taskkill", "/PID", "4321", "/T", "/F"])
+
+
+if __name__ == "__main__":
+    unittest.main()
