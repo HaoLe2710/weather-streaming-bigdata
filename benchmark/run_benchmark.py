@@ -812,7 +812,12 @@ def _run_throughput_iteration(
                     runtime_errors.append(
                         f"{app.get('name')} requested {app.get('cores')} cores; expected 1."
                     )
-                observed_memory = _memory_to_mb(app.get("memory_per_executor_mb"))
+                raw_memory = app.get("memory_per_executor_mb")
+                observed_memory = (
+                    raw_memory
+                    if isinstance(raw_memory, (int, float))
+                    else _memory_to_mb(raw_memory)
+                )
                 if observed_memory != 1024:
                     runtime_errors.append(
                         f"{app.get('name')} executor memory is {observed_memory} MB; expected 1024 MB."
