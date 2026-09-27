@@ -267,8 +267,10 @@ Calibration runs 10,000 source records at 100, 500, 1,000, 2,000, and 5,000
 requested messages/second, with no Spark queries running. A target passes when
 `actual_generated_msgs_sec` is within ±10% of the requested rate. The tolerance
 allows short-run rate-limiter and producer-flush jitter while rejecting a
-materially different offered load. A pipeline run refuses a target without a
-passing calibration for the same Git commit.
+materially different offered load. Calibration may be reused across commits
+only when the simulator, workload configuration, and simulator command are
+proven unchanged. The selected calibration commit and compatibility reason are
+recorded with each run.
 
 Run a supported rate with two independent repetitions and 50,000 source
 records:
@@ -286,110 +288,120 @@ Proceed to 2,000 or 5,000 only when the prior rate is sustainably handled and
 the generator calibration passes. Each run gets a new topic, Delta paths, and
 checkpoints. Topics and run outputs are retained.
 
-### Measurements on 2026-09-27
+### Existing 100 / 500 / 1,000 msg/s reanalysis
 
-The final calibration and streaming runs use commit `0143ce5`:
+The six valid 50,000-message runs were recomputed from their persisted raw
+progress, source-lag, resource, simulator, Delta, result, and manifest files.
+The original run folders were read-only inputs. Per-run derived results include
+SHA-256 hashes of every input file. These replace the previous `NEAR_CAPACITY`
+labels.
 
-| Requested rate (msg/s) | Calibrated generation (msg/s) | Including producer flush (msg/s) | Calibration |
-| ---: | ---: | ---: | :--- |
-| 100 | 100.00 | 100.00 | Pass |
-| 500 | 499.99 | 498.86 | Pass |
-| 1,000 | 999.98 | 999.81 | Pass |
-| 2,000 | 1,999.78 | 1,982.40 | Pass |
-| 5,000 | 4,999.58 | 4,995.60 | Pass |
+| Requested | Actual | Bronze rows/s | Silver rows/s | Startup lag peak | Steady lag avg / p95 / peak | Lag slope (records/s) | Drain (s) | Replay→Bronze p50 / p95 / p99 | Class |
+| ---: | ---: | ---: | ---: | ---: | :--- | ---: | ---: | :--- | :--- |
+| 100 | 100.00 | 107.14 | 108.94 | 2,299 | 323 / 600 / 900 | -0.43 | 7.24 | 355 ms / 3.603 s / 13.150 s | `UNDER_CAPACITY` |
+| 500 | 500.00 | 532.99 | 625.89 | 11,299 | 2,149 / 3,700 / 4,600 | -7.72 | 12.60 | 1.651 s / 12.135 s / 16.136 s | `UNDER_CAPACITY` |
+| 1,000 | 999.99 | 967.99 | 1,640.06 | 22,300 | 5,173 / 7,645 / 8,300 | 158.78 | 9.25 | 2.580 s / 15.095 s / 17.096 s | `NEAR_CAPACITY` |
 
-The streaming baseline ran two independent 50,000-message repetitions at each
-of 100, 500, and 1,000 msg/s. The table reports repetition means; throughput
-rates are averaged over non-warm-up Bronze progress batches, and latency is
-replay-to-Bronze processing latency.
+These are means across two runs. `pipeline_sustainable_rate` is the lower of
+Bronze and main Silver steady-state processed rates. All six runs produced
+50,000 messages, wrote 50,000 Bronze and Silver records, had zero DLQ records,
+and ended with zero Kafka-to-Bronze source lag. At 1,000 msg/s the sampled
+backlog grew during replay and then drained. Those 50,000-message windows
+contain only four or five steady-state Bronze progress samples, so a longer
+1,000 msg/s run is needed before fixing the capacity boundary.
 
-| Requested rate (msg/s) | Mean processed rate (rows/s) | Mean replay peak lag | Mean p95 batch (ms) | Mean latency p50 / p95 / p99 | Mean drain (s) | Repetitions |
-| ---: | ---: | ---: | ---: | :--- | ---: | :--- |
-| 100 | 106.60 | 2,299 | 4,127 | 355 ms / 3.603 s / 13.150 s | 7.98 | 2/2 `NEAR_CAPACITY` |
-| 500 | 554.72 | 11,299 | 5,236 | 1.651 s / 12.135 s / 16.136 s | 13.34 | 2/2 `NEAR_CAPACITY` |
-| 1,000 | 1,115.80 | 22,300 | 5,489 | 2.580 s / 15.095 s / 17.096 s | 9.79 | 2/2 `NEAR_CAPACITY` |
+Resource values below are means of the two runs at each rate. Docker CPU is a
+host usage percentage and can exceed 100% when a container uses multiple host
+logical CPUs; it is not a percentage of one Spark executor core. Historical
+Docker inspection found no hard CPU quota, cpuset, or memory limit for either
+container.
 
-Docker peak samples across the two repetitions at each rate were:
-
-| Requested rate (msg/s) | Spark worker CPU (%) | Spark worker memory (MiB) | Kafka broker CPU (%) | Kafka broker memory (MiB) |
+| Requested | Worker CPU avg / p95 / peak (%) | Worker RAM avg / p95 / peak (MiB) | Broker CPU avg / p95 / peak (%) | Broker RAM avg / p95 / peak (MiB) |
 | ---: | :--- | :--- | :--- | :--- |
-| 100 | 566.00–776.99 | 2,560.0–2,884.6 | 21.06–33.31 | 983.2–998.4 |
-| 500 | 723.37–723.72 | 2,271.2–2,343.9 | 20.04–43.34 | 634.6–648.6 |
-| 1,000 | 703.28–762.40 | 1,879.0–1,913.9 | 6.67–25.34 | 649.0–656.5 |
+| 100 | 196.46 / 339.37 / 671.50 | 2,332.05 / 2,678.55 / 2,722.30 | 2.30 / 3.72 / 27.19 | 853.07 / 986.68 / 990.80 |
+| 500 | 249.54 / 497.03 / 723.55 | 1,714.87 / 2,297.73 / 2,307.58 | 3.24 / 6.47 / 31.69 | 637.83 / 641.11 / 641.60 |
+| 1,000 | 292.98 / 555.40 / 732.84 | 1,384.60 / 1,887.36 / 1,896.45 | 3.19 / 5.82 / 16.01 | 650.36 / 652.19 / 652.75 |
 
-The worker and broker had no Docker CPU or memory hard limits. Docker worker
-CPU peaks above 100% reflect use of multiple host cores; they are not a
-container quota percentage. Memory values are sampled usage, not configured
-limits.
+Original calibration measured actual rates near 100, 499, 1,000, 1,982, and
+4,996 msg/s for requested 100, 500, 1,000, 2,000, and 5,000. The two highest
+rates are generator-only calibration, not observed pipeline capacity.
 
-All six runs wrote 50,000 Bronze and 50,000 Silver records, zero DLQ records,
-and ended with zero sampled Kafka lag. Each was classified `NEAR_CAPACITY`
-because its peak replay lag exceeded the two-trigger allowance (200, 1,000,
-and 2,000 records at the three rates). No run reached `SATURATED`; the largest
-tested rate drained in under 11 seconds. The 2,000 and 5,000 msg/s rates were
-calibrated but not used for streaming runs because 1,000 msg/s was already
-classified `NEAR_CAPACITY` under the predefined rule.
+Detailed results and raw input hashes are in [`raw artifact reanalysis`](../results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/summary.json) and its `runs/` folder. Previous per-rate summaries remain at [`100 msg/s`](../results/benchmarks/throughput/experiments/20260927T093618Z-f4e02041/summary.json), [`500 msg/s`](../results/benchmarks/throughput/experiments/20260927T095536Z-2b9a845e/summary.json), and [`1,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T100158Z-6981caa6/summary.json). The prior B0 result is [`here`](../results/benchmarks/b0/20260927T100636Z-1ed41634/result.json); a fresh B0 regression is required because the runner changed.
 
-Aggregate evidence is in [`calibration summary`](../results/benchmarks/throughput/experiments/20260927T093322Z-12167143/summary.json), [`100 msg/s`](../results/benchmarks/throughput/experiments/20260927T093618Z-f4e02041/summary.json), [`500 msg/s`](../results/benchmarks/throughput/experiments/20260927T095536Z-2b9a845e/summary.json), and [`1,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T100158Z-6981caa6/summary.json). The B0 regression on the same commit is recorded in [`B0 result`](../results/benchmarks/b0/20260927T100636Z-1ed41634/result.json).
+### Metrics, steady-state selection, and completion
 
-An earlier 100 msg/s startup attempt on `3daf778` is retained with status
-`FAILED`; it stopped before simulator replay because Spark Master returned
-executor memory as an integer MB value that the runtime assertion initially
-interpreted as bytes. The check was corrected, the change was committed, and
-calibration was repeated against `0143ce5`; the failed attempt is excluded from
-the measurements above.
+- The simulator records requested and actual producer rates, produced messages,
+  replay start/end, generation duration, producer time, and remaining messages
+  after `flush`.
+- A shared Spark `StreamingQueryListener` retains query lifecycle events and
+  original progress payloads in `spark_progress.jsonl`, including batch IDs,
+  row rates, input counts, duration components, and source offsets. All startup
+  samples stay in the raw file; new summaries do not discard a fixed number of
+  batches.
+- Steady-state starts at the latest of: first main query start plus 15 seconds,
+  completion of the third progress batch for both Bronze and main Silver, and
+  replay start. It ends at simulator replay end. Post-replay drain is excluded
+  from throughput and lag-trend calculations. If either query does not complete
+  three batches, steady-state measurement is incomplete. The warm-up policy,
+  warm-up start, steady-state start/end, and per-query sample counts are saved in
+  `manifest.json` and `result.json`.
+- Bronze and main Silver throughput are summarized separately from
+  `processedRowsPerSecond`. The pipeline rate is the lower observed stage rate;
+  DLQ progress is excluded from main Silver throughput.
+- The sampler compares Kafka high offsets with Bronze Kafka source `endOffset`,
+  summing positive offset differences across topic partitions.
+  `kafka_to_bronze_lag` is a sampled source backlog, not consumer-group lag or a
+  whole-pipeline metric. Results include startup peak, steady-state
+  average/p95/peak, linear lag slope, and final source lag. Negative or near-zero
+  slope means stable/draining backlog; sustained positive slope means growth
+  during replay.
+- Pipeline completion requires final source lag zero, exact expected Bronze
+  and Silver Delta counts, expected progress in both queries, and clean stream
+  shutdown. `pipeline_drain_seconds` is the later Bronze/Silver completion time
+  minus replay end. Kafka lag zero by itself does not prove Silver completion.
+- `replay_to_bronze_latency_ms` is Bronze processing timestamp minus simulator
+  replay ingestion timestamp. It excludes Silver commit time and historical
+  event time, so it is not full pipeline end-to-end latency. Percentiles use
+  Spark `percentile_approx` with accuracy 10,000.
+- Each second, `docker stats --no-stream` records CPU and memory for the Spark
+  worker and Kafka broker. Docker inspection records host logical CPU count,
+  CPU quota and period, cpuset, and hard memory limit. Unset limits are `null`;
+  Docker's reported memory denominator remains separate from a configured cap.
+  Resource summaries include average, p50, p95, and peak. Batch duration uses
+  `durationMs.triggerExecution`; raw component durations remain available.
 
-### Collected metrics and definitions
+### Capacity classification
 
-- The simulator records requested/actual messages per second, source and
-  produced counts, generation start/end timestamps, generation duration,
-  producer elapsed time, and remaining messages after `flush`.
-- A shared PySpark `StreamingQueryListener` writes lifecycle events and each
-  original `StreamingQueryProgress` object to `spark_progress.jsonl`. It keeps
-  `batchId`, timestamp, `numInputRows`, both rows-per-second fields, the full
-  `durationMs` map, source offsets, state operator details, and other Spark
-  progress fields. The first two micro-batches of each query are marked
-  `warmup_excluded: true` and retained in the raw file; summary averages omit
-  them.
-- Every second, the host samples Kafka's latest/high partition offsets using
-  librdkafka and compares them with the Kafka source `endOffset` in Bronze
-  progress. Lag is `sum(max(0, latest offset - Spark end offset))` over all
-  topic partitions. This is a sampled offset backlog, not a Kafka consumer-group
-  lag. `kafka_lag.jsonl` stores both offset sets and the computed lag; missing
-  offsets remain `null`.
-- Replay latency is measured for every Bronze message as
-  `spark_processing_time - ingestion_time`. `ingestion_time` is assigned when
-  the simulator sends the replay event; `spark_processing_time` is assigned by
-  the Bronze micro-batch. Historical `event_time` is excluded. This measures
-  replay-to-Bronze processing latency, not downstream Silver commit latency or
-  historical event-time lateness. Percentiles use Spark `percentile_approx`
-  with accuracy 10,000.
-- Every second, `docker stats --no-stream` records CPU percent, memory usage,
-  Docker-reported memory limit/denominator, and memory percent for
-  `weather-spark-worker` and `weather-kafka`. `resource_metrics.jsonl` also
-  records the configured hard memory limit when one exists.
-- Duration averages and percentiles use Spark's `durationMs.triggerExecution`;
-  the full per-component duration map remains available in raw progress.
+Startup peak lag is reported but never used alone to classify capacity. Let
+`R` be actual producer rate, `P` the lower Bronze/Silver steady-state rate, `S`
+the steady-state lag slope, `D` replay duration, and `T` pipeline drain time:
 
-### Sustainability and saturation classification
+- `FAILED`: a stream, checker, or required metric fails; a no-fault run injects
+  unexpected faults; or source lag is zero while expected output/progress counts
+  are incomplete.
+- `SATURATED`: the pipeline cannot finish with zero source lag, or
+  `S > max(20, 10% of R)` while `P < 90% of R`.
+- `UNDER_CAPACITY`: the complete pipeline has `S <= max(10, 2% of R)`,
+  `P >= 95% of R`, and `T <= max(15 seconds, 25% of D)`.
+- `NEAR_CAPACITY`: a complete, drained run misses the `UNDER_CAPACITY`
+  thresholds without meeting the sustained `SATURATED` rule.
 
-A run is sustainable only when all produced messages appear in both Bronze
-and Silver source progress, the final sampled Kafka lag is zero, and both Spark
-applications exit normally. The runner waits up to 300 seconds after replay
-for this drain; `--drain-timeout` changes that bound.
+These labels apply to the fixed configuration and finite replay workload. This
+milestone does not change Kafka partitions, Spark workers/cores/memory, shuffle
+partitions, trigger interval, or fault rates.
 
-- `UNDER_CAPACITY`: sustainable, with peak lag during replay no greater than
-  two one-second trigger intervals of offered data (`2 × requested msg/s`).
-- `NEAR_CAPACITY`: sustainable, but replay-time peak lag exceeds that allowance
-  before draining.
-- `SATURATED`: the drain bound expires or the final backlog remains nonzero,
-  without a Spark/container failure.
-- `FAILED`: a stream, metrics query, or required measurement fails.
+### Reanalysis and longer run commands
 
-This two-trigger allowance is tied to the configured trigger interval rather
-than a guessed absolute row count. `result.json` also reports maximum and final
-lag, replay-time peak lag, throughput, batch duration, latency, resource peaks,
-and reasons for unavailable metrics.
+Recompute existing summaries from raw telemetry without changing the input
+folders:
+
+```powershell
+python benchmark/reanalyze_throughput.py --rates 100,500,1000
+```
+
+For high rates, use enough records to provide at least 30–60 seconds of input.
+Examples are 100,000 records at 1,000 or 2,000 msg/s and 250,000 records at
+5,000 msg/s. Keep all infrastructure and other workload settings fixed.
 
 ### Run artifacts
 
@@ -405,8 +417,8 @@ delta_metrics.json
 result.json
 ```
 
-Per-rate repetition summaries and simulator calibration summaries are written
-to distinct timestamped directories under
-`results/benchmarks/throughput/experiments/`. The run folders do not overwrite
-earlier evidence. Delta data and checkpoints stay in the Docker volume and are
-not committed.
+Per-rate summaries, raw-artifact reanalyses, and simulator calibration summaries
+are written to separate timestamped directories under
+`results/benchmarks/throughput/experiments/`. Reanalysis never rewrites raw run
+files. Delta data and checkpoints stay in the Docker volume and are not
+committed.

@@ -1,10 +1,12 @@
 """Run one isolated correctness benchmark from Windows, PowerShell, or CI."""
 
 import argparse
+import ast
 from datetime import datetime, timezone
+import hashlib
 import importlib.util
 import json
-import math
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -29,13 +31,12 @@ from benchmark_config import (  # noqa: E402
     write_json,
 )
 from performance_metrics import (  # noqa: E402
-    add_warmup_markers,
+    DEFAULT_WARMUP_MIN_BATCHES,
+    DEFAULT_WARMUP_SECONDS,
+    analyze_run_artifacts,
     aggregate_repetitions,
-    classify_capacity,
     kafka_source_offsets,
-    lag_peak,
     latest_spark_end_offsets,
-    production_peak_lag,
     read_jsonl,
     resource_peaks,
     summarize_progress,
@@ -479,12 +480,10 @@ def _stop_stream_processes(
 def _merge_progress_files(
     progress_paths: dict[str, Path],
     output_path: Path,
-    warmup_batches: int,
 ) -> list[dict]:
     rows = []
     for path in progress_paths.values():
         rows.extend(read_jsonl(path))
-    rows = add_warmup_markers(rows, warmup_batches)
     rows.sort(key=lambda row: str(row.get("captured_at_utc", "")))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="\n") as output:
@@ -527,10 +526,15 @@ def _find_calibration(rate: int, git_commit: str) -> tuple[dict, Path]:
             summary = read_json(path)
         except (OSError, ValueError):
             continue
-        if (
-            summary.get("experiment_type") != "load_generator_calibration"
-            or summary.get("git_commit") != git_commit
-        ):
+        if summary.get("experiment_type") != "load_generator_calibration":
+            continue
+        calibration_commit = str(summary.get("git_commit") or "")
+        compatible, compatibility_reason = _calibration_source_compatibility(
+            calibration_commit,
+            git_commit,
+            summary.get("calibration_source_signature"),
+        )
+        if not compatible:
             continue
         for item in summary.get("rates", []):
             if int(item.get("requested_rate_msgs_sec", -1)) == rate:
@@ -541,11 +545,102 @@ def _find_calibration(rate: int, git_commit: str) -> tuple[dict, Path]:
                         f"deviation={item.get('deviation_percent')}%. "
                         "Do not use this rate as a pipeline workload."
                     )
-                return item, path
+                selected = dict(item)
+                selected["calibration_git_commit"] = calibration_commit
+                selected["calibration_reused_from_previous_commit"] = calibration_commit != git_commit
+                selected["calibration_compatibility_reason"] = compatibility_reason
+                return selected, path
     raise RuntimeError(
-        f"No generator calibration for {rate} msg/s matches Git commit {git_commit}. "
+        f"No compatible generator calibration for {rate} msg/s is available at "
+        f"Git commit {git_commit}; simulator or workload configuration changed. "
         "Run `python benchmark/run_benchmark.py --scenario throughput --calibrate-load-generator` first."
     )
+
+
+def _simulator_command_ast(source: str) -> str:
+    tree = ast.parse(source)
+    node = next(
+        (
+            item for item in tree.body
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and item.name == "_simulator_command"
+        ),
+        None,
+    )
+    if node is None:
+        raise ValueError("Could not locate _simulator_command in benchmark runner source.")
+    return ast.dump(node, include_attributes=False)
+
+
+def _calibration_source_signature() -> str:
+    runner_source = Path(__file__).read_text(encoding="utf-8")
+    calibration_inputs = [
+        SIMULATOR.read_bytes(),
+        (JOBS_DIR / "benchmark_config.py").read_bytes(),
+        _simulator_command_ast(runner_source).encode("utf-8"),
+    ]
+    digest = hashlib.sha256()
+    for content in calibration_inputs:
+        digest.update(len(content).to_bytes(8, "big"))
+        digest.update(content)
+    return digest.hexdigest()
+
+
+def _calibration_source_compatibility(
+    calibration_commit: str,
+    current_commit: str,
+    stored_signature: str | None,
+) -> tuple[bool, str]:
+    if not calibration_commit or not current_commit:
+        return False, "Calibration or current Git commit is missing."
+    if calibration_commit == current_commit:
+        if stored_signature and stored_signature != _calibration_source_signature():
+            return False, "Stored calibration fingerprint does not match current source."
+        return True, "Calibration and benchmark use the same Git commit."
+
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", calibration_commit, current_commit],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if ancestor.returncode != 0:
+        return False, "Calibration commit is not an ancestor of the current commit."
+
+    if stored_signature:
+        if stored_signature != _calibration_source_signature():
+            return False, "Simulator workload fingerprint changed after calibration."
+        return True, "Simulator workload fingerprint matches the saved calibration."
+
+    changed_inputs = subprocess.run(
+        [
+            "git", "diff", "--quiet", f"{calibration_commit}..{current_commit}",
+            "--", "simulator/historical_stream_simulator.py",
+            "spark/jobs/benchmark_config.py",
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if changed_inputs.returncode != 0:
+        return False, "Simulator or benchmark workload configuration changed after calibration."
+
+    try:
+        prior_runner = subprocess.run(
+            ["git", "show", f"{calibration_commit}:benchmark/run_benchmark.py"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        current_runner = Path(__file__).read_text(encoding="utf-8")
+        if _simulator_command_ast(prior_runner) != _simulator_command_ast(current_runner):
+            return False, "The simulator command changed after calibration."
+    except (OSError, subprocess.CalledProcessError, ValueError, SyntaxError):
+        return False, "Could not verify the simulator command at the calibration commit."
+    return True, "Simulator, workload configuration, and simulator command are unchanged."
 
 
 def run_load_generator_calibration(args) -> int:
@@ -654,11 +749,17 @@ def run_load_generator_calibration(args) -> int:
             raise
 
     summary = {
-        "schema_version": 1,
+        "schema_version": 2,
         "experiment_type": "load_generator_calibration",
         "experiment_id": experiment_id,
         "created_at": utc_now(),
         "git_commit": git_commit,
+        "calibration_source_signature": _calibration_source_signature(),
+        "calibration_source_files": [
+            "simulator/historical_stream_simulator.py",
+            "spark/jobs/benchmark_config.py",
+            "benchmark/run_benchmark.py::_simulator_command",
+        ],
         "scenario": THROUGHPUT_BASELINE,
         "source_record_limit": 10_000,
         "fault_rates": {
@@ -688,7 +789,8 @@ def _run_throughput_iteration(
     git_commit: str,
     calibration: dict,
     calibration_path: Path,
-    warmup_batches: int,
+    warmup_seconds: float,
+    warmup_min_batches: int,
     drain_timeout_seconds: float,
 ) -> dict:
     run_dir = REPO_ROOT / RESULTS_ROOT / config.slug / config.run_id
@@ -707,12 +809,27 @@ def _run_throughput_iteration(
         "calibrated_rate": calibration.get("requested_rate_msgs_sec"),
         "calibration_actual_rate_msgs_sec": calibration.get("actual_generated_msgs_sec"),
         "tolerance_percent": calibration.get("calibration_tolerance_percent"),
+        "calibration_git_commit": calibration.get("calibration_git_commit"),
+        "reused_from_previous_commit": calibration.get(
+            "calibration_reused_from_previous_commit", False
+        ),
+        "compatibility_reason": calibration.get("calibration_compatibility_reason"),
     }
-    manifest["warmup_batches_excluded_per_query"] = warmup_batches
+    manifest["warmup_policy"] = {
+        "name": "elapsed_time_and_completed_batches",
+        "minimum_warmup_seconds": warmup_seconds,
+        "minimum_completed_batches_per_query": warmup_min_batches,
+    }
     manifest["saturation_definition"] = {
-        "sustainable": "all producer messages counted by Bronze and Silver, final sampled Kafka lag is zero, and both stream applications exit normally",
-        "under_capacity_backlog_limit_records": max(1, math.ceil(config.requested_replay_rate * 2)),
-        "under_capacity_backlog_limit_reason": "two one-second trigger intervals of backlog",
+        "sustainable": "all expected records reach Bronze and Silver, final Kafka-to-Bronze source lag is zero, and both stream applications exit normally",
+        "under_capacity_lag_slope_max_records_per_second": (
+            "max(10, 2% of actual offered rate)"
+        ),
+        "under_capacity_pipeline_rate_min_fraction_of_actual": 0.95,
+        "under_capacity_drain_max_seconds": "max(15, 25% of replay duration)",
+        "saturated_lag_slope_min_fraction_of_actual": 0.10,
+        "saturated_pipeline_rate_max_fraction_of_actual": 0.90,
+        "startup_peak_lag_is_not_a_capacity_threshold": True,
         "drain_timeout_seconds": drain_timeout_seconds,
         "classes": ["UNDER_CAPACITY", "NEAR_CAPACITY", "SATURATED", "FAILED"],
     }
@@ -734,6 +851,7 @@ def _run_throughput_iteration(
     drain_complete = False
     drain_seconds = None
     stream_started_monotonic = None
+    stream_started_at_utc = None
     run_finished_monotonic = None
     delta_metrics = None
     metrics_error = None
@@ -758,14 +876,13 @@ def _run_throughput_iteration(
             manifest["throughput_baseline"]["bronze_delta_initialized_empty_before_streaming"] = True
             write_json(artifacts["manifest"], manifest)
             container_limits = manifest["throughput_baseline"]["docker_container_limits"]
-            configured_memory = {
-                name: item.get("configured_memory_limit_mb")
-                for name, item in container_limits.items()
-            }
             resource_sampler = DockerResourceSampler(
                 artifacts["resource_metrics"],
                 interval_seconds=1.0,
-                configured_memory_limits_mb=configured_memory,
+                container_limits=container_limits,
+                host_logical_cpu_count=manifest["throughput_baseline"].get(
+                    "host_logical_cpu_count"
+                ),
             )
             lag_sampler = KafkaLagSampler(
                 artifacts["kafka_lag"],
@@ -862,6 +979,9 @@ def _run_throughput_iteration(
                     + json.dumps(runtime_observation, sort_keys=True)
                 )
             stream_started_monotonic = time.monotonic()
+            stream_started_at_utc = utc_now()
+            manifest["stream_started_at_utc"] = stream_started_at_utc
+            write_json(artifacts["manifest"], manifest)
             print(
                 f"[THROUGHPUT] streaming apps started; requested="
                 f"{config.requested_replay_rate} msg/s, events={config.source_record_limit:,}"
@@ -952,7 +1072,6 @@ def _run_throughput_iteration(
     progress_rows = _merge_progress_files(
         progress_paths,
         artifacts["spark_progress"],
-        warmup_batches,
     )
     if (
         all(process_return_codes.get(stage) == 0 for stage in ("bronze", "silver"))
@@ -975,15 +1094,39 @@ def _run_throughput_iteration(
             for stage, log_path in log_paths.items():
                 log_tails[f"{stage}_metrics"] = _tail_text(log_path)
 
-    progress_summary = summarize_progress(progress_rows)
     lag_samples = read_jsonl(artifacts["kafka_lag"])
     resource_samples = read_jsonl(artifacts["resource_metrics"])
-    maximum_lag, final_lag = lag_peak(lag_samples)
-    replay_peak_lag = production_peak_lag(
-        lag_samples,
-        simulator_summary.get("generation_start_time") if simulator_summary else None,
-        simulator_summary.get("generation_end_time") if simulator_summary else None,
+    analysis = analyze_run_artifacts(
+        progress_rows=progress_rows,
+        lag_samples=lag_samples,
+        resource_samples=resource_samples,
+        simulator_summary=simulator_summary or {},
+        delta_metrics=delta_metrics,
+        manifest=manifest,
+        legacy_result={
+            "run_id": config.run_id,
+            "requested_rate_msgs_sec": config.requested_replay_rate,
+            "drain_seconds": drain_seconds,
+            "drain_complete": drain_complete,
+        },
+        minimum_warmup_seconds=warmup_seconds,
+        minimum_completed_batches=warmup_min_batches,
+        drain_complete=drain_complete,
+        stream_process_return_codes=process_return_codes,
+        failure_reason=(
+            failure_reason
+            if failure_kind in {"run_failure", "stream_failure"}
+            else None
+        ),
+        metrics_error=metrics_error,
     )
+    progress_summary = summarize_progress(
+        progress_rows,
+        steady_state_start=analysis["steady_state_start"],
+        generation_end_time=analysis["steady_state_end"],
+    )
+    maximum_lag = analysis["production_peak_kafka_to_bronze_lag"]
+    final_lag = analysis["final_source_lag"]
     offsets = _spark_offset_summary(progress_rows, config.topic)
     final_kafka_offsets = next(
         (
@@ -994,21 +1137,10 @@ def _run_throughput_iteration(
         ),
         {},
     )
-    peaks = resource_peaks(resource_samples)
-    worker_peaks = peaks.get("weather-spark-worker", {})
-    broker_peaks = peaks.get("weather-kafka", {})
-
     produced = int((simulator_summary or {}).get("kafka_messages", 0))
     bronze_processed = int(progress_summary.get("bronze_input_records", 0))
     silver_processed = int(progress_summary.get("silver_input_records", 0))
     bronze_delta = int((delta_metrics or {}).get("bronze_records", 0))
-    all_processed = (
-        produced > 0
-        and bronze_processed >= produced
-        and silver_processed >= produced
-        and bronze_delta >= produced
-        and final_lag == 0
-    )
     generator_rate = (simulator_summary or {}).get("actual_generated_msgs_sec")
     generator_deviation = (
         abs(float(generator_rate) - config.requested_replay_rate) / config.requested_replay_rate
@@ -1019,45 +1151,18 @@ def _run_throughput_iteration(
         generator_deviation is not None
         and generator_deviation <= float(calibration.get("calibration_tolerance_percent", 10)) / 100
     )
-    terminated_failures = [
-        row for row in progress_rows
-        if row.get("event_type") == "query_terminated" and row.get("exception")
-    ]
-    process_failed = failure_kind in {"run_failure", "stream_failure"} or any(
-        process_return_codes.get(stage) not in (0, None)
-        for stage in ("bronze", "silver")
-    ) or bool(terminated_failures)
-    resource_failed = any(
-        not isinstance(container_peaks.get(metric), (int, float))
-        for container_peaks in (worker_peaks, broker_peaks)
-        for metric in ("peak_cpu_percent", "peak_memory_mb")
-    )
-    latency_count = (delta_metrics or {}).get("latency_count")
-    latency_complete = isinstance(latency_count, int) and latency_count >= produced
-    measurement_failed = bool(metrics_error) or not any(
-        isinstance(row.get("lag_records"), int) for row in lag_samples
-    ) or final_lag is None or resource_failed or not latency_complete
-    capacity, capacity_reason = classify_capacity(
-        failed=process_failed or measurement_failed,
-        all_records_processed=all_processed,
-        final_lag=final_lag,
-        production_peak_lag=replay_peak_lag,
-        requested_rate=config.requested_replay_rate,
-        trigger_interval_seconds=1.0,
-    )
+    capacity = analysis["capacity_classification"]
+    capacity_reason = analysis["capacity_reason"]
     if simulator_summary is not None and not generator_valid:
         status = "INVALID_GENERATOR"
         capacity = None
         capacity_reason = "This run's measured generator rate fell outside its calibrated +/-10% band."
-    elif process_failed or measurement_failed:
+    elif capacity == "FAILED":
         status = "FAILED"
         if metrics_error:
             failure_reason = failure_reason or f"Delta metrics collection failed: {metrics_error}"
-    elif not drain_complete or not all_processed:
+    elif capacity == "SATURATED":
         status = "SATURATED"
-        if failure_kind == "drain_timeout":
-            capacity = "SATURATED"
-            capacity_reason = failure_reason
     else:
         status = capacity
 
@@ -1069,7 +1174,8 @@ def _run_throughput_iteration(
         else None
     )
     result = {
-        "schema_version": 1,
+        **analysis,
+        "schema_version": 2,
         "scenario": THROUGHPUT_BASELINE,
         "run_id": config.run_id,
         "git_commit": git_commit,
@@ -1094,7 +1200,8 @@ def _run_throughput_iteration(
         "duration_seconds": duration_seconds,
         "duration_definition": "First streaming query start through confirmed drain and clean stream shutdown.",
         "drain_seconds": drain_seconds,
-        "drain_complete": drain_complete,
+        "drain_complete": analysis["pipeline_completed"],
+        "stream_drain_complete": drain_complete,
         "bronze_input_records": bronze_processed,
         "silver_input_records": silver_processed,
         "avg_input_rows_per_sec": bronze_summary.get("avg_input_rows_per_sec"),
@@ -1103,50 +1210,44 @@ def _run_throughput_iteration(
         "peak_processed_rows_per_sec": bronze_summary.get("peak_processed_rows_per_sec"),
         "silver_avg_processed_rows_per_sec": silver_summary.get("avg_processed_rows_per_sec"),
         "silver_peak_processed_rows_per_sec": silver_summary.get("peak_processed_rows_per_sec"),
-        "included_bronze_batches": bronze_summary.get("included_batches"),
-        "included_silver_batches": silver_summary.get("included_batches"),
-        "warmup_batches_excluded_per_query": warmup_batches,
+        "included_bronze_batches": bronze_summary.get("steady_state_sample_count"),
+        "included_silver_batches": silver_summary.get("steady_state_sample_count"),
+        "warmup_batches_excluded_per_query": None,
         "avg_batch_duration_ms": bronze_summary.get("avg_batch_duration_ms"),
         "p95_batch_duration_ms": bronze_summary.get("p95_batch_duration_ms"),
         "max_batch_duration_ms": bronze_summary.get("max_batch_duration_ms"),
         "batch_duration_components": bronze_summary.get("duration_components"),
         "max_kafka_lag": maximum_lag,
-        "max_kafka_lag_during_production": replay_peak_lag,
+        "max_kafka_lag_during_production": analysis["production_peak_kafka_to_bronze_lag"],
         "final_kafka_lag": final_lag,
         "kafka_topic": config.topic,
         "kafka_partition_count": config.topic_partitions,
         "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
         **offsets,
         "final_kafka_latest_offsets": final_kafka_offsets,
-        "latency_count": (delta_metrics or {}).get("latency_count"),
-        "latency_min_ms": (delta_metrics or {}).get("latency_min_ms"),
-        "latency_avg_ms": (delta_metrics or {}).get("latency_avg_ms"),
-        "latency_p50_ms": (delta_metrics or {}).get("latency_p50_ms"),
-        "latency_p95_ms": (delta_metrics or {}).get("latency_p95_ms"),
-        "latency_p99_ms": (delta_metrics or {}).get("latency_p99_ms"),
-        "latency_max_ms": (delta_metrics or {}).get("latency_max_ms"),
-        "latency_definition": (delta_metrics or {}).get("latency_definition"),
-        "latency_percentile_method": (delta_metrics or {}).get("latency_percentile_method"),
-        "spark_worker_peak_cpu_percent": worker_peaks.get("peak_cpu_percent"),
-        "spark_worker_peak_memory_mb": worker_peaks.get("peak_memory_mb"),
-        "broker_peak_cpu_percent": broker_peaks.get("peak_cpu_percent"),
-        "broker_peak_memory_mb": broker_peaks.get("peak_memory_mb"),
+        "latency_count": analysis["replay_to_bronze_latency_count"],
+        "latency_min_ms": analysis["replay_to_bronze_latency_min_ms"],
+        "latency_avg_ms": analysis["replay_to_bronze_latency_avg_ms"],
+        "latency_p50_ms": analysis["replay_to_bronze_latency_p50_ms"],
+        "latency_p95_ms": analysis["replay_to_bronze_latency_p95_ms"],
+        "latency_p99_ms": analysis["replay_to_bronze_latency_p99_ms"],
+        "latency_max_ms": analysis["replay_to_bronze_latency_max_ms"],
+        "latency_definition": analysis["replay_to_bronze_latency_definition"],
+        "latency_percentile_method": analysis["replay_to_bronze_latency_percentile_method"],
+        "spark_worker_peak_cpu_percent": analysis["worker_cpu_peak"],
+        "spark_worker_peak_memory_mb": analysis["worker_memory_peak_mb"],
+        "broker_peak_cpu_percent": analysis["broker_cpu_peak"],
+        "broker_peak_memory_mb": analysis["broker_memory_peak_mb"],
         "resource_sample_count": len(resource_samples),
         "kafka_lag_sample_count": len(lag_samples),
         "fixed_infrastructure": manifest["throughput_baseline"],
         "observed_spark_runtime": runtime_observation,
         "stream_process_return_codes": process_return_codes,
-        "errors": {
-            "run": failure_reason,
-            "metrics": metrics_error,
-            "resource_sampler": resource_sampler.last_error if resource_sampler else "sampler did not start",
-            "kafka_lag_sampler": lag_sampler.last_error if lag_sampler else "sampler did not start",
-            "spark_log_tails": log_tails,
-        },
         "null_metric_reasons": {
             "latency": metrics_error or (
-                f"Latency was measured for {latency_count or 0} of {produced} produced messages."
-                if not latency_complete
+                f"Latency was measured for {analysis['replay_to_bronze_latency_count'] or 0} "
+                f"of {produced} produced messages."
+                if not analysis["latency_measurements_complete"]
                 else None
             ),
             "kafka_lag": (
@@ -1155,10 +1256,17 @@ def _run_throughput_iteration(
                 else None
             ),
             "resources": (
-                "Docker stats did not provide numeric CPU and memory peaks for both containers."
-                if resource_failed
+                "Docker stats did not provide numeric CPU and memory samples for both containers."
+                if not analysis["resource_measurements_complete"]
                 else None
             ),
+        },
+        "errors": {
+            "run": failure_reason,
+            "metrics": metrics_error,
+            "resource_sampler": resource_sampler.last_error if resource_sampler else "sampler did not start",
+            "kafka_lag_sampler": lag_sampler.last_error if lag_sampler else "sampler did not start",
+            "spark_log_tails": log_tails,
         },
     }
     write_json(artifacts["result"], result)
@@ -1183,8 +1291,10 @@ def run_throughput_benchmark(args) -> int:
         raise ValueError("Throughput --rate must be a positive messages/second target.")
     if args.repetitions <= 0:
         raise ValueError("--repetitions must be positive.")
-    if args.warmup_batches < 0:
-        raise ValueError("--warmup-batches must be zero or greater.")
+    if args.warmup_seconds < 0:
+        raise ValueError("--warmup-seconds must be zero or greater.")
+    if args.warmup_min_batches < 1:
+        raise ValueError("--warmup-min-batches must be at least one.")
     if args.drain_timeout <= 0:
         raise ValueError("--drain-timeout must be positive.")
 
@@ -1235,19 +1345,20 @@ def run_throughput_benchmark(args) -> int:
             git_commit=git_commit,
             calibration=calibration,
             calibration_path=calibration_path,
-            warmup_batches=args.warmup_batches,
+            warmup_seconds=args.warmup_seconds,
+            warmup_min_batches=args.warmup_min_batches,
             drain_timeout_seconds=args.drain_timeout,
         )
         run_results.append(result)
         if result.get("status") in {"FAILED", "INVALID_GENERATOR"}:
             break
-        if result.get("status") == "SATURATED":
-            print("[THROUGHPUT] clear saturation; stopping further repetitions at this rate")
+        if result.get("status") == "SATURATED" and not result.get("pipeline_completed"):
+            print("[THROUGHPUT] pipeline did not drain; stopping further repetitions at this rate")
             break
 
     aggregate = aggregate_repetitions(run_results)
     summary = {
-        "schema_version": 1,
+        "schema_version": 2,
         "experiment_type": "throughput_repetitions",
         "experiment_id": experiment_id,
         "created_at": utc_now(),
@@ -1256,7 +1367,12 @@ def run_throughput_benchmark(args) -> int:
         "source_record_limit": source_limit,
         "requested_repetitions": args.repetitions,
         "completed_repetitions": len(run_results),
-        "warmup_batches_excluded_per_query": args.warmup_batches,
+        "warmup_policy": {
+            "minimum_warmup_seconds": args.warmup_seconds,
+            "minimum_completed_batches_per_query": args.warmup_min_batches,
+            "steady_state_start_rule": "Later of elapsed warm-up and completed-batch cutoffs for both main queries.",
+            "steady_state_end_rule": "Simulator generation end; post-replay drain excluded.",
+        },
         "drain_timeout_seconds": args.drain_timeout,
         "calibration_summary": calibration_path.relative_to(REPO_ROOT).as_posix(),
         "runs": [
@@ -1363,21 +1479,38 @@ def _container_hard_limits(containers: list[str]) -> dict[str, dict[str, int | N
             completed = _run(
                 [
                     "docker", "inspect", "--format",
-                    "{{.HostConfig.Memory}} {{.HostConfig.NanoCpus}}",
+                    "{{json .HostConfig}}",
                     name,
                 ],
                 capture_output=True,
                 timeout=15,
             )
-            memory_bytes, nano_cpus = (int(part) for part in completed.stdout.split())
+            host_config = json.loads(completed.stdout)
+            memory_bytes = int(host_config.get("Memory") or 0)
+            nano_cpus = int(host_config.get("NanoCpus") or 0)
+            cpu_quota = int(host_config.get("CpuQuota") or 0)
+            cpu_period = int(host_config.get("CpuPeriod") or 0)
+            cpu_limit_cores = (
+                nano_cpus / 1_000_000_000
+                if nano_cpus > 0
+                else cpu_quota / cpu_period
+                if cpu_quota > 0 and cpu_period > 0
+                else None
+            )
             limits[name] = {
                 "configured_memory_limit_mb": memory_bytes // (1024 * 1024) if memory_bytes else None,
-                "configured_cpu_limit_cores": nano_cpus / 1_000_000_000 if nano_cpus else None,
+                "configured_cpu_limit_cores": cpu_limit_cores,
+                "configured_cpu_quota_us": cpu_quota or None,
+                "configured_cpu_period_us": cpu_period or None,
+                "configured_cpuset_cpus": host_config.get("CpusetCpus") or None,
             }
         except Exception as exc:
             limits[name] = {
                 "configured_memory_limit_mb": None,
                 "configured_cpu_limit_cores": None,
+                "configured_cpu_quota_us": None,
+                "configured_cpu_period_us": None,
+                "configured_cpuset_cpus": None,
                 "inspection_error": f"{type(exc).__name__}: {exc}",
             }
     return limits
@@ -1393,6 +1526,7 @@ def _throughput_infrastructure(versions: dict[str, str | None]) -> dict:
     containers = _container_hard_limits(["weather-spark-worker", "weather-kafka"])
     return {
         "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+        "host_logical_cpu_count": os.cpu_count(),
         "kafka": {
             "image": broker.get("image"),
             "version": versions.get("kafka"),
@@ -1651,10 +1785,16 @@ def parse_args():
         help="Independent runs at the selected throughput rate.",
     )
     parser.add_argument(
-        "--warmup-batches",
+        "--warmup-seconds",
+        type=float,
+        default=DEFAULT_WARMUP_SECONDS,
+        help="Minimum elapsed warm-up before steady-state metrics; both queries must also complete the minimum batch count.",
+    )
+    parser.add_argument(
+        "--warmup-min-batches",
         type=int,
-        default=2,
-        help="Per-query micro-batches retained in raw progress and excluded from summaries.",
+        default=DEFAULT_WARMUP_MIN_BATCHES,
+        help="Minimum completed micro-batches required for each main query before steady-state selection.",
     )
     parser.add_argument(
         "--drain-timeout",

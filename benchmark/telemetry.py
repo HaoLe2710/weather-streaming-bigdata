@@ -65,10 +65,14 @@ class DockerResourceSampler:
         *,
         interval_seconds: float = 1.0,
         configured_memory_limits_mb: dict[str, float | None] | None = None,
+        container_limits: dict[str, dict[str, Any]] | None = None,
+        host_logical_cpu_count: int | None = None,
     ):
         self.path = Path(output_path)
         self.interval_seconds = interval_seconds
         self.configured_memory_limits_mb = configured_memory_limits_mb or {}
+        self.container_limits = container_limits or {}
+        self.host_logical_cpu_count = host_logical_cpu_count
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
         self._lock = threading.Lock()
@@ -122,6 +126,19 @@ class DockerResourceSampler:
                         memory_percent = float(memory_text)
                     except ValueError:
                         memory_percent = None
+                    limits = self.container_limits.get(name, {})
+                    configured_memory_limit = limits.get(
+                        "configured_memory_limit_mb",
+                        self.configured_memory_limits_mb.get(name),
+                    )
+                    cpu_quota = limits.get(
+                        "configured_cpu_limit_cores",
+                        limits.get("container_cpu_quota_cores"),
+                    )
+                    cpuset = limits.get(
+                        "configured_cpuset_cpus",
+                        limits.get("container_cpuset"),
+                    )
                     _append_jsonl(self.path, {
                         "timestamp_utc": captured,
                         "container": name,
@@ -129,7 +146,13 @@ class DockerResourceSampler:
                         "cpu_percent": cpu_percent,
                         "memory_usage_mb": usage_mb,
                         "memory_limit_mb": reported_limit_mb,
-                        "configured_memory_limit_mb": self.configured_memory_limits_mb.get(name),
+                        "configured_memory_limit_mb": configured_memory_limit,
+                        "container_memory_limit_mb": configured_memory_limit,
+                        "container_cpu_quota_cores": cpu_quota,
+                        "container_cpu_quota_us": limits.get("configured_cpu_quota_us"),
+                        "container_cpu_period_us": limits.get("configured_cpu_period_us"),
+                        "container_cpuset": cpuset or None,
+                        "host_logical_cpu_count": self.host_logical_cpu_count,
                         "memory_percent": memory_percent,
                         "source": "docker stats --no-stream",
                     })
@@ -267,7 +290,11 @@ class KafkaLagSampler:
             "kafka_low_offsets": low_offsets,
             "kafka_latest_offsets": latest_offsets,
             "spark_end_offsets": spark_end_offsets,
+            "kafka_to_bronze_lag_records": lag,
             "lag_records": lag,
+            "kafka_to_bronze_lag_definition": (
+                "sum(max(0, Kafka high offset - Bronze Spark Kafka source end offset))"
+            ),
             "definition": "sum(max(0, Kafka high offset - Spark Kafka source end offset))",
             "error": error,
         }
@@ -283,7 +310,11 @@ class KafkaLagSampler:
             "partition_count": self.partitions,
             "kafka_latest_offsets": {},
             "spark_end_offsets": {},
+            "kafka_to_bronze_lag_records": None,
             "lag_records": None,
+            "kafka_to_bronze_lag_definition": (
+                "sum(max(0, Kafka high offset - Bronze Spark Kafka source end offset))"
+            ),
             "definition": "sum(max(0, Kafka high offset - Spark Kafka source end offset))",
             "error": message,
         }

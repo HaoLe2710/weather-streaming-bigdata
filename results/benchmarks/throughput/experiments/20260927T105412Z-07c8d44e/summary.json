@@ -1,0 +1,256 @@
+{
+  "created_at": "2026-09-27T10:54:12+00:00",
+  "experiment_id": "20260927T105412Z-07c8d44e",
+  "experiment_type": "throughput_raw_artifact_reanalysis",
+  "methodology": {
+    "minimum_completed_batches_per_query": 3,
+    "minimum_warmup_seconds": 15.0,
+    "rates": [
+      100,
+      500,
+      1000
+    ],
+    "raw_inputs_modified": false,
+    "steady_state_end": "simulator generation_end_time; post-replay drain excluded",
+    "steady_state_start": "later of query-start plus elapsed warm-up, the selected completed-batch count for both main queries, and replay start"
+  },
+  "rates": [
+    {
+      "aggregate": {
+        "actual_rate": 99.9999145100843,
+        "batch_duration_mean_ms": null,
+        "broker_cpu_avg": 2.3048129774906423,
+        "broker_cpu_p50": 1.9275,
+        "broker_cpu_p95": 3.7239999999999975,
+        "broker_cpu_peak": 27.185000000000002,
+        "broker_memory_avg_mb": 853.0703276419013,
+        "broker_memory_p50_mb": 798.025,
+        "broker_memory_p95_mb": 986.6775,
+        "broker_memory_peak_mb": 990.8,
+        "bronze_batch_p95_ms": 4127.149999999998,
+        "bronze_processed_rate_avg": 107.14451841886869,
+        "bronze_processed_rate_p50": 99.92511233150275,
+        "bronze_processed_rate_p95": 200.80117661839967,
+        "bronze_processed_rate_peak": 310.74821951870535,
+        "capacity_classification": "UNDER_CAPACITY",
+        "capacity_classifications": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "latency_p50_mean_ms": 355.278,
+        "latency_p95_mean_ms": 3602.9795000000004,
+        "latency_p99_mean_ms": 13150.3325,
+        "max_lag_mean": null,
+        "pipeline_drain_seconds": 7.235295499999999,
+        "pipeline_sustainable_rate": 107.14451841886869,
+        "processed_rate_mean": 107.14451841886869,
+        "replay_to_bronze_latency_p50_ms": 355.278,
+        "replay_to_bronze_latency_p95_ms": 3602.9795000000004,
+        "replay_to_bronze_latency_p99_ms": 13150.3325,
+        "requested_rate": 100,
+        "run_count": 2,
+        "run_ids": [
+          "20260927T093618Z-4654abdd",
+          "20260927T094552Z-26130c68"
+        ],
+        "silver_batch_p95_ms": 6339.424999999999,
+        "silver_processed_rate_avg": 108.93563405816792,
+        "silver_processed_rate_p50": 112.53823140222805,
+        "silver_processed_rate_p95": 211.7209632838531,
+        "silver_processed_rate_peak": 302.12061486717005,
+        "startup_peak_kafka_to_bronze_lag": 2299.0,
+        "steady_state_avg_kafka_to_bronze_lag": 322.8205176153789,
+        "steady_state_lag_slope_records_per_sec": -0.4259012899969035,
+        "steady_state_p95_kafka_to_bronze_lag": 600.0,
+        "steady_state_peak_kafka_to_bronze_lag": 900.0,
+        "worker_cpu_avg": 196.46438573552786,
+        "worker_cpu_p50": 186.7575,
+        "worker_cpu_p95": 339.36875,
+        "worker_cpu_peak": 671.495,
+        "worker_memory_avg_mb": 2332.05243675332,
+        "worker_memory_p50_mb": 2543.3599999999997,
+        "worker_memory_p95_mb": 2678.5536,
+        "worker_memory_peak_mb": 2722.304
+      },
+      "requested_rate": 100,
+      "run_analyses": [
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T093618Z-4654abdd.json",
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T094552Z-26130c68.json"
+      ],
+      "run_count": 2,
+      "run_ids": [
+        "20260927T093618Z-4654abdd",
+        "20260927T094552Z-26130c68"
+      ]
+    },
+    {
+      "aggregate": {
+        "actual_rate": 499.99766951099514,
+        "batch_duration_mean_ms": null,
+        "broker_cpu_avg": 3.2417090656799257,
+        "broker_cpu_p50": 2.2750000000000004,
+        "broker_cpu_p95": 6.467249999999991,
+        "broker_cpu_peak": 31.69,
+        "broker_memory_avg_mb": 637.8286771507862,
+        "broker_memory_p50_mb": 637.15,
+        "broker_memory_p95_mb": 641.1075,
+        "broker_memory_peak_mb": 641.6,
+        "bronze_batch_p95_ms": 5328.499999999999,
+        "bronze_processed_rate_avg": 532.9905099428707,
+        "bronze_processed_rate_p50": 506.86001058152135,
+        "bronze_processed_rate_p95": 1044.8461759124534,
+        "bronze_processed_rate_peak": 1344.786553621895,
+        "capacity_classification": "UNDER_CAPACITY",
+        "capacity_classifications": [
+          "UNDER_CAPACITY",
+          "UNDER_CAPACITY"
+        ],
+        "latency_p50_mean_ms": 1651.1329999999998,
+        "latency_p95_mean_ms": 12135.377,
+        "latency_p99_mean_ms": 16136.2615,
+        "max_lag_mean": null,
+        "pipeline_drain_seconds": 12.596307,
+        "pipeline_sustainable_rate": 532.9905099428707,
+        "processed_rate_mean": 532.9905099428707,
+        "replay_to_bronze_latency_p50_ms": 1651.1329999999998,
+        "replay_to_bronze_latency_p95_ms": 12135.377,
+        "replay_to_bronze_latency_p99_ms": 16136.2615,
+        "requested_rate": 500,
+        "run_count": 2,
+        "run_ids": [
+          "20260927T095536Z-f7a87d0f",
+          "20260927T095828Z-aa962133"
+        ],
+        "silver_batch_p95_ms": 7317.0999999999985,
+        "silver_processed_rate_avg": 625.8946131650227,
+        "silver_processed_rate_p50": 552.6731152575737,
+        "silver_processed_rate_p95": 1331.271661513993,
+        "silver_processed_rate_peak": 1587.9342412116193,
+        "startup_peak_kafka_to_bronze_lag": 11299.0,
+        "steady_state_avg_kafka_to_bronze_lag": 2148.9823609226596,
+        "steady_state_lag_slope_records_per_sec": -7.7164522499620185,
+        "steady_state_p95_kafka_to_bronze_lag": 3700.0,
+        "steady_state_peak_kafka_to_bronze_lag": 4600.0,
+        "worker_cpu_avg": 249.53950277520815,
+        "worker_cpu_p50": 228.0,
+        "worker_cpu_p95": 497.0345,
+        "worker_cpu_peak": 723.5450000000001,
+        "worker_memory_avg_mb": 1714.87365679926,
+        "worker_memory_p50_mb": 1915.904,
+        "worker_memory_p95_mb": 2297.728,
+        "worker_memory_peak_mb": 2307.584
+      },
+      "requested_rate": 500,
+      "run_analyses": [
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T095536Z-f7a87d0f.json",
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T095828Z-aa962133.json"
+      ],
+      "run_count": 2,
+      "run_ids": [
+        "20260927T095536Z-f7a87d0f",
+        "20260927T095828Z-aa962133"
+      ]
+    },
+    {
+      "aggregate": {
+        "actual_rate": 999.9897521103676,
+        "batch_duration_mean_ms": null,
+        "broker_cpu_avg": 3.185662393162393,
+        "broker_cpu_p50": 2.4725,
+        "broker_cpu_p95": 5.82125,
+        "broker_cpu_peak": 16.005,
+        "broker_memory_avg_mb": 650.362962962963,
+        "broker_memory_p50_mb": 650.2249999999999,
+        "broker_memory_p95_mb": 652.1925,
+        "broker_memory_peak_mb": 652.75,
+        "bronze_batch_p95_ms": 4592.9,
+        "bronze_processed_rate_avg": 967.9918276485528,
+        "bronze_processed_rate_p50": 1001.7032141903228,
+        "bronze_processed_rate_p95": 1206.6705531912644,
+        "bronze_processed_rate_peak": 1240.0112074060996,
+        "capacity_classification": "NEAR_CAPACITY",
+        "capacity_classifications": [
+          "NEAR_CAPACITY",
+          "NEAR_CAPACITY"
+        ],
+        "latency_p50_mean_ms": 2579.97,
+        "latency_p95_mean_ms": 15094.6975,
+        "latency_p99_mean_ms": 17096.05,
+        "max_lag_mean": null,
+        "pipeline_drain_seconds": 9.245784,
+        "pipeline_sustainable_rate": 967.9918276485528,
+        "processed_rate_mean": 967.9918276485528,
+        "replay_to_bronze_latency_p50_ms": 2579.97,
+        "replay_to_bronze_latency_p95_ms": 15094.6975,
+        "replay_to_bronze_latency_p99_ms": 17096.05,
+        "requested_rate": 1000,
+        "run_count": 2,
+        "run_ids": [
+          "20260927T100158Z-625c9bed",
+          "20260927T100358Z-8f984190"
+        ],
+        "silver_batch_p95_ms": 6906.25,
+        "silver_processed_rate_avg": 1640.0604342942381,
+        "silver_processed_rate_p50": 1634.8324304624691,
+        "silver_processed_rate_p95": 2395.477479211948,
+        "silver_processed_rate_peak": 2457.9277518597905,
+        "startup_peak_kafka_to_bronze_lag": 22299.5,
+        "steady_state_avg_kafka_to_bronze_lag": 5172.549019607843,
+        "steady_state_lag_slope_records_per_sec": 158.77860835867247,
+        "steady_state_p95_kafka_to_bronze_lag": 7644.999999999999,
+        "steady_state_peak_kafka_to_bronze_lag": 8300.0,
+        "worker_cpu_avg": 292.98475783475783,
+        "worker_cpu_p50": 293.21000000000004,
+        "worker_cpu_p95": 555.403,
+        "worker_cpu_peak": 732.8399999999999,
+        "worker_memory_avg_mb": 1384.5974245014245,
+        "worker_memory_p50_mb": 1619.712,
+        "worker_memory_p95_mb": 1887.3600000000001,
+        "worker_memory_peak_mb": 1896.4479999999999
+      },
+      "requested_rate": 1000,
+      "run_analyses": [
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T100158Z-625c9bed.json",
+        "results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/runs/20260927T100358Z-8f984190.json"
+      ],
+      "run_count": 2,
+      "run_ids": [
+        "20260927T100158Z-625c9bed",
+        "20260927T100358Z-8f984190"
+      ]
+    }
+  ],
+  "schema_version": 2,
+  "skipped_runs": [
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 100,
+      "run_id": "20260927T092728Z-ac16ac19"
+    },
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 500,
+      "run_id": "20260927T092914Z-3984efee"
+    },
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 1000,
+      "run_id": "20260927T092939Z-6cbb892f"
+    },
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 100,
+      "run_id": "20260927T093322Z-7c1e4b27"
+    },
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 500,
+      "run_id": "20260927T093508Z-d7d0877c"
+    },
+    {
+      "reason": "expected the existing 50,000-message run; found 10000",
+      "requested_rate": 1000,
+      "run_id": "20260927T093533Z-0593b676"
+    }
+  ]
+}

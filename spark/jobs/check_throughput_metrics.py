@@ -1,4 +1,4 @@
-"""Read run-scoped Delta outputs and summarize Bronze replay latency."""
+"""Read run-scoped Delta outputs and summarize replay-to-Bronze latency."""
 
 import os
 
@@ -75,6 +75,21 @@ result = {
     "bronze_records": bronze_count,
     "silver_records": silver_count,
     "dlq_records": dlq_count,
+    "replay_to_bronze_latency_count": latency_count,
+    "replay_to_bronze_latency_missing_records": bronze_count - latency_count,
+    "replay_to_bronze_latency_min_ms": latency["latency_min_ms"],
+    "replay_to_bronze_latency_avg_ms": latency["latency_avg_ms"],
+    "replay_to_bronze_latency_p50_ms": latency["latency_p50_ms"],
+    "replay_to_bronze_latency_p95_ms": latency["latency_p95_ms"],
+    "replay_to_bronze_latency_p99_ms": latency["latency_p99_ms"],
+    "replay_to_bronze_latency_max_ms": latency["latency_max_ms"],
+    "replay_to_bronze_latency_definition": (
+        "Bronze spark_processing_time minus simulator ingestion_time, "
+        "measured for every Bronze message after the stream drains. "
+        "Historical event_time is not used. This is not Silver completion latency."
+    ),
+    "replay_to_bronze_latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+    # Legacy aliases retained for readers of schema version 1 result files.
     "latency_count": latency_count,
     "latency_missing_records": bronze_count - latency_count,
     "latency_min_ms": latency["latency_min_ms"],
@@ -86,7 +101,7 @@ result = {
     "latency_definition": (
         "Bronze spark_processing_time minus simulator ingestion_time, "
         "measured for every Bronze message after the stream drains. "
-        "Historical event_time is not used."
+        "Historical event_time is not used; this is not Silver completion latency."
     ),
     "latency_percentile_method": "Spark percentile_approx, accuracy=10000",
 }
