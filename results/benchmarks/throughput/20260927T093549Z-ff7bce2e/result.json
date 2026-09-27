@@ -1,0 +1,17 @@
+{
+  "actual_generated_msgs_sec": 1999.7817438231264,
+  "actual_generation_rate_including_flush": 1982.4033945118235,
+  "calibrated": true,
+  "calibration_tolerance_percent": 10.0,
+  "deviation_percent": 0.010912808843681886,
+  "generation_elapsed_seconds": 5.000545699993381,
+  "git_commit": "0143ce5f4ef3310de51ad8b7f650160a3d995192",
+  "produced_messages": 10000,
+  "producer_elapsed_seconds": 5.0443819999927655,
+  "producer_flush_remaining": 0,
+  "requested_rate_msgs_sec": 2000,
+  "run_id": "20260927T093549Z-ff7bce2e",
+  "scenario": "THROUGHPUT_BASELINE",
+  "source_records": 10000,
+  "system_throughput_measured": false
+}

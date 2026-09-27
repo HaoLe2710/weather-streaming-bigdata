@@ -1,0 +1,39 @@
+{
+  "aggregate": {
+    "batch_duration_mean_ms": null,
+    "capacity_classifications": [
+      "FAILED"
+    ],
+    "latency_p50_mean_ms": null,
+    "latency_p95_mean_ms": null,
+    "latency_p99_mean_ms": null,
+    "max_lag_mean": null,
+    "processed_rate_max": null,
+    "processed_rate_mean": null,
+    "processed_rate_min": null,
+    "requested_rate_msgs_sec": 100,
+    "run_count": 1,
+    "run_ids": [
+      "20260927T093059Z-ad96d87e"
+    ]
+  },
+  "calibration_summary": "results/benchmarks/throughput/experiments/20260927T092728Z-4ad7d523/summary.json",
+  "completed_repetitions": 1,
+  "created_at": "2026-09-27T09:31:32+00:00",
+  "drain_timeout_seconds": 300.0,
+  "experiment_id": "20260927T093059Z-69773ac2",
+  "experiment_type": "throughput_repetitions",
+  "git_commit": "3daf7784abb5b56f5b5e8f07e652889283bde42c",
+  "requested_repetitions": 2,
+  "runs": [
+    {
+      "result": "results/benchmarks/throughput/20260927T093059Z-ad96d87e/result.json",
+      "run_id": "20260927T093059Z-ad96d87e",
+      "status": "FAILED"
+    }
+  ],
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 1,
+  "source_record_limit": 50000,
+  "warmup_batches_excluded_per_query": 2
+}

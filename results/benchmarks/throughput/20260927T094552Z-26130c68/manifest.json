@@ -1,0 +1,381 @@
+{
+  "artifacts": {
+    "delta_metrics": "results/benchmarks/throughput/20260927T094552Z-26130c68/delta_metrics.json",
+    "input_reference": "results/benchmarks/throughput/20260927T094552Z-26130c68/simulator.json",
+    "kafka_lag": "results/benchmarks/throughput/20260927T094552Z-26130c68/kafka_lag.jsonl",
+    "manifest": "results/benchmarks/throughput/20260927T094552Z-26130c68/manifest.json",
+    "resource_metrics": "results/benchmarks/throughput/20260927T094552Z-26130c68/resource_metrics.jsonl",
+    "result": "results/benchmarks/throughput/20260927T094552Z-26130c68/result.json",
+    "spark_progress": "results/benchmarks/throughput/20260927T094552Z-26130c68/spark_progress.jsonl"
+  },
+  "checkpoints": {
+    "bronze": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/bronze",
+    "dlq": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/dlq",
+    "gold": null,
+    "silver": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/silver"
+  },
+  "created_at": "2026-09-27T09:45:52+00:00",
+  "finished_at": "2026-09-27T09:55:23+00:00",
+  "git_commit": "0143ce5f4ef3310de51ad8b7f650160a3d995192",
+  "kafka": {
+    "partition_count": 1,
+    "topic": "weather.bench.throughput.20260927t094552z-26130c68"
+  },
+  "load_generator_calibration": {
+    "calibrated_rate": 100,
+    "calibration_actual_rate_msgs_sec": 99.99975190061812,
+    "summary": "results/benchmarks/throughput/experiments/20260927T093322Z-12167143/summary.json",
+    "this_run_actual_rate_msgs_sec": 99.99994652002883,
+    "this_run_deviation_percent": 5.347997117155501e-05,
+    "this_run_within_tolerance": true,
+    "tolerance_percent": 10.0
+  },
+  "measurement_mode": "fixed_configuration_throughput",
+  "observed_spark_runtime": {
+    "apps": [
+      {
+        "cores": 1,
+        "id": "app-20260927094619-0021",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherSilverStreaming-20260927T094552Z-26130c68",
+        "state": "RUNNING"
+      },
+      {
+        "cores": 1,
+        "id": "app-20260927094619-0022",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherBronzeStreaming-20260927T094552Z-26130c68",
+        "state": "RUNNING"
+      }
+    ],
+    "other_active_apps": [],
+    "workers": [
+      {
+        "cores_available": 4,
+        "cores_used": 2,
+        "id": "worker-20260927075255-172.18.0.4-36797",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 2048,
+        "state": "ALIVE"
+      }
+    ]
+  },
+  "parameters": {
+    "duplicate_rate": 0.0,
+    "invalid_rate": 0.0,
+    "late_delay_events": 240,
+    "late_rate": 0.0,
+    "max_offsets_per_trigger": null,
+    "out_of_order_max_delay": 40,
+    "out_of_order_rate": 0.0,
+    "requested_replay_rate": 100,
+    "run_id": "20260927T094552Z-26130c68",
+    "scenario": "THROUGHPUT_BASELINE",
+    "seed": 42,
+    "source_record_limit": 50000,
+    "topic": "weather.bench.throughput.20260927t094552z-26130c68",
+    "topic_partitions": 1,
+    "watermark": "10 minutes",
+    "window_duration": null
+  },
+  "paths": {
+    "bronze": "/opt/project/data/benchmark/runs/throughput/20260927T094552Z-26130c68/bronze/weather_raw",
+    "bronze_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/bronze",
+    "dlq": "/opt/project/data/benchmark/runs/throughput/20260927T094552Z-26130c68/silver/weather_invalid",
+    "dlq_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/dlq",
+    "gold": null,
+    "gold_checkpoint": null,
+    "root": "/opt/project/data/benchmark/runs/throughput/20260927T094552Z-26130c68",
+    "silver": "/opt/project/data/benchmark/runs/throughput/20260927T094552Z-26130c68/silver/weather_clean",
+    "silver_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/throughput/20260927T094552Z-26130c68/silver"
+  },
+  "result_metrics": {
+    "actual_generated_msgs_sec": 99.99994652002883,
+    "actual_generation_rate_including_flush": 99.99148062585539,
+    "avg_batch_duration_ms": 2368.0346534653463,
+    "avg_input_rows_per_sec": 99.9397946599352,
+    "avg_processed_rows_per_sec": 106.59585628411358,
+    "batch_duration_components": {
+      "addBatch": {
+        "max_ms": 7488.0,
+        "mean_ms": 2287.0445544554455,
+        "p95_ms": 4031.0499999999997
+      },
+      "commitOffsets": {
+        "max_ms": 73.0,
+        "mean_ms": 33.96534653465346,
+        "p95_ms": 45.0
+      },
+      "getBatch": {
+        "max_ms": 1.0,
+        "mean_ms": 0.13861386138613863,
+        "p95_ms": 1.0
+      },
+      "latestOffset": {
+        "max_ms": 14.0,
+        "mean_ms": 5.198019801980198,
+        "p95_ms": 8.0
+      },
+      "queryPlanning": {
+        "max_ms": 27.0,
+        "mean_ms": 3.900990099009901,
+        "p95_ms": 6.949999999999989
+      },
+      "triggerExecution": {
+        "max_ms": 7596.0,
+        "mean_ms": 2368.0346534653463,
+        "p95_ms": 4095.45
+      },
+      "walCommit": {
+        "max_ms": 59.0,
+        "mean_ms": 36.475247524752476,
+        "p95_ms": 46.94999999999999
+      }
+    },
+    "broker_peak_cpu_percent": 33.31,
+    "broker_peak_memory_mb": 998.4,
+    "bronze_input_records": 50000,
+    "bronze_records": 50000,
+    "capacity_classification": "NEAR_CAPACITY",
+    "capacity_reason": "The run drained completely, but replay-time backlog exceeded the two-trigger-interval allowance.",
+    "dlq_output_records": 0,
+    "drain_complete": true,
+    "drain_seconds": 6.1631344000052195,
+    "duration_definition": "First streaming query start through confirmed drain and clean stream shutdown.",
+    "duration_seconds": 507.65436169999884,
+    "errors": {
+      "kafka_lag_sampler": null,
+      "metrics": null,
+      "resource_sampler": null,
+      "run": null,
+      "spark_log_tails": {
+        "bronze": "26/09/27 09:52:01 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1983 milliseconds\n26/09/27 09:52:03 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2015 milliseconds\n26/09/27 09:52:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4004 milliseconds\n26/09/27 09:52:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1979 milliseconds\n26/09/27 09:52:11 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1985 milliseconds\n26/09/27 09:52:13 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1999 milliseconds\n26/09/27 09:52:15 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2020 milliseconds\n26/09/27 09:52:17 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1986 milliseconds\n26/09/27 09:52:19 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1988 milliseconds\n26/09/27 09:52:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2035 milliseconds\n26/09/27 09:52:23 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1977 milliseconds\n26/09/27 09:52:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2002 milliseconds\n26/09/27 09:52:29 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4085 milliseconds\n26/09/27 09:52:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1906 milliseconds\n26/09/27 09:52:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2026 milliseconds\n26/09/27 09:52:35 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1971 milliseconds\n26/09/27 09:52:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2005 milliseconds\n26/09/27 09:52:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2003 milliseconds\n26/09/27 09:52:41 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1995 milliseconds\n26/09/27 09:52:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1999 milliseconds\n26/09/27 09:52:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2006 milliseconds\n26/09/27 09:52:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1991 milliseconds\n26/09/27 09:52:51 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4295 milliseconds\n26/09/27 09:52:53 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2273 milliseconds\n26/09/27 09:52:55 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1667 milliseconds\n26/09/27 09:52:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1767 milliseconds\n26/09/27 09:52:59 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2002 milliseconds\n26/09/27 09:53:01 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2022 milliseconds\n26/09/27 09:53:03 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1985 milliseconds\n26/09/27 09:53:05 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1980 milliseconds\n26/09/27 09:53:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2030 milliseconds\n26/09/27 09:53:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1965 milliseconds\n26/09/27 09:53:13 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4070 milliseconds\n26/09/27 09:53:15 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1931 milliseconds\n26/09/27 09:53:17 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1997 milliseconds\n26/09/27 09:53:19 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2001 milliseconds\n26/09/27 09:53:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1994 milliseconds\n26/09/27 09:53:23 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2009 milliseconds\n26/09/27 09:53:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2002 milliseconds\n26/09/27 09:53:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1997 milliseconds\n26/09/27 09:53:29 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2017 milliseconds\n26/09/27 09:53:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2000 milliseconds\n26/09/27 09:53:35 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3992 milliseconds\n26/09/27 09:53:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2002 milliseconds\n26/09/27 09:53:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1988 milliseconds\n26/09/27 09:53:41 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1990 milliseconds\n26/09/27 09:53:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2019 milliseconds\n26/09/27 09:53:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1991 milliseconds\n26/09/27 09:53:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2008 milliseconds\n26/09/27 09:53:49 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1994 milliseconds\n26/09/27 09:53:51 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2000 milliseconds\n26/09/27 09:53:53 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1993 milliseconds\n26/09/27 09:53:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3903 milliseconds\n26/09/27 09:53:59 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2108 milliseconds\n26/09/27 09:54:01 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2000 milliseconds\n26/09/27 09:54:03 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2008 milliseconds\n26/09/27 09:54:05 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1996 milliseconds\n26/09/27 09:54:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2004 milliseconds\n26/09/27 09:54:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1992 milliseconds\n26/09/27 09:54:11 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1994 milliseconds\n26/09/27 09:54:13 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2000 milliseconds\n26/09/27 09:54:15 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1998 milliseconds\n26/09/27 09:54:19 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3970 milliseconds\n26/09/27 09:54:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2028 milliseconds\n26/09/27 09:54:23 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2013 milliseconds\n26/09/27 09:54:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2010 milliseconds\n26/09/27 09:54:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1981 milliseconds\n26/09/27 09:54:29 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2001 milliseconds\n26/09/27 09:54:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1993 milliseconds\n26/09/27 09:54:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1998 milliseconds\n26/09/27 09:54:35 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2001 milliseconds\n26/09/27 09:54:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1999 milliseconds\n26/09/27 09:54:41 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4097 milliseconds\n26/09/27 09:54:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1911 milliseconds\n26/09/27 09:54:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1990 milliseconds\n26/09/27 09:54:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1990 milliseconds\n26/09/27 09:54:49 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2127 milliseconds\n26/09/27 09:54:53 WARN DAGScheduler: Failed to cancel job group f6318825-df64-48cc-800d-c7f3ff7c3b9d. Cannot find active jobs for it.\n26/09/27 09:54:53 WARN DAGScheduler: Failed to cancel job group f6318825-df64-48cc-800d-c7f3ff7c3b9d. Cannot find active jobs for it.\nWeather Bronze throughput run drained and stopped",
+        "silver": "26/09/27 09:52:51 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3322 milliseconds\n26/09/27 09:52:51 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3274 milliseconds\n26/09/27 09:52:54 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2963 milliseconds\n26/09/27 09:52:54 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2946 milliseconds\n26/09/27 09:52:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2982 milliseconds\n26/09/27 09:52:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3006 milliseconds\n26/09/27 09:53:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3102 milliseconds\n26/09/27 09:53:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3131 milliseconds\n26/09/27 09:53:04 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3282 milliseconds\n26/09/27 09:53:04 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3221 milliseconds\n26/09/27 09:53:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2941 milliseconds\n26/09/27 09:53:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2981 milliseconds\n26/09/27 09:53:10 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3105 milliseconds\n26/09/27 09:53:13 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6278 milliseconds\n26/09/27 09:53:13 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3165 milliseconds\n26/09/27 09:53:16 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2896 milliseconds\n26/09/27 09:53:19 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3157 milliseconds\n26/09/27 09:53:19 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6365 milliseconds\n26/09/27 09:53:22 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2976 milliseconds\n26/09/27 09:53:22 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2712 milliseconds\n26/09/27 09:53:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2889 milliseconds\n26/09/27 09:53:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2814 milliseconds\n26/09/27 09:53:28 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2950 milliseconds\n26/09/27 09:53:28 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3004 milliseconds\n26/09/27 09:53:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2925 milliseconds\n26/09/27 09:53:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2864 milliseconds\n26/09/27 09:53:34 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2892 milliseconds\n26/09/27 09:53:34 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2903 milliseconds\n26/09/27 09:53:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3040 milliseconds\n26/09/27 09:53:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3070 milliseconds\n26/09/27 09:53:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2828 milliseconds\n26/09/27 09:53:40 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2072 milliseconds\n26/09/27 09:53:42 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2906 milliseconds\n26/09/27 09:53:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2965 milliseconds\n26/09/27 09:53:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6058 milliseconds\n26/09/27 09:53:48 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2843 milliseconds\n26/09/27 09:53:52 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3297 milliseconds\n26/09/27 09:53:52 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6526 milliseconds\n26/09/27 09:53:54 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2893 milliseconds\n26/09/27 09:53:55 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2632 milliseconds\n26/09/27 09:53:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2849 milliseconds\n26/09/27 09:53:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2809 milliseconds\n26/09/27 09:54:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3005 milliseconds\n26/09/27 09:54:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2998 milliseconds\n26/09/27 09:54:03 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2950 milliseconds\n26/09/27 09:54:03 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2991 milliseconds\n26/09/27 09:54:06 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3141 milliseconds\n26/09/27 09:54:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3129 milliseconds\n26/09/27 09:54:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2951 milliseconds\n26/09/27 09:54:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2920 milliseconds\n26/09/27 09:54:12 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2957 milliseconds\n26/09/27 09:54:12 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2990 milliseconds\n26/09/27 09:54:15 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2885 milliseconds\n26/09/27 09:54:18 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5860 milliseconds\n26/09/27 09:54:18 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2948 milliseconds\n26/09/27 09:54:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2914 milliseconds\n26/09/27 09:54:24 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3114 milliseconds\n26/09/27 09:54:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6342 milliseconds\n26/09/27 09:54:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2804 milliseconds\n26/09/27 09:54:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2529 milliseconds\n26/09/27 09:54:30 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2979 milliseconds\n26/09/27 09:54:30 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2978 milliseconds\n26/09/27 09:54:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2834 milliseconds\n26/09/27 09:54:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2809 milliseconds\n26/09/27 09:54:36 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3055 milliseconds\n26/09/27 09:54:36 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3084 milliseconds\n26/09/27 09:54:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2873 milliseconds\n26/09/27 09:54:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2832 milliseconds\n26/09/27 09:54:42 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3229 milliseconds\n26/09/27 09:54:42 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3276 milliseconds\n26/09/27 09:54:44 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1672 milliseconds\n26/09/27 09:54:46 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2863 milliseconds\n26/09/27 09:54:49 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2770 milliseconds\n26/09/27 09:54:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5970 milliseconds\n26/09/27 09:54:52 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2772 milliseconds\n26/09/27 09:54:52 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2440 milliseconds\n26/09/27 09:54:53 WARN DAGScheduler: Failed to cancel job group 466deefe-232e-4e63-be02-4a8584436cf4. Cannot find active jobs for it.\n26/09/27 09:54:53 WARN DAGScheduler: Failed to cancel job group 053b4d06-3413-48ea-b7b9-ff41c700f94e. Cannot find active jobs for it.\n26/09/27 09:54:53 WARN DAGScheduler: Failed to cancel job group 053b4d06-3413-48ea-b7b9-ff41c700f94e. Cannot find active jobs for it.\nWeather Silver throughput run drained and stopped"
+      }
+    },
+    "final_kafka_lag": 0,
+    "final_kafka_latest_offsets": {
+      "weather.bench.throughput.20260927t094552z-26130c68:0": 50000
+    },
+    "fixed_infrastructure": {
+      "bronze_delta_initialized_empty_before_streaming": true,
+      "docker_container_limits": {
+        "weather-kafka": {
+          "configured_cpu_limit_cores": null,
+          "configured_memory_limit_mb": null
+        },
+        "weather-spark-worker": {
+          "configured_cpu_limit_cores": null,
+          "configured_memory_limit_mb": null
+        }
+      },
+      "kafka": {
+        "configured_container_limits": {
+          "configured_cpu_limit_cores": null,
+          "configured_memory_limit_mb": null
+        },
+        "image": "apache/kafka:4.3.1",
+        "partition_count": 1,
+        "replication_factor": 1,
+        "version": "4.3.1"
+      },
+      "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+      "resource_sampling": {
+        "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+        "hard_container_memory_limit_configured": false
+      },
+      "spark": {
+        "configured_container_limits": {
+          "configured_cpu_limit_cores": null,
+          "configured_memory_limit_mb": null
+        },
+        "cores_max_per_application": 1,
+        "delta_version": "4.0.0",
+        "deployment_mode": "client",
+        "executor_cores_per_application": 1,
+        "executor_memory_mb_per_application": 1024,
+        "image": "weather-spark:4.0.4-delta4.0.0",
+        "shuffle_partitions": 1,
+        "streaming_applications": 2,
+        "total_requested_executor_cores": 2,
+        "trigger_interval_seconds": 1,
+        "version": "4.0.4",
+        "worker_cores_available": 4,
+        "worker_count": 1,
+        "worker_memory_mb_available": 4096
+      }
+    },
+    "generation_elapsed_seconds": 500.00026739999885,
+    "generator_calibrated": true,
+    "generator_deviation_percent": 5.347997117155501e-05,
+    "git_commit": "0143ce5f4ef3310de51ad8b7f650160a3d995192",
+    "included_bronze_batches": 202,
+    "included_silver_batches": 130,
+    "input_records": 50000,
+    "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
+    "kafka_lag_sample_count": 516,
+    "kafka_partition_count": 1,
+    "kafka_topic": "weather.bench.throughput.20260927t094552z-26130c68",
+    "latency_avg_ms": 1214.0538176799978,
+    "latency_count": 50000,
+    "latency_definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used.",
+    "latency_max_ms": 18099.731,
+    "latency_min_ms": 57.306,
+    "latency_p50_ms": 364.566,
+    "latency_p95_ms": 4096.957,
+    "latency_p99_ms": 14094.743,
+    "latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+    "max_batch_duration_ms": 7596.0,
+    "max_kafka_lag": 2399,
+    "max_kafka_lag_during_production": 2399,
+    "null_metric_reasons": {
+      "kafka_lag": null,
+      "latency": null,
+      "resources": null
+    },
+    "observed_spark_runtime": {
+      "apps": [
+        {
+          "cores": 1,
+          "id": "app-20260927094619-0021",
+          "memory_per_executor_mb": 1024,
+          "name": "WeatherSilverStreaming-20260927T094552Z-26130c68",
+          "state": "RUNNING"
+        },
+        {
+          "cores": 1,
+          "id": "app-20260927094619-0022",
+          "memory_per_executor_mb": 1024,
+          "name": "WeatherBronzeStreaming-20260927T094552Z-26130c68",
+          "state": "RUNNING"
+        }
+      ],
+      "other_active_apps": [],
+      "workers": [
+        {
+          "cores_available": 4,
+          "cores_used": 2,
+          "id": "worker-20260927075255-172.18.0.4-36797",
+          "memory_available_mb": 4096,
+          "memory_used_mb": 2048,
+          "state": "ALIVE"
+        }
+      ]
+    },
+    "p95_batch_duration_ms": 4095.45,
+    "peak_input_rows_per_sec": 182.1493624772313,
+    "peak_processed_rows_per_sec": 314.6303093864709,
+    "processed_records": 50000,
+    "produced_messages": 50000,
+    "producer_elapsed_seconds": 500.04260050001903,
+    "producer_flush_remaining": 0,
+    "requested_rate_msgs_sec": 100,
+    "resource_sample_count": 394,
+    "run_id": "20260927T094552Z-26130c68",
+    "scenario": "THROUGHPUT_BASELINE",
+    "schema_version": 1,
+    "silver_avg_processed_rows_per_sec": 108.62364513036349,
+    "silver_input_records": 50000,
+    "silver_output_records": 50000,
+    "silver_peak_processed_rows_per_sec": 317.04996034892946,
+    "spark_end_offsets": {
+      "weather.bench.throughput.20260927t094552z-26130c68:0": 50000
+    },
+    "spark_start_offsets": {
+      "weather.bench.throughput.20260927t094552z-26130c68:0": 0
+    },
+    "spark_worker_peak_cpu_percent": 776.99,
+    "spark_worker_peak_memory_mb": 2884.608,
+    "status": "NEAR_CAPACITY",
+    "stream_process_return_codes": {
+      "bronze": 0,
+      "silver": 0
+    },
+    "sustainable": true,
+    "warmup_batches_excluded_per_query": 2
+  },
+  "run_id": "20260927T094552Z-26130c68",
+  "runtime_validation": {
+    "errors": [],
+    "expected_cores_per_application": 1,
+    "expected_executor_memory_mb_per_application": 1024,
+    "expected_streaming_app_count": 2,
+    "expected_worker_cores": 4,
+    "expected_worker_count": 1,
+    "expected_worker_memory_mb": 4096,
+    "passed": true
+  },
+  "saturation_definition": {
+    "classes": [
+      "UNDER_CAPACITY",
+      "NEAR_CAPACITY",
+      "SATURATED",
+      "FAILED"
+    ],
+    "drain_timeout_seconds": 300.0,
+    "sustainable": "all producer messages counted by Bronze and Silver, final sampled Kafka lag is zero, and both stream applications exit normally",
+    "under_capacity_backlog_limit_reason": "two one-second trigger intervals of backlog",
+    "under_capacity_backlog_limit_records": 200
+  },
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 1,
+  "software_versions": {
+    "delta": "4.0.0",
+    "kafka": "4.3.1",
+    "spark": "4.0.4"
+  },
+  "source": {
+    "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+    "record_limit": 50000
+  },
+  "status": "NEAR_CAPACITY",
+  "throughput_baseline": {
+    "bronze_delta_initialized_empty_before_streaming": true,
+    "docker_container_limits": {
+      "weather-kafka": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-spark-worker": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      }
+    },
+    "kafka": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "image": "apache/kafka:4.3.1",
+      "partition_count": 1,
+      "replication_factor": 1,
+      "version": "4.3.1"
+    },
+    "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+    "resource_sampling": {
+      "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+      "hard_container_memory_limit_configured": false
+    },
+    "spark": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "cores_max_per_application": 1,
+      "delta_version": "4.0.0",
+      "deployment_mode": "client",
+      "executor_cores_per_application": 1,
+      "executor_memory_mb_per_application": 1024,
+      "image": "weather-spark:4.0.4-delta4.0.0",
+      "shuffle_partitions": 1,
+      "streaming_applications": 2,
+      "total_requested_executor_cores": 2,
+      "trigger_interval_seconds": 1,
+      "version": "4.0.4",
+      "worker_cores_available": 4,
+      "worker_count": 1,
+      "worker_memory_mb_available": 4096
+    }
+  },
+  "warmup_batches_excluded_per_query": 2
+}

@@ -1,0 +1,205 @@
+{
+  "actual_generated_msgs_sec": 499.9974195133138,
+  "actual_generation_rate_including_flush": 499.9894307234146,
+  "avg_batch_duration_ms": 2690.0666666666666,
+  "avg_input_rows_per_sec": 491.7882881260961,
+  "avg_processed_rows_per_sec": 560.2318196300469,
+  "batch_duration_components": {
+    "addBatch": {
+      "max_ms": 6350.0,
+      "mean_ms": 2592.866666666667,
+      "p95_ms": 5161.199999999999
+    },
+    "commitOffsets": {
+      "max_ms": 76.0,
+      "mean_ms": 39.9,
+      "p95_ms": 53.55
+    },
+    "getBatch": {
+      "max_ms": 1.0,
+      "mean_ms": 0.4,
+      "p95_ms": 1.0
+    },
+    "latestOffset": {
+      "max_ms": 13.0,
+      "mean_ms": 6.833333333333333,
+      "p95_ms": 11.0
+    },
+    "queryPlanning": {
+      "max_ms": 15.0,
+      "mean_ms": 6.5,
+      "p95_ms": 10.549999999999997
+    },
+    "triggerExecution": {
+      "max_ms": 6446.0,
+      "mean_ms": 2690.0666666666666,
+      "p95_ms": 5257.949999999999
+    },
+    "walCommit": {
+      "max_ms": 67.0,
+      "mean_ms": 41.766666666666666,
+      "p95_ms": 54.64999999999999
+    }
+  },
+  "broker_peak_cpu_percent": 43.34,
+  "broker_peak_memory_mb": 634.6,
+  "bronze_input_records": 50000,
+  "bronze_records": 50000,
+  "capacity_classification": "NEAR_CAPACITY",
+  "capacity_reason": "The run drained completely, but replay-time backlog exceeded the two-trigger-interval allowance.",
+  "dlq_output_records": 0,
+  "drain_complete": true,
+  "drain_seconds": 12.576414700015448,
+  "duration_definition": "First streaming query start through confirmed drain and clean stream shutdown.",
+  "duration_seconds": 113.86273150000488,
+  "errors": {
+    "kafka_lag_sampler": null,
+    "metrics": null,
+    "resource_sampler": null,
+    "run": null,
+    "spark_log_tails": {
+      "bronze": "26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.antlr_antlr4-runtime-4.13.1.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.antlr_antlr4-runtime-4.13.1.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar at spark://spark-master:44149/files/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.4.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar at spark://spark-master:44149/files/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar at spark://spark-master:44149/files/org.apache.kafka_kafka-clients-3.9.1.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.kafka_kafka-clients-3.9.1.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.apache.kafka_kafka-clients-3.9.1.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar at spark://spark-master:44149/files/com.google.code.findbugs_jsr305-3.0.0.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/com.google.code.findbugs_jsr305-3.0.0.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/com.google.code.findbugs_jsr305-3.0.0.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar at spark://spark-master:44149/files/org.apache.commons_commons-pool2-2.12.0.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.commons_commons-pool2-2.12.0.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.apache.commons_commons-pool2-2.12.0.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar at spark://spark-master:44149/files/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar at spark://spark-master:44149/files/org.lz4_lz4-java-1.8.0.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.lz4_lz4-java-1.8.0.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.lz4_lz4-java-1.8.0.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar at spark://spark-master:44149/files/org.xerial.snappy_snappy-java-1.1.10.7.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:44149/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:44149/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790502960262\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-4428aae1-8f05-4066-ba39-49862de9a6ba/userFiles-df46bb4d-d970-4fc7-b2ed-d2b51b557ea2/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 09:56:01 INFO SecurityManager: Changing view acls to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 09:56:01 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 09:56:01 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 22 ms (0 ms spent in bootstraps)\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927095601-0025\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927095601-0025/0 on worker-20260927075255-172.18.0.4-36797 (172.18.0.4:36797) with 1 core(s)\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927095601-0025/0 on hostPort 172.18.0.4:36797 with 1 core(s), 1024.0 MiB RAM\n26/09/27 09:56:01 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 34181.\n26/09/27 09:56:01 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:34181\n26/09/27 09:56:01 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 09:56:01 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 34181, None)\n26/09/27 09:56:01 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:34181 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 34181, None)\n26/09/27 09:56:01 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 34181, None)\n26/09/27 09:56:01 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 34181, None)\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927095601-0025/0 is now RUNNING\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 09:56:04 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:54144) with ID 0, ResourceProfileId 0\n26/09/27 09:56:05 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:33843 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 33843, None)\n26/09/27 09:56:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Bronze Streaming started [topic=weather.bench.throughput.20260927t095536z-f7a87d0f]\n26/09/27 09:56:10 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 09:56:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 17636 milliseconds\n26/09/27 09:56:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5884 milliseconds\n26/09/27 09:56:34 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3508 milliseconds\n26/09/27 09:56:37 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3016 milliseconds\n26/09/27 09:56:40 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2877 milliseconds\n26/09/27 09:56:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2717 milliseconds\n26/09/27 09:56:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2611 milliseconds\n26/09/27 09:56:48 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2544 milliseconds\n26/09/27 09:56:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2542 milliseconds\n26/09/27 09:56:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6447 milliseconds\n26/09/27 09:57:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2705 milliseconds\n26/09/27 09:57:02 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2690 milliseconds\n26/09/27 09:57:05 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2258 milliseconds\n26/09/27 09:57:07 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2395 milliseconds\n26/09/27 09:57:09 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2207 milliseconds\n26/09/27 09:57:11 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2075 milliseconds\n26/09/27 09:57:14 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2261 milliseconds\n26/09/27 09:57:16 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2171 milliseconds\n26/09/27 09:57:18 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2270 milliseconds\n26/09/27 09:57:23 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5371 milliseconds\n26/09/27 09:57:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2025 milliseconds\n26/09/27 09:57:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1997 milliseconds\n26/09/27 09:57:29 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2124 milliseconds\n26/09/27 09:57:31 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1907 milliseconds\n26/09/27 09:57:34 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2214 milliseconds\n26/09/27 09:57:36 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2095 milliseconds\n26/09/27 09:57:38 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2260 milliseconds\n26/09/27 09:57:40 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2077 milliseconds\n26/09/27 09:57:42 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1886 milliseconds\n26/09/27 09:57:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5122 milliseconds\n26/09/27 09:57:49 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 1888 milliseconds\n26/09/27 09:57:51 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2468 milliseconds\n26/09/27 09:58:01 WARN DAGScheduler: Failed to cancel job group b3960c32-2c54-4794-88b7-768cc6994692. Cannot find active jobs for it.\n26/09/27 09:58:01 WARN DAGScheduler: Failed to cancel job group b3960c32-2c54-4794-88b7-768cc6994692. Cannot find active jobs for it.\nWeather Bronze throughput run drained and stopped",
+      "silver": "26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.xerial.snappy_snappy-java-1.1.10.7.jar to /tmp/spark-6d1b4536-7d73-4e97-b26a-db888a59da8c/userFiles-c6ec2de4-17b1-4ded-9857-3134379bbdb9/org.xerial.snappy_snappy-java-1.1.10.7.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar at spark://spark-master:43457/files/org.slf4j_slf4j-api-2.0.16.jar with timestamp 1790502960335\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.slf4j_slf4j-api-2.0.16.jar to /tmp/spark-6d1b4536-7d73-4e97-b26a-db888a59da8c/userFiles-c6ec2de4-17b1-4ded-9857-3134379bbdb9/org.slf4j_slf4j-api-2.0.16.jar\n26/09/27 09:56:01 INFO SparkContext: Added file file:///tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar at spark://spark-master:43457/files/org.apache.hadoop_hadoop-client-api-3.4.1.jar with timestamp 1790502960335\n26/09/27 09:56:01 INFO Utils: Copying /tmp/spark-ivy/jars/org.apache.hadoop_hadoop-client-api-3.4.1.jar to /tmp/spark-6d1b4536-7d73-4e97-b26a-db888a59da8c/userFiles-c6ec2de4-17b1-4ded-9857-3134379bbdb9/org.apache.hadoop_hadoop-client-api-3.4.1.jar\n26/09/27 09:56:01 INFO SecurityManager: Changing view acls to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing modify acls to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing view acls groups to: spark\n26/09/27 09:56:01 INFO SecurityManager: Changing modify acls groups to: spark\n26/09/27 09:56:01 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: spark groups with view permissions: EMPTY; users with modify permissions: spark; groups with modify permissions: EMPTY; RPC SSL disabled\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://spark-master:7077...\n26/09/27 09:56:01 INFO TransportClientFactory: Successfully created connection to spark-master/172.18.0.2:7077 after 25 ms (0 ms spent in bootstraps)\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20260927095601-0026\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20260927095601-0026/0 on worker-20260927075255-172.18.0.4-36797 (172.18.0.4:36797) with 1 core(s)\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: Granted executor ID app-20260927095601-0026/0 on hostPort 172.18.0.4:36797 with 1 core(s), 1024.0 MiB RAM\n26/09/27 09:56:01 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 36597.\n26/09/27 09:56:01 INFO NettyBlockTransferService: Server created on spark-master 0.0.0.0:36597\n26/09/27 09:56:01 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy\n26/09/27 09:56:01 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, spark-master, 36597, None)\n26/09/27 09:56:01 INFO BlockManagerMasterEndpoint: Registering block manager spark-master:36597 with 434.4 MiB RAM, BlockManagerId(driver, spark-master, 36597, None)\n26/09/27 09:56:01 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, spark-master, 36597, None)\n26/09/27 09:56:01 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, spark-master, 36597, None)\n26/09/27 09:56:01 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20260927095601-0026/0 is now RUNNING\n26/09/27 09:56:01 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0\n26/09/27 09:56:04 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (172.18.0.4:53762) with ID 0, ResourceProfileId 0\n26/09/27 09:56:05 INFO BlockManagerMasterEndpoint: Registering block manager 172.18.0.4:35591 with 434.4 MiB RAM, BlockManagerId(0, 172.18.0.4, 35591, None)\n26/09/27 09:56:07 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\n26/09/27 09:56:08 WARN ResolveWriteToStream: spark.sql.adaptive.enabled is not supported in streaming DataFrames/Datasets and will be disabled.\nWeather Silver Streaming started\nSilver Query: 30a9e932-8db4-40f9-a954-79e51886fc4a WeatherSilverStreaming-20260927T095536Z-f7a87d0f-silver True\nInvalid Query: e445e29b-a2ac-460d-ae38-cb76a9d2c441 WeatherSilverStreaming-20260927T095536Z-f7a87d0f-dlq True\n26/09/27 09:56:09 WARN SparkStringUtils: Truncated the string representation of a plan since it was too large. This behavior can be adjusted by setting 'spark.sql.debug.maxToStringFields'.\n26/09/27 09:56:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 19140 milliseconds\n26/09/27 09:56:27 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 19328 milliseconds\n26/09/27 09:56:33 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6566 milliseconds\n26/09/27 09:56:34 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6989 milliseconds\n26/09/27 09:56:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5798 milliseconds\n26/09/27 09:56:41 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 7192 milliseconds\n26/09/27 09:56:45 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 5755 milliseconds\n26/09/27 09:56:46 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4790 milliseconds\n26/09/27 09:56:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4646 milliseconds\n26/09/27 09:56:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4270 milliseconds\n26/09/27 09:56:54 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4020 milliseconds\n26/09/27 09:56:54 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3806 milliseconds\n26/09/27 09:56:58 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4411 milliseconds\n26/09/27 09:56:58 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4453 milliseconds\n26/09/27 09:57:01 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2222 milliseconds\n26/09/27 09:57:04 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3543 milliseconds\n26/09/27 09:57:05 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3954 milliseconds\n26/09/27 09:57:08 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3835 milliseconds\n26/09/27 09:57:08 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3815 milliseconds\n26/09/27 09:57:12 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3677 milliseconds\n26/09/27 09:57:18 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 9535 milliseconds\n26/09/27 09:57:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 8962 milliseconds\n26/09/27 09:57:21 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2914 milliseconds\n26/09/27 09:57:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 4049 milliseconds\n26/09/27 09:57:25 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3957 milliseconds\n26/09/27 09:57:28 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3346 milliseconds\n26/09/27 09:57:28 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2994 milliseconds\n26/09/27 09:57:32 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3655 milliseconds\n26/09/27 09:57:32 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3449 milliseconds\n26/09/27 09:57:36 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3705 milliseconds\n26/09/27 09:57:36 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3852 milliseconds\n26/09/27 09:57:39 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3709 milliseconds\n26/09/27 09:57:40 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3733 milliseconds\n26/09/27 09:57:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3651 milliseconds\n26/09/27 09:57:43 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3477 milliseconds\n26/09/27 09:57:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3711 milliseconds\n26/09/27 09:57:47 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3839 milliseconds\n26/09/27 09:57:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3659 milliseconds\n26/09/27 09:57:50 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3510 milliseconds\n26/09/27 09:57:53 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 3088 milliseconds\n26/09/27 09:57:57 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6650 milliseconds\n26/09/27 09:58:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 2868 milliseconds\n26/09/27 09:58:00 WARN ProcessingTimeExecutor: Current batch is falling behind. The trigger interval is 1000} milliseconds, but spent 6707 milliseconds\n26/09/27 09:58:01 WARN DAGScheduler: Failed to cancel job group 52a7d362-7d73-45b6-b7b6-f175f327390b. Cannot find active jobs for it.\n26/09/27 09:58:01 WARN DAGScheduler: Failed to cancel job group 96a35949-0e06-40ec-ba3b-13d0e0c8248f. Cannot find active jobs for it.\n26/09/27 09:58:01 WARN DAGScheduler: Failed to cancel job group 96a35949-0e06-40ec-ba3b-13d0e0c8248f. Cannot find active jobs for it.\nWeather Silver throughput run drained and stopped\n26/09/27 09:58:01 WARN TaskSetManager: Lost task 36.0 in stage 235.0 (TID 3134) (172.18.0.4 executor 0): TaskKilled (Stage cancelled: [SPARK_JOB_CANCELLED] Job 106 cancelled Query WeatherSilverStreaming-20260927T095536Z-f7a87d0f-silver [id = 30a9e932-8db4-40f9-a954-79e51886fc4a, runId = 52a7d362-7d73-45b6-b7b6-f175f327390b] was stopped SQLSTATE: XXKDA)"
+    }
+  },
+  "final_kafka_lag": 0,
+  "final_kafka_latest_offsets": {
+    "weather.bench.throughput.20260927t095536z-f7a87d0f:0": 50000
+  },
+  "fixed_infrastructure": {
+    "bronze_delta_initialized_empty_before_streaming": true,
+    "docker_container_limits": {
+      "weather-kafka": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "weather-spark-worker": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      }
+    },
+    "kafka": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "image": "apache/kafka:4.3.1",
+      "partition_count": 1,
+      "replication_factor": 1,
+      "version": "4.3.1"
+    },
+    "measurement_scope": "Kafka -> Bronze -> Silver and DLQ; Gold excluded",
+    "resource_sampling": {
+      "docker_stats_reported_memory_limit_is_host_capacity_when_container_limit_is_unset": true,
+      "hard_container_memory_limit_configured": false
+    },
+    "spark": {
+      "configured_container_limits": {
+        "configured_cpu_limit_cores": null,
+        "configured_memory_limit_mb": null
+      },
+      "cores_max_per_application": 1,
+      "delta_version": "4.0.0",
+      "deployment_mode": "client",
+      "executor_cores_per_application": 1,
+      "executor_memory_mb_per_application": 1024,
+      "image": "weather-spark:4.0.4-delta4.0.0",
+      "shuffle_partitions": 1,
+      "streaming_applications": 2,
+      "total_requested_executor_cores": 2,
+      "trigger_interval_seconds": 1,
+      "version": "4.0.4",
+      "worker_cores_available": 4,
+      "worker_count": 1,
+      "worker_memory_mb_available": 4096
+    }
+  },
+  "generation_elapsed_seconds": 100.00051610000082,
+  "generator_calibrated": true,
+  "generator_deviation_percent": 0.000516097337242627,
+  "git_commit": "0143ce5f4ef3310de51ad8b7f650160a3d995192",
+  "included_bronze_batches": 30,
+  "included_silver_batches": 20,
+  "input_records": 50000,
+  "kafka_lag_definition": "For each sample, sum(max(0, Kafka high/latest offset - Spark Kafka source end offset)) across the run topic partitions.",
+  "kafka_lag_sample_count": 127,
+  "kafka_partition_count": 1,
+  "kafka_topic": "weather.bench.throughput.20260927t095536z-f7a87d0f",
+  "latency_avg_ms": 2836.7128822000072,
+  "latency_count": 50000,
+  "latency_definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used.",
+  "latency_max_ms": 16658.459,
+  "latency_min_ms": 26.019,
+  "latency_p50_ms": 1648.194,
+  "latency_p95_ms": 11855.154,
+  "latency_p99_ms": 15855.197,
+  "latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+  "max_batch_duration_ms": 6446.0,
+  "max_kafka_lag": 11199,
+  "max_kafka_lag_during_production": 11199,
+  "null_metric_reasons": {
+    "kafka_lag": null,
+    "latency": null,
+    "resources": null
+  },
+  "observed_spark_runtime": {
+    "apps": [
+      {
+        "cores": 1,
+        "id": "app-20260927095601-0025",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherBronzeStreaming-20260927T095536Z-f7a87d0f",
+        "state": "RUNNING"
+      },
+      {
+        "cores": 1,
+        "id": "app-20260927095601-0026",
+        "memory_per_executor_mb": 1024,
+        "name": "WeatherSilverStreaming-20260927T095536Z-f7a87d0f",
+        "state": "RUNNING"
+      }
+    ],
+    "other_active_apps": [],
+    "workers": [
+      {
+        "cores_available": 4,
+        "cores_used": 2,
+        "id": "worker-20260927075255-172.18.0.4-36797",
+        "memory_available_mb": 4096,
+        "memory_used_mb": 2048,
+        "state": "ALIVE"
+      }
+    ]
+  },
+  "p95_batch_duration_ms": 5257.949999999999,
+  "peak_input_rows_per_sec": 592.3000987166831,
+  "peak_processed_rows_per_sec": 1377.1186440677966,
+  "processed_records": 50000,
+  "produced_messages": 50000,
+  "producer_elapsed_seconds": 100.00211390000186,
+  "producer_flush_remaining": 0,
+  "requested_rate_msgs_sec": 500,
+  "resource_sample_count": 94,
+  "run_id": "20260927T095536Z-f7a87d0f",
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 1,
+  "silver_avg_processed_rows_per_sec": 582.3793776991444,
+  "silver_input_records": 50000,
+  "silver_output_records": 50000,
+  "silver_peak_processed_rows_per_sec": 1853.7590113285273,
+  "spark_end_offsets": {
+    "weather.bench.throughput.20260927t095536z-f7a87d0f:0": 50000
+  },
+  "spark_start_offsets": {
+    "weather.bench.throughput.20260927t095536z-f7a87d0f:0": 0
+  },
+  "spark_worker_peak_cpu_percent": 723.37,
+  "spark_worker_peak_memory_mb": 2271.232,
+  "status": "NEAR_CAPACITY",
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "sustainable": true,
+  "warmup_batches_excluded_per_query": 2
+}

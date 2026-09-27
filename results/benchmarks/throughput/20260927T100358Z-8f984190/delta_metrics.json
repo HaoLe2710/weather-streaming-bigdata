@@ -1,0 +1,17 @@
+{
+  "bronze_records": 50000,
+  "dlq_records": 0,
+  "latency_avg_ms": 4842.345283119981,
+  "latency_count": 50000,
+  "latency_definition": "Bronze spark_processing_time minus simulator ingestion_time, measured for every Bronze message after the stream drains. Historical event_time is not used.",
+  "latency_max_ms": 18593.516,
+  "latency_min_ms": 99.848,
+  "latency_missing_records": 0,
+  "latency_p50_ms": 2771.787,
+  "latency_p95_ms": 15997.98,
+  "latency_p99_ms": 18000.018,
+  "latency_percentile_method": "Spark percentile_approx, accuracy=10000",
+  "run_id": "20260927T100358Z-8f984190",
+  "scenario": "THROUGHPUT_BASELINE",
+  "silver_records": 50000
+}

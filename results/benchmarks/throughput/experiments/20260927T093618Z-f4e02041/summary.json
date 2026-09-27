@@ -1,0 +1,46 @@
+{
+  "aggregate": {
+    "batch_duration_mean_ms": 2340.3044080723857,
+    "capacity_classifications": [
+      "NEAR_CAPACITY",
+      "NEAR_CAPACITY"
+    ],
+    "latency_p50_mean_ms": 355.278,
+    "latency_p95_mean_ms": 3602.9795000000004,
+    "latency_p99_mean_ms": 13150.3325,
+    "max_lag_mean": 2299.0,
+    "processed_rate_max": 106.60923905820623,
+    "processed_rate_mean": 106.6025476711599,
+    "processed_rate_min": 106.59585628411358,
+    "requested_rate_msgs_sec": 100,
+    "run_count": 2,
+    "run_ids": [
+      "20260927T093618Z-4654abdd",
+      "20260927T094552Z-26130c68"
+    ]
+  },
+  "calibration_summary": "results/benchmarks/throughput/experiments/20260927T093322Z-12167143/summary.json",
+  "completed_repetitions": 2,
+  "created_at": "2026-09-27T09:55:23+00:00",
+  "drain_timeout_seconds": 300.0,
+  "experiment_id": "20260927T093618Z-f4e02041",
+  "experiment_type": "throughput_repetitions",
+  "git_commit": "0143ce5f4ef3310de51ad8b7f650160a3d995192",
+  "requested_repetitions": 2,
+  "runs": [
+    {
+      "result": "results/benchmarks/throughput/20260927T093618Z-4654abdd/result.json",
+      "run_id": "20260927T093618Z-4654abdd",
+      "status": "NEAR_CAPACITY"
+    },
+    {
+      "result": "results/benchmarks/throughput/20260927T094552Z-26130c68/result.json",
+      "run_id": "20260927T094552Z-26130c68",
+      "status": "NEAR_CAPACITY"
+    }
+  ],
+  "scenario": "THROUGHPUT_BASELINE",
+  "schema_version": 1,
+  "source_record_limit": 50000,
+  "warmup_batches_excluded_per_query": 2
+}

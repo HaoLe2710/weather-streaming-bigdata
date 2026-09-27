@@ -286,6 +286,46 @@ Proceed to 2,000 or 5,000 only when the prior rate is sustainably handled and
 the generator calibration passes. Each run gets a new topic, Delta paths, and
 checkpoints. Topics and run outputs are retained.
 
+### Measurements on 2026-09-27
+
+The final calibration and streaming runs use commit `0143ce5`:
+
+| Requested rate (msg/s) | Calibrated generation (msg/s) | Including producer flush (msg/s) | Calibration |
+| ---: | ---: | ---: | :--- |
+| 100 | 100.00 | 100.00 | Pass |
+| 500 | 499.99 | 498.86 | Pass |
+| 1,000 | 999.98 | 999.81 | Pass |
+| 2,000 | 1,999.78 | 1,982.40 | Pass |
+| 5,000 | 4,999.58 | 4,995.60 | Pass |
+
+The streaming baseline ran two independent 50,000-message repetitions at each
+of 100, 500, and 1,000 msg/s. The table reports repetition means; throughput
+rates are averaged over non-warm-up Bronze progress batches, and latency is
+replay-to-Bronze processing latency.
+
+| Requested rate (msg/s) | Mean processed rate (rows/s) | Mean replay peak lag | Mean latency p50 / p95 / p99 | Mean drain (s) | Repetitions |
+| ---: | ---: | ---: | :--- | ---: | :--- |
+| 100 | 106.60 | 2,299 | 355 ms / 3.603 s / 13.150 s | 7.98 | 2/2 `NEAR_CAPACITY` |
+| 500 | 554.72 | 11,299 | 1.651 s / 12.135 s / 16.136 s | 13.34 | 2/2 `NEAR_CAPACITY` |
+| 1,000 | 1,115.80 | 22,300 | 2.580 s / 15.095 s / 17.096 s | 9.79 | 2/2 `NEAR_CAPACITY` |
+
+All six runs wrote 50,000 Bronze and 50,000 Silver records, zero DLQ records,
+and ended with zero sampled Kafka lag. Each was classified `NEAR_CAPACITY`
+because its peak replay lag exceeded the two-trigger allowance (200, 1,000,
+and 2,000 records at the three rates). No run reached `SATURATED`; the largest
+tested rate drained in under 11 seconds. The 2,000 and 5,000 msg/s rates were
+calibrated but not used for streaming runs because 1,000 msg/s was already
+classified `NEAR_CAPACITY` under the predefined rule.
+
+Aggregate evidence is in [`calibration summary`](../results/benchmarks/throughput/experiments/20260927T093322Z-12167143/summary.json), [`100 msg/s`](../results/benchmarks/throughput/experiments/20260927T093618Z-f4e02041/summary.json), [`500 msg/s`](../results/benchmarks/throughput/experiments/20260927T095536Z-2b9a845e/summary.json), and [`1,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T100158Z-6981caa6/summary.json). The B0 regression on the same commit is recorded in [`B0 result`](../results/benchmarks/b0/20260927T100636Z-1ed41634/result.json).
+
+An earlier 100 msg/s startup attempt on `3daf778` is retained with status
+`FAILED`; it stopped before simulator replay because Spark Master returned
+executor memory as an integer MB value that the runtime assertion initially
+interpreted as bytes. The check was corrected, the change was committed, and
+calibration was repeated against `0143ce5`; the failed attempt is excluded from
+the measurements above.
+
 ### Collected metrics and definitions
 
 - The simulator records requested/actual messages per second, source and
