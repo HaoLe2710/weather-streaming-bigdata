@@ -684,10 +684,12 @@ window, so it is excluded.
 | C1 p1-b2-s1-w2 | 1 | 2 | 2 / 1 | 3 | 8,966.95 | 6,129.94 | 6,129.94 | 0.692x | 80,100 | 17.512 s | 26.12 | NEAR / UNDER |
 | P3-B2-S2 p3-b2-s2-w1 | 3 | 1 | 2 / 2 | 4 allocated | N/A* | N/A* | N/A* | N/A | N/A | N/A | N/A | FAILED_RESOURCE_LIMIT |
 
-The old 8,000 msg/s summary used the mean of each run's per-run minimum for
-some pipeline values. The corrected rule first aggregates each stage and then
-takes the minimum. The corrected pipeline rates are 8,855.04 for B0,
-8,154.95 for B1, and 6,129.94 rows/s for C1. Relative to B0, B1 is 0.921x
+The old 8,000 msg/s B1 aggregate was 7,997.26 rows/s, the mean of its two
+per-run stage minima. The earlier table also showed Bronze (8,648.34) under
+the conflated `Pipeline / Bronze` heading. Both values are superseded here:
+the corrected rule first aggregates each stage and then takes the minimum.
+The corrected pipeline rates are 8,855.04 for B0, 8,154.95 for B1, and
+6,129.94 rows/s for C1. Relative to B0, B1 is 0.921x
 (-7.91%) and C1 is 0.692x (-30.77%). Equivalently, B0 is 1.086x B1 and
 1.445x C1. B1 is Silver-limited (8,154.95 vs 8,648.34 Bronze), and C1 is
 more strongly Silver-limited (6,129.94 vs 8,966.95 Bronze). For B0, Bronze is
