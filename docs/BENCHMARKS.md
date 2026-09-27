@@ -323,10 +323,54 @@ container.
 | 1,000 | 292.98 / 555.40 / 732.84 | 1,384.60 / 1,887.36 / 1,896.45 | 3.19 / 5.82 / 16.01 | 650.36 / 652.19 / 652.75 |
 
 Original calibration measured actual rates near 100, 499, 1,000, 1,982, and
-4,996 msg/s for requested 100, 500, 1,000, 2,000, and 5,000. The two highest
-rates are generator-only calibration, not observed pipeline capacity.
+4,996 msg/s for requested 100, 500, 1,000, 2,000, and 5,000. The 2,000 and
+5,000 msg/s pipeline runs above confirm those higher offered rates under the
+fixed infrastructure.
 
-Detailed results and raw input hashes are in [`raw artifact reanalysis`](../results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/summary.json) and its `runs/` folder. Previous per-rate summaries remain at [`100 msg/s`](../results/benchmarks/throughput/experiments/20260927T093618Z-f4e02041/summary.json), [`500 msg/s`](../results/benchmarks/throughput/experiments/20260927T095536Z-2b9a845e/summary.json), and [`1,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T100158Z-6981caa6/summary.json). The prior B0 result is [`here`](../results/benchmarks/b0/20260927T100636Z-1ed41634/result.json); a fresh B0 regression is required because the runner changed.
+Detailed results and raw input hashes are in [`raw artifact reanalysis`](../results/benchmarks/throughput/experiments/20260927T105412Z-07c8d44e/summary.json) and its `runs/` folder. Previous per-rate summaries remain at [`100 msg/s`](../results/benchmarks/throughput/experiments/20260927T093618Z-f4e02041/summary.json), [`500 msg/s`](../results/benchmarks/throughput/experiments/20260927T095536Z-2b9a845e/summary.json), and [`1,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T100158Z-6981caa6/summary.json). A fresh B0 regression after the runner refinement passed all 11 assertions in [`this result`](../results/benchmarks/b0/20260927T110549Z-43ffbfba/result.json).
+
+### Extended fixed-configuration rates (1,000 / 2,000 / 5,000 msg/s)
+
+The original 1,000 msg/s replay had only four or five steady-state Bronze
+samples. Two longer 100,000-record repetitions provided 50 seconds of offered
+load and were classified `UNDER_CAPACITY`. Since this rate remained
+sustainable, two 100,000-record repetitions were measured at 2,000 msg/s.
+Both completed and drained, so the conditional 5,000 msg/s step used 250,000
+records per repetition to retain 50 seconds of offered load. All runs kept the
+fixed configuration above and used zero fault injection.
+
+| Requested (records × reps) | Actual (msg/s) | Bronze / Silver (rows/s) | Startup peak lag | Steady avg / p95 / peak lag | Lag slope (records/s) | Drain (s) | Replay→Bronze p50 / p95 / p99 | Per-run classes | Aggregate |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- | :--- | :--- |
+| 1,000 (100k × 2) | 999.995 | 1,121.32 / 1,254.46 | 24,800 | 4,553 / 8,500 / 10,000 | -28.23 | 9.36 | 1.779 s / 14.007 s / 18.009 s | UNDER / UNDER | `UNDER_CAPACITY` |
+| 2,000 (100k × 2) | 1,999.969 | 2,060.00 / 3,623.53 | 48,800 | 9,421 / 12,490 / 13,200 | 44.69 | 11.10 | 2.804 s / 15.952 s / 17.952 s | NEAR / UNDER | `NEAR_CAPACITY` |
+| 5,000 (250k × 2) | 4,999.945 | 4,967.38 / 6,411.23 | 120,599 | 23,856 / 31,200 / 32,400 | 1,000.01 | 13.55 | 2.833 s / 15.587 s / 17.588 s | NEAR / NEAR | `NEAR_CAPACITY` |
+
+Both repetitions at each extended rate wrote all expected Bronze and Silver
+records, ended with zero Kafka-to-Bronze source lag, and drained after replay.
+The 2,000 msg/s runs differed: one was `NEAR_CAPACITY` and one
+`UNDER_CAPACITY`, so their aggregate is reported as `NEAR_CAPACITY`. At 5,000
+msg/s, both runs were `NEAR_CAPACITY`; the steady-state source backlog rose by
+about 1,000 records/s even though the finite replay drained in about 14
+seconds. Bronze throughput averaged about 99.35% of the actual offered rate.
+This is strong near-capacity evidence, but it does not meet the documented
+`SATURATED` rule, which also requires the pipeline rate to fall below 90% of
+the offered rate when the lag slope is high.
+
+| Requested | Worker CPU avg / p95 / peak (%) | Worker RAM avg / p95 / peak (MiB) | Broker CPU avg / p95 / peak (%) | Broker RAM avg / p95 / peak (MiB) |
+| ---: | :--- | :--- | :--- | :--- |
+| 1,000 (100k × 2) | 255.63 / 505.20 / 697.75 | 1,725.13 / 2,284.75 / 2,297.86 | 4.05 / 6.09 / 40.03 | 804.00 / 807.16 / 807.50 |
+| 2,000 (100k × 2) | 286.98 / 597.11 / 753.51 | 1,496.91 / 2,126.31 / 2,127.87 | 3.61 / 6.53 / 10.62 | 826.64 / 829.53 / 830.00 |
+| 5,000 (250k × 2) | 292.71 / 675.80 / 783.61 | 1,637.89 / 2,265.24 / 2,268.16 | 5.26 / 10.81 / 12.70 | 838.61 / 844.02 / 853.90 |
+
+The longer 1,000 msg/s evidence shows the earlier 50,000-record `NEAR_CAPACITY`
+classification was inconclusive: the extended repetitions are
+`UNDER_CAPACITY`. The measured fixed-configuration region is therefore
+`UNDER_CAPACITY` through 1,000 msg/s, with `NEAR_CAPACITY` behavior appearing
+by 2,000 msg/s and pronounced backlog growth at 5,000 msg/s. No run met the
+strict `SATURATED` classification through 5,000 msg/s; this milestone stops
+here without extrapolating to a higher rate or changing infrastructure.
+
+Raw telemetry and per-run outputs are retained with the [`1,000 msg/s extended`](../results/benchmarks/throughput/experiments/20260927T110751Z-9942215f/summary.json), [`2,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T111414Z-548a979e/summary.json), and [`5,000 msg/s`](../results/benchmarks/throughput/experiments/20260927T111912Z-318a4d6e/summary.json) experiment summaries.
 
 ### Metrics, steady-state selection, and completion
 
@@ -401,7 +445,9 @@ python benchmark/reanalyze_throughput.py --rates 100,500,1000
 
 For high rates, use enough records to provide at least 30–60 seconds of input.
 Examples are 100,000 records at 1,000 or 2,000 msg/s and 250,000 records at
-5,000 msg/s. Keep all infrastructure and other workload settings fixed.
+5,000 msg/s. Keep all infrastructure and other workload settings fixed. This
+milestone measured 2,000 and 5,000 only after the preceding rate completed and
+drained; do not treat these examples as a reason to test beyond 5,000.
 
 ### Run artifacts
 
