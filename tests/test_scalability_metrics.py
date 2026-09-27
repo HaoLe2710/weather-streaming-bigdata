@@ -215,6 +215,41 @@ class ScalabilityMetricsTests(unittest.TestCase):
         self.assertEqual(result["actual_allocated_cores_by_app"]["WeatherBronzeStreaming-r1"], 1)
         self.assertTrue(any("requested 2 cores but has 1 allocated" in error for error in result["errors"]))
 
+    def test_allocation_uses_master_core_totals_when_worker_ui_omits_executor_cores(self):
+        config = ScalabilityConfig(partitions=3, bronze_cores=2, silver_cores=1, workers=1)
+        observation = {
+            "apps": [
+                {
+                    "name": "WeatherBronzeStreaming-r1",
+                    "cores": 2,
+                    "actual_allocated_cores": 2,
+                    "executors": [
+                        {"cores": None, "memory_mb": 1024, "worker_id": "w1"},
+                        {"cores": None, "memory_mb": 1024, "worker_id": "w1"},
+                    ],
+                },
+                {
+                    "name": "WeatherSilverStreaming-r1",
+                    "cores": 1,
+                    "actual_allocated_cores": 1,
+                    "executors": [
+                        {"cores": None, "memory_mb": 1024, "worker_id": "w1"},
+                    ],
+                },
+            ],
+            "workers": [
+                {"id": "w1", "state": "ALIVE", "cores_available": 4, "memory_available_mb": 4096},
+            ],
+            "other_active_apps": [],
+        }
+
+        result = validate_runtime_allocation(observation, run_id="r1", config=config)
+
+        self.assertTrue(result["passed"], result["errors"])
+        self.assertEqual(result["actual_allocated_cores_by_app"]["WeatherBronzeStreaming-r1"], 2)
+        self.assertEqual(result["actual_allocated_cores_total"], 3)
+        self.assertFalse(result["executor_core_width_observed_by_app"]["WeatherBronzeStreaming-r1"])
+
     def test_progress_percentiles_use_main_silver_query_and_window(self):
         rows = [
             {"stage": "bronze", "event_type": "progress", "captured_at_utc": "2026-01-01T00:00:10Z", "progress": {"processedRowsPerSecond": 100, "durationMs": {"triggerExecution": 20}}},

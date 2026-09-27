@@ -505,9 +505,22 @@ def _spark_active_apps(run_id: str, *, include_executors: bool = False) -> dict:
             for app in result["apps"]:
                 executors = executor_by_app.get(str(app.get("name")), [])
                 app["executors"] = executors
-                app["actual_allocated_cores"] = sum(
-                    int(executor.get("cores") or 0) for executor in executors
-                )
+                master_cores = app.get("cores")
+                observed_executor_cores = [
+                    int(executor["cores"])
+                    for executor in executors
+                    if isinstance(executor.get("cores"), (int, float))
+                    and not isinstance(executor.get("cores"), bool)
+                ]
+                if isinstance(master_cores, (int, float)) and not isinstance(master_cores, bool):
+                    app["actual_allocated_cores"] = int(master_cores)
+                    app["actual_allocated_cores_source"] = "spark_master_active_apps.cores"
+                elif observed_executor_cores:
+                    app["actual_allocated_cores"] = sum(observed_executor_cores)
+                    app["actual_allocated_cores_source"] = "worker_executor_cores"
+                else:
+                    app["actual_allocated_cores"] = None
+                    app["actual_allocated_cores_source"] = None
                 app["actual_executor_count"] = len(executors)
                 app["actual_executor_cores"] = [executor.get("cores") for executor in executors]
                 app["actual_executor_memory_mb"] = [executor.get("memory_mb") for executor in executors]

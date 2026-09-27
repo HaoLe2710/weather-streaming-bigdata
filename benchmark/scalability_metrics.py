@@ -343,33 +343,51 @@ def validate_runtime_allocation(
         if worker.get("memory_available_mb") != config.worker_memory_mb_each:
             errors.append(f"Spark worker {worker.get('id')} has unexpected memory.")
 
-    allocation_by_app: dict[str, int] = {}
+    allocation_by_app: dict[str, int | None] = {}
     executor_count_by_app: dict[str, int] = {}
     executor_workers_by_app: dict[str, list[str]] = {}
     executor_details_by_app: dict[str, list[dict[str, Any]]] = {}
+    executor_core_width_observed_by_app: dict[str, bool] = {}
     for app_name, expected in expected_cores.items():
         app = apps.get(app_name)
         if app is None:
             continue
         executors = app.get("executors") or []
-        actual_cores = sum(
-            int(executor.get("cores") or 0)
+        reported_cores = _number_value(app.get("actual_allocated_cores"))
+        if reported_cores is None:
+            reported_cores = _number_value(app.get("cores"))
+        observed_executor_cores = [
+            _number_value(executor.get("cores"))
             for executor in executors
-            if _number(executor.get("cores"))
-        )
+            if _number_value(executor.get("cores")) is not None
+        ]
+        if reported_cores is not None:
+            actual_cores: int | None = int(reported_cores)
+        elif observed_executor_cores:
+            actual_cores = int(sum(observed_executor_cores))
+        else:
+            actual_cores = None
         allocation_by_app[app_name] = actual_cores
         executor_count_by_app[app_name] = len(executors)
         worker_ids = sorted({str(executor.get("worker_id")) for executor in executors if executor.get("worker_id")})
         executor_workers_by_app[app_name] = worker_ids
         executor_details_by_app[app_name] = executors
-        if actual_cores != expected:
+        executor_core_width_observed_by_app[app_name] = len(observed_executor_cores) == len(executors) and bool(executors)
+        if actual_cores is None:
+            errors.append(f"{app_name} has no observed aggregate core allocation.")
+        elif actual_cores != expected:
             errors.append(f"{app_name} requested {expected} cores but has {actual_cores} allocated.")
         if not executors:
             errors.append(f"{app_name} has no active executor evidence.")
+        elif actual_cores is not None and actual_cores != len(executors) * config.executor_cores:
+            errors.append(
+                f"{app_name} has {actual_cores} aggregate cores across {len(executors)} executors; "
+                f"expected {config.executor_cores} core(s) per executor."
+            )
         for executor in executors:
             if executor.get("memory_mb") != config.executor_memory_mb:
                 errors.append(f"{app_name} has an executor with unexpected memory.")
-            if executor.get("cores") != config.executor_cores:
+            if executor.get("cores") is not None and executor.get("cores") != config.executor_cores:
                 errors.append(f"{app_name} has an executor with unexpected core width.")
 
     assigned_workers = sorted({
@@ -379,7 +397,7 @@ def validate_runtime_allocation(
     })
     if config.workers > 1 and len(assigned_workers) < 2:
         errors.append("Executors did not run across both registered Spark workers.")
-    total_allocated = sum(allocation_by_app.values())
+    total_allocated = sum(cores for cores in allocation_by_app.values() if cores is not None)
     return {
         "passed": not errors,
         "errors": errors,
@@ -387,6 +405,7 @@ def validate_runtime_allocation(
         "actual_allocated_cores_by_app": allocation_by_app,
         "actual_allocated_cores_total": total_allocated,
         "executor_count_by_app": executor_count_by_app,
+        "executor_core_width_observed_by_app": executor_core_width_observed_by_app,
         "executor_workers_by_app": executor_workers_by_app,
         "executor_details_by_app": executor_details_by_app,
         "worker_count": len(workers),
