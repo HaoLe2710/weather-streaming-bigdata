@@ -108,6 +108,7 @@ def compute_scalability_metrics(
     )
     return {
         "speedup": speedup,
+        "throughput_gain_percent": (speedup - 1) * 100 if speedup is not None else None,
         "compute_multiplier": core_multiplier,
         "scaling_efficiency": (
             speedup / core_multiplier
@@ -155,8 +156,9 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
     runs = list(results)
     if not runs:
         raise ValueError("At least one scalability run is required.")
-    valid_runs = [run for run in runs if run.get("valid_for_comparison") is True]
-    metric_runs = valid_runs or runs
+    run_audits = [_scalability_run_audit(run) for run in runs]
+    valid_runs = [run for run, audit in zip(runs, run_audits) if audit["valid_for_comparison"]]
+    metric_runs = valid_runs
     fields = {
         "actual_rate": "actual_generated_msgs_sec",
         "bronze_processed_rate_avg": "avg_processed_rows_per_sec",
@@ -190,24 +192,12 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
         numeric = [value for value in values if value is not None]
         metrics[label] = _statistics(numeric)
 
-    stages_complete = bool(metric_runs) and all(
-        bronze is not None and silver is not None
-        for bronze, silver in zip(bronze_stage_rates, silver_stage_rates)
-    )
-    stage_statistics = ("mean", "median", "min", "max")
-    metrics["pipeline_rate"] = {
-        statistic: (
-            min(
-                metrics["bronze_processed_rate_avg"][statistic],
-                metrics["silver_processed_rate_avg"][statistic],
-            )
-            if stages_complete
-            and metrics["bronze_processed_rate_avg"][statistic] is not None
-            and metrics["silver_processed_rate_avg"][statistic] is not None
-            else None
-        )
-        for statistic in stage_statistics
-    }
+    pipeline_rates = [
+        audit["pipeline_rate"]
+        for audit in run_audits
+        if audit["valid_for_comparison"] and audit["pipeline_rate"] is not None
+    ]
+    metrics["pipeline_rate"] = _statistics(pipeline_rates)
 
     worker_cpu = [
         _nested_number(run, "scalability_resource_metrics", "cluster_aggregate", "cpu_p95_percent")
@@ -244,23 +234,38 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
         metrics[label] = _statistics([value for value in values if value is not None])
 
     classifications = [run.get("capacity_classification") for run in runs]
+    legacy_statuses = [audit["legacy_pipeline_status"] for audit in run_audits]
+    if "LEGACY_PIPELINE_NOT_RECOMPUTABLE" in legacy_statuses:
+        legacy_pipeline_status = "LEGACY_PIPELINE_NOT_RECOMPUTABLE"
+    elif "RECOMPUTED_FROM_STAGE_RATES" in legacy_statuses:
+        legacy_pipeline_status = "RECOMPUTED_FROM_STAGE_RATES"
+    else:
+        legacy_pipeline_status = "NO_LEGACY_PIPELINE_FIELD"
     aggregate: dict[str, Any] = {
         "run_count": len(runs),
         "valid_run_count": len(valid_runs),
-        "metrics_scope": "valid_runs" if valid_runs else "all_attempts_no_valid_comparison_run",
+        "reported_valid_run_count": sum(run.get("valid_for_comparison") is True for run in runs),
+        "metrics_scope": "valid_runs" if valid_runs else "no_valid_comparison_runs",
         "run_ids": [run.get("run_id") for run in runs],
         "statuses": [run.get("status") for run in runs],
         "capacity_classifications": classifications,
+        "per_run_pipeline_rate": run_audits,
         "pipeline_rate_definition": (
-            "minimum of the aggregated steady-state Bronze and Silver processed rates; "
-            "both stages must have positive finite rates in every included comparison run"
+            "for each eligible run, minimum of that run's positive finite steady-state Bronze and Silver rates; "
+            "experiment statistics aggregate those per-run pipeline rates"
         ),
+        "legacy_pipeline_status": legacy_pipeline_status,
+        "pipeline_rate_status": "NO_VALID_PIPELINE_RUNS",
         "metrics": metrics,
     }
-    if not stages_complete:
+    if not pipeline_rates:
         aggregate["pipeline_rate_unavailable_reason"] = (
-            "At least one included comparison run is missing a positive finite Bronze or Silver rate."
+            "No run met comparison eligibility with positive finite Bronze and Silver rates."
         )
+        if legacy_pipeline_status == "LEGACY_PIPELINE_NOT_RECOMPUTABLE":
+            aggregate["pipeline_rate_status"] = "LEGACY_PIPELINE_NOT_RECOMPUTABLE"
+    else:
+        aggregate["pipeline_rate_status"] = "RECOMPUTED_FROM_PER_RUN_STAGE_RATES"
     for label, summary in metrics.items():
         aggregate[f"{label}_mean"] = summary["mean"]
         aggregate[f"{label}_median"] = summary["median"]
@@ -271,6 +276,101 @@ def aggregate_scalability_runs(results: Iterable[dict[str, Any]]) -> dict[str, A
     aggregate["worker_cpu_p95_mean"] = aggregate["worker_cpu_p95_percent_mean"]
     aggregate["worker_memory_p95_mean_mb"] = aggregate["worker_memory_p95_mb_mean"]
     return aggregate
+
+
+_REQUIRED_CORRECTNESS_CHECKS = (
+    "bronze_matches_expected",
+    "silver_matches_expected",
+    "dlq_is_empty",
+    "duplicate_event_groups_are_empty",
+    "quality_violations_are_empty",
+)
+
+
+def _scalability_run_audit(run: dict[str, Any]) -> dict[str, Any]:
+    bronze_rate = _stage_rate_value(run, "bronze")
+    silver_rate = _stage_rate_value(run, "silver")
+    reasons: list[str] = []
+    status = str(run.get("status") or "").upper()
+
+    if run.get("valid_for_comparison") is not True:
+        reasons.append("valid_for_comparison is not true")
+    if not status:
+        reasons.append("run status is missing")
+    invalid_statuses = {
+        "FAILED",
+        "INVALID_FOR_COMPARISON",
+        "INVALID_CORRECTNESS",
+        "FAILED_RESOURCE_LIMIT",
+        "LOAD_GENERATOR_LIMITED",
+    }
+    if status in invalid_statuses or status.startswith(("FAILED_", "INVALID_")):
+        reasons.append(f"run status is {status}")
+    if (
+        run.get("resource_safety_interrupted") is True
+        or bool(run.get("resource_safety_interruption"))
+        or run.get("broker_failure") is True
+        or str(run.get("broker_status") or "").upper() in {"FAILED", "UNAVAILABLE"}
+    ):
+        reasons.append("resource safety interruption or broker failure was recorded")
+    if any(
+        run.get(key) is True
+        for key in ("bronze_query_failed", "silver_query_failed", "query_failed")
+    ):
+        reasons.append("a streaming query failed")
+
+    checks = run.get("correctness_checks")
+    checks_complete = isinstance(checks, dict) and all(key in checks for key in _REQUIRED_CORRECTNESS_CHECKS)
+    checks_failed = not isinstance(checks, dict)
+    if isinstance(checks, dict):
+        checks_failed = any(
+            checks.get(key) is not True for key in _REQUIRED_CORRECTNESS_CHECKS
+        ) or any(value is not True for value in checks.values())
+    if run.get("correctness_passed") is not True or not checks_complete or checks_failed:
+        reasons.append("correctness did not complete successfully")
+
+    final_lag = run.get("final_source_lag")
+    if final_lag is None:
+        final_lag = run.get("final_kafka_to_bronze_lag")
+    if not _number(final_lag) or float(final_lag) != 0:
+        reasons.append("final source lag is missing or nonzero")
+
+    return_codes = run.get("stream_process_return_codes")
+    if not isinstance(return_codes, dict) or any(
+        return_codes.get(stage) != 0 for stage in ("bronze", "silver")
+    ):
+        reasons.append("Bronze or Silver streaming query return status is missing or failed")
+
+    allocation = run.get("scalability_runtime_validation")
+    if not isinstance(allocation, dict) or allocation.get("passed") is not True:
+        reasons.append("requested actual Spark allocation was not verified")
+
+    if bronze_rate is None:
+        reasons.append("Bronze steady-state rate is missing or invalid")
+    if silver_rate is None:
+        reasons.append("Silver steady-state rate is missing or invalid")
+
+    legacy_pipeline_present = any(
+        run.get(key) is not None for key in ("pipeline_sustainable_rate", "pipeline_rate")
+    )
+    if legacy_pipeline_present and (bronze_rate is None or silver_rate is None):
+        legacy_status = "LEGACY_PIPELINE_NOT_RECOMPUTABLE"
+    elif legacy_pipeline_present:
+        legacy_status = "RECOMPUTED_FROM_STAGE_RATES"
+    else:
+        legacy_status = "NO_LEGACY_PIPELINE_FIELD"
+
+    eligible = not reasons
+    return {
+        "run_id": run.get("run_id"),
+        "status": run.get("status"),
+        "valid_for_comparison": eligible,
+        "exclusion_reasons": reasons,
+        "bronze_rate": bronze_rate,
+        "silver_rate": silver_rate,
+        "pipeline_rate": min(bronze_rate, silver_rate) if eligible else None,
+        "legacy_pipeline_status": legacy_status,
+    }
 
 
 def select_best_partition_config(config_summaries: dict[str, dict[str, Any]]) -> str:

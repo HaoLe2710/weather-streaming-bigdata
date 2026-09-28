@@ -18,6 +18,18 @@ class BenchmarkRunnerLifecycleTests(unittest.TestCase):
                 {
                     "run_id": "run-1",
                     "valid_for_comparison": True,
+                    "status": "UNDER_CAPACITY",
+                    "correctness_passed": True,
+                    "correctness_checks": {
+                        "bronze_matches_expected": True,
+                        "silver_matches_expected": True,
+                        "dlq_is_empty": True,
+                        "duplicate_event_groups_are_empty": True,
+                        "quality_violations_are_empty": True,
+                    },
+                    "final_source_lag": 0,
+                    "stream_process_return_codes": {"bronze": 0, "silver": 0},
+                    "scalability_runtime_validation": {"passed": True},
                     "avg_processed_rows_per_sec": 123.0,
                     "silver_avg_processed_rows_per_sec": 150.0,
                     "pipeline_sustainable_rate": 123.0,
