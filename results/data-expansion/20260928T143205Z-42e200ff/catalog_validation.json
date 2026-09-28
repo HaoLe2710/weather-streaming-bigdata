@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "admin_snapshot": "VN_63_PRE_2025_MERGER",
+  "catalog_count": 63,
+  "unique_location_ids": 63,
+  "unique_canonical_names": 63,
+  "central_city_count": 6,
+  "province_count": 57,
+  "original_20_preserved": 20,
+  "new_location_count": 43,
+  "duplicate_coordinate_pairs": {},
+  "errors": [],
+  "validated_at": "2026-09-28T14:38:30.636729+00:00",
+  "catalog_path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\historical\\locations.json",
+  "catalog_sha256": "e57910b3bc222784b0d1cdddf30593bfbece9065ba12d67c73f8ac9bc9fe8728"
+}
