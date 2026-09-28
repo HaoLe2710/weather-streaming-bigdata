@@ -1,0 +1,129 @@
+{
+  "actual_allocation": {
+    "actual_allocated_cores_by_app": {
+      "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e": 2,
+      "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e": 1
+    },
+    "actual_allocated_cores_total": 3,
+    "assigned_worker_ids": [
+      "worker-20260927123744-172.18.0.4-35099"
+    ],
+    "executor_count_by_app": {
+      "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e": 2,
+      "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e": 1
+    },
+    "executor_details_by_app": {
+      "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e": [
+        {
+          "app_id": "app-20260927152059-0227",
+          "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+          "cores": null,
+          "executor_id": 1,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        },
+        {
+          "app_id": "app-20260927152059-0227",
+          "application": "WeatherBronzeStreaming-20260927T152036Z-3a0c5f5e",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ],
+      "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e": [
+        {
+          "app_id": "app-20260927152059-0228",
+          "application": "WeatherSilverStreaming-20260927T152036Z-3a0c5f5e",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ]
+    },
+    "passed": true,
+    "worker_count": 1
+  },
+  "actual_generated_msgs_sec": 4999.969105189935,
+  "bronze_rate": 5454.9856826530695,
+  "config_id": "p1-b2-s1-w1",
+  "correctness_checks": {
+    "bronze_matches_expected": true,
+    "dlq_is_empty": true,
+    "duplicate_event_groups_are_empty": true,
+    "quality_violations_are_empty": true,
+    "silver_matches_expected": true
+  },
+  "correctness_passed": true,
+  "drain_seconds": 14.082744700019248,
+  "exclusion_reasons": [],
+  "final_source_lag": 0,
+  "input_records": 500000,
+  "partition_distribution": {
+    "max_partition_records": 500000,
+    "mean_partition_records": 500000,
+    "min_partition_records": 500000,
+    "partition_imbalance_ratio": 1.0,
+    "records_per_partition": {
+      "0": 500000
+    }
+  },
+  "replay_to_bronze_latency_p95_ms": 11625.106,
+  "requested_rate_msgs_sec": 5000,
+  "resource_metrics": {
+    "cluster_aggregate": {
+      "cpu_avg_percent": 334.6639583333333,
+      "cpu_p50_percent": 304.71500000000003,
+      "cpu_p95_percent": 711.7569999999997,
+      "cpu_peak_percent": 906.26,
+      "memory_avg_mb": 2210.0968333333335,
+      "memory_p50_mb": 2437.12,
+      "memory_p95_mb": 2934.784,
+      "memory_peak_mb": 2967.552,
+      "sample_count": 48
+    },
+    "cluster_aggregate_cpu_definition": "sum of per-worker Docker CPU percent at each sample timestamp",
+    "cluster_aggregate_memory_definition": "sum of per-worker resident memory at each sample timestamp",
+    "cluster_worker_count": 1,
+    "kafka_broker": {
+      "cpu_avg_percent": 5.620208333333333,
+      "cpu_p50_percent": 5.365,
+      "cpu_p95_percent": 8.9285,
+      "cpu_peak_percent": 28.28,
+      "memory_avg_mb": 789.04375,
+      "memory_p50_mb": 804.0999999999999,
+      "memory_p95_mb": 826.8649999999999,
+      "memory_peak_mb": 827.0,
+      "sample_count": 48
+    },
+    "per_worker": {
+      "weather-streaming-bigdata-spark-worker-1": {
+        "cpu_avg_percent": 334.6639583333333,
+        "cpu_p50_percent": 304.71500000000003,
+        "cpu_p95_percent": 711.7569999999997,
+        "cpu_peak_percent": 906.26,
+        "memory_avg_mb": 2210.0968333333335,
+        "memory_p50_mb": 2437.12,
+        "memory_p95_mb": 2934.784,
+        "memory_peak_mb": 2967.552,
+        "sample_count": 48
+      }
+    }
+  },
+  "run_id": "20260927T152036Z-3a0c5f5e",
+  "run_pipeline_rate": 5454.9856826530695,
+  "schema_version": 1,
+  "silver_rate": 6186.097850219927,
+  "source_result": "results/benchmarks/scalability/20260927T152036Z-3a0c5f5e/result.json",
+  "source_sha256": "77ae3a130dc6041121e28963a80fff3ec9ac5a6dff64d87dbfc96d1bdcd268ae",
+  "status": "UNDER_CAPACITY",
+  "steady_state_lag_slope_records_per_sec": -228.4132516098317,
+  "steady_state_p95_kafka_to_bronze_lag": 33639.999999999985,
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "stream_shutdown_confirmed": true,
+  "valid_for_comparison": true
+}

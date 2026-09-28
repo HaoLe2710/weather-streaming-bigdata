@@ -1,0 +1,141 @@
+{
+  "actual_allocation": {
+    "actual_allocated_cores_by_app": {
+      "WeatherBronzeStreaming-20260927T150815Z-77998358": 2,
+      "WeatherSilverStreaming-20260927T150815Z-77998358": 1
+    },
+    "actual_allocated_cores_total": 3,
+    "assigned_worker_ids": [
+      "worker-20260927123744-172.18.0.4-35099",
+      "worker-20260927150758-172.18.0.5-39537"
+    ],
+    "executor_count_by_app": {
+      "WeatherBronzeStreaming-20260927T150815Z-77998358": 2,
+      "WeatherSilverStreaming-20260927T150815Z-77998358": 1
+    },
+    "executor_details_by_app": {
+      "WeatherBronzeStreaming-20260927T150815Z-77998358": [
+        {
+          "app_id": "app-20260927150842-0215",
+          "application": "WeatherBronzeStreaming-20260927T150815Z-77998358",
+          "cores": null,
+          "executor_id": 1,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        },
+        {
+          "app_id": "app-20260927150842-0215",
+          "application": "WeatherBronzeStreaming-20260927T150815Z-77998358",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927150758-172.18.0.5-39537"
+        }
+      ],
+      "WeatherSilverStreaming-20260927T150815Z-77998358": [
+        {
+          "app_id": "app-20260927150842-0216",
+          "application": "WeatherSilverStreaming-20260927T150815Z-77998358",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927150758-172.18.0.5-39537"
+        }
+      ]
+    },
+    "passed": true,
+    "worker_count": 2
+  },
+  "actual_generated_msgs_sec": 7999.9604081971465,
+  "bronze_rate": 9157.421401036012,
+  "config_id": "p1-b2-s1-w2",
+  "correctness_checks": {
+    "bronze_matches_expected": true,
+    "dlq_is_empty": true,
+    "duplicate_event_groups_are_empty": true,
+    "quality_violations_are_empty": true,
+    "silver_matches_expected": true
+  },
+  "correctness_passed": true,
+  "drain_seconds": 32.13981559997774,
+  "exclusion_reasons": [],
+  "final_source_lag": 0,
+  "input_records": 800000,
+  "partition_distribution": {
+    "max_partition_records": 800000,
+    "mean_partition_records": 800000,
+    "min_partition_records": 800000,
+    "partition_imbalance_ratio": 1.0,
+    "records_per_partition": {
+      "0": 800000
+    }
+  },
+  "replay_to_bronze_latency_p95_ms": 14915.606,
+  "requested_rate_msgs_sec": 8000,
+  "resource_metrics": {
+    "cluster_aggregate": {
+      "cpu_avg_percent": 326.98875,
+      "cpu_p50_percent": 317.14500000000004,
+      "cpu_p95_percent": 668.7059999999999,
+      "cpu_peak_percent": 913.2,
+      "memory_avg_mb": 2333.5739166666667,
+      "memory_p50_mb": 2709.482,
+      "memory_p95_mb": 3052.636,
+      "memory_peak_mb": 3056.608,
+      "sample_count": 48
+    },
+    "cluster_aggregate_cpu_definition": "sum of per-worker Docker CPU percent at each sample timestamp",
+    "cluster_aggregate_memory_definition": "sum of per-worker resident memory at each sample timestamp",
+    "cluster_worker_count": 2,
+    "kafka_broker": {
+      "cpu_avg_percent": 12.940208333333333,
+      "cpu_p50_percent": 10.71,
+      "cpu_p95_percent": 33.39199999999998,
+      "cpu_peak_percent": 70.39,
+      "memory_avg_mb": 803.18125,
+      "memory_p50_mb": 808.35,
+      "memory_p95_mb": 840.755,
+      "memory_peak_mb": 851.5,
+      "sample_count": 48
+    },
+    "per_worker": {
+      "weather-streaming-bigdata-spark-worker-1": {
+        "cpu_avg_percent": 101.97479166666666,
+        "cpu_p50_percent": 100.97,
+        "cpu_p95_percent": 225.16400000000002,
+        "cpu_peak_percent": 356.93,
+        "memory_avg_mb": 806.4020833333333,
+        "memory_p50_mb": 904.3,
+        "memory_p95_mb": 961.76,
+        "memory_peak_mb": 964.5,
+        "sample_count": 48
+      },
+      "weather-streaming-bigdata-spark-worker-2": {
+        "cpu_avg_percent": 225.01395833333333,
+        "cpu_p50_percent": 204.5,
+        "cpu_p95_percent": 398.5685,
+        "cpu_peak_percent": 619.75,
+        "memory_avg_mb": 1527.1718333333333,
+        "memory_p50_mb": 1823.232,
+        "memory_p95_mb": 2114.816,
+        "memory_peak_mb": 2117.632,
+        "sample_count": 48
+      }
+    }
+  },
+  "run_id": "20260927T150815Z-77998358",
+  "run_pipeline_rate": 4564.453236997534,
+  "schema_version": 1,
+  "silver_rate": 4564.453236997534,
+  "source_result": "results/benchmarks/scalability/20260927T150815Z-77998358/result.json",
+  "source_sha256": "29785121b72ec6141f43c210d789df0957804aaf6de43fb1dcb027cf65134c9e",
+  "status": "NEAR_CAPACITY",
+  "steady_state_lag_slope_records_per_sec": -2234.204474186359,
+  "steady_state_p95_kafka_to_bronze_lag": 101199.99999999999,
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "stream_shutdown_confirmed": true,
+  "valid_for_comparison": true
+}

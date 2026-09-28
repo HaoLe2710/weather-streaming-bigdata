@@ -1,0 +1,121 @@
+{
+  "actual_allocation": {
+    "actual_allocated_cores_by_app": {
+      "WeatherBronzeStreaming-20260927T145453Z-0fe7d813": 1,
+      "WeatherSilverStreaming-20260927T145453Z-0fe7d813": 1
+    },
+    "actual_allocated_cores_total": 2,
+    "assigned_worker_ids": [
+      "worker-20260927123744-172.18.0.4-35099"
+    ],
+    "executor_count_by_app": {
+      "WeatherBronzeStreaming-20260927T145453Z-0fe7d813": 1,
+      "WeatherSilverStreaming-20260927T145453Z-0fe7d813": 1
+    },
+    "executor_details_by_app": {
+      "WeatherBronzeStreaming-20260927T145453Z-0fe7d813": [
+        {
+          "app_id": "app-20260927145518-0199",
+          "application": "WeatherBronzeStreaming-20260927T145453Z-0fe7d813",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ],
+      "WeatherSilverStreaming-20260927T145453Z-0fe7d813": [
+        {
+          "app_id": "app-20260927145518-0200",
+          "application": "WeatherSilverStreaming-20260927T145453Z-0fe7d813",
+          "cores": null,
+          "executor_id": 0,
+          "memory_mb": 1024,
+          "worker_id": "worker-20260927123744-172.18.0.4-35099"
+        }
+      ]
+    },
+    "passed": true,
+    "worker_count": 1
+  },
+  "actual_generated_msgs_sec": 7999.9579282198765,
+  "bronze_rate": 8993.959087205527,
+  "config_id": "p1-b1-s1-w1",
+  "correctness_checks": {
+    "bronze_matches_expected": true,
+    "dlq_is_empty": true,
+    "duplicate_event_groups_are_empty": true,
+    "quality_violations_are_empty": true,
+    "silver_matches_expected": true
+  },
+  "correctness_passed": true,
+  "drain_seconds": 15.577596099989023,
+  "exclusion_reasons": [],
+  "final_source_lag": 0,
+  "input_records": 800000,
+  "partition_distribution": {
+    "max_partition_records": 800000,
+    "mean_partition_records": 800000,
+    "min_partition_records": 800000,
+    "partition_imbalance_ratio": 1.0,
+    "records_per_partition": {
+      "0": 800000
+    }
+  },
+  "replay_to_bronze_latency_p95_ms": 11184.855,
+  "requested_rate_msgs_sec": 8000,
+  "resource_metrics": {
+    "cluster_aggregate": {
+      "cpu_avg_percent": 257.59125,
+      "cpu_p50_percent": 247.34,
+      "cpu_p95_percent": 518.7969999999998,
+      "cpu_peak_percent": 699.11,
+      "memory_avg_mb": 1653.9050833333333,
+      "memory_p50_mb": 1948.672,
+      "memory_p95_mb": 2195.0976,
+      "memory_peak_mb": 2266.112,
+      "sample_count": 48
+    },
+    "cluster_aggregate_cpu_definition": "sum of per-worker Docker CPU percent at each sample timestamp",
+    "cluster_aggregate_memory_definition": "sum of per-worker resident memory at each sample timestamp",
+    "cluster_worker_count": 1,
+    "kafka_broker": {
+      "cpu_avg_percent": 15.804166666666667,
+      "cpu_p50_percent": 10.575,
+      "cpu_p95_percent": 47.79799999999997,
+      "cpu_peak_percent": 93.37,
+      "memory_avg_mb": 1060.5866666666666,
+      "memory_p50_mb": 1061.888,
+      "memory_p95_mb": 1074.432,
+      "memory_peak_mb": 1079.296,
+      "sample_count": 48
+    },
+    "per_worker": {
+      "weather-streaming-bigdata-spark-worker-1": {
+        "cpu_avg_percent": 257.59125,
+        "cpu_p50_percent": 247.34,
+        "cpu_p95_percent": 518.7969999999998,
+        "cpu_peak_percent": 699.11,
+        "memory_avg_mb": 1653.9050833333333,
+        "memory_p50_mb": 1948.672,
+        "memory_p95_mb": 2195.0976,
+        "memory_peak_mb": 2266.112,
+        "sample_count": 48
+      }
+    }
+  },
+  "run_id": "20260927T145453Z-0fe7d813",
+  "run_pipeline_rate": 8993.959087205527,
+  "schema_version": 1,
+  "silver_rate": 9078.653894025032,
+  "source_result": "results/benchmarks/scalability/20260927T145453Z-0fe7d813/result.json",
+  "source_sha256": "65b6b46afe0837ff1510f56775fb568b0b1af4b5614ee699a012b64755d541fd",
+  "status": "UNDER_CAPACITY",
+  "steady_state_lag_slope_records_per_sec": -351.96922773720127,
+  "steady_state_p95_kafka_to_bronze_lag": 76480.0,
+  "stream_process_return_codes": {
+    "bronze": 0,
+    "silver": 0
+  },
+  "stream_shutdown_confirmed": true,
+  "valid_for_comparison": true
+}

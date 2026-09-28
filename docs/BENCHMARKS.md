@@ -399,8 +399,10 @@ Raw telemetry and per-run outputs are retained with the [`1,000 msg/s extended`]
   warm-up start, steady-state start/end, and per-query sample counts are saved in
   `manifest.json` and `result.json`.
 - Bronze and main Silver throughput are summarized separately from
-  `processedRowsPerSecond`. The pipeline rate is the lower observed stage rate;
-  DLQ progress is excluded from main Silver throughput.
+  `processedRowsPerSecond`. Each valid run's pipeline rate is the lower of
+  Bronze and main Silver in that same run; experiment pipeline statistics are
+  calculated from those per-run values. DLQ progress is excluded from main
+  Silver throughput.
 - The sampler compares Kafka high offsets with Bronze Kafka source `endOffset`,
   summing positive offset differences across topic partitions.
   `kafka_to_bronze_lag` is a sampled source backlog, not consumer-group lag or a
@@ -426,8 +428,9 @@ Raw telemetry and per-run outputs are retained with the [`1,000 msg/s extended`]
 ### Capacity classification
 
 Startup peak lag is reported but never used alone to classify capacity. Let
-`R` be actual producer rate, `P` the lower Bronze/Silver steady-state rate, `S`
-the steady-state lag slope, `D` replay duration, and `T` pipeline drain time:
+`R` be actual producer rate, `P` the per-run minimum of Bronze/Silver
+steady-state rates, `S` the steady-state lag slope, `D` replay duration, and
+`T` pipeline drain time:
 
 - `FAILED`: a stream, checker, or required metric fails; a no-fault run injects
   unexpected faults; or source lag is zero while expected output/progress counts
@@ -504,13 +507,16 @@ p1-b2-s1-w2 means one Kafka partition, two Bronze cores, one Silver core, and
 two Spark workers.
 
 Every report separates `bronze_processed_rate`, `silver_processed_rate`, and
-`pipeline_sustainable_rate`. Reanalysis aggregates each stage over the valid
-repetitions first, then defines the pipeline rate as the minimum of the
-aggregated Bronze and Silver steady-state rates. The pipeline rate is null if
-either stage is missing or invalid. Speedup and throughput gain use candidate
-pipeline rate divided by baseline pipeline rate; compute efficiency uses
-measured allocated cores. Stage-specific rates are never substituted for the
-pipeline rate.
+`pipeline_sustainable_rate`. For each eligible run, calculate
+`run_pipeline_rate = min(run_bronze_rate, run_silver_rate)`, then calculate
+mean, median, minimum, and maximum across those run-level pipeline rates.
+Bronze and Silver aggregates remain descriptive and are never combined to
+derive pipeline throughput. A run without both valid stage rates, completed
+correctness checks, zero final source lag, successful streaming processes, or
+verified allocation is excluded. Old pipeline fields are ignored when stage
+rates are available; otherwise the artifact marks
+`LEGACY_PIPELINE_NOT_RECOMPUTABLE`. Speedup is candidate pipeline median divided
+by baseline pipeline median; throughput gain is `(speedup - 1) * 100`.
 
 ```mermaid
 flowchart TD
@@ -564,8 +570,10 @@ volume. The three-repetition final aggregation is
 [20260927T152924Z-988f7da5](../results/benchmarks/scalability/experiments/20260927T152924Z-988f7da5/summary.json).
 The primary matrix and stress evidence are summarized in
 [20260927T140207Z-101f56f0](../results/benchmarks/scalability/experiments/20260927T140207Z-101f56f0/summary.json).
-The corrected stage aggregation and source checksums are in the
-[scalability closure reanalysis](../results/benchmarks/scalability/experiments/20260927T162057Z-closure-reanalysis/summary.json).
+The earlier aggregation pass remains preserved as a historical artifact at
+[20260927T162057Z-closure-reanalysis](../results/benchmarks/scalability/experiments/20260927T162057Z-closure-reanalysis/summary.json).
+Its stage-aggregate pipeline formula is superseded by the final per-run
+reanalysis in [20260928T133347Z-final-interaction](../results/benchmarks/scalability/experiments/20260928T133347Z-final-interaction/summary.json).
 
 ### Stage A: Kafka partitions
 
@@ -606,19 +614,18 @@ validation below adds one independent run for B0, B1, and C1.
 | :--- | ---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- |
 | B0 p1-b1-s1-w1 | 1 | 1 / 1 | 2 | 5,591.41 | 6,902.50 | 5,591.41 | 1.000x | 45,685 | 25.246 s | 12.31 | UNDER |
 | B1 p1-b2-s1-w1 | 1 | 2 / 1 | 3 | 5,647.27 | 7,253.61 | 5,647.27 | 1.010x | 38,440 | 24.705 s | 13.33 | UNDER |
-| B2 p1-b2-s2-w1 | 1 | 2 / 2 | 4 | 5,606.69 | 5,628.42 | 5,606.69 | 1.003x | 44,645 | 39.861 s | 15.08 | mixed |
+| B2 p1-b2-s2-w1 | 1 | 2 / 2 | 4 | 5,606.69 | 5,628.42 | 5,017.55 | 0.897x | 44,645 | 39.861 s | 15.08 | mixed |
 | C1 p1-b2-s1-w2 | 2 | 2 / 1 | 3 | 5,564.61 | 6,128.60 | 5,564.61 | 0.995x | 46,515 | 23.754 s | 14.07 | UNDER |
 | C2 p1-b4-s4-w2 | 2 | 4 / 4 | invalid | N/A | N/A | N/A | N/A | N/A | N/A | N/A | FAILED |
 
 B1 was the highest measured single-worker median in Stage B, so it was
 selected for Stage C. Its approximately 1% gain came with 50% more actual
-application cores. Reanalysis changes B2's pipeline median from 5,017.55 to
-5,606.69 rows/s: the old summary averaged per-run stage minima, while the
-corrected summary first aggregates Bronze and Silver and then takes their
-minimum. That is a 0.27% gain over the two-run B0 matrix reference, below the
-5% material-improvement threshold; B2's p95 latency was 39.861 seconds.
-One SQL shuffle partition and the single-host environment remain limitations
-on interpreting extra Silver cores.
+application cores. The final per-run reanalysis gives B2 pipeline rates of
+5,515.62 and 4,519.47 rows/s, for a 5,017.55 rows/s median. The previous
+5,606.69 figure came from taking the minimum of the aggregate stage medians
+and is superseded. B2 is 10.26% below the two-run B0 matrix reference, and its
+p95 latency was 39.861 seconds. One SQL shuffle partition and the single-host
+environment remain limitations on interpreting extra Silver cores.
 
 C1 preserves the B1 application caps while increasing worker count. It did not
 add Spark application cores: B1 and C1 both allocated three cores total. At
@@ -661,7 +668,7 @@ are descriptive for this single-host setup, not linear-scaling claims.
 | B0 | 5,562.45 | 2 | 1.000x | 1.00x | 100.0% | 2,781.23 |
 | B1 | 5,565.14 | 3 | 1.000x | 1.50x | 66.7% | 1,855.05 |
 | C1 | 5,459.15 | 3 | 0.981x | 1.50x | 65.4% | 1,819.72 |
-| B2, matrix only | 5,606.69 | 4 | 1.008x | 2.00x | 50.4% | 1,401.67 |
+| B2, matrix only | 5,017.55 | 4 | 0.902x | 2.00x | 45.1% | 1,254.39 |
 
 B1 is the numeric 5,000 msg/s median leader, but its gain over B0 is only
 0.05% for 50% more cores. B0 is the more resource-efficient choice. At this
@@ -680,22 +687,20 @@ window, so it is excluded.
 | Config | Partitions | Workers | B/S core caps | Actual cores | Bronze (rows/s) | Silver (rows/s) | Pipeline (rows/s) | Speedup vs B0 | Lag p95 | Latency p95 | Drain (s) | Class |
 | :--- | ---: | ---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- |
 | B0 p1-b1-s1-w1 | 1 | 1 | 1 / 1 | 2 | 8,855.04 | 9,042.53 | 8,855.04 | 1.000x | 71,470 | 11.239 s | 14.58 | UNDER / UNDER |
-| B1 p1-b2-s1-w1 | 1 | 1 | 2 / 1 | 3 | 8,648.34 | 8,154.95 | 8,154.95 | 0.921x | 64,460 | 22.657 s | 19.10 | UNDER / NEAR |
+| B1 p1-b2-s1-w1 | 1 | 1 | 2 / 1 | 3 | 8,648.34 | 8,154.95 | 7,997.26 | 0.903x | 64,460 | 22.657 s | 19.10 | UNDER / NEAR |
 | C1 p1-b2-s1-w2 | 1 | 2 | 2 / 1 | 3 | 8,966.95 | 6,129.94 | 6,129.94 | 0.692x | 80,100 | 17.512 s | 26.12 | NEAR / UNDER |
 | P3-B2-S2 p3-b2-s2-w1 | 3 | 1 | 2 / 2 | 4 allocated | N/A* | N/A* | N/A* | N/A | N/A | N/A | N/A | FAILED_RESOURCE_LIMIT |
 
-The old 8,000 msg/s B1 aggregate was 7,997.26 rows/s, the mean of its two
-per-run stage minima. The earlier table also showed Bronze (8,648.34) under
-the conflated `Pipeline / Bronze` heading. Both values are superseded here:
-the corrected rule first aggregates each stage and then takes the minimum.
-The corrected pipeline rates are 8,855.04 for B0, 8,154.95 for B1, and
-6,129.94 rows/s for C1. Relative to B0, B1 is 0.921x
-(-7.91%) and C1 is 0.692x (-30.77%). Equivalently, B0 is 1.086x B1 and
-1.445x C1. B1 is Silver-limited (8,154.95 vs 8,648.34 Bronze), and C1 is
-more strongly Silver-limited (6,129.94 vs 8,966.95 Bronze). For B0, Bronze is
-the slower measured stage. C1's pipeline was 24.83% below B1 even though
-both allocated three application cores; the two-worker placement did not
-improve this workload. These two-run comparisons are descriptive, not
+The 8,000 msg/s B1 stage medians are 8,648.34 Bronze and 8,154.95 Silver,
+but the per-run pipeline rates are 8,464.46 and 7,530.06, so its pipeline
+median is 7,997.26 rows/s. The earlier 8,154.95 pipeline figure used the
+minimum of aggregated stage medians and is superseded. The final per-run
+pipeline rates are 8,855.04 for B0, 7,997.26 for B1, and 6,129.94 rows/s for
+C1. Relative to B0, B1 is 0.903x (-9.69%) and C1 is 0.692x (-30.77%). B1's
+bottleneck switches from Bronze in its first repetition to Silver in its
+second; C1 is Silver-limited in both repetitions, while B0 is Bronze-limited
+in both. C1's pipeline is 23.35% below B1 although both allocated three
+application cores. These two-run comparisons are descriptive, not
 statistical significance tests.
 
 The P3-B2-S2 row is an attempted configuration but has no valid comparison
@@ -730,7 +735,7 @@ suite completed.
 | :--- | ---: | ---: | :--- | ---: | ---: | ---: | :--- |
 | P1-B1-S1 | 5,000 msg/s | 1 | 1 / 1 | 5,591.41 | baseline | 1.00 | Valid primary-matrix baseline |
 | P3-B1-S1 | 5,000 msg/s | 3 | 1 / 1 | 5,472.94 | -2.12% | 1.65 | Partition parallelism alone did not improve throughput |
-| P1-B2-S2 | 5,000 msg/s | 1 | 2 / 2 | 5,606.69 | +0.27% | 1.00 | Two valid reps; below the material-improvement threshold |
+| P1-B2-S2 | 5,000 msg/s | 1 | 2 / 2 | 5,017.55 | -10.26% | 1.00 | Two valid reps; per-run pipeline aggregation |
 | P3-B2-S2 | 8,000 msg/s | 3 | 2 / 2 | N/A | N/A | 1.65 | Attempted once; invalid for comparison after memory safety interruption |
 
 The 800,000-event P3 attempt was distributed as P0=200,000, P1=440,000, and
@@ -743,8 +748,8 @@ correctness assertions were not recorded as passing. The run is therefore
 invalid for throughput comparison despite its verified allocation.
 
 At 5,000 msg/s, the P1-to-P3 one-core comparison did not improve pipeline
-throughput. The P1-B2-S2 two-core-stage configuration was only 0.27% above its
-P1 baseline, below the 5% material-improvement threshold. Since P3-B2-S2 has
+throughput. Under the final per-run rule, the P1-B2-S2 two-core-stage
+configuration was 10.26% below its P1 baseline. Since P3-B2-S2 has
 no valid 8,000 msg/s result and no comparable P3-B2-S2 result at 5,000 msg/s,
 the experiment cannot determine whether partition and compute parallelism
 interact beneficially. It also cannot establish that P1 limited core scaling.
@@ -805,17 +810,17 @@ location catalog were not changed.
 
 - The valid 5,000 msg/s P3 one-core result was 2.12% below P1. P6 has no valid
   steady-state rate, so no throughput claim is made above P3.
-- At 5,000 msg/s the three-run B1 median was 0.05% above B0. The corrected
-  two-run B2 matrix pipeline was 0.27% above its B0 reference, below the
-  material-improvement threshold; its p95 latency was 39.861 seconds.
+- At 5,000 msg/s the three-run B1 median was 0.05% above B0. The two-run B2
+  matrix pipeline was 10.26% below the two-run B0 reference under per-run
+  aggregation; its p95 latency was 39.861 seconds.
 - Adding a worker with unchanged application caps did not improve throughput.
   The valid C1 run had three actual application cores, the same as B1. The
   expanded B4/S4 two-worker C2 attempt remains unvalidated on this host.
-- At 8,000 msg/s, B0 pipeline was 1.086x B1 and 1.445x C1. The candidate
-  speedups vs B0 were 0.921x for B1 and 0.692x for C1. B0's measured slower
-  stage was Bronze; B1 and C1 were Silver-limited. The P3-B2-S2 attempt has no
-  valid rate, so these data do not decide whether combined source and compute
-  parallelism would improve throughput.
+- At 8,000 msg/s, B0 pipeline was 1.107x B1 and 1.445x C1. The candidate
+  speedups vs B0 were 0.903x for B1 and 0.692x for C1. B0 was Bronze-limited
+  in both runs; B1's bottleneck switched between runs and C1 was Silver-limited
+  in both. The P3-B2-S2 attempt has no valid rate, so these data do not decide
+  whether combined source and compute parallelism would improve throughput.
 - The measurements point to Silver/Delta processing as the constraint for
   B1 and especially C1 at 8,000 msg/s. One shuffle partition and single-host
   resource contention remain plausible contributors, but were not changed or
@@ -827,17 +832,110 @@ location catalog were not changed.
   physical machines; these results do not establish multi-node hardware
   scalability.
 
+### Final Partition × Compute Interaction
+
+The planned controlled pair keeps two Spark workers, Bronze 2 cores, Silver
+2 cores, one core and 1,024 MiB per executor, one shuffle partition, a
+one-second trigger, zero injected faults, and the existing 20-location
+dataset fixed. I0 is `p1-b2-s2-w2`; I1 is `p3-b2-s2-w2`. Kafka partitions
+(1 versus 3) are the only planned difference. Each workload targeted two
+valid repetitions at 8,000 msg/s and 800,000 records, with the predefined
+5,000 msg/s / 500,000-record fallback assessed for both configurations.
+
+The initial Docker state was inconsistent (`docker info` reported three
+running containers while `docker ps` and `docker stats` listed none, and WSL
+reported Docker stopped). To measure the actual required-service footprint,
+I started only the broker, Spark master, and two scaled Spark workers with
+`docker compose up -d --scale spark-worker=2 broker spark-master spark-worker`.
+The Spark REST snapshot then confirmed two ALIVE workers, four advertised
+cores and 4,096 MiB each (eight cores / 8,192 MiB total), zero used cores or
+memory, and no submitted applications. Immediately before startup, Windows
+reported 5,919,524 KiB free (5,780.8 MiB) of 16,101,436 KiB total. With that
+cluster idle, free host memory fell to 360,212 KiB (351.8 MiB), a 5,559,312
+KiB decrease. At the same observation, Docker reported 195.6 MiB and 190.7
+MiB for the workers, 265.2 MiB for the master, and 973.4 MiB for Kafka
+(1,624.9 MiB total container memory); their CPU readings were 0.10%, 0.11%,
+0.11%, and 3.45%, respectively. The four requested executors would add 4,096
+MiB of heap before JVM, Spark, Kafka, Delta/Python, Docker, and WSL overhead.
+No replay or Spark application was submitted. Because the idle cluster alone
+left only 351.8 MiB free, both the 8k primary pair and 5k fallback were
+aborted before replay; reducing input rate does not reduce the four-executor
+heap request. The four project services started for this measurement were
+then stopped. Free memory recovered to 1,526,172 KiB (1,489.4 MiB) immediately
+after stop and was 2,440,584 KiB (2,383.4 MiB) at 13:41:01 UTC. No unrelated
+user process was stopped and Docker memory, executor memory, or core caps were
+not changed. The prior P3-B2-S2-W1 run had reached 331 MiB free and was safely
+stopped, corroborating the need for the safety stop.
+
+| Config | Workload assessed | Valid reps (target) | Producer (msg/s) | Bronze | Silver | Per-run pipeline | Aggregate pipeline | I1/I0 speedup | Lag p95 / slope | Latency p95 | Drain | Status |
+| :--- | :--- | ---: | ---: | ---: | ---: | :--- | ---: | ---: | :--- | :--- | ---: | :--- |
+| I0 `p1-b2-s2-w2` | 8k, then 5k fallback | 0/2 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | `ABORT_BEFORE_REPLAY` |
+| I1 `p3-b2-s2-w2` | 8k, then 5k fallback | 0/2 | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | `ABORT_BEFORE_REPLAY` |
+
+The only resource sample was the idle preflight snapshot above, not a run
+profile:
+
+| Idle service | CPU sample | RAM sample |
+| :--- | ---: | ---: |
+| Worker 1 | 0.10% | 195.6 MiB |
+| Worker 2 | 0.11% | 190.7 MiB |
+| Spark master | 0.11% | 265.2 MiB |
+| Kafka broker | 3.45% | 973.4 MiB |
+
+These are single idle snapshots, not averages, p95s, or peaks. Run-level
+worker and broker CPU/RAM statistics are N/A for both configurations.
+
+| Config | Planned repetition | Run ID | Bronze | Silver | Pipeline = min(B,S) | Final lag | Correctness | Allocation |
+| :--- | ---: | :--- | ---: | ---: | ---: | ---: | :--- | :--- |
+| I0 | 1–2 | Not created | N/A | N/A | N/A | N/A | Not run | No application submitted |
+| I1 | 1–2 | Not created | N/A | N/A | N/A | N/A | Not run | No application submitted |
+
+No actual run rows exist: the planned I0 and I1 repetitions were stopped at
+the shared preflight gate. Their per-run Bronze, Silver, pipeline, final-lag,
+correctness, and allocation values are all N/A.
+
+| I1 planned run | P0 | P1 | P2 | Minimum | Maximum | Mean | Imbalance |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+| 2 | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+
+For I1, each planned run's P0/P1/P2 partition distribution is N/A because no
+topic or replay was created. The two Spark workers and advertised capacity
+were confirmed during the idle preflight, but no benchmark application was
+submitted: actual Bronze/Silver core allocation, four-executor placement,
+topic metadata, and per-run allocation fingerprints are N/A. No conclusion can
+be drawn about executor placement comparability.
+
+There is no I1/I0 speedup, gain percentage, lag result, latency result, drain
+result, partition imbalance, correctness result, or bottleneck conclusion.
+This does not show that P3 failed to improve throughput; the interaction was
+not measured. The earlier 8,000 msg/s B0/B1/C1 data remain comparable and are
+reanalyzed under the final rule above. Their per-run pipeline values are B0
+8,993.96 and 8,716.12 (median 8,855.04), B1 8,464.46 and 7,530.06 (median
+7,997.26), and C1 4,564.45 and 7,695.43 (median 6,129.94) rows/s. This does
+not answer the P1-versus-P3 interaction at B2/S2/W2. The 5,000 msg/s B2
+two-worker historical run remains a different configuration and is not used
+as a substitute for either member of the pair.
+
+The full preflight, per-run reanalysis, raw input hashes, normalized summaries,
+and `ABORT_BEFORE_REPLAY` outcomes are stored in
+[the final interaction artifact](../results/benchmarks/scalability/experiments/20260928T133347Z-final-interaction/summary.json),
+with its manifest and checksums alongside it. The previous P3-B2-S2-W1 run is
+excluded from all rankings. C2 remains `EXPANDED_SCALE_OUT_NOT_VALIDATED`; its
+historical exit 137 cause is unconfirmed and C2 was not rerun. P6 remains
+closed and was not rerun.
+
 ### Scalability Closure Status
 
-Pipeline aggregation, speedup definitions, regression tests, corrected
-historical summaries, and the C2 evidence review are complete. The required
-P3-B2-S2 interaction is not complete: its first attempt was stopped when host
-free memory reached 331 MiB, and no second run was started because the
-observed peak allocation would leave insufficient headroom on the current
-host. There are zero valid P3-B2-S2 repetitions. Therefore the interaction
-question remains unanswered and this scalability closure is **not ready to
-merge or tag**. Revisit the exact configuration when the same experimental
-environment has enough safe memory headroom to complete two correctness-valid
-runs. After closure and human review, the next milestone remains expanding
-the historical dataset from 20 locations to the 63 old provinces/cities,
-before feature engineering and model training.
+The final per-run pipeline rule, invalid-run exclusion, tests, hashed B0/B1/C1
+reanalysis, documentation, and preflight evidence are complete. The planned
+I0/I1 comparison was not run because starting the requested idle two-worker
+cluster reduced measured free host memory to 351.8 MiB before any executor
+heap was allocated; the 5,000 msg/s fallback retains the same 4,096 MiB
+executor-heap request. Under the fail-safe merge rule, the remaining blocker is the
+single-host resource ceiling; no claim is made about the interaction result or
+8,000 msg/s P3 performance. The recommendation is
+`READY_TO_MERGE_WITH_LIMITATION`, subject to human review. Do not merge or tag
+from this task. After review and merge/tag approval, the next milestone remains
+the nationwide dataset expansion, followed later by feature engineering and
+model training.

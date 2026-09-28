@@ -1,0 +1,283 @@
+{
+  "captured_at_utc": "2026-09-28T13:35:22Z",
+  "decision": {
+    "primary_8k": "ABORT_BEFORE_REPLAY",
+    "fallback_5k": "ABORT_BEFORE_REPLAY",
+    "reason": "ABORT_BEFORE_REPLAY: starting only the broker, Spark master, and two idle Spark workers left 360,212 KiB (351.8 MiB) Windows free memory before any benchmark application or executor was submitted. The four requested 1,024 MiB executors require 4,096 MiB heap before JVM and container overhead; the 5k fallback uses the same allocation, so both workloads were withheld.",
+    "core_caps_changed": false,
+    "executor_memory_changed": false,
+    "docker_memory_changed": false,
+    "services_started": true,
+    "services_started_for_idle_preflight": [
+      "broker",
+      "spark-master",
+      "spark-worker-1",
+      "spark-worker-2"
+    ],
+    "services_stopped_after_measurement": [
+      "broker",
+      "spark-master",
+      "spark-worker-1",
+      "spark-worker-2"
+    ],
+    "stop_command": "docker compose stop broker spark-master spark-worker",
+    "stop_exit_code": 0,
+    "replay_started": false,
+    "benchmark_applications_submitted": false,
+    "unrelated_processes_stopped": false,
+    "fallback_uses_same_four_executor_heaps": true,
+    "reason_basis": "Measured free host memory while only the requested broker/master/two-worker services were idle; no arbitrary JVM-overhead constant was assumed."
+  },
+  "docker": {
+    "info": {
+      "command": "docker info --format Server={{.ServerVersion}} Running={{.ContainersRunning}} Total={{.Containers}} MemTotal={{.MemTotal}}",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "Server=29.8.0 Running=3 Total=5 MemTotal=7984529408"
+    },
+    "ps": {
+      "command": "docker ps --format table {{.Names}}\t{{.Status}}",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "NAMES     STATUS"
+    },
+    "ps_active_container_rows": 0,
+    "ps_all": {
+      "command": "docker ps -a --format table {{.Names}}\t{{.Status}}",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "NAMES                                      STATUS\nweather-streaming-bigdata-spark-worker-1   Exited (255) 10 minutes ago\nweather-spark-master                       Exited (255) 10 minutes ago\nweather-stream-simulator                   Exited (137) 6 days ago\nweather-historical-downloader              Exited (137) 6 days ago\nweather-kafka                              Exited (255) 10 minutes ago"
+    },
+    "ps_all_status_lines": [
+      "weather-streaming-bigdata-spark-worker-1   Exited (255) 10 minutes ago",
+      "weather-spark-master                       Exited (255) 10 minutes ago",
+      "weather-stream-simulator                   Exited (137) 6 days ago",
+      "weather-historical-downloader              Exited (137) 6 days ago",
+      "weather-kafka                              Exited (255) 10 minutes ago"
+    ],
+    "reported_server_mem_total_bytes": 7984529408,
+    "reported_server_mem_total_mib": 7614.64,
+    "stats": {
+      "command": "docker stats --no-stream --format table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "host_memory": {
+    "command_return_code": 0,
+    "free_physical_memory_kb": 6030344,
+    "free_physical_memory_mib": 5889.01,
+    "top_processes": [
+      {
+        "Id": 6776,
+        "ProcessName": "Code",
+        "WorkingSet64": 807206912
+      },
+      {
+        "Id": 16224,
+        "ProcessName": "msedge",
+        "WorkingSet64": 564195328
+      },
+      {
+        "Id": 12668,
+        "ProcessName": "msedge",
+        "WorkingSet64": 480026624
+      },
+      {
+        "Id": 21004,
+        "ProcessName": "Code",
+        "WorkingSet64": 442855424
+      },
+      {
+        "Id": 16020,
+        "ProcessName": "msedge",
+        "WorkingSet64": 427204608
+      },
+      {
+        "Id": 23092,
+        "ProcessName": "Code",
+        "WorkingSet64": 392581120
+      },
+      {
+        "Id": 5108,
+        "ProcessName": "Memory Compression",
+        "WorkingSet64": 389513216
+      },
+      {
+        "Id": 27156,
+        "ProcessName": "explorer",
+        "WorkingSet64": 320761856
+      }
+    ],
+    "total_visible_memory_kb": 16101436,
+    "total_visible_memory_mib": 15724.06,
+    "sample_context": "Initial preflight sample; resource_observations records the later immediately-before-start, idle-cluster, and post-stop checks."
+  },
+  "prior_safety_event": {
+    "classification": "ABORTED_FOR_HOST_MEMORY_SAFETY",
+    "free_memory_low_mib": 331,
+    "raw_artifact": "results/benchmarks/scalability/experiments/20260927T160742Z-2f7a95d7/resource_safety_interruption.json",
+    "run_id": "20260927T160742Z-6cd589c1",
+    "sha256": "c0665422e925a5cc44187574e4060eea8de4f91a3976069738342f7fccfc24e8"
+  },
+  "requested_cluster": {
+    "advertised_cores_per_worker": 4,
+    "advertised_memory_mib_per_worker": 4096,
+    "bronze_cores": 2,
+    "executor_cores": 1,
+    "executor_memory_mib": 1024,
+    "executors_per_stage": 2,
+    "silver_cores": 2,
+    "total_advertised_cores": 8,
+    "total_advertised_worker_memory_mib": 8192,
+    "total_executor_heap_mib": 4096,
+    "workers": 2
+  },
+  "resource_observations": [
+    {
+      "phase": "initial_preflight",
+      "captured_at_utc": "2026-09-28T13:35:22Z",
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 6030344,
+      "free_physical_memory_mib": 5889.01,
+      "note": "Initial sample; subsequent immediately-before-start sample is the safety baseline."
+    },
+    {
+      "phase": "immediately_before_service_start",
+      "captured_at_utc": null,
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 5919524,
+      "free_physical_memory_mib": 5780.79,
+      "note": "Latest retained host sample before starting only required project services; exact per-sample timestamp was not retained."
+    },
+    {
+      "phase": "required_services_idle",
+      "captured_at_utc": null,
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 360212,
+      "free_physical_memory_mib": 351.77,
+      "drop_from_immediately_before_start_kb": 5559312,
+      "docker_memory_total_bytes": 7984529408,
+      "docker_memory_total_mib": 7614.64,
+      "docker_stats_no_stream": [
+        {
+          "container": "weather-streaming-bigdata-spark-worker-1",
+          "cpu_percent": 0.1,
+          "memory_mib": 195.6
+        },
+        {
+          "container": "weather-streaming-bigdata-spark-worker-2",
+          "cpu_percent": 0.11,
+          "memory_mib": 190.7
+        },
+        {
+          "container": "weather-spark-master",
+          "cpu_percent": 0.11,
+          "memory_mib": 265.2
+        },
+        {
+          "container": "weather-kafka",
+          "cpu_percent": 3.45,
+          "memory_mib": 973.4
+        }
+      ],
+      "total_project_container_memory_mib": 1624.9,
+      "spark_workers": {
+        "alive_workers": 2,
+        "worker_1": {
+          "cores": 4,
+          "memory_mib": 4096
+        },
+        "worker_2": {
+          "cores": 4,
+          "memory_mib": 4096
+        },
+        "total_cores": 8,
+        "total_memory_mib": 8192,
+        "cores_used": 0,
+        "memory_used_mib": 0,
+        "applications": [],
+        "source": "Spark Master REST /json/"
+      },
+      "replay_started": false,
+      "applications_submitted": false
+    },
+    {
+      "phase": "immediately_after_stopping_started_services",
+      "captured_at_utc": null,
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 1526172,
+      "free_physical_memory_mib": 1489.43,
+      "stop_exit_code": 0
+    },
+    {
+      "phase": "post_stop_followup",
+      "captured_at_utc": "2026-09-28T13:41:01Z",
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 2440584,
+      "free_physical_memory_mib": 2383.38,
+      "docker_running_containers": 0,
+      "docker_ps_active_rows": 0
+    },
+    {
+      "phase": "post_stop_current_check",
+      "captured_at_utc": "2026-09-28T13:43:28Z",
+      "total_visible_memory_kb": 16101436,
+      "free_physical_memory_kb": 2247856,
+      "free_physical_memory_mib": 2195.17,
+      "docker_ps_active_rows": 0,
+      "compose_started_services_status": "Exited (143); no project containers running"
+    }
+  ],
+  "idle_cluster_snapshot": {
+    "start_command": "docker compose up -d --scale spark-worker=2 broker spark-master spark-worker",
+    "spark_master_rest": {
+      "alive_workers": 2,
+      "worker_1": {
+        "cores": 4,
+        "memory_mib": 4096
+      },
+      "worker_2": {
+        "cores": 4,
+        "memory_mib": 4096
+      },
+      "total_cores": 8,
+      "total_memory_mib": 8192,
+      "cores_used": 0,
+      "memory_used_mib": 0,
+      "applications": [],
+      "source": "Spark Master REST /json/"
+    },
+    "docker_stats_no_stream": [
+      {
+        "container": "weather-streaming-bigdata-spark-worker-1",
+        "cpu_percent": 0.1,
+        "memory_mib": 195.6
+      },
+      {
+        "container": "weather-streaming-bigdata-spark-worker-2",
+        "cpu_percent": 0.11,
+        "memory_mib": 190.7
+      },
+      {
+        "container": "weather-spark-master",
+        "cpu_percent": 0.11,
+        "memory_mib": 265.2
+      },
+      {
+        "container": "weather-kafka",
+        "cpu_percent": 3.45,
+        "memory_mib": 973.4
+      }
+    ],
+    "total_idle_container_memory_mib": 1624.9,
+    "host_free_memory_kb_before": 5919524,
+    "host_free_memory_kb_idle": 360212,
+    "host_free_memory_drop_kb": 5559312,
+    "requested_executor_heap_mib": 4096,
+    "executor_heap_allocated": false,
+    "topic_created": false
+  },
+  "updated_at_utc": "2026-09-28T13:43:28Z"
+}

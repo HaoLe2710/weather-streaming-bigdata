@@ -1,0 +1,51 @@
+{
+  "actual_generated_msgs_sec": null,
+  "actual_spark_allocation": "N/A_NO_APPLICATION_SUBMITTED_RESOURCE_ABORT",
+  "aggregate_pipeline_rate": null,
+  "broker_resource_metrics": null,
+  "bronze_rate": null,
+  "config_id": "p1-b2-s2-w2",
+  "correctness": "NOT_RUN",
+  "drain_seconds": null,
+  "label": "I0",
+  "lag_p95": null,
+  "lag_slope": null,
+  "observed_repetitions": 0,
+  "partition_distribution": null,
+  "partitions": 1,
+  "per_run_pipeline_rate": [],
+  "replay_to_bronze_latency_p95_ms": null,
+  "run_ids": [],
+  "schema_version": 1,
+  "silver_rate": null,
+  "speedup": null,
+  "status": "ABORT_BEFORE_REPLAY",
+  "target_valid_repetitions": 2,
+  "throughput_gain_percent": null,
+  "valid_repetitions": 0,
+  "worker_resource_metrics": null,
+  "workload": {
+    "requested_rate_msgs_sec": 5000,
+    "source_records": 500000
+  },
+  "run_attempted": false,
+  "abort_before_replay_reason": "ABORT_BEFORE_REPLAY: starting only the broker, Spark master, and two idle Spark workers left 360,212 KiB (351.8 MiB) Windows free memory before any benchmark application or executor was submitted. The four requested 1,024 MiB executors require 4,096 MiB heap before JVM and container overhead; the 5k fallback uses the same allocation, so both workloads were withheld.",
+  "preflight_workers_confirmed": {
+    "alive_workers": 2,
+    "worker_1": {
+      "cores": 4,
+      "memory_mib": 4096
+    },
+    "worker_2": {
+      "cores": 4,
+      "memory_mib": 4096
+    },
+    "total_cores": 8,
+    "total_memory_mib": 8192,
+    "cores_used": 0,
+    "memory_used_mib": 0,
+    "applications": [],
+    "source": "Spark Master REST /json/"
+  },
+  "preflight_resource_artifact": "../preflight.json"
+}

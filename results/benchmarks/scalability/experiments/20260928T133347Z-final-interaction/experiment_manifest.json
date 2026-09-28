@@ -1,0 +1,85 @@
+{
+  "aggregation_rule": "For each comparison-eligible run, run_pipeline_rate=min(run_bronze_rate,run_silver_rate); aggregate the per-run pipeline rates across eligible repetitions. Invalid runs contribute no throughput metrics.",
+  "analysis_code_git_commit": "2ffb1fdf6f7aa2dc1c3d87f265c542eb66801ad4",
+  "analysis_code_path": "benchmark/scalability_metrics.py",
+  "analysis_code_sha256": "e3ff65646b62d2de8e339138c4544685fb8ff67e93df13f8412a4c79ebded381",
+  "branch": "benchmark/scalability",
+  "created_at_utc": "2026-09-28T13:35:22Z",
+  "existing_valid_reanalysis_groups": [
+    "8k_B0_p1-b1-s1-w1",
+    "8k_B1_p1-b2-s1-w1",
+    "8k_C1_p1-b2-s1-w2",
+    "5k_matrix_B0_p1-b1-s1-w1",
+    "5k_matrix_B2_p1-b2-s2-w1",
+    "5k_final_B0_p1-b1-s1-w1",
+    "5k_final_B1_p1-b2-s1-w1",
+    "5k_final_C1_p1-b2-s1-w2"
+  ],
+  "experiment_id": "20260928T133347Z-final-interaction",
+  "experiment_type": "scalability_final_interaction_closure",
+  "fallback_workload": {
+    "rate_msgs_sec": 5000,
+    "source_records": 500000,
+    "target_valid_repetitions_per_config": 2,
+    "used_for_both_configs": false
+  },
+  "fixed_configuration": {
+    "bronze_cores": 2,
+    "executor_cores": 1,
+    "executor_memory_mib": 1024,
+    "fault_injection": 0,
+    "historical_locations": 20,
+    "shuffle_partitions": 1,
+    "silver_cores": 2,
+    "trigger_interval": "1 second",
+    "worker_cores_each": 4,
+    "worker_memory_mib_each": 4096,
+    "workers": 2
+  },
+  "interaction_preflight_decision": "Both I0 and I1 primary 8k and fallback 5k workloads are ABORT_BEFORE_REPLAY: the idle two-worker required-service cluster left 351.8 MiB host free memory before any executor was submitted. The 5k fallback has the same four-executor 4096 MiB heap request.",
+  "primary_pair": {
+    "I0": "p1-b2-s2-w2",
+    "I0_partitions": 1,
+    "I1": "p3-b2-s2-w2",
+    "I1_partitions": 3,
+    "only_variable": "Kafka topic partitions"
+  },
+  "primary_workload": {
+    "rate_msgs_sec": 8000,
+    "source_records": 800000,
+    "target_valid_repetitions_per_config": 2
+  },
+  "schema_version": 1,
+  "source_artifact_hashes_sha256": {
+    "benchmark/scalability_metrics.py": "e3ff65646b62d2de8e339138c4544685fb8ff67e93df13f8412a4c79ebded381",
+    "results/benchmarks/scalability/20260927T140220Z-f64cbc77/result.json": "ca0d14a720028c7bc4b32afaf21fb2eb2cbcf7d286fec4d32f8cb40adc35f17c",
+    "results/benchmarks/scalability/20260927T140524Z-7940b6d6/result.json": "4f9c5a958881ad33eeacdb9b4d5ada5d25e4f619e5ec3c162694a0574a694c57",
+    "results/benchmarks/scalability/20260927T141810Z-322e9ac1/result.json": "6c0eca8b4df2cfc5129779bfbffe5a943b622cb65ff8b305a8fcb6235d2ad430",
+    "results/benchmarks/scalability/20260927T142118Z-9a543683/result.json": "57016fb090f42aba1b67f44948a80a1d04b0ab20109ea5df0e540966c0168007",
+    "results/benchmarks/scalability/20260927T142422Z-bb1365ab/result.json": "bb21f3ba4693adce405c2a40100082323d93fa0c85152850bcc06e757a9bdfe5",
+    "results/benchmarks/scalability/20260927T142727Z-5e03fc56/result.json": "b174d06fcf787e2e192d5e0543b6a40b66ec6fd0802ae9d09e43badccdc2c4d3",
+    "results/benchmarks/scalability/20260927T143050Z-e1e896f1/result.json": "1eca6333fd2677118220ed3d4f4119b49fb875a604a84427badd4d2d65ada12a",
+    "results/benchmarks/scalability/20260927T143416Z-31bf938c/result.json": "2d2f6fac59174742acfd19e83b3b2dda1202fb91c27d7a479ecbc9d0e01a4b6e",
+    "results/benchmarks/scalability/20260927T145453Z-0fe7d813/result.json": "65b6b46afe0837ff1510f56775fb568b0b1af4b5614ee699a012b64755d541fd",
+    "results/benchmarks/scalability/20260927T145802Z-de6423ab/result.json": "12483fdf8acbe6e64e7879567bf658145ee486b5f8a6e23a45cb887ca7d9b97f",
+    "results/benchmarks/scalability/20260927T150117Z-da0dc02b/result.json": "92e41d8325bb7f804368fba2126767ac91b878e5283cb1e131551cb56e09889c",
+    "results/benchmarks/scalability/20260927T150428Z-070a2de4/result.json": "aed92ddff88c795abc348c3650a42d5bedd75541a07d11995180c17e425a6060",
+    "results/benchmarks/scalability/20260927T150815Z-77998358/result.json": "29785121b72ec6141f43c210d789df0957804aaf6de43fb1dcb027cf65134c9e",
+    "results/benchmarks/scalability/20260927T151151Z-d933d93b/result.json": "07a094590be40613b1ddb81d556dce2d56e1c9bdd4a8fc133320f7c044b51bfe",
+    "results/benchmarks/scalability/20260927T151729Z-74766b7e/result.json": "f48f8cc83f65d5a537ba81caf3c58e039c52c876bb8b6cfbb72e37b437f6885e",
+    "results/benchmarks/scalability/20260927T152036Z-3a0c5f5e/result.json": "77ae3a130dc6041121e28963a80fff3ec9ac5a6dff64d87dbfc96d1bdcd268ae",
+    "results/benchmarks/scalability/20260927T152358Z-022a43e5/result.json": "d1eeddcdd0446ba5eea1949fdf8574e139e7159e11f57062afc12acaf15d0a43",
+    "results/benchmarks/scalability/20260927T160742Z-6cd589c1/result.json": "7f55396a316d0587fc4729dcb16458ccddbb9803e482922adecce6eaaca15542",
+    "results/benchmarks/scalability/experiments/20260927T160742Z-2f7a95d7/resource_safety_interruption.json": "c0665422e925a5cc44187574e4060eea8de4f91a3976069738342f7fccfc24e8",
+    "results/benchmarks/scalability/experiments/20260927T162057Z-closure-reanalysis/experiment_manifest.json": "e270eee977a959a13a17e2c88700edac82f121aaa8867a4019ffd6da25bc6e00",
+    "results/benchmarks/scalability/experiments/20260927T162057Z-closure-reanalysis/summary.json": "0c9a8884014fe23140bf777e8db0ce5be61e7bc4e41bf4aff0fae9f7dc86f10a",
+    "tests/test_scalability_metrics.py": "9c0bd58e8056a5836ea234ecdcd406972cb5f41bf86b527493321e3f39a92caf"
+  },
+  "status": "READY_TO_MERGE_WITH_LIMITATION",
+  "supersedes": [
+    "20260927T162057Z-closure-reanalysis: stage-aggregate pipeline formula",
+    "docs/BENCHMARKS.md: stale 5k B2 and 8k B1 pipeline figures"
+  ],
+  "preflight_completed_at_utc": "2026-09-28T13:43:28Z",
+  "resource_safety_evidence": "preflight.json#resource_observations"
+}
