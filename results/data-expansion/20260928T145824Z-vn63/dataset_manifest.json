@@ -133,7 +133,8 @@
     "delta": "delta_validation.json",
     "live_smoke": "live_smoke.json",
     "replay_smoke": "replay_smoke.json",
-    "pipeline_regression": "pipeline_regression.json"
+    "pipeline_regression": "pipeline_regression.json",
+    "correctness_regression": "correctness_regression.json"
   },
   "runtime_smokes": {
     "live": {
@@ -160,6 +161,24 @@
       "silver": 63,
       "dlq": 0,
       "gold": 378
+    },
+    "b0_correctness": {
+      "status": "PASS",
+      "dataset_id": "BENCHMARK_20",
+      "assertions_passed": 11,
+      "source_records": 10000,
+      "bronze_records": 10195,
+      "silver_records": 9903,
+      "dlq_records": 97,
+      "result": "results/benchmarks/b0/vn63reg20260928/result.json"
     }
+  },
+  "benchmark_isolation": {
+    "status": "PASS",
+    "dataset_id": "BENCHMARK_20",
+    "source_path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+    "run_id": "vn63reg20260928",
+    "result": "11/11 PASS",
+    "git_commit": "4ab9a1d74cba6a9e838eea2fb39043922d3057ee"
   }
 }

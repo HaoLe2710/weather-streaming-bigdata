@@ -1,0 +1,106 @@
+{
+  "artifacts": {
+    "input_reference": "results/benchmarks/b0/vn63reg20260928/simulator.json",
+    "manifest": "results/benchmarks/b0/vn63reg20260928/manifest.json",
+    "result": "results/benchmarks/b0/vn63reg20260928/result.json"
+  },
+  "assertions": {
+    "all_injected_invalid_events_reached_dlq": true,
+    "bronze_fault_distribution_matches_simulator": true,
+    "dlq_contains_only_injected_invalid_events": true,
+    "kafka_message_count_matches_bronze": true,
+    "observed_duplicates_removed_match_injected_duplicates": true,
+    "silver_contains_all_valid_nonduplicate_events": true,
+    "silver_dlq_and_removed_duplicates_conserve_bronze": true,
+    "silver_has_no_duplicate_event_id_groups": true,
+    "silver_quality_violation_count_is_zero": true,
+    "simulator_flush_completed": true,
+    "source_fault_categories_sum_to_source_records": true
+  },
+  "checkpoints": {
+    "bronze": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/bronze",
+    "dlq": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/dlq",
+    "gold": null,
+    "silver": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/silver"
+  },
+  "created_at": "2026-09-28T15:31:50+00:00",
+  "finished_at": "2026-09-28T15:34:08+00:00",
+  "git_commit": "4ab9a1d74cba6a9e838eea2fb39043922d3057ee",
+  "kafka": {
+    "partition_count": 1,
+    "topic": "weather.bench.b0.vn63reg20260928"
+  },
+  "parameters": {
+    "duplicate_rate": 0.02,
+    "invalid_rate": 0.01,
+    "late_delay_events": 240,
+    "late_rate": 0.05,
+    "max_offsets_per_trigger": null,
+    "out_of_order_max_delay": 40,
+    "out_of_order_rate": 0.05,
+    "requested_replay_rate": 1000,
+    "run_id": "vn63reg20260928",
+    "scenario": "B0_CORRECTNESS",
+    "seed": 42,
+    "source_record_limit": 10000,
+    "topic": "weather.bench.b0.vn63reg20260928",
+    "topic_partitions": 1,
+    "watermark": "10 minutes",
+    "window_duration": null
+  },
+  "paths": {
+    "bronze": "/opt/project/data/benchmark/runs/b0/vn63reg20260928/bronze/weather_raw",
+    "bronze_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/bronze",
+    "dlq": "/opt/project/data/benchmark/runs/b0/vn63reg20260928/silver/weather_invalid",
+    "dlq_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/dlq",
+    "gold": null,
+    "gold_checkpoint": null,
+    "root": "/opt/project/data/benchmark/runs/b0/vn63reg20260928",
+    "silver": "/opt/project/data/benchmark/runs/b0/vn63reg20260928/silver/weather_clean",
+    "silver_checkpoint": "/opt/project/data/checkpoints/benchmark/runs/b0/vn63reg20260928/silver"
+  },
+  "result_metrics": {
+    "bronze_fault_distribution": {
+      "DUPLICATE": 195,
+      "INVALID": 97,
+      "LATE": 490,
+      "NORMAL": 8892,
+      "OUT_OF_ORDER": 521
+    },
+    "bronze_records": 10195,
+    "dlq_fault_distribution": {
+      "INVALID": 97
+    },
+    "dlq_records": 97,
+    "duplicate_event_id_groups": 0,
+    "duplicates_generated": 195,
+    "duplicates_removed": 195,
+    "invalid_generated": 97,
+    "invalid_routed_to_dlq": 97,
+    "kafka_messages": 10195,
+    "late_generated": 490,
+    "normal_generated": 8892,
+    "out_of_order_generated": 521,
+    "quality_violation_count": 0,
+    "silver_fault_distribution": {
+      "LATE": 490,
+      "NORMAL": 8892,
+      "OUT_OF_ORDER": 521
+    },
+    "silver_records": 9903,
+    "source_records": 10000
+  },
+  "run_id": "vn63reg20260928",
+  "scenario": "B0_CORRECTNESS",
+  "schema_version": 1,
+  "software_versions": {
+    "delta": "4.0.0",
+    "kafka": "4.3.1",
+    "spark": "4.0.4"
+  },
+  "source": {
+    "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical\\raw",
+    "record_limit": 10000
+  },
+  "status": "PASS"
+}

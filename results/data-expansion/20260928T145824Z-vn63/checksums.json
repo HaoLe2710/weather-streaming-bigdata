@@ -22,6 +22,12 @@
     "replay_smoke_producer.json": "2771776e584ac1547f1ccb8a7690ccf6c09b896d69c984213e81a21af0ab50d4",
     "replay_smoke.json": "6da324cf6bf1f642d315a7fc13629642bdbda53db7aed1aeb852fe535c07d115",
     "pipeline_regression.json": "02b92ebcf342268d0d93942d4232f9d13cc6f72fae779136be8a89c97d87a00e",
-    "dataset_manifest.json": "14556d5c7aba0b914e0712a2937bba5e6bfa31c892aee95b37653f1a59aa1356"
+    "correctness_regression.json": "4d7824e4bbf0f93731955cd8f38d697215e9d3350c0324a78d886149e4d0cd14",
+    "dataset_manifest.json": "6b1cf970aa68b9149eeda4e481ffd7f618059c94b8ba1b63e737a8d0428f5e48"
+  },
+  "benchmark_files": {
+    "results/benchmarks/b0/vn63reg20260928/manifest.json": "1bdde3cd94b08b3c7b3746058d9f785a951f54aa29a690cec9579de4f22bc105",
+    "results/benchmarks/b0/vn63reg20260928/result.json": "0e1cac07995225f604b48c96ac7a11f79c972fd39a8630b9d6230e7843cf5886",
+    "results/benchmarks/b0/vn63reg20260928/simulator.json": "b63b7cd3c67615fdc67c37dbf9d99a2c5f98119dc87f9edc01a93ae96e541dbb"
   }
 }
