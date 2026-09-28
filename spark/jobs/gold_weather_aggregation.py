@@ -1,18 +1,28 @@
+import os
+
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-
 from delta.tables import DeltaTable
 
 
-SILVER_PATH = "/opt/project/data/silver/weather_clean"
-
-GOLD_PATH = (
-    "/opt/project/data/gold/weather_aggregates"
+SILVER_PATH = os.getenv(
+    "SILVER_PATH",
+    "/opt/project/data/silver/weather_clean",
 )
 
-GOLD_CHECKPOINT = (
-    "/opt/project/data/checkpoints/"
-    "gold_weather_aggregates"
+GOLD_PATH = os.getenv(
+    "GOLD_PATH",
+    "/opt/project/data/gold/weather_aggregates",
+)
+
+GOLD_CHECKPOINT = os.getenv(
+    "GOLD_CHECKPOINT",
+    "/opt/project/data/checkpoints/gold_weather_aggregates",
+)
+
+AVAILABLE_NOW = (
+    os.getenv("AVAILABLE_NOW", "false").strip().lower()
+    in {"1", "true", "yes"}
 )
 
 
@@ -334,29 +344,19 @@ def upsert_gold(
 # START STREAM
 # =====================================
 
-query = (
+gold_writer = (
     gold.writeStream
-
-    .foreachBatch(
-        upsert_gold
-    )
-
-    .outputMode(
-        "update"
-    )
-
-    .option(
-        "checkpointLocation",
-        GOLD_CHECKPOINT
-    )
-
-    .trigger(
-        processingTime="10 seconds"
-    )
-
-    .start()
+    .foreachBatch(upsert_gold)
+    .outputMode("update")
+    .option("checkpointLocation", GOLD_CHECKPOINT)
 )
 
+if AVAILABLE_NOW:
+    gold_writer = gold_writer.trigger(availableNow=True)
+else:
+    gold_writer = gold_writer.trigger(processingTime="10 seconds")
+
+query = gold_writer.start()
 
 print(
     "Weather Gold Aggregation started"
@@ -369,3 +369,6 @@ print(
 
 
 query.awaitTermination()
+
+if AVAILABLE_NOW:
+    spark.stop()
