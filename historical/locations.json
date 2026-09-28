@@ -1,25 +1,1158 @@
 [
-  {"id":"VN_HCM","name":"Ho Chi Minh City","latitude":10.8231,"longitude":106.6297},
-  {"id":"VN_HANOI","name":"Hanoi","latitude":21.0285,"longitude":105.8542},
-  {"id":"VN_DANANG","name":"Da Nang","latitude":16.0544,"longitude":108.2022},
-  {"id":"VN_CANTHO","name":"Can Tho","latitude":10.0452,"longitude":105.7469},
-  {"id":"VN_HUE","name":"Hue","latitude":16.4637,"longitude":107.5909},
-
-  {"id":"VN_HAIPHONG","name":"Hai Phong","latitude":20.8449,"longitude":106.6881},
-  {"id":"VN_NHATRANG","name":"Nha Trang","latitude":12.2388,"longitude":109.1967},
-  {"id":"VN_DALAT","name":"Da Lat","latitude":11.9404,"longitude":108.4583},
-  {"id":"VN_VUNGTAU","name":"Vung Tau","latitude":10.4114,"longitude":107.1362},
-  {"id":"VN_QUYNHON","name":"Quy Nhon","latitude":13.7820,"longitude":109.2190},
-
-  {"id":"VN_BMT","name":"Buon Ma Thuot","latitude":12.6667,"longitude":108.0500},
-  {"id":"VN_PLEIKU","name":"Pleiku","latitude":13.9833,"longitude":108.0000},
-  {"id":"VN_PHANTHIET","name":"Phan Thiet","latitude":10.9289,"longitude":108.1021},
-  {"id":"VN_VINH","name":"Vinh","latitude":18.6796,"longitude":105.6813},
-  {"id":"VN_THANHHOA","name":"Thanh Hoa","latitude":19.8067,"longitude":105.7852},
-
-  {"id":"VN_HALONG","name":"Ha Long","latitude":20.9712,"longitude":107.0448},
-  {"id":"VN_BIENHOA","name":"Bien Hoa","latitude":10.9574,"longitude":106.8426},
-  {"id":"VN_LONGXUYEN","name":"Long Xuyen","latitude":10.3864,"longitude":105.4352},
-  {"id":"VN_RACHGIA","name":"Rach Gia","latitude":10.0125,"longitude":105.0809},
-  {"id":"VN_CAMAU","name":"Ca Mau","latitude":9.1768,"longitude":105.1524}
+  {
+    "location_id": "VN_HCM",
+    "name": "Ho Chi Minh City",
+    "province_name": "Thành phố Hồ Chí Minh",
+    "province_name_ascii": "Ho Chi Minh City",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Thành phố Hồ Chí Minh",
+    "latitude": 10.8231,
+    "longitude": 106.6297,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_HANOI",
+    "name": "Hanoi",
+    "province_name": "Hà Nội",
+    "province_name_ascii": "Ha Noi",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Hà Nội",
+    "latitude": 21.0285,
+    "longitude": 105.8542,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_DANANG",
+    "name": "Da Nang",
+    "province_name": "Đà Nẵng",
+    "province_name_ascii": "Da Nang",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Đà Nẵng",
+    "latitude": 16.0544,
+    "longitude": 108.2022,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_CANTHO",
+    "name": "Can Tho",
+    "province_name": "Cần Thơ",
+    "province_name_ascii": "Can Tho",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Cần Thơ",
+    "latitude": 10.0452,
+    "longitude": 105.7469,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_HUE",
+    "name": "Hue",
+    "province_name": "Huế",
+    "province_name_ascii": "Hue",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Huế",
+    "latitude": 16.4637,
+    "longitude": 107.5909,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [
+      "Thừa Thiên Huế"
+    ],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_HAIPHONG",
+    "name": "Hai Phong",
+    "province_name": "Hải Phòng",
+    "province_name_ascii": "Hai Phong",
+    "admin_type": "CENTRAL_CITY",
+    "representative_place": "Hải Phòng",
+    "latitude": 20.8449,
+    "longitude": 106.6881,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_NHATRANG",
+    "name": "Nha Trang",
+    "province_name": "Khánh Hòa",
+    "province_name_ascii": "Khanh Hoa",
+    "admin_type": "PROVINCE",
+    "representative_place": "Nha Trang",
+    "latitude": 12.2388,
+    "longitude": 109.1967,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_DALAT",
+    "name": "Da Lat",
+    "province_name": "Lâm Đồng",
+    "province_name_ascii": "Lam Dong",
+    "admin_type": "PROVINCE",
+    "representative_place": "Đà Lạt",
+    "latitude": 11.9404,
+    "longitude": 108.4583,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_VUNGTAU",
+    "name": "Vung Tau",
+    "province_name": "Bà Rịa - Vũng Tàu",
+    "province_name_ascii": "Ba Ria - Vung Tau",
+    "admin_type": "PROVINCE",
+    "representative_place": "Vũng Tàu",
+    "latitude": 10.4114,
+    "longitude": 107.1362,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_QUYNHON",
+    "name": "Quy Nhon",
+    "province_name": "Bình Định",
+    "province_name_ascii": "Binh Dinh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Quy Nhơn",
+    "latitude": 13.782,
+    "longitude": 109.219,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_BMT",
+    "name": "Buon Ma Thuot",
+    "province_name": "Đắk Lắk",
+    "province_name_ascii": "Dak Lak",
+    "admin_type": "PROVINCE",
+    "representative_place": "Buôn Ma Thuột",
+    "latitude": 12.6667,
+    "longitude": 108.05,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_PLEIKU",
+    "name": "Pleiku",
+    "province_name": "Gia Lai",
+    "province_name_ascii": "Gia Lai",
+    "admin_type": "PROVINCE",
+    "representative_place": "Pleiku",
+    "latitude": 13.9833,
+    "longitude": 108.0,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_PHANTHIET",
+    "name": "Phan Thiet",
+    "province_name": "Bình Thuận",
+    "province_name_ascii": "Binh Thuan",
+    "admin_type": "PROVINCE",
+    "representative_place": "Phan Thiết",
+    "latitude": 10.9289,
+    "longitude": 108.1021,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_VINH",
+    "name": "Vinh",
+    "province_name": "Nghệ An",
+    "province_name_ascii": "Nghe An",
+    "admin_type": "PROVINCE",
+    "representative_place": "Vinh",
+    "latitude": 18.6796,
+    "longitude": 105.6813,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_THANHHOA",
+    "name": "Thanh Hoa",
+    "province_name": "Thanh Hóa",
+    "province_name_ascii": "Thanh Hoa",
+    "admin_type": "PROVINCE",
+    "representative_place": "Thanh Hóa",
+    "latitude": 19.8067,
+    "longitude": 105.7852,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_HALONG",
+    "name": "Ha Long",
+    "province_name": "Quảng Ninh",
+    "province_name_ascii": "Quang Ninh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hạ Long",
+    "latitude": 20.9712,
+    "longitude": 107.0448,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_BIENHOA",
+    "name": "Bien Hoa",
+    "province_name": "Đồng Nai",
+    "province_name_ascii": "Dong Nai",
+    "admin_type": "PROVINCE",
+    "representative_place": "Biên Hòa",
+    "latitude": 10.9574,
+    "longitude": 106.8426,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_LONGXUYEN",
+    "name": "Long Xuyen",
+    "province_name": "An Giang",
+    "province_name_ascii": "An Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Long Xuyên",
+    "latitude": 10.3864,
+    "longitude": 105.4352,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_RACHGIA",
+    "name": "Rach Gia",
+    "province_name": "Kiên Giang",
+    "province_name_ascii": "Kien Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Rạch Giá",
+    "latitude": 10.0125,
+    "longitude": 105.0809,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_CAMAU",
+    "name": "Ca Mau",
+    "province_name": "Cà Mau",
+    "province_name_ascii": "Ca Mau",
+    "admin_type": "PROVINCE",
+    "representative_place": "Cà Mau",
+    "latitude": 9.1768,
+    "longitude": 105.1524,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "BENCHMARK_20",
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "PRESERVED_BENCHMARK_20"
+  },
+  {
+    "location_id": "VN_BACGIANG",
+    "name": "Bac Giang",
+    "province_name": "Bắc Giang",
+    "province_name_ascii": "Bac Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Bắc Giang",
+    "latitude": 21.27307,
+    "longitude": 106.1946,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_BACKAN",
+    "name": "Bac Kan",
+    "province_name": "Bắc Kạn",
+    "province_name_ascii": "Bac Kan",
+    "admin_type": "PROVINCE",
+    "representative_place": "Bắc Kạn",
+    "latitude": 22.14701,
+    "longitude": 105.83481,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_BACLIEU",
+    "name": "Bac Lieu",
+    "province_name": "Bạc Liêu",
+    "province_name_ascii": "Bac Lieu",
+    "admin_type": "PROVINCE",
+    "representative_place": "Bạc Liêu",
+    "latitude": 9.29414,
+    "longitude": 105.72776,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_BACNINH",
+    "name": "Bac Ninh",
+    "province_name": "Bắc Ninh",
+    "province_name_ascii": "Bac Ninh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Bắc Ninh",
+    "latitude": 21.18608,
+    "longitude": 106.07631,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_BENTRE",
+    "name": "Ben Tre",
+    "province_name": "Bến Tre",
+    "province_name_ascii": "Ben Tre",
+    "admin_type": "PROVINCE",
+    "representative_place": "Bến Tre",
+    "latitude": 10.24147,
+    "longitude": 106.37585,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_THUDAUMOT",
+    "name": "Thu Dau Mot",
+    "province_name": "Bình Dương",
+    "province_name_ascii": "Binh Duong",
+    "admin_type": "PROVINCE",
+    "representative_place": "Thủ Dầu Một",
+    "latitude": 10.9804,
+    "longitude": 106.6519,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_DONGXOAI",
+    "name": "Dong Xoai",
+    "province_name": "Bình Phước",
+    "province_name_ascii": "Binh Phuoc",
+    "admin_type": "PROVINCE",
+    "representative_place": "Đồng Xoài",
+    "latitude": 11.53495,
+    "longitude": 106.88324,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_CAOBANG",
+    "name": "Cao Bang",
+    "province_name": "Cao Bằng",
+    "province_name_ascii": "Cao Bang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Cao Bằng",
+    "latitude": 22.66568,
+    "longitude": 106.25786,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_GIANGHIA",
+    "name": "Gia Nghia",
+    "province_name": "Đắk Nông",
+    "province_name_ascii": "Dak Nong",
+    "admin_type": "PROVINCE",
+    "representative_place": "Gia Nghĩa",
+    "latitude": 12.00423,
+    "longitude": 107.69074,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_DIENBIENPHU",
+    "name": "Dien Bien Phu",
+    "province_name": "Điện Biên",
+    "province_name_ascii": "Dien Bien",
+    "admin_type": "PROVINCE",
+    "representative_place": "Điện Biên Phủ",
+    "latitude": 21.38602,
+    "longitude": 103.02301,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_CAOLANH",
+    "name": "Cao Lanh",
+    "province_name": "Đồng Tháp",
+    "province_name_ascii": "Dong Thap",
+    "admin_type": "PROVINCE",
+    "representative_place": "Cao Lãnh",
+    "latitude": 10.46017,
+    "longitude": 105.63294,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_HAGIANG",
+    "name": "Ha Giang",
+    "province_name": "Hà Giang",
+    "province_name_ascii": "Ha Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hà Giang",
+    "latitude": 22.82333,
+    "longitude": 104.98357,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_PHULY",
+    "name": "Phu Ly",
+    "province_name": "Hà Nam",
+    "province_name_ascii": "Ha Nam",
+    "admin_type": "PROVINCE",
+    "representative_place": "Phủ Lý",
+    "latitude": 20.54531,
+    "longitude": 105.91221,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_HATINH",
+    "name": "Ha Tinh",
+    "province_name": "Hà Tĩnh",
+    "province_name_ascii": "Ha Tinh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hà Tĩnh",
+    "latitude": 18.34282,
+    "longitude": 105.90569,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_HAIDUONG",
+    "name": "Hai Duong",
+    "province_name": "Hải Dương",
+    "province_name_ascii": "Hai Duong",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hải Dương",
+    "latitude": 20.94099,
+    "longitude": 106.33302,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_VITHANH",
+    "name": "Vi Thanh",
+    "province_name": "Hậu Giang",
+    "province_name_ascii": "Hau Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Vị Thanh",
+    "latitude": 9.78449,
+    "longitude": 105.47012,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_HOABINH",
+    "name": "Hoa Binh",
+    "province_name": "Hòa Bình",
+    "province_name_ascii": "Hoa Binh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hòa Bình",
+    "latitude": 20.81717,
+    "longitude": 105.33759,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_HUNGYEN",
+    "name": "Hung Yen",
+    "province_name": "Hưng Yên",
+    "province_name_ascii": "Hung Yen",
+    "admin_type": "PROVINCE",
+    "representative_place": "Hưng Yên",
+    "latitude": 20.64637,
+    "longitude": 106.05112,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_KONTUM",
+    "name": "Kon Tum",
+    "province_name": "Kon Tum",
+    "province_name_ascii": "Kon Tum",
+    "admin_type": "PROVINCE",
+    "representative_place": "Kon Tum",
+    "latitude": 14.35451,
+    "longitude": 108.00759,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_LAICHAU",
+    "name": "Lai Chau",
+    "province_name": "Lai Châu",
+    "province_name_ascii": "Lai Chau",
+    "admin_type": "PROVINCE",
+    "representative_place": "Lai Châu",
+    "latitude": 22.39644,
+    "longitude": 103.45824,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_LANGSON",
+    "name": "Lang Son",
+    "province_name": "Lạng Sơn",
+    "province_name_ascii": "Lang Son",
+    "admin_type": "PROVINCE",
+    "representative_place": "Lạng Sơn",
+    "latitude": 21.85264,
+    "longitude": 106.76101,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_LAOCAI",
+    "name": "Lao Cai",
+    "province_name": "Lào Cai",
+    "province_name_ascii": "Lao Cai",
+    "admin_type": "PROVINCE",
+    "representative_place": "Lào Cai",
+    "latitude": 22.48556,
+    "longitude": 103.97066,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TANAN",
+    "name": "Tan An",
+    "province_name": "Long An",
+    "province_name_ascii": "Long An",
+    "admin_type": "PROVINCE",
+    "representative_place": "Tân An",
+    "latitude": 10.53589,
+    "longitude": 106.41366,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_NAMDINH",
+    "name": "Nam Dinh",
+    "province_name": "Nam Định",
+    "province_name_ascii": "Nam Dinh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Nam Định",
+    "latitude": 20.43389,
+    "longitude": 106.17729,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_NINHBINH",
+    "name": "Ninh Binh",
+    "province_name": "Ninh Bình",
+    "province_name_ascii": "Ninh Binh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Ninh Bình",
+    "latitude": 20.25809,
+    "longitude": 105.97965,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_PHANRANGTHAPCHAM",
+    "name": "Phan Rang-Thap Cham",
+    "province_name": "Ninh Thuận",
+    "province_name_ascii": "Ninh Thuan",
+    "admin_type": "PROVINCE",
+    "representative_place": "Phan Rang - Tháp Chàm",
+    "latitude": 11.56432,
+    "longitude": 108.98858,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_VIETTRI",
+    "name": "Viet Tri",
+    "province_name": "Phú Thọ",
+    "province_name_ascii": "Phu Tho",
+    "admin_type": "PROVINCE",
+    "representative_place": "Việt Trì",
+    "latitude": 21.32274,
+    "longitude": 105.40198,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TUYHOA",
+    "name": "Tuy Hoa",
+    "province_name": "Phú Yên",
+    "province_name_ascii": "Phu Yen",
+    "admin_type": "PROVINCE",
+    "representative_place": "Tuy Hòa",
+    "latitude": 13.09546,
+    "longitude": 109.32094,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_DONGHOI",
+    "name": "Dong Hoi",
+    "province_name": "Quảng Bình",
+    "province_name_ascii": "Quang Binh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Đồng Hới",
+    "latitude": 17.46885,
+    "longitude": 106.62226,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TAMKY",
+    "name": "Tam Ky",
+    "province_name": "Quảng Nam",
+    "province_name_ascii": "Quang Nam",
+    "admin_type": "PROVINCE",
+    "representative_place": "Tam Kỳ",
+    "latitude": 15.57364,
+    "longitude": 108.47403,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_QUANGNGAI",
+    "name": "Quang Ngai",
+    "province_name": "Quảng Ngãi",
+    "province_name_ascii": "Quang Ngai",
+    "admin_type": "PROVINCE",
+    "representative_place": "Quảng Ngãi",
+    "latitude": 15.12047,
+    "longitude": 108.79232,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_DONGHA",
+    "name": "Dong Ha",
+    "province_name": "Quảng Trị",
+    "province_name_ascii": "Quang Tri",
+    "admin_type": "PROVINCE",
+    "representative_place": "Đông Hà",
+    "latitude": 16.81625,
+    "longitude": 107.10031,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_SOCTRANG",
+    "name": "Soc Trang",
+    "province_name": "Sóc Trăng",
+    "province_name_ascii": "Soc Trang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Sóc Trăng",
+    "latitude": 9.59995,
+    "longitude": 105.97193,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_SONLA",
+    "name": "Son La",
+    "province_name": "Sơn La",
+    "province_name_ascii": "Son La",
+    "admin_type": "PROVINCE",
+    "representative_place": "Sơn La",
+    "latitude": 21.3256,
+    "longitude": 103.91882,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TAYNINH",
+    "name": "Tay Ninh",
+    "province_name": "Tây Ninh",
+    "province_name_ascii": "Tay Ninh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Tây Ninh",
+    "latitude": 11.31004,
+    "longitude": 106.09828,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_THAIBINH",
+    "name": "Thai Binh",
+    "province_name": "Thái Bình",
+    "province_name_ascii": "Thai Binh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Thái Bình",
+    "latitude": 20.45,
+    "longitude": 106.34002,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_THAINGUYEN",
+    "name": "Thai Nguyen",
+    "province_name": "Thái Nguyên",
+    "province_name_ascii": "Thai Nguyen",
+    "admin_type": "PROVINCE",
+    "representative_place": "Thái Nguyên",
+    "latitude": 21.59422,
+    "longitude": 105.84817,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_MYTHO",
+    "name": "My Tho",
+    "province_name": "Tiền Giang",
+    "province_name_ascii": "Tien Giang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Mỹ Tho",
+    "latitude": 10.36004,
+    "longitude": 106.35996,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TRAVINH",
+    "name": "Tra Vinh",
+    "province_name": "Trà Vinh",
+    "province_name_ascii": "Tra Vinh",
+    "admin_type": "PROVINCE",
+    "representative_place": "Trà Vinh",
+    "latitude": 9.94719,
+    "longitude": 106.34225,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_TUYENQUANG",
+    "name": "Tuyen Quang",
+    "province_name": "Tuyên Quang",
+    "province_name_ascii": "Tuyen Quang",
+    "admin_type": "PROVINCE",
+    "representative_place": "Tuyên Quang",
+    "latitude": 21.82356,
+    "longitude": 105.21424,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_VINHLONG",
+    "name": "Vinh Long",
+    "province_name": "Vĩnh Long",
+    "province_name_ascii": "Vinh Long",
+    "admin_type": "PROVINCE",
+    "representative_place": "Vĩnh Long",
+    "latitude": 10.25369,
+    "longitude": 105.9722,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_VINHYEN",
+    "name": "Vinh Yen",
+    "province_name": "Vĩnh Phúc",
+    "province_name_ascii": "Vinh Phuc",
+    "admin_type": "PROVINCE",
+    "representative_place": "Vĩnh Yên",
+    "latitude": 21.30891,
+    "longitude": 105.60489,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  },
+  {
+    "location_id": "VN_YENBAI",
+    "name": "Yen Bai",
+    "province_name": "Yên Bái",
+    "province_name_ascii": "Yen Bai",
+    "admin_type": "PROVINCE",
+    "representative_place": "Yên Bái",
+    "latitude": 21.72288,
+    "longitude": 104.9113,
+    "country_code": "VN",
+    "timezone": "UTC",
+    "admin_snapshot": "VN_63_PRE_2025_MERGER",
+    "aliases": [],
+    "dataset_memberships": [
+      "NATIONWIDE_63"
+    ],
+    "coordinate_source": "OPEN_METEO_GEOCODING_GEONAMES"
+  }
 ]

@@ -12,6 +12,30 @@ from pathlib import Path
 from confluent_kafka import Producer
 
 
+DATASET_SOURCE_PATHS = {
+    "BENCHMARK_20": Path(
+        "/opt/project/history-data/historical/raw"
+    ),
+    "NATIONWIDE_63": Path(
+        "/opt/project/history-data/historical/nationwide_63/raw"
+    ),
+}
+
+
+def resolve_dataset_source(dataset, source_override=None):
+    """Resolve a named dataset, while preserving explicit legacy --source paths."""
+    if source_override:
+        return Path(source_override)
+
+    normalized = dataset.strip().upper().replace("-", "_")
+    try:
+        return DATASET_SOURCE_PATHS[normalized]
+    except KeyError as exc:
+        raise ValueError(
+            "dataset must be benchmark-20 or nationwide-63"
+        ) from exc
+
+
 # =========================================================
 # RATE LIMITER
 # =========================================================
@@ -368,10 +392,13 @@ def run(args):
             ] += 1
 
 
-    records = (
-        read_historical_records(
-            args.source
-        )
+    source_path = resolve_dataset_source(
+        args.dataset,
+        args.source,
+    )
+
+    records = read_historical_records(
+        source_path
     )
 
 
@@ -697,6 +724,8 @@ def run(args):
         "scenario": args.scenario,
         "run_id": run_id,
         "topic": args.topic,
+        "dataset_id": args.dataset.strip().upper().replace("-", "_"),
+        "source_path": str(source_path),
         "source_records": stats["source"],
         "kafka_messages": stats["produced"],
         "normal_generated": stats["normal"],
@@ -776,11 +805,19 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--source",
-        default=(
-            "/opt/project/history-data/"
-            "historical/raw"
+        "--dataset",
+        choices=("benchmark-20", "nationwide-63"),
+        default="benchmark-20",
+        help=(
+            "Select the immutable 20-location benchmark source or the "
+            "separate 63-location nationwide source."
         ),
+    )
+
+    parser.add_argument(
+        "--source",
+        default=None,
+        help="Optional explicit source directory override.",
     )
 
     parser.add_argument(

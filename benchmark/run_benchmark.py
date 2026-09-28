@@ -2058,6 +2058,8 @@ def _simulator_command(
         str(SIMULATOR),
         "--bootstrap-servers",
         "localhost:9092",
+        "--dataset",
+        "benchmark-20",
         "--source",
         str(source),
         *config.simulator_arguments(),

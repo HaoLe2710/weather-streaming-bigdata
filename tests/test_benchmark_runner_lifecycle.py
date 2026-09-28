@@ -12,6 +12,22 @@ import run_benchmark  # noqa: E402
 
 
 class BenchmarkRunnerLifecycleTests(unittest.TestCase):
+    def test_simulator_command_explicitly_pins_the_20_location_benchmark(self):
+        config = run_benchmark.BenchmarkConfig.for_scenario(
+            run_benchmark.B0_CORRECTNESS,
+            "b0-dataset-pin",
+        )
+        source = REPO_ROOT / "data" / "historical" / "raw"
+        command = run_benchmark._simulator_command(
+            config,
+            source,
+            REPO_ROOT / "results" / "simulator.json",
+        )
+        dataset_index = command.index("--dataset")
+        self.assertEqual(command[dataset_index + 1], "benchmark-20")
+        source_index = command.index("--source")
+        self.assertEqual(Path(command[source_index + 1]), source)
+
     def test_scalability_cli_can_aggregate_run_results(self):
         aggregate = run_benchmark.aggregate_scalability_runs(
             [
