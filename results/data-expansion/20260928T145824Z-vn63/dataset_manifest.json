@@ -1,0 +1,165 @@
+{
+  "dataset_id": "NATIONWIDE_63",
+  "admin_snapshot": "VN_63_PRE_2025_MERGER",
+  "location_count": 63,
+  "central_city_count": 6,
+  "province_count": 57,
+  "existing_locations_preserved": 20,
+  "new_locations_added": 43,
+  "representative_coordinates_per_location": 1,
+  "source": "Open-Meteo Historical Weather API",
+  "source_endpoint": "https://archive-api.open-meteo.com/v1/archive",
+  "provider_model": "Open-Meteo Historical Archive (same provider/model family as the 20-location source)",
+  "weather_variables": [
+    "temperature_2m",
+    "relative_humidity_2m",
+    "precipitation",
+    "pressure_msl",
+    "wind_speed_10m",
+    "wind_gusts_10m",
+    "weather_code"
+  ],
+  "timezone": "UTC",
+  "start": "2020-01-01T00:00:00Z",
+  "end": "2025-12-31T23:00:00Z",
+  "expected_records": 3314304,
+  "actual_records": 3314304,
+  "unique_event_ids": 3314304,
+  "missing_records": 0,
+  "duplicate_event_ids": 0,
+  "duplicate_observation_keys": 0,
+  "unknown_location_records": 0,
+  "sorting_violations": 0,
+  "weather_quality_violation_count": 0,
+  "records_per_year": [
+    {
+      "year": 2020,
+      "expected": 553392,
+      "actual": 553392,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    },
+    {
+      "year": 2021,
+      "expected": 551880,
+      "actual": 551880,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    },
+    {
+      "year": 2022,
+      "expected": 551880,
+      "actual": 551880,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    },
+    {
+      "year": 2023,
+      "expected": 551880,
+      "actual": 551880,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    },
+    {
+      "year": 2024,
+      "expected": 553392,
+      "actual": 553392,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    },
+    {
+      "year": 2025,
+      "expected": 551880,
+      "actual": 551880,
+      "difference": 0,
+      "missing_records": 0,
+      "affected_locations": [],
+      "unique_location_ids": 63
+    }
+  ],
+  "records_per_location": {
+    "expected": 52608,
+    "actual_min": 52608,
+    "actual_max": 52608,
+    "location_count": 63
+  },
+  "raw_paths": [
+    "data/historical/nationwide_63/raw/weather_2020.jsonl.gz",
+    "data/historical/nationwide_63/raw/weather_2021.jsonl.gz",
+    "data/historical/nationwide_63/raw/weather_2022.jsonl.gz",
+    "data/historical/nationwide_63/raw/weather_2023.jsonl.gz",
+    "data/historical/nationwide_63/raw/weather_2024.jsonl.gz",
+    "data/historical/nationwide_63/raw/weather_2025.jsonl.gz"
+  ],
+  "delta_path": "/opt/project/data/historical/weather_hourly_vn63",
+  "delta_records": 3314304,
+  "delta_unique_event_ids": 3314304,
+  "delta_duplicate_event_ids": 0,
+  "delta_matches_raw_valid_records": true,
+  "delta_partition_column": "year",
+  "catalog_sha256": "e57910b3bc222784b0d1cdddf30593bfbece9065ba12d67c73f8ac9bc9fe8728",
+  "git_commit": "af737feed2538c394270898db6f30fb7edb1b824",
+  "download_run_id": "20260928T145824Z-vn63",
+  "validation_status": "PASS",
+  "validated_at": "2026-09-28T15:29:02.450701+00:00",
+  "download_summary": {
+    "requested_location_years": 378,
+    "successful_location_years": 378,
+    "failed_location_years": 0,
+    "reused_benchmark_location_years": 120,
+    "new_location_years_downloaded": 258,
+    "request_count": 30,
+    "retry_count": 0,
+    "batch_size": 10,
+    "run_started_at": "2026-09-28T14:58:39.865277+00:00",
+    "run_ended_at": "2026-09-28T15:08:58.487073+00:00"
+  },
+  "reports": {
+    "catalog": "catalog_validation.json",
+    "download": "historical_download_summary.json",
+    "raw": "historical_validation.json",
+    "per_location": "per_location_validation.csv",
+    "per_year": "year_validation.csv",
+    "delta": "delta_validation.json",
+    "live_smoke": "live_smoke.json",
+    "replay_smoke": "replay_smoke.json",
+    "pipeline_regression": "pipeline_regression.json"
+  },
+  "runtime_smokes": {
+    "live": {
+      "valid": true,
+      "messages": 63,
+      "unique_location_ids": 63,
+      "topic": "weather.test.vn63.20260928T145824Z-vn63"
+    },
+    "replay": {
+      "valid": true,
+      "source_records": 10000,
+      "kafka_messages": 10000,
+      "fault_injections": {
+        "duplicate": 0,
+        "invalid": 0,
+        "late": 0,
+        "out_of_order": 0
+      },
+      "unique_event_ids": 10000
+    },
+    "bronze_silver_gold": {
+      "status": "PASS",
+      "bronze": 63,
+      "silver": 63,
+      "dlq": 0,
+      "gold": 378
+    }
+  }
+}

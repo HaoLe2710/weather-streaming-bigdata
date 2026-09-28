@@ -1,0 +1,22 @@
+{
+  "run_id": "20260928T145824Z-vn63",
+  "topic": "weather.test.vn63.replay.20260928T145824Z-vn63",
+  "source_dataset": "NATIONWIDE_63",
+  "source_path": "data\\historical\\nationwide_63\\raw",
+  "source_records": 10000,
+  "kafka_messages": 10000,
+  "topic_offsets": 10000,
+  "fault_injections": {
+    "duplicate": 0,
+    "invalid": 0,
+    "late": 0,
+    "out_of_order": 0
+  },
+  "unique_location_ids": 63,
+  "unknown_location_ids": [],
+  "unique_event_ids": 10000,
+  "duplicate_event_ids": 0,
+  "producer_delivery_complete": true,
+  "consumer_errors": [],
+  "valid": true
+}

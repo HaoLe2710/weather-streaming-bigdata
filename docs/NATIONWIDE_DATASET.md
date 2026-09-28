@@ -72,7 +72,11 @@ Raw validation checks expected versus actual totals, exact absent hourly timesta
 
 `historical_to_delta.py --dataset nationwide-63` reads VN63 raw data and writes a separate Delta target at `/opt/project/data/historical/weather_hourly_vn63`. The original `benchmark-20` default remains `/opt/project/data/historical/weather_hourly`. Both retain the existing `year` partition column and weather-quality filters. Conversion writes a row-count, unique-ID, location-coverage, and UTC-time-range report before the result is treated as validated.
 
+Direct `spark-submit` launches resolve the JVM Delta artifact pinned by `spark/requirements-benchmark.txt` (`io.delta:delta-spark_2.13:4.0.0`) and enable `io.delta.sql.DeltaSparkSessionExtension` with `org.apache.spark.sql.delta.catalog.DeltaCatalog`, matching the benchmark runner. The Python package alone does not provide the Delta JVM data source.
+
 The historical simulator accepts `--dataset benchmark-20` or `--dataset nationwide-63`; an explicit `--source` override remains available. The benchmark runner explicitly pins `benchmark-20` and its original source path. Live producer batches also come from the canonical 63-location catalog, retains the 10-second poll interval and Kafka key `location_id`, and validates response cardinality before assigning observations. Failed batches are logged with their IDs and poll timestamp; successful batches may still publish, but no stale or fabricated rows are emitted. A complete poll therefore contains one current observation per catalog location.
+
+For finite integration smokes, Bronze and Silver support `AVAILABLE_NOW=true`; Gold accepts isolated `SILVER_PATH`, `GOLD_PATH`, and `GOLD_CHECKPOINT` values and also supports `AVAILABLE_NOW=true`. Gold's existing 30-minute window, 5-minute slide, location grouping, and default 10-second processing trigger are unchanged.
 
 ```mermaid
 flowchart LR

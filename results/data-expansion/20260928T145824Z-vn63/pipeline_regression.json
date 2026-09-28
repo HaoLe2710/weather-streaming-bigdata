@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "run_id": "20260928T145824Z-vn63",
+  "scope": "production Bronze -> Silver/DLQ -> Gold, on isolated live-producer topic",
+  "topic": "weather.test.vn63.20260928T145824Z-vn63",
+  "spark": "4.0.4",
+  "delta": "4.0.0",
+  "bronze": {
+    "status": "PASS",
+    "rows": 63,
+    "unique_kafka_keys": 63,
+    "unique_event_ids": 63,
+    "topics": 1,
+    "unparseable_payloads": 0,
+    "location_ids_match_live_smoke": true
+  },
+  "silver": {
+    "status": "PASS",
+    "rows": 63,
+    "unique_location_ids": 63,
+    "unique_event_ids": 63,
+    "null_identity_rows": 0,
+    "all_catalog_ids_preserved": true
+  },
+  "dlq": {
+    "status": "PASS",
+    "rows": 0
+  },
+  "gold": {
+    "status": "PASS",
+    "rows": 378,
+    "unique_location_ids": 63,
+    "window_start_count": 6,
+    "rows_per_location_min": 6,
+    "rows_per_location_max": 6,
+    "observation_count_min": 1,
+    "observation_count_max": 1,
+    "cross_location_mixing": false,
+    "aggregation": "30-minute windows sliding every 5 minutes; location_id in grouping"
+  },
+  "paths": {
+    "bronze": "/opt/project/data/nationwide-smoke/20260928T145824Z-vn63/bronze/weather_raw",
+    "silver": "/opt/project/data/nationwide-smoke/20260928T145824Z-vn63/silver/weather_clean",
+    "dlq": "/opt/project/data/nationwide-smoke/20260928T145824Z-vn63/silver/weather_invalid",
+    "gold": "/opt/project/data/nationwide-smoke/20260928T145824Z-vn63/gold/weather_aggregates",
+    "checkpoints": "/opt/project/data/checkpoints/nationwide-smoke/20260928T145824Z-vn63"
+  }
+}

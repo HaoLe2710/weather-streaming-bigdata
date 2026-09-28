@@ -1,0 +1,27 @@
+{
+  "run_id": "20260928T145824Z-vn63",
+  "algorithm": "SHA-256",
+  "catalog_sha256": "e57910b3bc222784b0d1cdddf30593bfbece9065ba12d67c73f8ac9bc9fe8728",
+  "raw_files": {
+    "data/historical/nationwide_63/raw/weather_2020.jsonl.gz": "6957401125c1e1f74a4e0f13186aefa859fa8832f0a493a76a167a6c27ec1759",
+    "data/historical/nationwide_63/raw/weather_2021.jsonl.gz": "7146ea61f6a36e37dc7706e4da47fd9c76c6ea5d3428234d0c18b4180b101e63",
+    "data/historical/nationwide_63/raw/weather_2022.jsonl.gz": "d939ffa55eab0a9166d46d920aac3046a8749db277108ab10ddcac6340252658",
+    "data/historical/nationwide_63/raw/weather_2023.jsonl.gz": "a98a6db2041834f262b1c524e260287108c44de7aeb50632ccb899ab939fbac3",
+    "data/historical/nationwide_63/raw/weather_2024.jsonl.gz": "f1c2ec53bbb81ff70bee94590b2f721363c8306d2ccd2c94027db3590beb89ec",
+    "data/historical/nationwide_63/raw/weather_2025.jsonl.gz": "c1aa9e33ab09cbfe85431b5ed8adb7d692334de6d70b92f7d0948fd6e937bbe0"
+  },
+  "result_files": {
+    "catalog_validation.json": "6859972ebfe1c7998a30228b7856329db7042ba3984814cfe3b76fff449ed858",
+    "historical_download_summary.json": "c7a94d237dbff473c646a0e3b77350fd9ecfb7e75ce921ca44bca8a9fdbddc2f",
+    "historical_validation.json": "cba16e5163002a43dec1112132256701596a8d404c90a86ad87676537be95766",
+    "per_location_validation.csv": "dd70d05adb9629980b0727d83c5a3773edf36fe64ef3aa79e252c0cbf31e9cb9",
+    "year_validation.csv": "d46ea712bdb1a2b2dc4be55ca90c5fca1523f8b589b6c8fdb1ac21ea2b5b19f9",
+    "delta_validation.json": "8d6adef49bfbc6546cb31e3391b86df3c29f82e315915e8c832fce7f3d33aa46",
+    "live_producer_summary.json": "6a2be663777ed47eccbfee64209ccf4aa52e202d02dd59f814ec6b19e2d8228d",
+    "live_smoke.json": "f307adcc3655fddf8da43f8413f67ecc40a151cfa568a94bf57aaed1c3aa4b72",
+    "replay_smoke_producer.json": "2771776e584ac1547f1ccb8a7690ccf6c09b896d69c984213e81a21af0ab50d4",
+    "replay_smoke.json": "6da324cf6bf1f642d315a7fc13629642bdbda53db7aed1aeb852fe535c07d115",
+    "pipeline_regression.json": "02b92ebcf342268d0d93942d4232f9d13cc6f72fae779136be8a89c97d87a00e",
+    "dataset_manifest.json": "14556d5c7aba0b914e0712a2937bba5e6bfa31c892aee95b37653f1a59aa1356"
+  }
+}
