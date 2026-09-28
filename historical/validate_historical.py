@@ -363,7 +363,8 @@ def _write_reports(report: dict[str, Any], output_json: Path) -> None:
     fields = [
         "location_id", "province_name", "representative_place", "latitude", "longitude",
         "actual_records", "expected_records", "missing_records", "min_event_time",
-        "max_event_time", "duplicate_count", "status", "missing_timestamps",
+        "max_event_time", "duplicate_count", "duplicate_observation_count",
+        "invalid_coordinate_records", "quality_violation_count", "status", "missing_timestamps",
     ]
     with locations_csv.open("w", newline="", encoding="utf-8-sig") as output:
         writer = csv.DictWriter(output, fieldnames=fields)
@@ -376,10 +377,15 @@ def _write_reports(report: dict[str, Any], output_json: Path) -> None:
     years_csv = output_json.with_name("year_validation.csv")
     with years_csv.open("w", newline="", encoding="utf-8") as output:
         writer = csv.DictWriter(output, fieldnames=[
-            "year", "expected", "actual", "difference", "unique_location_ids",
+            "year", "expected", "actual", "difference", "missing_records",
+            "affected_locations", "unique_location_ids",
         ])
         writer.writeheader()
-        writer.writerows(report["records_per_year"])
+        for row in report["records_per_year"]:
+            writer.writerow({
+                **row,
+                "affected_locations": ",".join(row["affected_locations"]),
+            })
 
 
 def parse_args() -> argparse.Namespace:
@@ -404,7 +410,27 @@ def main() -> int:
     })
     output = args.output or DEFAULT_RESULTS_DIR / run_id / "historical_validation.json"
     _write_reports(report, output)
-    print(json.dumps(report, ensure_ascii=False, indent=2))
+    console_summary = {
+        key: report[key]
+        for key in (
+            "status", "location_count", "total_records", "expected_records",
+            "missing_records", "unique_event_ids", "duplicate_event_ids",
+            "duplicate_observation_keys", "unknown_location_records",
+            "sorting_violations", "weather_quality_violation_count",
+            "min_event_time", "max_event_time",
+        )
+    }
+    console_summary["records_per_year"] = [
+        {
+            key: row[key]
+            for key in (
+                "year", "expected", "actual", "difference", "missing_records",
+                "unique_location_ids",
+            )
+        }
+        for row in report["records_per_year"]
+    ]
+    print(json.dumps(console_summary, ensure_ascii=True, indent=2))
     print(f"report={output}")
     print(f"per_location_report={output.with_name('per_location_validation.csv')}")
     print(f"year_report={output.with_name('year_validation.csv')}")

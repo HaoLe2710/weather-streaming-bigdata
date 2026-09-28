@@ -291,6 +291,14 @@ class HistoricalRawValidationTests(unittest.TestCase):
                 for record in records:
                     output.write(json.dumps(record) + "\n")
             report = validate_historical.validate_raw_dataset(temp_dir, [self.location])
+            output_json = Path(temp_dir) / "validation.json"
+            validate_historical._write_reports(report, output_json)
+            location_header = output_json.with_name("per_location_validation.csv").read_text(
+                encoding="utf-8-sig"
+            ).splitlines()[0]
+            year_header = output_json.with_name("year_validation.csv").read_text(
+                encoding="utf-8"
+            ).splitlines()[0]
         stats = report["per_location"][0]
         self.assertEqual(report["total_records"], 2)
         self.assertEqual(report["unique_event_ids"], 2)
@@ -298,6 +306,10 @@ class HistoricalRawValidationTests(unittest.TestCase):
         self.assertEqual(len(stats["missing_timestamps"]), 52606)
         self.assertEqual(stats["missing_timestamps"][0], "2020-01-01T02:00:00Z")
         self.assertEqual(stats["status"], "MISSING_HOURS")
+        self.assertIn("quality_violation_count", location_header)
+        self.assertIn("missing_timestamps", location_header)
+        self.assertIn("affected_locations", year_header)
+        self.assertIn("missing_records", year_header)
 
     def test_raw_validation_reports_duplicate_ids_and_timestamp_keys(self):
         with tempfile.TemporaryDirectory() as temp_dir:
