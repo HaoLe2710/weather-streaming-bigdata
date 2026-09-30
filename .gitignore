@@ -59,6 +59,9 @@ results/feature-engineering/*-feature-smoke-v1/
 # =========================
 benchmark-results/
 checkpoints/
+artifacts/modeling/
+results/modeling/**/test_predictions.parquet
+results/modeling/**/weather_forecast_xgboost_v1.json
 
 # =========================
 # Node
