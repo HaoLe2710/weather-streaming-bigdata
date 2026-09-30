@@ -1,0 +1,4454 @@
+{
+  "status": "PASS",
+  "output_rows": 3312729,
+  "location_count": 63,
+  "location_ids": [
+    "VN_BACGIANG",
+    "VN_BACKAN",
+    "VN_BACLIEU",
+    "VN_BACNINH",
+    "VN_BENTRE",
+    "VN_BIENHOA",
+    "VN_BMT",
+    "VN_CAMAU",
+    "VN_CANTHO",
+    "VN_CAOBANG",
+    "VN_CAOLANH",
+    "VN_DALAT",
+    "VN_DANANG",
+    "VN_DIENBIENPHU",
+    "VN_DONGHA",
+    "VN_DONGHOI",
+    "VN_DONGXOAI",
+    "VN_GIANGHIA",
+    "VN_HAGIANG",
+    "VN_HAIDUONG",
+    "VN_HAIPHONG",
+    "VN_HALONG",
+    "VN_HANOI",
+    "VN_HATINH",
+    "VN_HCM",
+    "VN_HOABINH",
+    "VN_HUE",
+    "VN_HUNGYEN",
+    "VN_KONTUM",
+    "VN_LAICHAU",
+    "VN_LANGSON",
+    "VN_LAOCAI",
+    "VN_LONGXUYEN",
+    "VN_MYTHO",
+    "VN_NAMDINH",
+    "VN_NHATRANG",
+    "VN_NINHBINH",
+    "VN_PHANRANGTHAPCHAM",
+    "VN_PHANTHIET",
+    "VN_PHULY",
+    "VN_PLEIKU",
+    "VN_QUANGNGAI",
+    "VN_QUYNHON",
+    "VN_RACHGIA",
+    "VN_SOCTRANG",
+    "VN_SONLA",
+    "VN_TAMKY",
+    "VN_TANAN",
+    "VN_TAYNINH",
+    "VN_THAIBINH",
+    "VN_THAINGUYEN",
+    "VN_THANHHOA",
+    "VN_THUDAUMOT",
+    "VN_TRAVINH",
+    "VN_TUYENQUANG",
+    "VN_TUYHOA",
+    "VN_VIETTRI",
+    "VN_VINH",
+    "VN_VINHLONG",
+    "VN_VINHYEN",
+    "VN_VITHANH",
+    "VN_VUNGTAU",
+    "VN_YENBAI"
+  ],
+  "schema": [
+    {
+      "name": "location_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "event_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "name": "target_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "name": "weather_code",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "temperature_c",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_pct",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_mm",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_hpa",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_gust_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "latitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "longitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "local_hour",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_day_of_week",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_month",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_day_of_year",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "hour_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "hour_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_week_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_week_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_year_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_year_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_12h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_1h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_3h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_6h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_12h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_24h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_12h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_delta_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_delta_1h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_delta_3h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "target_temperature_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "split",
+      "type": "string",
+      "nullable": true
+    }
+  ],
+  "unique_observation_keys": 3312729,
+  "duplicate_observation_keys": 0,
+  "target_time_alignment_violations": 0,
+  "target_temperature_alignment_violations": 0,
+  "numeric_quality": {
+    "null_required_feature_values": 0,
+    "nan_feature_values": 0,
+    "infinite_feature_values": 0,
+    "per_split": {
+      "TRAIN": {
+        "temperature_c": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_pct": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_mm": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_hpa": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_gust_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "latitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "longitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_hour": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_week": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_month": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_year": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "target_temperature_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        }
+      },
+      "VALIDATION": {
+        "temperature_c": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_pct": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_mm": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_hpa": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_gust_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "latitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "longitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_hour": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_week": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_month": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_year": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "target_temperature_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        }
+      },
+      "TEST": {
+        "temperature_c": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_pct": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_mm": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_hpa": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_gust_kmh": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "latitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "longitude": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_hour": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_week": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_month": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "local_day_of_year": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "hour_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_week_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_sin": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "day_of_year_cos": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_12h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_lag_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_roll_std_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "precipitation_sum_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_roll_mean_24h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "temp_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "humidity_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_3h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "pressure_delta_6h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "wind_speed_delta_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        },
+        "target_temperature_1h": {
+          "null": 0,
+          "nan": 0,
+          "infinite": 0
+        }
+      }
+    }
+  },
+  "null_identity_time_partition_values": {
+    "location_id": 0,
+    "event_time": 0,
+    "target_time": 0,
+    "split": 0
+  },
+  "null_weather_code_context_values": 0,
+  "split_counts": {
+    "TRAIN": 2207457,
+    "VALIDATION": 553392,
+    "TEST": 551880
+  },
+  "locations_by_split": {
+    "TRAIN": 63,
+    "VALIDATION": 63,
+    "TEST": 63
+  },
+  "per_location_split_counts": [
+    {
+      "location_id": "VN_BACGIANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACGIANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACGIANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACKAN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACKAN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACKAN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACLIEU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACLIEU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACLIEU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACNINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACNINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BACNINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BENTRE",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BENTRE",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BENTRE",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BIENHOA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BIENHOA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BIENHOA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BMT",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BMT",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_BMT",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAMAU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAMAU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAMAU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CANTHO",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CANTHO",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CANTHO",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOBANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOBANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOBANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOLANH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOLANH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_CAOLANH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DALAT",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DALAT",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DALAT",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DANANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DANANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DANANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DIENBIENPHU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DIENBIENPHU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DIENBIENPHU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHOI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHOI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGHOI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGXOAI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGXOAI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_DONGXOAI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_GIANGHIA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_GIANGHIA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_GIANGHIA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAGIANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAGIANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAGIANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIDUONG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIDUONG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIDUONG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIPHONG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIPHONG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HAIPHONG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HALONG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HALONG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HALONG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HANOI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HANOI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HANOI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HATINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HATINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HATINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HCM",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HCM",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HCM",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HOABINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HOABINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HOABINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUE",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUE",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUE",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUNGYEN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUNGYEN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_HUNGYEN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_KONTUM",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_KONTUM",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_KONTUM",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAICHAU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAICHAU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAICHAU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LANGSON",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LANGSON",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LANGSON",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAOCAI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAOCAI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LAOCAI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LONGXUYEN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LONGXUYEN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_LONGXUYEN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_MYTHO",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_MYTHO",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_MYTHO",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NAMDINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NAMDINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NAMDINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NHATRANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NHATRANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NHATRANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NINHBINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NINHBINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_NINHBINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANRANGTHAPCHAM",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANRANGTHAPCHAM",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANRANGTHAPCHAM",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANTHIET",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANTHIET",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHANTHIET",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHULY",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHULY",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PHULY",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PLEIKU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PLEIKU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_PLEIKU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUANGNGAI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUANGNGAI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUANGNGAI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUYNHON",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUYNHON",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_QUYNHON",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_RACHGIA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_RACHGIA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_RACHGIA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SOCTRANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SOCTRANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SOCTRANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SONLA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SONLA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_SONLA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAMKY",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAMKY",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAMKY",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TANAN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TANAN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TANAN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAYNINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAYNINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TAYNINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAIBINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAIBINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAIBINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAINGUYEN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAINGUYEN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THAINGUYEN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THANHHOA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THANHHOA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THANHHOA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THUDAUMOT",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THUDAUMOT",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_THUDAUMOT",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TRAVINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TRAVINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TRAVINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYENQUANG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYENQUANG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYENQUANG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYHOA",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYHOA",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_TUYHOA",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VIETTRI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VIETTRI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VIETTRI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHLONG",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHLONG",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHLONG",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHYEN",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHYEN",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VINHYEN",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VITHANH",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VITHANH",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VITHANH",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VUNGTAU",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VUNGTAU",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_VUNGTAU",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_YENBAI",
+      "split": "TEST",
+      "row_count": 8760,
+      "min_target_time_utc": "2025-01-01T00:00:00",
+      "max_target_time_utc": "2025-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_YENBAI",
+      "split": "TRAIN",
+      "row_count": 35039,
+      "min_target_time_utc": "2020-01-02T01:00:00",
+      "max_target_time_utc": "2023-12-31T23:00:00"
+    },
+    {
+      "location_id": "VN_YENBAI",
+      "split": "VALIDATION",
+      "row_count": 8784,
+      "min_target_time_utc": "2024-01-01T00:00:00",
+      "max_target_time_utc": "2024-12-31T23:00:00"
+    }
+  ],
+  "boundary_ranges_utc": {
+    "TRAIN": {
+      "min_event_time": "2020-01-02T00:00:00",
+      "max_event_time": "2023-12-31T22:00:00",
+      "min_target_time": "2020-01-02T01:00:00",
+      "max_target_time": "2023-12-31T23:00:00"
+    },
+    "VALIDATION": {
+      "min_event_time": "2023-12-31T23:00:00",
+      "max_event_time": "2024-12-31T22:00:00",
+      "min_target_time": "2024-01-01T00:00:00",
+      "max_target_time": "2024-12-31T23:00:00"
+    },
+    "TEST": {
+      "min_event_time": "2024-12-31T23:00:00",
+      "max_event_time": "2025-12-31T22:00:00",
+      "min_target_time": "2025-01-01T00:00:00",
+      "max_target_time": "2025-12-31T23:00:00"
+    }
+  },
+  "statistics_by_split": {
+    "TRAIN": {
+      "row_count": 2207457,
+      "location_count": 63,
+      "min_event_time": "2020-01-02T00:00:00",
+      "max_event_time": "2023-12-31T22:00:00",
+      "min_target_time": "2020-01-02T01:00:00",
+      "max_target_time": "2023-12-31T23:00:00",
+      "features": {
+        "temperature_c": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.06607032435967,
+          "stddev_pop": 4.801357168237376
+        },
+        "humidity_pct": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.59871517316078,
+          "stddev_pop": 14.433099947192362
+        },
+        "precipitation_mm": {
+          "min": 0.0,
+          "max": 77.9,
+          "mean": 0.255473787258384,
+          "stddev_pop": 1.0079396851013933
+        },
+        "pressure_hpa": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.7005982902496,
+          "stddev_pop": 5.368302751277424
+        },
+        "wind_speed_kmh": {
+          "min": 0.0,
+          "max": 65.9,
+          "mean": 8.985111555966913,
+          "stddev_pop": 5.403482165722919
+        },
+        "wind_gust_kmh": {
+          "min": 0.7,
+          "max": 134.3,
+          "mean": 20.462640993686385,
+          "stddev_pop": 10.616878406103133
+        },
+        "latitude": {
+          "min": 9.173989,
+          "max": 22.811949,
+          "mean": 16.048762198410518,
+          "stddev_pop": 4.892892031929302
+        },
+        "longitude": {
+          "min": 103.02752,
+          "max": 109.32666,
+          "mean": 106.4198814761988,
+          "stddev_pop": 1.3460849668540769
+        },
+        "local_hour": {
+          "min": 0.0,
+          "max": 23.0,
+          "mean": 11.500156967949998,
+          "stddev_pop": 6.922222969690421
+        },
+        "local_day_of_week": {
+          "min": 0.0,
+          "max": 6.0,
+          "mean": 3.0035959930363307,
+          "stddev_pop": 2.0000681151167807
+        },
+        "local_month": {
+          "min": 1.0,
+          "max": 12.0,
+          "mean": 6.526870059077028,
+          "stddev_pop": 3.4467753943783754
+        },
+        "local_day_of_year": {
+          "min": 1.0,
+          "max": 366.0,
+          "mean": 183.2550015696795,
+          "stddev_pop": 105.3642681408428
+        },
+        "hour_sin": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -2.8539627272468026e-05,
+          "stddev_pop": 0.7070966902566098
+        },
+        "hour_cos": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -7.282420321792634e-17,
+          "stddev_pop": 0.7071168713965394
+        },
+        "day_of_week_sin": {
+          "min": -0.9749279121818236,
+          "max": 0.9749279121818236,
+          "mean": -0.0012899743612950782,
+          "stddev_pop": 0.7070591944330141
+        },
+        "day_of_week_cos": {
+          "min": -0.9009688679024191,
+          "max": 1.0,
+          "mean": -0.0006083641300943142,
+          "stddev_pop": 0.707152926478403
+        },
+        "day_of_year_sin": {
+          "min": -0.9999994220246925,
+          "max": 0.9999855506507186,
+          "mean": 9.820233534581163e-07,
+          "stddev_pop": 0.7073589156528342
+        },
+        "day_of_year_cos": {
+          "min": -0.9999791929590823,
+          "max": 1.0,
+          "mean": -0.0007134357864880889,
+          "stddev_pop": 0.7068541967441809
+        },
+        "temp_lag_1h": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.066071909894514,
+          "stddev_pop": 4.801346582465047
+        },
+        "temp_lag_3h": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.066077436615988,
+          "stddev_pop": 4.8013275079322035
+        },
+        "temp_lag_6h": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.06607902215083,
+          "stddev_pop": 4.801312017714844
+        },
+        "temp_lag_12h": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.065975418773732,
+          "stddev_pop": 4.801388068533874
+        },
+        "temp_lag_24h": {
+          "min": 3.3,
+          "max": 41.4,
+          "mean": 25.065746286337635,
+          "stddev_pop": 4.801484161174813
+        },
+        "humidity_lag_1h": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.59860056164175,
+          "stddev_pop": 14.433039871339933
+        },
+        "humidity_lag_3h": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.59835231218547,
+          "stddev_pop": 14.432949349825446
+        },
+        "humidity_lag_6h": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.598032940166,
+          "stddev_pop": 14.432936393990754
+        },
+        "humidity_lag_12h": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.5977534330227,
+          "stddev_pop": 14.43330438579269
+        },
+        "humidity_lag_24h": {
+          "min": 12.0,
+          "max": 100.0,
+          "mean": 80.5966653031067,
+          "stddev_pop": 14.43491142289388
+        },
+        "pressure_lag_1h": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.700756526628,
+          "stddev_pop": 5.368498954443983
+        },
+        "pressure_lag_3h": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.7010617194355,
+          "stddev_pop": 5.36885321395342
+        },
+        "pressure_lag_6h": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.7014630862571,
+          "stddev_pop": 5.369366229567846
+        },
+        "pressure_lag_12h": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.7023742251833,
+          "stddev_pop": 5.370625509301988
+        },
+        "pressure_lag_24h": {
+          "min": 970.5,
+          "max": 1035.3,
+          "mean": 1010.7038735522368,
+          "stddev_pop": 5.37274008477166
+        },
+        "precipitation_lag_1h": {
+          "min": 0.0,
+          "max": 77.9,
+          "mean": 0.25547414966634935,
+          "stddev_pop": 1.0079401865076016
+        },
+        "precipitation_lag_3h": {
+          "min": 0.0,
+          "max": 77.9,
+          "mean": 0.25547546339522376,
+          "stddev_pop": 1.0079404984751308
+        },
+        "precipitation_lag_6h": {
+          "min": 0.0,
+          "max": 77.9,
+          "mean": 0.25547935928085147,
+          "stddev_pop": 1.0079406750579716
+        },
+        "precipitation_lag_24h": {
+          "min": 0.0,
+          "max": 77.9,
+          "mean": 0.25553394698063453,
+          "stddev_pop": 1.0080158306934113
+        },
+        "wind_speed_lag_1h": {
+          "min": 0.0,
+          "max": 65.9,
+          "mean": 8.985175339768814,
+          "stddev_pop": 5.40348353911853
+        },
+        "wind_speed_lag_3h": {
+          "min": 0.0,
+          "max": 65.9,
+          "mean": 8.985286553713191,
+          "stddev_pop": 5.403504254343883
+        },
+        "wind_speed_lag_6h": {
+          "min": 0.0,
+          "max": 65.9,
+          "mean": 8.985433872551106,
+          "stddev_pop": 5.403572889105239
+        },
+        "wind_speed_lag_24h": {
+          "min": 0.0,
+          "max": 65.9,
+          "mean": 8.987839264819222,
+          "stddev_pop": 5.4052463546585106
+        },
+        "temp_roll_mean_3h": {
+          "min": 3.5,
+          "max": 41.06666666666667,
+          "mean": 25.066071909894475,
+          "stddev_pop": 4.754484127501078
+        },
+        "temp_roll_std_3h": {
+          "min": 0.0,
+          "max": 5.164838386199086,
+          "mean": 0.5097025788162385,
+          "stddev_pop": 0.4336138670677446
+        },
+        "temp_roll_mean_6h": {
+          "min": 3.6833333333333336,
+          "max": 40.7,
+          "mean": 25.06607585108113,
+          "stddev_pop": 4.645095623069183
+        },
+        "temp_roll_std_6h": {
+          "min": 0.0,
+          "max": 7.179929588017483,
+          "mean": 0.9898852237305361,
+          "stddev_pop": 0.7042834073980709
+        },
+        "temp_roll_mean_24h": {
+          "min": 4.529166666666666,
+          "max": 35.34583333333334,
+          "mean": 25.06590367709689,
+          "stddev_pop": 4.11927806113418
+        },
+        "temp_roll_std_24h": {
+          "min": 0.09991315673568253,
+          "max": 7.41724716829334,
+          "mean": 2.301235032405799,
+          "stddev_pop": 0.8884620407197811
+        },
+        "humidity_roll_mean_3h": {
+          "min": 13.0,
+          "max": 100.0,
+          "mean": 80.59859859859856,
+          "stddev_pop": 14.080502330568619
+        },
+        "humidity_roll_std_3h": {
+          "min": 0.0,
+          "max": 28.331372481167705,
+          "mean": 2.376421146431512,
+          "stddev_pop": 2.0987655015823354
+        },
+        "humidity_roll_mean_6h": {
+          "min": 16.333333333333332,
+          "max": 100.0,
+          "mean": 80.59842018817741,
+          "stddev_pop": 13.333467488811765
+        },
+        "humidity_roll_std_6h": {
+          "min": 0.0,
+          "max": 27.913059468443958,
+          "mean": 4.473577747161595,
+          "stddev_pop": 3.2429769908894577
+        },
+        "humidity_roll_mean_24h": {
+          "min": 30.083333333333332,
+          "max": 100.0,
+          "mean": 80.59804783286833,
+          "stddev_pop": 9.486684284636153
+        },
+        "humidity_roll_std_24h": {
+          "min": 0.0,
+          "max": 32.55497487157515,
+          "mean": 10.076550655636119,
+          "stddev_pop": 4.0978368550930195
+        },
+        "pressure_roll_mean_3h": {
+          "min": 973.3666666666668,
+          "max": 1035.033333333333,
+          "mean": 1010.7007562095217,
+          "stddev_pop": 5.344896839272489
+        },
+        "pressure_roll_std_3h": {
+          "min": 0.0,
+          "max": 5.226428566005264,
+          "mean": 0.43369497562581505,
+          "stddev_pop": 0.254397570001439
+        },
+        "pressure_roll_mean_6h": {
+          "min": 978.0666666666667,
+          "max": 1034.5833333333333,
+          "mean": 1010.7009762138059,
+          "stddev_pop": 5.289949701102231
+        },
+        "pressure_roll_std_6h": {
+          "min": 0.0,
+          "max": 8.248383680051097,
+          "mean": 0.8297055945348578,
+          "stddev_pop": 0.38931271393621336
+        },
+        "pressure_roll_mean_24h": {
+          "min": 991.775,
+          "max": 1032.2916666666667,
+          "mean": 1010.7022399756825,
+          "stddev_pop": 5.1662817067556945
+        },
+        "pressure_roll_std_24h": {
+          "min": 0.44158804331639784,
+          "max": 11.750631631959129,
+          "mean": 1.415575344942371,
+          "stddev_pop": 0.3834733220942209
+        },
+        "precipitation_sum_3h": {
+          "min": 0.0,
+          "max": 176.0,
+          "mean": 0.7664223130960038,
+          "stddev_pop": 2.434907596993877
+        },
+        "precipitation_sum_6h": {
+          "min": 0.0,
+          "max": 268.79999999999995,
+          "mean": 1.532852372662252,
+          "stddev_pop": 4.202590369570028
+        },
+        "precipitation_sum_24h": {
+          "min": 0.0,
+          "max": 795.0999999999999,
+          "mean": 6.131766054786233,
+          "stddev_pop": 11.995558552009552
+        },
+        "wind_speed_roll_mean_3h": {
+          "min": 0.13333333333333333,
+          "max": 64.8,
+          "mean": 8.98517293881602,
+          "stddev_pop": 5.208944788056191
+        },
+        "wind_speed_roll_mean_6h": {
+          "min": 0.3833333333333333,
+          "max": 64.11666666666666,
+          "mean": 8.9852554621298,
+          "stddev_pop": 4.989264991333218
+        },
+        "wind_speed_roll_mean_24h": {
+          "min": 1.2583333333333333,
+          "max": 52.71666666666667,
+          "mean": 8.986058931914261,
+          "stddev_pop": 4.2434081742906
+        },
+        "temp_delta_1h": {
+          "min": -9.700000000000003,
+          "max": 9.200000000000001,
+          "mean": -1.5855348484704346e-06,
+          "stddev_pop": 0.8855642963949518
+        },
+        "temp_delta_3h": {
+          "min": -12.299999999999997,
+          "max": 14.3,
+          "mean": -7.112256320282321e-06,
+          "stddev_pop": 2.1796852853021185
+        },
+        "humidity_delta_1h": {
+          "min": -43.0,
+          "max": 58.0,
+          "mean": 0.00011461151904657713,
+          "stddev_pop": 4.312983734893681
+        },
+        "humidity_delta_3h": {
+          "min": -63.0,
+          "max": 61.0,
+          "mean": 0.00036286097532137656,
+          "stddev_pop": 9.901118691541333
+        },
+        "pressure_delta_1h": {
+          "min": -6.600000000000023,
+          "max": 6.899999999999977,
+          "mean": -0.00015823637787734977,
+          "stddev_pop": 0.6465331078490898
+        },
+        "pressure_delta_3h": {
+          "min": -16.100000000000023,
+          "max": 17.5,
+          "mean": -0.0004634291857100731,
+          "stddev_pop": 1.6793209584683346
+        },
+        "pressure_delta_6h": {
+          "min": -22.700000000000045,
+          "max": 26.299999999999955,
+          "mean": -0.000864796007351446,
+          "stddev_pop": 2.4743918343177342
+        },
+        "wind_speed_delta_1h": {
+          "min": -29.3,
+          "max": 34.699999999999996,
+          "mean": -6.378380190418167e-05,
+          "stddev_pop": 2.1702060621198584
+        }
+      }
+    },
+    "VALIDATION": {
+      "row_count": 553392,
+      "location_count": 63,
+      "min_event_time": "2023-12-31T23:00:00",
+      "max_event_time": "2024-12-31T22:00:00",
+      "min_target_time": "2024-01-01T00:00:00",
+      "max_target_time": "2024-12-31T23:00:00",
+      "features": {
+        "temperature_c": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.647104403388564,
+          "stddev_pop": 4.793870572537258
+        },
+        "humidity_pct": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.82920425304305,
+          "stddev_pop": 14.845610293501855
+        },
+        "precipitation_mm": {
+          "min": 0.0,
+          "max": 48.6,
+          "mean": 0.2516588602654152,
+          "stddev_pop": 1.031610183935256
+        },
+        "pressure_hpa": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.456182958915,
+          "stddev_pop": 5.497362079279007
+        },
+        "wind_speed_kmh": {
+          "min": 0.0,
+          "max": 91.0,
+          "mean": 8.937879658542228,
+          "stddev_pop": 5.478683126291288
+        },
+        "wind_gust_kmh": {
+          "min": 0.7,
+          "max": 172.1,
+          "mean": 19.826362325440197,
+          "stddev_pop": 10.389554415281022
+        },
+        "latitude": {
+          "min": 9.173989,
+          "max": 22.811949,
+          "mean": 16.048762198412472,
+          "stddev_pop": 4.892892031929303
+        },
+        "longitude": {
+          "min": 103.02752,
+          "max": 109.32666,
+          "mean": 106.41988147618812,
+          "stddev_pop": 1.3460849668540749
+        },
+        "local_hour": {
+          "min": 0.0,
+          "max": 23.0,
+          "mean": 11.5,
+          "stddev_pop": 6.922186552431737
+        },
+        "local_day_of_week": {
+          "min": 0.0,
+          "max": 6.0,
+          "mean": 2.987704918032787,
+          "stddev_pop": 2.0020103776631397
+        },
+        "local_month": {
+          "min": 1.0,
+          "max": 12.0,
+          "mean": 6.5136612021857925,
+          "stddev_pop": 3.451233918085987
+        },
+        "local_day_of_year": {
+          "min": 1.0,
+          "max": 366.0,
+          "mean": 183.5,
+          "stddev_pop": 105.65470489602752
+        },
+        "hour_sin": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -3.7020073305180824e-17,
+          "stddev_pop": 0.7071067811865476
+        },
+        "hour_cos": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -7.393903340229014e-17,
+          "stddev_pop": 0.7071067811865476
+        },
+        "day_of_week_sin": {
+          "min": -0.9749279121818236,
+          "max": 0.9749279121818236,
+          "mean": 0.0028020859576880853,
+          "stddev_pop": 0.7068092079507565
+        },
+        "day_of_week_cos": {
+          "min": -0.9009688679024191,
+          "max": 1.0,
+          "mean": 0.0036007092031956948,
+          "stddev_pop": 0.707389515587802
+        },
+        "day_of_year_sin": {
+          "min": -0.9999994220246925,
+          "max": 0.9999855506507186,
+          "mean": -4.406378939394848e-06,
+          "stddev_pop": 0.7063819060415685
+        },
+        "day_of_year_cos": {
+          "min": -0.9999791929590823,
+          "max": 1.0,
+          "mean": 0.002049186644590371,
+          "stddev_pop": 0.7078279477611514
+        },
+        "temp_lag_1h": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.647478460115074,
+          "stddev_pop": 4.7931195139973255
+        },
+        "temp_lag_3h": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.648189348599182,
+          "stddev_pop": 4.791714114969328
+        },
+        "temp_lag_6h": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.649134067713295,
+          "stddev_pop": 4.789964492498873
+        },
+        "temp_lag_12h": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.650932611964034,
+          "stddev_pop": 4.787537524172734
+        },
+        "temp_lag_24h": {
+          "min": 2.6,
+          "max": 42.9,
+          "mean": 25.65477346980079,
+          "stddev_pop": 4.7856682560128405
+        },
+        "humidity_lag_1h": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.82987285685373,
+          "stddev_pop": 14.845944668670914
+        },
+        "humidity_lag_3h": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.8310998351982,
+          "stddev_pop": 14.846527765455486
+        },
+        "humidity_lag_6h": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.83272074767976,
+          "stddev_pop": 14.847204394451195
+        },
+        "humidity_lag_12h": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.83512410732357,
+          "stddev_pop": 14.847390472016544
+        },
+        "humidity_lag_24h": {
+          "min": 11.0,
+          "max": 100.0,
+          "mean": 79.83929474947234,
+          "stddev_pop": 14.846688413121006
+        },
+        "pressure_lag_1h": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.4561867536934,
+          "stddev_pop": 5.497292026484142
+        },
+        "pressure_lag_3h": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.4561115809406,
+          "stddev_pop": 5.4971073044079
+        },
+        "pressure_lag_6h": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.455911180501,
+          "stddev_pop": 5.4967380767037
+        },
+        "pressure_lag_12h": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.4552369748748,
+          "stddev_pop": 5.4956355188179735
+        },
+        "pressure_lag_24h": {
+          "min": 955.8,
+          "max": 1033.5,
+          "mean": 1010.452945109434,
+          "stddev_pop": 5.491600972936266
+        },
+        "precipitation_lag_1h": {
+          "min": 0.0,
+          "max": 48.6,
+          "mean": 0.25166391996992843,
+          "stddev_pop": 1.0316104210200174
+        },
+        "precipitation_lag_3h": {
+          "min": 0.0,
+          "max": 48.6,
+          "mean": 0.2516617515251369,
+          "stddev_pop": 1.0315937485163147
+        },
+        "precipitation_lag_6h": {
+          "min": 0.0,
+          "max": 48.6,
+          "mean": 0.25166391996992843,
+          "stddev_pop": 1.03159362240234
+        },
+        "precipitation_lag_24h": {
+          "min": 0.0,
+          "max": 48.6,
+          "mean": 0.25160537196056065,
+          "stddev_pop": 1.031527026000629
+        },
+        "wind_speed_lag_1h": {
+          "min": 0.0,
+          "max": 91.0,
+          "mean": 8.937759671263771,
+          "stddev_pop": 5.478702329399279
+        },
+        "wind_speed_lag_3h": {
+          "min": 0.0,
+          "max": 91.0,
+          "mean": 8.937616734611272,
+          "stddev_pop": 5.478693238018164
+        },
+        "wind_speed_lag_6h": {
+          "min": 0.0,
+          "max": 91.0,
+          "mean": 8.93752349148524,
+          "stddev_pop": 5.478580352085833
+        },
+        "wind_speed_lag_24h": {
+          "min": 0.0,
+          "max": 91.0,
+          "mean": 8.934531037673118,
+          "stddev_pop": 5.47709118437135
+        },
+        "temp_roll_mean_3h": {
+          "min": 2.6999999999999997,
+          "max": 41.699999999999996,
+          "mean": 25.647475930262818,
+          "stddev_pop": 4.741671041228149
+        },
+        "temp_roll_std_3h": {
+          "min": 0.0,
+          "max": 5.7063317658739585,
+          "mean": 0.5305576313317037,
+          "stddev_pop": 0.45730648451765676
+        },
+        "temp_roll_mean_6h": {
+          "min": 3.0,
+          "max": 40.96666666666667,
+          "mean": 25.64799361633948,
+          "stddev_pop": 4.620439197186455
+        },
+        "temp_roll_std_6h": {
+          "min": 0.0,
+          "max": 6.29858890722535,
+          "mean": 1.0332539638702096,
+          "stddev_pop": 0.7404699152603661
+        },
+        "temp_roll_mean_24h": {
+          "min": 4.425,
+          "max": 35.75833333333333,
+          "mean": 25.650928553659373,
+          "stddev_pop": 4.037837237837883
+        },
+        "temp_roll_std_24h": {
+          "min": 0.13743685418725543,
+          "max": 7.148920615884765,
+          "mean": 2.4006384204868567,
+          "stddev_pop": 0.929516881628367
+        },
+        "humidity_roll_mean_3h": {
+          "min": 12.333333333333334,
+          "max": 100.0,
+          "mean": 79.829855991172,
+          "stddev_pop": 14.484637720539864
+        },
+        "humidity_roll_std_3h": {
+          "min": 0.0,
+          "max": 25.69478978746902,
+          "mean": 2.4460842795065987,
+          "stddev_pop": 2.1479406336824978
+        },
+        "humidity_roll_mean_6h": {
+          "min": 15.333333333333334,
+          "max": 100.0,
+          "mean": 79.83075740162488,
+          "stddev_pop": 13.70097173087196
+        },
+        "humidity_roll_std_6h": {
+          "min": 0.0,
+          "max": 29.24418270737314,
+          "mean": 4.635539987035951,
+          "stddev_pop": 3.348038348034165
+        },
+        "humidity_roll_mean_24h": {
+          "min": 29.75,
+          "max": 99.75,
+          "mean": 79.83428850314668,
+          "stddev_pop": 9.608543498393702
+        },
+        "humidity_roll_std_24h": {
+          "min": 0.4330127018922181,
+          "max": 33.41840706191059,
+          "mean": 10.492599146431582,
+          "stddev_pop": 4.243235368940558
+        },
+        "pressure_roll_mean_3h": {
+          "min": 959.9,
+          "max": 1033.2333333333333,
+          "mean": 1010.4561727792708,
+          "stddev_pop": 5.472122369857616
+        },
+        "pressure_roll_std_3h": {
+          "min": 0.0,
+          "max": 12.232288783743167,
+          "mean": 0.4516014714960008,
+          "stddev_pop": 0.2684499009509573
+        },
+        "pressure_roll_mean_6h": {
+          "min": 965.9833333333332,
+          "max": 1032.85,
+          "mean": 1010.4561136590337,
+          "stddev_pop": 5.4135023840421175
+        },
+        "pressure_roll_std_6h": {
+          "min": 0.0372677996249626,
+          "max": 15.455572529745455,
+          "mean": 0.861945745327957,
+          "stddev_pop": 0.4118093372598041
+        },
+        "pressure_roll_mean_24h": {
+          "min": 984.0583333333334,
+          "max": 1030.7583333333334,
+          "mean": 1010.455055548327,
+          "stddev_pop": 5.281991091641158
+        },
+        "pressure_roll_std_24h": {
+          "min": 0.5441449714919904,
+          "max": 15.572302245404186,
+          "mean": 1.462314425107864,
+          "stddev_pop": 0.4015927289810668
+        },
+        "precipitation_sum_3h": {
+          "min": 0.0,
+          "max": 112.3,
+          "mean": 0.7549901335762024,
+          "stddev_pop": 2.41206819450376
+        },
+        "precipitation_sum_6h": {
+          "min": 0.0,
+          "max": 185.2,
+          "mean": 1.5099811706710693,
+          "stddev_pop": 4.107153646336573
+        },
+        "precipitation_sum_24h": {
+          "min": 0.0,
+          "max": 286.0,
+          "mean": 6.039684708127311,
+          "stddev_pop": 11.596528780073163
+        },
+        "wind_speed_roll_mean_3h": {
+          "min": 0.0,
+          "max": 85.13333333333334,
+          "mean": 8.93777605506886,
+          "stddev_pop": 5.273098392013881
+        },
+        "wind_speed_roll_mean_6h": {
+          "min": 0.13333333333333333,
+          "max": 78.21666666666665,
+          "mean": 8.937666277551298,
+          "stddev_pop": 5.042871774142796
+        },
+        "wind_speed_roll_mean_24h": {
+          "min": 1.2750000000000001,
+          "max": 52.012499999999996,
+          "mean": 8.937383114802282,
+          "stddev_pop": 4.260895338185304
+        },
+        "temp_delta_1h": {
+          "min": -12.3,
+          "max": 6.099999999999998,
+          "mean": -0.0003740567265157428,
+          "stddev_pop": 0.9263355914726907
+        },
+        "temp_delta_3h": {
+          "min": -12.5,
+          "max": 12.8,
+          "mean": -0.001084945210628271,
+          "stddev_pop": 2.2810730784319713
+        },
+        "humidity_delta_1h": {
+          "min": -39.0,
+          "max": 55.0,
+          "mean": -0.0006686038106803134,
+          "stddev_pop": 4.4057042062171865
+        },
+        "humidity_delta_3h": {
+          "min": -61.0,
+          "max": 63.0,
+          "mean": -0.0018955821551449967,
+          "stddev_pop": 10.250029442460631
+        },
+        "pressure_delta_1h": {
+          "min": -7.899999999999977,
+          "max": 21.300000000000068,
+          "mean": -3.794778384941333e-06,
+          "stddev_pop": 0.6772218369078369
+        },
+        "pressure_delta_3h": {
+          "min": -18.399999999999977,
+          "max": 31.799999999999955,
+          "mean": 7.137797438344072e-05,
+          "stddev_pop": 1.7497388518395343
+        },
+        "pressure_delta_6h": {
+          "min": -28.300000000000068,
+          "max": 43.80000000000007,
+          "mean": 0.0002717784138549192,
+          "stddev_pop": 2.5740665325599577
+        },
+        "wind_speed_delta_1h": {
+          "min": -38.00000000000001,
+          "max": 27.0,
+          "mean": 0.00011998727845722362,
+          "stddev_pop": 2.2531439807049223
+        }
+      }
+    },
+    "TEST": {
+      "row_count": 551880,
+      "location_count": 63,
+      "min_event_time": "2024-12-31T23:00:00",
+      "max_event_time": "2025-12-31T22:00:00",
+      "min_target_time": "2025-01-01T00:00:00",
+      "max_target_time": "2025-12-31T23:00:00",
+      "features": {
+        "temperature_c": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.93617634268319,
+          "stddev_pop": 4.727449965495898
+        },
+        "humidity_pct": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.4780260201493,
+          "stddev_pop": 14.458175197386332
+        },
+        "precipitation_mm": {
+          "min": 0.0,
+          "max": 41.9,
+          "mean": 0.27398854823512026,
+          "stddev_pop": 1.0551522504677107
+        },
+        "pressure_hpa": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6729745596874,
+          "stddev_pop": 5.583189215290134
+        },
+        "wind_speed_kmh": {
+          "min": 0.0,
+          "max": 74.3,
+          "mean": 8.713085090961805,
+          "stddev_pop": 5.677356149471816
+        },
+        "wind_gust_kmh": {
+          "min": 0.4,
+          "max": 139.3,
+          "mean": 19.84094694498804,
+          "stddev_pop": 10.901577795735976
+        },
+        "latitude": {
+          "min": 9.173989,
+          "max": 22.811949,
+          "mean": 16.04876219841247,
+          "stddev_pop": 4.892892031929302
+        },
+        "longitude": {
+          "min": 103.02752,
+          "max": 109.32666,
+          "mean": 106.41988147618812,
+          "stddev_pop": 1.3460849668540735
+        },
+        "local_hour": {
+          "min": 0.0,
+          "max": 23.0,
+          "mean": 11.5,
+          "stddev_pop": 6.922186552431737
+        },
+        "local_day_of_week": {
+          "min": 0.0,
+          "max": 6.0,
+          "mean": 2.997945205479452,
+          "stddev_pop": 1.9977716757003134
+        },
+        "local_month": {
+          "min": 1.0,
+          "max": 12.0,
+          "mean": 6.526027397260274,
+          "stddev_pop": 3.447851322051952
+        },
+        "local_day_of_year": {
+          "min": 1.0,
+          "max": 365.0,
+          "mean": 183.0,
+          "stddev_pop": 105.36602868097476
+        },
+        "hour_sin": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -3.7020107932991805e-17,
+          "stddev_pop": 0.7071067811865475
+        },
+        "hour_cos": {
+          "min": -1.0,
+          "max": 1.0,
+          "mean": -7.393882563542424e-17,
+          "stddev_pop": 0.7071067811865476
+        },
+        "day_of_week_sin": {
+          "min": -0.9749279121818236,
+          "max": 0.9749279121818236,
+          "mean": 0.002300457175111665,
+          "stddev_pop": 0.707606413861912
+        },
+        "day_of_week_cos": {
+          "min": -0.9009688679024191,
+          "max": 1.0,
+          "mean": -0.001074336760118468,
+          "stddev_pop": 0.7066022337629548
+        },
+        "day_of_year_sin": {
+          "min": -0.9999994220246925,
+          "max": 0.9999855506507186,
+          "mean": 7.36399455113277e-06,
+          "stddev_pop": 0.7073488547805477
+        },
+        "day_of_year_cos": {
+          "min": -0.9999791929590823,
+          "max": 1.0,
+          "mean": -0.0006848998369544293,
+          "stddev_pop": 0.7068642928445567
+        },
+        "temp_lag_1h": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.93599369428136,
+          "stddev_pop": 4.727968034117943
+        },
+        "temp_lag_3h": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.935614082771615,
+          "stddev_pop": 4.728997732965792
+        },
+        "temp_lag_6h": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.935061969993473,
+          "stddev_pop": 4.730393410865161
+        },
+        "temp_lag_12h": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.93411303181851,
+          "stddev_pop": 4.732328378656025
+        },
+        "temp_lag_24h": {
+          "min": 3.3,
+          "max": 40.2,
+          "mean": 24.932132528810605,
+          "stddev_pop": 4.733804350415347
+        },
+        "humidity_lag_1h": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.47738276436907,
+          "stddev_pop": 14.457911268666583
+        },
+        "humidity_lag_3h": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.47631187939407,
+          "stddev_pop": 14.457533939374805
+        },
+        "humidity_lag_6h": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.47528629412191,
+          "stddev_pop": 14.457325173048007
+        },
+        "humidity_lag_12h": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.47510328332247,
+          "stddev_pop": 14.4573059336653
+        },
+        "humidity_lag_24h": {
+          "min": 14.0,
+          "max": 100.0,
+          "mean": 80.47620134811916,
+          "stddev_pop": 14.454303597615436
+        },
+        "pressure_lag_1h": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6732796984859,
+          "stddev_pop": 5.583412089636978
+        },
+        "pressure_lag_3h": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6740209828233,
+          "stddev_pop": 5.583874943473731
+        },
+        "pressure_lag_6h": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6753672899913,
+          "stddev_pop": 5.584847689137268
+        },
+        "pressure_lag_12h": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6786892077988,
+          "stddev_pop": 5.58720729058697
+        },
+        "pressure_lag_24h": {
+          "min": 976.9,
+          "max": 1036.5,
+          "mean": 1010.6865905631668,
+          "stddev_pop": 5.594059560309441
+        },
+        "precipitation_lag_1h": {
+          "min": 0.0,
+          "max": 41.9,
+          "mean": 0.27398003189098746,
+          "stddev_pop": 1.055143273755256
+        },
+        "precipitation_lag_3h": {
+          "min": 0.0,
+          "max": 41.9,
+          "mean": 0.27397785750525144,
+          "stddev_pop": 1.0551601009693479
+        },
+        "precipitation_lag_6h": {
+          "min": 0.0,
+          "max": 41.9,
+          "mean": 0.27396789157062795,
+          "stddev_pop": 1.0551605849813952
+        },
+        "precipitation_lag_24h": {
+          "min": 0.0,
+          "max": 41.9,
+          "mean": 0.2740816844241469,
+          "stddev_pop": 1.0552235400958847
+        },
+        "wind_speed_lag_1h": {
+          "min": 0.0,
+          "max": 74.3,
+          "mean": 8.71306842067116,
+          "stddev_pop": 5.677381411070889
+        },
+        "wind_speed_lag_3h": {
+          "min": 0.0,
+          "max": 74.3,
+          "mean": 8.713017685003985,
+          "stddev_pop": 5.677452961375226
+        },
+        "wind_speed_lag_6h": {
+          "min": 0.0,
+          "max": 74.3,
+          "mean": 8.712670870479085,
+          "stddev_pop": 5.67766275359708
+        },
+        "wind_speed_lag_24h": {
+          "min": 0.0,
+          "max": 74.3,
+          "mean": 8.71215137348699,
+          "stddev_pop": 5.678607681704629
+        },
+        "temp_roll_mean_3h": {
+          "min": 3.4,
+          "max": 39.6,
+          "mean": 24.935992486289297,
+          "stddev_pop": 4.677247398123484
+        },
+        "temp_roll_std_3h": {
+          "min": 0.0,
+          "max": 4.751841748206689,
+          "mean": 0.5204429900882575,
+          "stddev_pop": 0.45406160305901266
+        },
+        "temp_roll_mean_6h": {
+          "min": 3.65,
+          "max": 38.75,
+          "mean": 24.9357080041555,
+          "stddev_pop": 4.561701824048903
+        },
+        "temp_roll_std_6h": {
+          "min": 0.0,
+          "max": 5.706429122781894,
+          "mean": 1.0125847877102723,
+          "stddev_pop": 0.7255253767446838
+        },
+        "temp_roll_mean_24h": {
+          "min": 9.108333333333333,
+          "max": 33.99583333333333,
+          "mean": 24.934076829806006,
+          "stddev_pop": 4.0134125931788
+        },
+        "temp_roll_std_24h": {
+          "min": 0.1587713240271475,
+          "max": 7.379965371794703,
+          "mean": 2.348305756497309,
+          "stddev_pop": 0.87497540903189
+        },
+        "humidity_roll_mean_3h": {
+          "min": 15.333333333333334,
+          "max": 100.0,
+          "mean": 80.47740450822648,
+          "stddev_pop": 14.0830219653446
+        },
+        "humidity_roll_std_3h": {
+          "min": 0.0,
+          "max": 22.395436042987765,
+          "mean": 2.438508996418181,
+          "stddev_pop": 2.180313945994401
+        },
+        "humidity_roll_mean_6h": {
+          "min": 17.333333333333332,
+          "max": 100.0,
+          "mean": 80.47664981517724,
+          "stddev_pop": 13.271093757176455
+        },
+        "humidity_roll_std_6h": {
+          "min": 0.0,
+          "max": 27.716822007983207,
+          "mean": 4.641793955259056,
+          "stddev_pop": 3.3699277519125537
+        },
+        "humidity_roll_mean_24h": {
+          "min": 36.125,
+          "max": 99.45833333333333,
+          "mean": 80.4763358882366,
+          "stddev_pop": 9.009408458514882
+        },
+        "humidity_roll_std_24h": {
+          "min": 0.40611643103370554,
+          "max": 28.824872313488033,
+          "mean": 10.571546748846643,
+          "stddev_pop": 4.008704830242916
+        },
+        "pressure_roll_mean_3h": {
+          "min": 978.4,
+          "max": 1036.0333333333333,
+          "mean": 1010.6732961875775,
+          "stddev_pop": 5.559682427686558
+        },
+        "pressure_roll_std_3h": {
+          "min": 0.0,
+          "max": 6.138403701289099,
+          "mean": 0.4416895285365907,
+          "stddev_pop": 0.2633382413992223
+        },
+        "pressure_roll_mean_6h": {
+          "min": 981.4499999999999,
+          "max": 1034.9333333333334,
+          "mean": 1010.6738777451619,
+          "stddev_pop": 5.504886059190252
+        },
+        "pressure_roll_std_6h": {
+          "min": 0.03726779962500073,
+          "max": 8.660526671180055,
+          "mean": 0.8412288231533875,
+          "stddev_pop": 0.4090329089582138
+        },
+        "pressure_roll_mean_24h": {
+          "min": 987.2708333333335,
+          "max": 1031.9166666666667,
+          "mean": 1010.6788226984734,
+          "stddev_pop": 5.374716284219026
+        },
+        "pressure_roll_std_24h": {
+          "min": 0.5864204028585983,
+          "max": 9.245944118308863,
+          "mean": 1.455295405450843,
+          "stddev_pop": 0.46062731485098135
+        },
+        "precipitation_sum_3h": {
+          "min": 0.0,
+          "max": 97.6,
+          "mean": 0.8219448068420718,
+          "stddev_pop": 2.4620766527922853
+        },
+        "precipitation_sum_6h": {
+          "min": 0.0,
+          "max": 133.2,
+          "mean": 1.643857360295726,
+          "stddev_pop": 4.205706197960339
+        },
+        "precipitation_sum_24h": {
+          "min": 0.0,
+          "max": 269.5,
+          "mean": 6.575919946365129,
+          "stddev_pop": 12.011834312684314
+        },
+        "wind_speed_roll_mean_3h": {
+          "min": 0.06666666666666667,
+          "max": 65.16666666666667,
+          "mean": 8.713064373897705,
+          "stddev_pop": 5.464690587403539
+        },
+        "wind_speed_roll_mean_6h": {
+          "min": 0.23333333333333336,
+          "max": 61.76666666666667,
+          "mean": 8.713002826701455,
+          "stddev_pop": 5.234389467248646
+        },
+        "wind_speed_roll_mean_24h": {
+          "min": 0.9124999999999998,
+          "max": 44.13333333333333,
+          "mean": 8.711732003938057,
+          "stddev_pop": 4.436400300351464
+        },
+        "temp_delta_1h": {
+          "min": -9.599999999999998,
+          "max": 5.9,
+          "mean": 0.00018264840182648394,
+          "stddev_pop": 0.914609981579273
+        },
+        "temp_delta_3h": {
+          "min": -11.399999999999999,
+          "max": 11.900000000000002,
+          "mean": 0.000562259911574981,
+          "stddev_pop": 2.237206910162782
+        },
+        "humidity_delta_1h": {
+          "min": -43.0,
+          "max": 49.0,
+          "mean": 0.0006432557802420816,
+          "stddev_pop": 4.413980744436552
+        },
+        "humidity_delta_3h": {
+          "min": -59.0,
+          "max": 57.0,
+          "mean": 0.0017141407552366456,
+          "stddev_pop": 10.29711635191777
+        },
+        "pressure_delta_1h": {
+          "min": -8.600000000000023,
+          "max": 8.399999999999977,
+          "mean": -0.0003051387982894832,
+          "stddev_pop": 0.663773823363038
+        },
+        "pressure_delta_3h": {
+          "min": -18.0,
+          "max": 17.899999999999977,
+          "mean": -0.001046423135464232,
+          "stddev_pop": 1.7116007926746601
+        },
+        "pressure_delta_6h": {
+          "min": -24.200000000000045,
+          "max": 22.799999999999955,
+          "mean": -0.00239273030368921,
+          "stddev_pop": 2.5336590591227846
+        },
+        "wind_speed_delta_1h": {
+          "min": -37.8,
+          "max": 32.9,
+          "mean": 1.667029064289356e-05,
+          "stddev_pop": 2.344185933282523
+        }
+      }
+    }
+  },
+  "source_rows": 3314304,
+  "source_delta_total_rows_verified": 3314304,
+  "source_delta_location_count_verified": 63,
+  "source_location_count": 63,
+  "source_schema": [
+    {
+      "name": "city",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "event_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "event_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "name": "event_type",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "humidity_pct",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "ingestion_time",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "latitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "location_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "longitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_mm",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_hpa",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "temperature_c",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "weather_code",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "wind_gust_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "year",
+      "type": "int",
+      "nullable": true
+    }
+  ],
+  "source_duplicate_observation_keys": 0,
+  "source_weather_code_null_count": 0,
+  "source_model_input_quality": {
+    "temperature_c": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "humidity_pct": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "precipitation_mm": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "pressure_hpa": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "wind_speed_kmh": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "wind_gust_kmh": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "latitude": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    },
+    "longitude": {
+      "null": 0,
+      "nan": 0,
+      "infinite": 0
+    }
+  },
+  "source_invalid_model_input_values": 0,
+  "source_hourly_gap_edges": 0,
+  "lag24_history_continuity_violations": 0,
+  "target_time_gap_edges": 0,
+  "history_ineligible_rows": 1512,
+  "target_ineligible_rows": 63,
+  "invalid_numeric_feature_rows": 0,
+  "eligible_rows_before_write": 3312729,
+  "rows_dropped_for_history": 1512,
+  "rows_dropped_for_target": 63,
+  "total_rows_dropped": 1575,
+  "model_feature_count": 73,
+  "output_column_count": 79,
+  "source_delta_version_before": 0,
+  "source_delta_version_after": 0,
+  "readback_status": "PASS",
+  "spark_shuffle_partitions": 16
+}

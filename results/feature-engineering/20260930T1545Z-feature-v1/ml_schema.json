@@ -1,0 +1,402 @@
+{
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "feature_count": 73,
+  "output_column_count": 79,
+  "columns": [
+    {
+      "name": "location_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "name": "event_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "name": "target_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "name": "weather_code",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "temperature_c",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_pct",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_mm",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_hpa",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_gust_kmh",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "latitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "longitude",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "local_hour",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_day_of_week",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_month",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "local_day_of_year",
+      "type": "int",
+      "nullable": true
+    },
+    {
+      "name": "hour_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "hour_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_week_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_week_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_year_sin",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "day_of_year_cos",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_12h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_1h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_3h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_6h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_12h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_lag_24h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_12h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_lag_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_roll_std_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "precipitation_sum_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_roll_mean_24h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "temp_delta_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "humidity_delta_1h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "humidity_delta_3h",
+      "type": "bigint",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_3h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "pressure_delta_6h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "wind_speed_delta_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "target_temperature_1h",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "name": "split",
+      "type": "string",
+      "nullable": true
+    }
+  ]
+}

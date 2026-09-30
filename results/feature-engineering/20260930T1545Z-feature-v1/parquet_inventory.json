@@ -1,0 +1,86 @@
+{
+  "format": "Parquet",
+  "compression": "Snappy",
+  "partition_columns": [
+    "split"
+  ],
+  "parquet_file_count": 15,
+  "total_bytes": 367979619,
+  "files": [
+    {
+      "path": "split=TEST/part-00000-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 14603318,
+      "modified_at_utc": "2026-09-30T15:21:54.114355+00:00"
+    },
+    {
+      "path": "split=TEST/part-00001-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 13692271,
+      "modified_at_utc": "2026-09-30T15:21:52.447857+00:00"
+    },
+    {
+      "path": "split=TEST/part-00002-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 12800934,
+      "modified_at_utc": "2026-09-30T15:21:51.982407+00:00"
+    },
+    {
+      "path": "split=TEST/part-00003-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 11738949,
+      "modified_at_utc": "2026-09-30T15:21:51.043586+00:00"
+    },
+    {
+      "path": "split=TEST/part-00004-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 8848972,
+      "modified_at_utc": "2026-09-30T15:22:19.912755+00:00"
+    },
+    {
+      "path": "split=TRAIN/part-00000-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 58135383,
+      "modified_at_utc": "2026-09-30T15:22:04.685847+00:00"
+    },
+    {
+      "path": "split=TRAIN/part-00001-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 54613253,
+      "modified_at_utc": "2026-09-30T15:22:03.272868+00:00"
+    },
+    {
+      "path": "split=TRAIN/part-00002-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 50696886,
+      "modified_at_utc": "2026-09-30T15:22:02.221127+00:00"
+    },
+    {
+      "path": "split=TRAIN/part-00003-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 46641574,
+      "modified_at_utc": "2026-09-30T15:21:59.767332+00:00"
+    },
+    {
+      "path": "split=TRAIN/part-00004-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 34535227,
+      "modified_at_utc": "2026-09-30T15:22:24.561731+00:00"
+    },
+    {
+      "path": "split=VALIDATION/part-00000-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 14607443,
+      "modified_at_utc": "2026-09-30T15:22:06.746436+00:00"
+    },
+    {
+      "path": "split=VALIDATION/part-00001-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 13637863,
+      "modified_at_utc": "2026-09-30T15:22:05.395635+00:00"
+    },
+    {
+      "path": "split=VALIDATION/part-00002-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 12733267,
+      "modified_at_utc": "2026-09-30T15:22:04.339940+00:00"
+    },
+    {
+      "path": "split=VALIDATION/part-00003-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 11781771,
+      "modified_at_utc": "2026-09-30T15:22:01.846913+00:00"
+    },
+    {
+      "path": "split=VALIDATION/part-00004-79c90d68-8276-496f-a790-497e551ef123.c000.snappy.parquet",
+      "size_bytes": 8912508,
+      "modified_at_utc": "2026-09-30T15:22:25.826741+00:00"
+    }
+  ]
+}

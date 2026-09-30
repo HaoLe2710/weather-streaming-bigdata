@@ -1,0 +1,17 @@
+{
+  "started_at_utc": "2026-09-30T15:19:54.069686+00:00",
+  "finished_at_utc": "2026-09-30T15:24:58.264883+00:00",
+  "duration_seconds": 304.116,
+  "spark_version": "4.0.4",
+  "delta_python_package_version": "4.0.0",
+  "spark_master": "spark://spark-master:7077",
+  "spark_application_id": "app-20260930151952-0000",
+  "spark_default_parallelism": 4,
+  "spark_sql_shuffle_partitions": 16,
+  "spark_adaptive_execution": "true",
+  "spark_executor_cores": "4",
+  "spark_executor_memory": "3g",
+  "spark_executor_instances": "1",
+  "catalog_path": "/opt/project/historical/locations.json",
+  "catalog_sha256": "e57910b3bc222784b0d1cdddf30593bfbece9065ba12d67c73f8ac9bc9fe8728"
+}

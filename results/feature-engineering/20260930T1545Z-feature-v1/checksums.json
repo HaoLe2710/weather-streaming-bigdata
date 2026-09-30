@@ -1,0 +1,14 @@
+{
+  "algorithm": "SHA-256",
+  "scope": "All small report artifacts. Parquet files are inventoried by path, size and modification time.",
+  "files": {
+    "feature_manifest.json": "89ad312d17b88a901fc32fb0e9e891560d68053d7543b637c614a40310099363",
+    "feature_spec.json": "094ff42511a6cd8da0ded52869dc70bc5a592fa0edd1390cdd212140c6c2ddb0",
+    "feature_validation.json": "a0b71d61886a483ca0b1a77842be4f8d65d24f1019e1f6228266d523be0a2d8e",
+    "ml_schema.json": "930d87c6ea27cae65245e9ba2769f72ffb13f8ae5f9269b3999a3523c03a5acc",
+    "parquet_inventory.json": "eb60a604e73ac28c79132c829fb48e9e77645b618cf29794b30ad6a0b25df017",
+    "per_location_split_counts.csv": "a1c13b830fa581ea1f27a6c35e6ddd45a5df53e14f3ae54d615c9240e02edf28",
+    "runtime_summary.json": "1f98536b17f2f0e4f723c8b66634444abd7d7c239a0ca85fb63a17a7803b2ea5",
+    "statistics_by_split.json": "6f30f17f48f0b90f2d1abc5f37ced7160fb095291d9a64f03c28b673bf1363c4"
+  }
+}

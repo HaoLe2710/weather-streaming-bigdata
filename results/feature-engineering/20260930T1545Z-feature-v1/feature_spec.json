@@ -1,0 +1,732 @@
+{
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "version": 1,
+  "source_dataset_id": "NATIONWIDE_63",
+  "feature_time_column": "event_time",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "model_features": [
+    {
+      "name": "temperature_c",
+      "role": "feature",
+      "category": "current",
+      "source": "temperature_c",
+      "definition": "Observed temperature at feature event_time (Delta field temperature_c).",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_pct",
+      "role": "feature",
+      "category": "current",
+      "source": "humidity_pct",
+      "definition": "Observed relative humidity at feature event_time (Delta field humidity_pct).",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_mm",
+      "role": "feature",
+      "category": "current",
+      "source": "precipitation_mm",
+      "definition": "Observed precipitation at feature event_time (Delta field precipitation_mm).",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_hpa",
+      "role": "feature",
+      "category": "current",
+      "source": "pressure_hpa",
+      "definition": "Observed pressure at feature event_time (Delta field pressure_hpa).",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_kmh",
+      "role": "feature",
+      "category": "current",
+      "source": "wind_speed_kmh",
+      "definition": "Observed wind speed at feature event_time (Delta field wind_speed_kmh).",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_gust_kmh",
+      "role": "feature",
+      "category": "current",
+      "source": "wind_gust_kmh",
+      "definition": "Observed wind gust at feature event_time (Delta field wind_gust_kmh).",
+      "uses_future_data": false
+    },
+    {
+      "name": "latitude",
+      "role": "feature",
+      "category": "location",
+      "source": "latitude",
+      "definition": "Canonical location latitude from the Delta source.",
+      "uses_future_data": false
+    },
+    {
+      "name": "longitude",
+      "role": "feature",
+      "category": "location",
+      "source": "longitude",
+      "definition": "Canonical location longitude from the Delta source.",
+      "uses_future_data": false
+    },
+    {
+      "name": "local_hour",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Hour (0-23) after converting UTC event_time to Asia/Ho_Chi_Minh.",
+      "uses_future_data": false
+    },
+    {
+      "name": "local_day_of_week",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Monday=0 through Sunday=6 in Asia/Ho_Chi_Minh.",
+      "uses_future_data": false
+    },
+    {
+      "name": "local_month",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Local calendar month, 1-12.",
+      "uses_future_data": false
+    },
+    {
+      "name": "local_day_of_year",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Local calendar day-of-year, 1-366.",
+      "uses_future_data": false
+    },
+    {
+      "name": "hour_sin",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Sine of 2*pi*local_hour/24.",
+      "uses_future_data": false,
+      "input_expression": "local_hour",
+      "period": 24
+    },
+    {
+      "name": "hour_cos",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Cosine of 2*pi*local_hour/24.",
+      "uses_future_data": false,
+      "input_expression": "local_hour",
+      "period": 24
+    },
+    {
+      "name": "day_of_week_sin",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Sine of 2*pi*local_day_of_week/7; Monday=0.",
+      "uses_future_data": false,
+      "input_expression": "local_day_of_week",
+      "period": 7
+    },
+    {
+      "name": "day_of_week_cos",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Cosine of 2*pi*local_day_of_week/7; Monday=0.",
+      "uses_future_data": false,
+      "input_expression": "local_day_of_week",
+      "period": 7
+    },
+    {
+      "name": "day_of_year_sin",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Sine of 2*pi*(local_day_of_year-1)/365.25.",
+      "uses_future_data": false,
+      "input_expression": "local_day_of_year-1",
+      "period": 365.25
+    },
+    {
+      "name": "day_of_year_cos",
+      "role": "feature",
+      "category": "time",
+      "source": "event_time",
+      "definition": "Cosine of 2*pi*(local_day_of_year-1)/365.25.",
+      "uses_future_data": false,
+      "input_expression": "local_day_of_year-1",
+      "period": 365.25
+    },
+    {
+      "name": "temp_lag_1h",
+      "role": "feature",
+      "category": "lag",
+      "source": "temperature_c",
+      "definition": "Same-location source value at event_time minus 1 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_lag_3h",
+      "role": "feature",
+      "category": "lag",
+      "source": "temperature_c",
+      "definition": "Same-location source value at event_time minus 3 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_lag_6h",
+      "role": "feature",
+      "category": "lag",
+      "source": "temperature_c",
+      "definition": "Same-location source value at event_time minus 6 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_lag_12h",
+      "role": "feature",
+      "category": "lag",
+      "source": "temperature_c",
+      "definition": "Same-location source value at event_time minus 12 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_lag_24h",
+      "role": "feature",
+      "category": "lag",
+      "source": "temperature_c",
+      "definition": "Same-location source value at event_time minus 24 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_lag_1h",
+      "role": "feature",
+      "category": "lag",
+      "source": "humidity_pct",
+      "definition": "Same-location source value at event_time minus 1 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_lag_3h",
+      "role": "feature",
+      "category": "lag",
+      "source": "humidity_pct",
+      "definition": "Same-location source value at event_time minus 3 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_lag_6h",
+      "role": "feature",
+      "category": "lag",
+      "source": "humidity_pct",
+      "definition": "Same-location source value at event_time minus 6 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_lag_12h",
+      "role": "feature",
+      "category": "lag",
+      "source": "humidity_pct",
+      "definition": "Same-location source value at event_time minus 12 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_lag_24h",
+      "role": "feature",
+      "category": "lag",
+      "source": "humidity_pct",
+      "definition": "Same-location source value at event_time minus 24 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_lag_1h",
+      "role": "feature",
+      "category": "lag",
+      "source": "pressure_hpa",
+      "definition": "Same-location source value at event_time minus 1 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_lag_3h",
+      "role": "feature",
+      "category": "lag",
+      "source": "pressure_hpa",
+      "definition": "Same-location source value at event_time minus 3 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_lag_6h",
+      "role": "feature",
+      "category": "lag",
+      "source": "pressure_hpa",
+      "definition": "Same-location source value at event_time minus 6 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_lag_12h",
+      "role": "feature",
+      "category": "lag",
+      "source": "pressure_hpa",
+      "definition": "Same-location source value at event_time minus 12 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_lag_24h",
+      "role": "feature",
+      "category": "lag",
+      "source": "pressure_hpa",
+      "definition": "Same-location source value at event_time minus 24 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_lag_1h",
+      "role": "feature",
+      "category": "lag",
+      "source": "precipitation_mm",
+      "definition": "Same-location source value at event_time minus 1 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_lag_3h",
+      "role": "feature",
+      "category": "lag",
+      "source": "precipitation_mm",
+      "definition": "Same-location source value at event_time minus 3 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_lag_6h",
+      "role": "feature",
+      "category": "lag",
+      "source": "precipitation_mm",
+      "definition": "Same-location source value at event_time minus 6 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_lag_24h",
+      "role": "feature",
+      "category": "lag",
+      "source": "precipitation_mm",
+      "definition": "Same-location source value at event_time minus 24 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_lag_1h",
+      "role": "feature",
+      "category": "lag",
+      "source": "wind_speed_kmh",
+      "definition": "Same-location source value at event_time minus 1 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_lag_3h",
+      "role": "feature",
+      "category": "lag",
+      "source": "wind_speed_kmh",
+      "definition": "Same-location source value at event_time minus 3 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_lag_6h",
+      "role": "feature",
+      "category": "lag",
+      "source": "wind_speed_kmh",
+      "definition": "Same-location source value at event_time minus 6 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_lag_24h",
+      "role": "feature",
+      "category": "lag",
+      "source": "wind_speed_kmh",
+      "definition": "Same-location source value at event_time minus 24 hours.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_mean_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Trailing mean over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_std_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Population standard deviation (stddev_pop) over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_mean_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Trailing mean over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_std_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Population standard deviation (stddev_pop) over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_mean_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Trailing mean over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_roll_std_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "temperature_c",
+      "definition": "Population standard deviation (stddev_pop) over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_mean_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Trailing mean over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_std_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Population standard deviation (stddev_pop) over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_mean_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Trailing mean over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_std_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Population standard deviation (stddev_pop) over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_mean_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Trailing mean over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_roll_std_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "humidity_pct",
+      "definition": "Population standard deviation (stddev_pop) over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_mean_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Trailing mean over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_std_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Population standard deviation (stddev_pop) over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_mean_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Trailing mean over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_std_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Population standard deviation (stddev_pop) over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_mean_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Trailing mean over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_roll_std_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "pressure_hpa",
+      "definition": "Population standard deviation (stddev_pop) over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_sum_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "precipitation_mm",
+      "definition": "Trailing sum over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_sum_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "precipitation_mm",
+      "definition": "Trailing sum over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "precipitation_sum_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "precipitation_mm",
+      "definition": "Trailing sum over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_roll_mean_3h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "wind_speed_kmh",
+      "definition": "Trailing mean over [2 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_roll_mean_6h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "wind_speed_kmh",
+      "definition": "Trailing mean over [5 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_roll_mean_24h",
+      "role": "feature",
+      "category": "rolling",
+      "source": "wind_speed_kmh",
+      "definition": "Trailing mean over [23 hours before event_time, event_time], inclusive.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_delta_1h",
+      "role": "feature",
+      "category": "change",
+      "source": "temperature_c",
+      "definition": "Current temperature_c value minus its same-location value 1 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "temp_delta_3h",
+      "role": "feature",
+      "category": "change",
+      "source": "temperature_c",
+      "definition": "Current temperature_c value minus its same-location value 3 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_delta_1h",
+      "role": "feature",
+      "category": "change",
+      "source": "humidity_pct",
+      "definition": "Current humidity_pct value minus its same-location value 1 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "humidity_delta_3h",
+      "role": "feature",
+      "category": "change",
+      "source": "humidity_pct",
+      "definition": "Current humidity_pct value minus its same-location value 3 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_delta_1h",
+      "role": "feature",
+      "category": "change",
+      "source": "pressure_hpa",
+      "definition": "Current pressure_hpa value minus its same-location value 1 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_delta_3h",
+      "role": "feature",
+      "category": "change",
+      "source": "pressure_hpa",
+      "definition": "Current pressure_hpa value minus its same-location value 3 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "pressure_delta_6h",
+      "role": "feature",
+      "category": "change",
+      "source": "pressure_hpa",
+      "definition": "Current pressure_hpa value minus its same-location value 6 hours earlier.",
+      "uses_future_data": false
+    },
+    {
+      "name": "wind_speed_delta_1h",
+      "role": "feature",
+      "category": "change",
+      "source": "wind_speed_kmh",
+      "definition": "Current wind_speed_kmh value minus its same-location value 1 hours earlier.",
+      "uses_future_data": false
+    }
+  ],
+  "label": {
+    "name": "target_temperature_1h",
+    "role": "target",
+    "source": "temperature_c at lead(event_time, 1)",
+    "definition": "Temperature at exactly target_time=event_time+1 hour in the same location.",
+    "uses_future_data": true
+  },
+  "metadata": [
+    {
+      "name": "location_id",
+      "role": "identifier",
+      "definition": "Same-location partition key; not numerically encoded as a model feature."
+    },
+    {
+      "name": "event_time",
+      "role": "feature_time",
+      "definition": "UTC feature observation timestamp."
+    },
+    {
+      "name": "target_time",
+      "role": "label_time",
+      "definition": "UTC timestamp exactly one hour after event_time."
+    },
+    {
+      "name": "weather_code",
+      "role": "context",
+      "definition": "Preserved from Delta; not numerically modeled or ordinally encoded."
+    },
+    {
+      "name": "split",
+      "role": "partition",
+      "definition": "TRAIN/VALIDATION/TEST assigned from target_time."
+    }
+  ],
+  "source_mapping": {
+    "temperature_2m": "temperature_c",
+    "relative_humidity_2m": "humidity_pct",
+    "precipitation": "precipitation_mm",
+    "pressure_msl": "pressure_hpa",
+    "wind_speed_10m": "wind_speed_kmh",
+    "wind_gusts_10m": "wind_gust_kmh",
+    "weather_code": "weather_code"
+  },
+  "rolling_semantics": "Trailing row windows include current time t; eligibility proves all required history is hourly-contiguous. No centered windows.",
+  "feature_count": 73,
+  "output_column_count": 79,
+  "output_columns": [
+    "location_id",
+    "event_time",
+    "target_time",
+    "weather_code",
+    "temperature_c",
+    "humidity_pct",
+    "precipitation_mm",
+    "pressure_hpa",
+    "wind_speed_kmh",
+    "wind_gust_kmh",
+    "latitude",
+    "longitude",
+    "local_hour",
+    "local_day_of_week",
+    "local_month",
+    "local_day_of_year",
+    "hour_sin",
+    "hour_cos",
+    "day_of_week_sin",
+    "day_of_week_cos",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "temp_lag_1h",
+    "temp_lag_3h",
+    "temp_lag_6h",
+    "temp_lag_12h",
+    "temp_lag_24h",
+    "humidity_lag_1h",
+    "humidity_lag_3h",
+    "humidity_lag_6h",
+    "humidity_lag_12h",
+    "humidity_lag_24h",
+    "pressure_lag_1h",
+    "pressure_lag_3h",
+    "pressure_lag_6h",
+    "pressure_lag_12h",
+    "pressure_lag_24h",
+    "precipitation_lag_1h",
+    "precipitation_lag_3h",
+    "precipitation_lag_6h",
+    "precipitation_lag_24h",
+    "wind_speed_lag_1h",
+    "wind_speed_lag_3h",
+    "wind_speed_lag_6h",
+    "wind_speed_lag_24h",
+    "temp_roll_mean_3h",
+    "temp_roll_std_3h",
+    "temp_roll_mean_6h",
+    "temp_roll_std_6h",
+    "temp_roll_mean_24h",
+    "temp_roll_std_24h",
+    "humidity_roll_mean_3h",
+    "humidity_roll_std_3h",
+    "humidity_roll_mean_6h",
+    "humidity_roll_std_6h",
+    "humidity_roll_mean_24h",
+    "humidity_roll_std_24h",
+    "pressure_roll_mean_3h",
+    "pressure_roll_std_3h",
+    "pressure_roll_mean_6h",
+    "pressure_roll_std_6h",
+    "pressure_roll_mean_24h",
+    "pressure_roll_std_24h",
+    "precipitation_sum_3h",
+    "precipitation_sum_6h",
+    "precipitation_sum_24h",
+    "wind_speed_roll_mean_3h",
+    "wind_speed_roll_mean_6h",
+    "wind_speed_roll_mean_24h",
+    "temp_delta_1h",
+    "temp_delta_3h",
+    "humidity_delta_1h",
+    "humidity_delta_3h",
+    "pressure_delta_1h",
+    "pressure_delta_3h",
+    "pressure_delta_6h",
+    "wind_speed_delta_1h",
+    "target_temperature_1h",
+    "split"
+  ]
+}
