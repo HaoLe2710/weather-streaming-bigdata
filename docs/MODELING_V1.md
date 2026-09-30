@@ -31,7 +31,7 @@ Candidate profiles are a small deterministic set: five when a GPU passes both `n
 
 Selection sorts by validation MAE, then validation RMSE, then `best_boost_rounds * max_depth` as a simple size proxy, then training time. TEST is not part of this ranking. The selected candidate and its metrics are written to `selected_candidate.json` before final fitting.
 
-The final fit combines all 2,207,457 TRAIN rows and all 553,392 VALIDATION rows, for 2,760,849 rows total. It uses exactly `best_iteration + 1` rounds and has no TEST eval set or early stopping. The model is saved, hashed, reloaded into a fresh XGBoost Booster, and sample predictions are compared before TEST is opened.
+The final fit combines all 2,207,457 TRAIN rows and all 553,392 VALIDATION rows, for 2,760,849 rows total. It uses exactly `best_iteration + 1` rounds and has no TEST eval set or early stopping. The model is saved, hashed, reloaded into a fresh XGBoost Booster, and 64 sample predictions are compared before TEST is opened (`rtol=1e-6`, `atol=1e-4` °C). Both tolerances and the maximum observed difference are recorded in the reload-validation artifact.
 
 ## TEST isolation and reporting
 
@@ -43,7 +43,7 @@ Gain and split-weight importance are persisted. The notebook saves actual-vs-pre
 
 ## Artifacts and reproducibility
 
-Run-scoped output is stored in `MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_v1/<run_id>/`. Run IDs use UTC. An active run ID is reused after a disconnect until a successful manifest marks that run complete; a completed run is never overwritten.
+Run-scoped output is stored in `MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_v1/<run_id>/`. Run IDs use UTC. An unfinished run is resumed only when its recorded code commit matches the current commit; a changed commit starts a new run and preserves the earlier artifacts. A completed run is never overwritten.
 
 The Drive run contains candidate checkpoints, selected parameters, feature list and hash, dataset verification, baseline/model metrics, per-location metrics, importance, training environment and manifest, model JSON and SHA-256, reload validation, prediction Parquet, plots, and result checksums. Only small reports and checksums are copied under `results/modeling/<run_id>/`; model binaries and prediction Parquet remain on Drive. `.gitignore` also excludes those large artifacts if copied locally by mistake.
 
