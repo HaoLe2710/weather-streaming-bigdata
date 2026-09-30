@@ -52,6 +52,7 @@ derby.log
 # Runtime / generated data
 # =========================
 data/
+results/feature-engineering/*-feature-smoke-v1/
 
 # =========================
 # Local benchmark artifacts
