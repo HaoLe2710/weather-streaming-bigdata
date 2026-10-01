@@ -12,6 +12,8 @@ The inference topic is `weather.hourly.observations.v1`. Each record represents 
 
 The existing Open-Meteo live producer remains unchanged. It polls current conditions every 10 seconds and timestamps each response with the provider's `current.time`. That is not a canonical hourly observation contract and cannot safely populate hourly lag or rolling features. The replay publisher reads the validated `NATIONWIDE_63` Delta source and writes a dedicated, sorted hourly feed. A production live-to-hourly publisher remains a separate integration step; the current high-frequency topic is not subscribed to by this model job.
 
+Open-Meteo documents current conditions as being based on 15-minute model data ([Forecast API documentation](https://open-meteo.com/en/docs)). The 10-second poll can therefore see the same provider timestamp on repeated requests. The producer forms `event_id` from `(location_id, event_time)`, and Silver deduplicates that exact ID within its 10-minute watermark. Silver does not aggregate by UTC hour: distinct provider timestamps that fall within one hour can remain as multiple rows for a location. No live Silver row-count sample was collected during this replay, so this describes the source and deduplication contract rather than a measured live row count.
+
 For the acceptance replay, `publish-replay --hours 72` validates the complete NATIONWIDE_63 Delta source, selects the first deterministic 72-hour range, verifies exactly one row for every location-hour (4,536 rows), and publishes that window to the inference topic. It never changes the benchmark-20 source or producer path.
 
 ```mermaid
