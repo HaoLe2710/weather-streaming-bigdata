@@ -60,6 +60,11 @@ services:
     environment:
       HOME: /tmp
       SPARK_MASTER_HOST: spark-master
+      WEATHER_FORECAST_MODEL_PATH: /opt/project/history-data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json
+      WEATHER_FORECAST_MODEL_SHA256: 07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a
+      PYTHONPATH: /opt/inference-python:/opt/delta-python:/opt/project:/opt/project/spark:/opt/project/spark/jobs
+      PYSPARK_PYTHON: /usr/local/bin/python3.12
+      PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
 
     ports:
       - "7077:7077"
@@ -70,6 +75,7 @@ services:
       - ./historical:/opt/project/historical
       - ./data:/opt/project/history-data
       - ./results:/opt/project/results
+      - ./ml:/opt/project/ml
       - weather-data:/opt/project/data
 
 
@@ -87,6 +93,11 @@ services:
       HOME: /tmp
       SPARK_WORKER_CORES: 4
       SPARK_WORKER_MEMORY: 4g
+      WEATHER_FORECAST_MODEL_PATH: /opt/project/history-data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json
+      WEATHER_FORECAST_MODEL_SHA256: 07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a
+      PYTHONPATH: /opt/inference-python:/opt/delta-python:/opt/project:/opt/project/spark:/opt/project/spark/jobs
+      PYSPARK_PYTHON: /usr/local/bin/python3.12
+      PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
 
     depends_on:
       - spark-master
@@ -96,6 +107,7 @@ services:
       - ./historical:/opt/project/historical
       - ./data:/opt/project/history-data
       - ./results:/opt/project/results
+      - ./ml:/opt/project/ml
       - weather-data:/opt/project/data
 
   historical-downloader:
