@@ -1,0 +1,22 @@
+{
+  "active_rejection_path_after_archive": "/opt/project/data/streaming/weather_forecast_xgboost_v1/rejected_observations (absent until first legitimate rejection write)",
+  "archived_delta_path_in_weather_data_volume": "/opt/project/data/streaming/weather_forecast_xgboost_v1/failed_attempts/catalog_coordinate_mismatch/rejected_observations",
+  "correct_inference_policy": "Preserve validated source coordinates used by the frozen training features; validate geographic ranges and one stable coordinate pair per location in the replay window.",
+  "current_catalog_coordinates_example": {
+    "latitude": 12.6667,
+    "location_id": "VN_BMT",
+    "longitude": 108.05
+  },
+  "initial_attempt": {
+    "eligible_as_inference_result": false,
+    "reason": "LOCATION_COORDINATE_MISMATCH",
+    "rejected_rows": 4536
+  },
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "status": "DOCUMENTED_AND_ARCHIVED",
+  "training_source_coordinates_example": {
+    "latitude": 12.688928,
+    "location_id": "VN_BMT",
+    "longitude": 108.01631
+  }
+}

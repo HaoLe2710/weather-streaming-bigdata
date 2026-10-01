@@ -1,0 +1,51 @@
+{
+  "acceptance_replay": {
+    "hours": 72,
+    "locations": 63,
+    "published_topic": "weather.hourly.observations.v1",
+    "source_rows": 4536
+  },
+  "checkpoint_path": "data/checkpoints/weather_forecast_xgboost_v1",
+  "created_at_utc": "2026-10-01T19:38:51.075667+00:00",
+  "existing_live_path": {
+    "event_id": "location_id + event_time",
+    "event_time_source": "Open-Meteo current.time",
+    "poll_interval_seconds": 10,
+    "retained_unchanged": true,
+    "topic": "weather.raw"
+  },
+  "failed_coordinate_rejection_table_archived_within_weather_data_volume": true,
+  "forecast_delta_path": "data/streaming/weather_forecast_xgboost_v1/forecasts",
+  "forecast_kafka_sink_implemented": false,
+  "gitnexus": {
+    "affected_processes": 35,
+    "clusters": 67,
+    "detect_changes_risk": "CRITICAL",
+    "edges": 3700,
+    "flows": 108,
+    "index_nodes": 2116,
+    "source_commit_indexed": "181b27a85f45d641f78d57ca066916c6dece5e35"
+  },
+  "historical_source": {
+    "dataset_id": "NATIONWIDE_63",
+    "locations": 63,
+    "rows": 3314304
+  },
+  "inference_path": [
+    "Kafka hourly observation topic",
+    "Spark per-location sort and Delta state",
+    "online 73-feature builder",
+    "CPU XGBoost",
+    "idempotent forecast Delta MERGE"
+  ],
+  "input_contract": {
+    "cadence": "one canonical observation per location per exact UTC hour",
+    "topic": "weather.hourly.observations.v1"
+  },
+  "modeling_baseline_commit": "59289066968ac2f255ae378d329784bfc6516776",
+  "production_live_hourly_publisher_implemented": false,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "state_delta_path": "data/streaming/weather_forecast_xgboost_v1/state_hourly_observations",
+  "status": "PASS",
+  "weather_data_volume_preserved": true
+}

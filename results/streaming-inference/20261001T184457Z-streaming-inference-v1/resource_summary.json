@@ -1,0 +1,33 @@
+{
+  "containers": {
+    "weather-kafka": {
+      "max_cpu_percent": 8.07,
+      "max_memory_used_mib": 550.4,
+      "samples": 90
+    },
+    "weather-spark-master": {
+      "max_cpu_percent": 490.88,
+      "max_memory_used_mib": 1551.36,
+      "samples": 90
+    },
+    "weather-streaming-bigdata-spark-worker-1": {
+      "max_cpu_percent": 429.39,
+      "max_memory_used_mib": 3078.144,
+      "samples": 90
+    }
+  },
+  "resource_note": "Docker stats samples are observational peaks, not reserved capacity or a repeatable benchmark.",
+  "samples_per_container": {
+    "weather-kafka": 90,
+    "weather-spark-master": 90,
+    "weather-streaming-bigdata-spark-worker-1": 90
+  },
+  "sampling_duration_seconds": 368.607027,
+  "sampling_end_utc": "2026-10-01T18:59:25.401801+00:00",
+  "sampling_start_utc": "2026-10-01T18:53:16.794774+00:00",
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_file": "resource_samples.csv",
+  "spark_driver_container": "weather-spark-master",
+  "spark_worker_container": "weather-streaming-bigdata-spark-worker-1",
+  "status": "PASS"
+}

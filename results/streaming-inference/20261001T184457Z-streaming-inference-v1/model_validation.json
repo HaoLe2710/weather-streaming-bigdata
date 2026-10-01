@@ -1,0 +1,27 @@
+{
+  "booster_feature_count": 73,
+  "booster_feature_order_matches_contract": true,
+  "canonical_spark_python_version": "3.12.15",
+  "canonical_spark_runtime": {
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "pyarrow": "23.0.1",
+    "xgboost": "3.4.1"
+  },
+  "cpu_inference_probe_pass": true,
+  "created_at_utc": "2026-10-01T19:38:51.073882+00:00",
+  "expected_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "local_bytes": 51662443,
+  "local_ignored_path": "data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json",
+  "local_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "model_artifact": "weather_forecast_xgboost_v1.json",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+  "probe_note": "One finite synthetic 73-value vector confirmed CPU batch prediction; it is not evaluation data.",
+  "sha_matches_canonical": true,
+  "source_bytes": 51662443,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "status": "PASS",
+  "user_supplied_path": "D:\\HK1-2026-2027\\BigData\\weather_forecast_xgboost_v1.json",
+  "xgboost_version": "3.4.1"
+}

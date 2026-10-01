@@ -1,0 +1,39 @@
+{
+  "diagnostic_predicted_rows_per_batch_second": 46.515554314564554,
+  "duplicate_output_rows_on_replay": 3024,
+  "feature_build_seconds_per_location": {
+    "max": 0.018051345000003494,
+    "median": 0.009707892000051288,
+    "p95": 0.016114355000127034
+  },
+  "feature_ready_rows": 3024,
+  "full_microbatch_seconds": {
+    "max": 65.01051195800005,
+    "median": 65.01051195800005,
+    "p95": 65.01051195800005,
+    "sample_count": 1
+  },
+  "history_gap_rows": 0,
+  "hourly_canonical_rows": 4536,
+  "insufficient_history_rows": 1512,
+  "latency_note": "Prediction p95/max include one-time worker model loading; the replay has one aggregate batch duration sample.",
+  "locations": 63,
+  "model_load_count": 2,
+  "model_loads_by_worker_pid": {
+    "1483": 1,
+    "1485": 1
+  },
+  "new_forecast_rows_on_replay": 0,
+  "predicted_rows": 3024,
+  "prediction_seconds_per_location": {
+    "max": 8.60740543399993,
+    "median": 0.03740146400014055,
+    "p95": 0.0538917510000374
+  },
+  "python_worker_count": 2,
+  "run_id": "20261001T184457Z-streaming-inference-v1",
+  "sink_seconds": 2.7720571890001793,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_observations": 4536,
+  "status": "PASS"
+}

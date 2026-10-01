@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "canonical_forecast_keys_unique": true,
+    "identical_duplicate_collapsed": true
+  },
+  "duplicate_forecast_id_count": 0,
+  "duplicate_input_rows": 1,
+  "duplicate_keys": [
+    {
+      "event_time": "2024-06-02T13:00:00Z",
+      "location_id": "VN_HCM"
+    }
+  ],
+  "duplicate_model_location_time_count": 0,
+  "fixture": "fixtures/gap_out_of_order_duplicate_fixture.jsonl",
+  "forecast_rows": 1,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_rows": 38,
+  "state_rows": 37,
+  "status": "PASS",
+  "unique_location_hour_keys": 37
+}

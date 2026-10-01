@@ -1,0 +1,66 @@
+{
+  "checks": {
+    "all_expected_locations_produce_forecasts": true,
+    "forecast_count_matches_expected": true,
+    "forecast_id_unique": true,
+    "model_location_time_unique": true,
+    "no_unknown_locations": true,
+    "state_observation_key_unique": true,
+    "state_retained_within_49_hours": true,
+    "target_time_is_feature_time_plus_one_hour": true
+  },
+  "created_at_utc": "2026-10-01T19:08:39.359550+00:00",
+  "duplicate_forecast_id_count": 0,
+  "duplicate_input_rows": 1,
+  "duplicate_model_location_time_count": 0,
+  "duplicate_output_rows_on_replay": 0,
+  "expected_forecasts": 1,
+  "feature_count": 73,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "feature_time_max_utc": "2024-06-02T13:00:00",
+  "feature_time_min_utc": "2024-06-02T13:00:00",
+  "forecast_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/tests/gap-out-of-order/forecasts",
+  "forecast_rows": 1,
+  "forecast_temperature_c": {
+    "max": 21.830419540405273,
+    "mean": 21.830419540405273,
+    "min": 21.830419540405273,
+    "std": 0.0
+  },
+  "full_microbatch_runtime_seconds": {
+    "max": 46.714038501000005,
+    "median": 20.962721451999982,
+    "p95": 46.714038501000005
+  },
+  "history_gap_skipped_rows": 13,
+  "invalid_forecast_rows": 0,
+  "locations_expected": 1,
+  "locations_with_forecasts": 1,
+  "missing_locations": [],
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+  "model_load_count_from_batches": 1,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "prediction_latency": {
+    "max_seconds_per_location": 9.507513124999832,
+    "median_seconds_per_location": 9.507513124999832,
+    "p95_seconds_per_location": 9.507513124999832
+  },
+  "replay_hours": 38,
+  "required_prior_history_hours": 24,
+  "runtime_seconds_from_batches": 105.16560384299987,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_observations": 38,
+  "state_observation_rows": 37,
+  "state_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/tests/gap-out-of-order/state_hourly_observations",
+  "state_rows_per_location": {
+    "max": 37,
+    "min": 37
+  },
+  "state_unique_observation_keys": 37,
+  "status": "PASS",
+  "target_time_max_utc": "2024-06-02T14:00:00",
+  "target_time_min_utc": "2024-06-02T14:00:00",
+  "unknown_locations": [],
+  "warmup_skipped_rows": 26
+}

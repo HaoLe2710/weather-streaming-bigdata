@@ -1,0 +1,19 @@
+{
+  "feature_time_resume_after_gap": true,
+  "fixture": "fixtures/gap_out_of_order_duplicate_fixture.jsonl",
+  "forecast_feature_time_utc": "2024-06-02T13:00:00",
+  "forecast_rows": 1,
+  "history_gap_skipped_rows": 13,
+  "missing_hour_utc": [
+    "2024-06-01T12:00:00Z"
+  ],
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_rows": 38,
+  "state_rows": 37,
+  "state_unique_keys": 37,
+  "status": "PASS",
+  "target_time_plus_one_hour": true,
+  "target_time_utc": "2024-06-02T14:00:00",
+  "unique_location_hour_keys": 37,
+  "warmup_skipped_rows": 26
+}

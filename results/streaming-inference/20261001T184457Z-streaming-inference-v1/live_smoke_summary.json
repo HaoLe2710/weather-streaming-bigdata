@@ -1,0 +1,14 @@
+{
+  "compatibility_status": "LIVE_INPUT_NOT_COMPATIBLE",
+  "event_id_semantics": "location_id + event_time; repeated polling can reuse a provider timestamp/event ID",
+  "event_time_source": "Open-Meteo current.time",
+  "implemented_hourly_replay_path": "NATIONWIDE_63 Delta -> deterministic 72-hour publisher -> weather.hourly.observations.v1",
+  "live_inference_smoke_executed": false,
+  "producer_poll_interval_seconds": 10,
+  "production_live_hourly_publisher_implemented": false,
+  "reason": "The existing current-conditions stream is 10-second telemetry, not a training-compatible hourly observation feed; V1 does not consume weather.raw.",
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "state_not_warmed": true,
+  "status": "NOT_RUN",
+  "training_cadence": "one canonical hourly row per location"
+}

@@ -1,0 +1,65 @@
+{
+  "checks": {
+    "all_expected_locations_produce_forecasts": true,
+    "forecast_count_matches_expected": true,
+    "forecast_id_unique": true,
+    "model_location_time_unique": true,
+    "no_unknown_locations": true,
+    "state_observation_key_unique": true,
+    "state_retained_within_49_hours": true,
+    "target_time_is_feature_time_plus_one_hour": true
+  },
+  "created_at_utc": "2026-10-01T19:04:40.009268+00:00",
+  "duplicate_forecast_id_count": 0,
+  "duplicate_input_rows": 0,
+  "duplicate_model_location_time_count": 0,
+  "duplicate_output_rows_on_replay": 0,
+  "expected_forecasts": 1,
+  "feature_count": 73,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "first_forecast_on_25th_observation": true,
+  "forecast_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/tests/warmup/forecasts",
+  "forecast_rows": 1,
+  "forecast_temperature_c": {
+    "max": 21.820520401000977,
+    "mean": 21.820520401000977,
+    "min": 21.820520401000977,
+    "std": 0.0
+  },
+  "full_microbatch_runtime_seconds": {
+    "max": 52.048482723999996,
+    "median": 52.048482723999996,
+    "p95": 52.048482723999996
+  },
+  "history_gap_skipped_rows": 0,
+  "invalid_forecast_rows": 0,
+  "locations_expected": 1,
+  "locations_with_forecasts": 1,
+  "missing_locations": [],
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+  "model_load_count_from_batches": 1,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "prediction_latency": {
+    "max_seconds_per_location": 7.135047446000044,
+    "median_seconds_per_location": 7.135047446000044,
+    "p95_seconds_per_location": 7.135047446000044
+  },
+  "replay_hours": 25,
+  "required_contiguous_observations_including_current": 25,
+  "required_prior_history_hours": 24,
+  "required_prior_hours": 24,
+  "runtime_seconds_from_batches": 52.048482723999996,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_observations": 25,
+  "state_observation_rows": 25,
+  "state_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/tests/warmup/state_hourly_observations",
+  "state_rows_per_location": {
+    "max": 25,
+    "min": 25
+  },
+  "state_unique_observation_keys": 25,
+  "status": "PASS",
+  "unknown_locations": [],
+  "warmup_skipped_rows": 24
+}

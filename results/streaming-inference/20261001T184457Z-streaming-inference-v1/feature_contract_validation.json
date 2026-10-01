@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "canonical_hash_matches": true,
+    "count_is_73": true,
+    "exact_order_matches_model": true,
+    "no_duplicate_names": true,
+    "no_forbidden_columns": true,
+    "timezone_is_asia_ho_chi_minh": true
+  },
+  "created_at_utc": "2026-10-01T19:38:51.073199+00:00",
+  "duplicate_feature_names": 0,
+  "feature_code_commit": "1c59f2b8d9a84afdc0118c80a040660d5df98b75",
+  "feature_count": 73,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "forbidden_model_inputs_present": [],
+  "ordered_feature_names_match_training_and_model": true,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "status": "PASS",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "training_code_commit": "aea82dd33359087fc7adb115a778a0e3b86e7e9a"
+}

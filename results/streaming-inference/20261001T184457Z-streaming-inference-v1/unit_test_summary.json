@@ -1,0 +1,13 @@
+{
+  "compileall": "PASS",
+  "docker_compose_config_quiet": "PASS",
+  "failed": 0,
+  "git_diff_check": "PASS",
+  "passed": 96,
+  "skip_reason": "Six existing PySpark semantic tests are guarded to run inside the Spark image; inference replay, warm-up, gap, duplicate, out-of-order, and restart checks were exercised separately in Spark/Kafka.",
+  "skipped": 6,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "status": "PASS",
+  "test_command": ".venv\\Scripts\\python.exe -m unittest discover -s tests -v",
+  "tests_run": 102
+}

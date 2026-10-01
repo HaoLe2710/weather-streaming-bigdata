@@ -1,0 +1,123 @@
+{
+  "checks": {
+    "all_expected_locations_produce_forecasts": true,
+    "forecast_count_matches_expected": true,
+    "forecast_id_unique": true,
+    "model_location_time_unique": true,
+    "no_unknown_locations": true,
+    "state_observation_key_unique": true,
+    "state_retained_within_49_hours": true,
+    "target_time_is_feature_time_plus_one_hour": true
+  },
+  "created_at_utc": "2026-10-01T19:14:42.871171+00:00",
+  "duplicate_forecast_id_count": 0,
+  "duplicate_input_rows": 0,
+  "duplicate_model_location_time_count": 0,
+  "duplicate_output_rows_on_replay": 3024,
+  "expected_forecasts": 3024,
+  "feature_count": 73,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "feature_time_max_utc": "2020-01-03T23:00:00",
+  "feature_time_min_utc": "2020-01-02T00:00:00",
+  "forecast_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/forecasts",
+  "forecast_rows": 3024,
+  "forecast_schema": [
+    {
+      "field": "forecast_id",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "location_id",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "feature_time",
+      "nullable": true,
+      "type": "timestamp"
+    },
+    {
+      "field": "target_time",
+      "nullable": true,
+      "type": "timestamp"
+    },
+    {
+      "field": "prediction_temperature_c",
+      "nullable": true,
+      "type": "double"
+    },
+    {
+      "field": "model_id",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "model_sha256",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "feature_set_id",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "feature_list_sha256",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "source_event_id",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "field": "inference_time",
+      "nullable": true,
+      "type": "timestamp"
+    }
+  ],
+  "forecast_temperature_c": {
+    "max": 33.63760757446289,
+    "mean": 23.470027909392403,
+    "min": 12.947810173034668,
+    "std": 3.8250507198317
+  },
+  "full_microbatch_runtime_seconds": {
+    "max": 65.01051195800005,
+    "median": 65.01051195800005,
+    "p95": 65.01051195800005
+  },
+  "history_gap_skipped_rows": 0,
+  "invalid_forecast_rows": 0,
+  "locations_expected": 63,
+  "locations_with_forecasts": 63,
+  "missing_locations": [],
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+  "model_load_count_from_batches": 2,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "prediction_latency": {
+    "max_seconds_per_location": 8.60740543399993,
+    "median_seconds_per_location": 0.03740146400014055,
+    "p95_seconds_per_location": 0.0538917510000374
+  },
+  "replay_hours": 72,
+  "required_prior_history_hours": 24,
+  "runtime_seconds_from_batches": 65.01051195800005,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "source_observations": 4536,
+  "state_observation_rows": 3087,
+  "state_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/state_hourly_observations",
+  "state_rows_per_location": {
+    "max": 49,
+    "min": 49
+  },
+  "state_unique_observation_keys": 3087,
+  "status": "PASS",
+  "target_time_max_utc": "2020-01-04T00:00:00",
+  "target_time_min_utc": "2020-01-02T01:00:00",
+  "unknown_locations": [],
+  "warmup_skipped_rows": 1512
+}

@@ -1,0 +1,15 @@
+{
+  "canonical_forecast_rows_after_replay": 3024,
+  "checkpoint_restart_exit_code": 0,
+  "forecast_count_unchanged": true,
+  "forecast_rows_after_restart": 3024,
+  "forecast_rows_before_restart": 3024,
+  "new_microbatch_after_restart": false,
+  "replay_added_no_forecasts": true,
+  "same_checkpoint_available_now_restart_completed": true,
+  "same_data_replay_duplicate_output_rows": 3024,
+  "same_data_replay_new_forecast_rows": 0,
+  "source_commit": "181b27a85f45d641f78d57ca066916c6dece5e35",
+  "state_rows_after_restart": 3087,
+  "status": "PASS"
+}
