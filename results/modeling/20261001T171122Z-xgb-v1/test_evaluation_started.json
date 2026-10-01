@@ -1,0 +1,7 @@
+{
+  "started_at_utc": "2026-10-01T17:22:28.991063+00:00",
+  "attempt": 1,
+  "engineering_recovery": null,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "training_code_commit": "aea82dd33359087fc7adb115a778a0e3b86e7e9a"
+}

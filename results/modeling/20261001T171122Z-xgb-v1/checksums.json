@@ -1,0 +1,29 @@
+{
+  "algorithm": "SHA-256",
+  "scope": "Small committed modeling reports only; excludes this checksum file, model JSON, TEST prediction Parquet, and plots.",
+  "files": {
+    "model_feature_list.json": "814c320b974b72c1c107245eb6b4d87d9f2e56b9fd3cdc7690b21068b0a59d8f",
+    "training_code_commit.json": "f362a04659ada950b0035de9034e0078d8038ea1b2cb3699638725b5130f4e67",
+    "dataset_verification.json": "c1bad843f67821a46e9b263d80b2b8f66803eac154e3266623ed1ef741ad604c",
+    "training_environment.json": "ac00abf825542a84510928843746040d8fd7c9851277c2a92e2c44e82de648d9",
+    "candidate_plan.json": "29522f0d854a3722910720c11893e91dc9368f48f729bb0a7c846611b9218f13",
+    "candidate_results.csv": "b9a250174fddfe7ef387906b51443b7fb72e45b93e6fdef395875adfbb356c53",
+    "candidate_results.json": "d6402af782191a27e1979553b7a51a328ffbc93cf71cedaba33894fdaa8def49",
+    "selected_candidate.json": "8213dd3de147779155103c52d367b6e57b75b0b26d5f11a7057fe9b68a479e6b",
+    "baseline_validation_metrics.json": "fab649705d9f7c9d6c5b7d14f384df25c486b01f16413b9a5bcc38029073f52e",
+    "selected_validation_metrics.json": "a0b8ae48a849929d574acdb433bbd4725ff5927ac26935a11657d733e364b334",
+    "baseline_test_metrics.json": "458a1bf43555d465c3599b418b15f3a0d474fea825fe6ccaa71f60d7ddb2b461",
+    "xgboost_test_metrics.json": "20f5f82e731503914a965964e091fa8b03b815e334493b4d9702be266e3e2e56",
+    "baseline_comparison.json": "ba95d19ea41be3bc9d730af14414760278af80993718e789c250c889633d55e1",
+    "per_location_test_metrics.csv": "941471b6eabfd4af76b734ade9974ce21f946cd1d40bcdf0a0839639cf7f4db9",
+    "location_summary.json": "e1de2ec47c4a5041700a9c7bbd25ad477da8582663faecf466ab8ece49e8d347",
+    "worst_location_diagnostics.json": "da42053b1505cb5655779569a22412f829ab2310b4af6e310f77df47cb29249a",
+    "feature_importance.csv": "3bb6e7c8c832acb740087f0613bac98d8755f212a572f9f71c6e4cff24a70dd9",
+    "model_artifact_manifest.json": "c9190edfe23c241502bf0d45844faffd0c55b545e8a49c52e978b9dda8a99a49",
+    "model_reload_validation.json": "eecd614562c1dcca1e0e00db061e3043300af1377d1284f3df3907e7eb0a51ba",
+    "final_model_freeze.json": "dbb5ee7ea98c7f8622180843f11c1a41914298923c891e9d889c0c4cb11f8b8e",
+    "test_evaluation_started.json": "3e7d9dc29396ab509678ef349122f99f1407836b5b1fd8ad050c86da692e3074",
+    "test_evaluation_complete.json": "e48875bdda9dd53c0064679798831f6ff0fa939f8240d4ebd65570222e68d644",
+    "training_manifest.json": "885c4f0312628396f612cbbdc86a98e4d33ae395ddae3d1acb3d2401e61316fa"
+  }
+}

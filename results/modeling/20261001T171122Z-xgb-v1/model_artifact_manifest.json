@@ -1,0 +1,8 @@
+{
+  "model_file_name": "weather_forecast_xgboost_v1.json",
+  "drive_relative_path": "weather-streaming-bigdata/artifacts/weather_forecast_xgboost_v1/20261001T171122Z-xgb-v1/weather_forecast_xgboost_v1.json",
+  "sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "size_bytes": 51662443,
+  "run_id": "20261001T171122Z-xgb-v1",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1"
+}

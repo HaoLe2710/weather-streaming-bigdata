@@ -1,0 +1,27 @@
+{
+  "status": "FROZEN",
+  "frozen_at_utc": "2026-10-01T17:22:09.564631+00:00",
+  "training_code_commit": "aea82dd33359087fc7adb115a778a0e3b86e7e9a",
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "selected_candidate_id": "gpu_d8_regularized",
+  "selected_params": {
+    "candidate_id": "gpu_d8_regularized",
+    "max_depth": 8,
+    "learning_rate": 0.05,
+    "min_child_weight": 3.0,
+    "subsample": 0.85,
+    "colsample_bytree": 0.9,
+    "reg_lambda": 3.0,
+    "reg_alpha": 0.1
+  },
+  "best_iteration": 2161,
+  "final_boost_rounds": 2162,
+  "final_training_rows": 2760849,
+  "device": "cuda",
+  "device_fallback_reason": null,
+  "model_file": "weather_forecast_xgboost_v1.json",
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "model_bytes": 51662443,
+  "reload_validation": "PASS",
+  "final_fit_seconds": 100.27194656899997
+}

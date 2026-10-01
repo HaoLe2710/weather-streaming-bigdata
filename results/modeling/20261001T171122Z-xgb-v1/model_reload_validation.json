@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "sample_rows": 64,
+  "max_absolute_prediction_difference": 5.340576171875e-05,
+  "relative_tolerance": 1e-06,
+  "absolute_tolerance": 0.0001,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "model_bytes": 51662443,
+  "fresh_booster_reload": true
+}

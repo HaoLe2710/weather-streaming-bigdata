@@ -1,0 +1,36 @@
+{
+  "candidate_id": "gpu_d8_regularized",
+  "params": {
+    "candidate_id": "gpu_d8_regularized",
+    "max_depth": 8,
+    "learning_rate": 0.05,
+    "min_child_weight": 3.0,
+    "subsample": 0.85,
+    "colsample_bytree": 0.9,
+    "reg_lambda": 3.0,
+    "reg_alpha": 0.1
+  },
+  "best_iteration": 2161,
+  "best_boost_rounds": 2162,
+  "validation_metrics": {
+    "n": 553392,
+    "mae": 0.3210655357606269,
+    "rmse": 0.49847729765582527,
+    "r2": 0.9891911185477709,
+    "mean_error": -0.018824355980775528
+  },
+  "training_time_seconds": 97.369110568,
+  "device": "cuda",
+  "successful_candidate_count": 5,
+  "selection_metric": "validation_mae",
+  "tie_break_order": [
+    "validation_rmse",
+    "best_boost_rounds*max_depth",
+    "training_time_seconds"
+  ],
+  "selection_reason": "Lowest full-validation MAE; ties are resolved by lower RMSE, smaller model-size proxy, then lower training time.",
+  "final_training_rows": 2760849,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "training_code_commit": "aea82dd33359087fc7adb115a778a0e3b86e7e9a",
+  "frozen_at_utc": "2026-10-01T17:20:09.616296+00:00"
+}
