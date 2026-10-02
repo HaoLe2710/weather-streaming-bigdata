@@ -15,5 +15,24 @@
   "target_time_plus_one_hour": true,
   "target_time_utc": "2024-06-02T14:00:00",
   "unique_location_hour_keys": 37,
-  "warmup_skipped_rows": 26
+  "warmup_skipped_rows": 26,
+  "counter_semantics": {
+    "aggregation_unit": "per-microbatch feature-status assessment",
+    "counters_are_mutually_exclusive_per_unique_input_key": false,
+    "microbatch_status_assessments": 40,
+    "unique_location_hour_keys": 37,
+    "additional_assessments_from_rescoring": 3,
+    "one_pass_unique_key_status_counts": {
+      "INSUFFICIENT_HISTORY": 24,
+      "HISTORY_GAP": 12,
+      "READY": 1
+    },
+    "batch_status_assessments": [
+      {"batch_id": 0, "source_rows": 10, "accepted_rows": 10, "insufficient_history": 10, "history_gap": 0, "ready": 0},
+      {"batch_id": 1, "source_rows": 10, "accepted_rows": 10, "insufficient_history": 11, "history_gap": 0, "ready": 0},
+      {"batch_id": 2, "source_rows": 10, "accepted_rows": 10, "insufficient_history": 5, "history_gap": 6, "ready": 0},
+      {"batch_id": 3, "source_rows": 8, "accepted_rows": 7, "insufficient_history": 0, "history_gap": 7, "ready": 1}
+    ],
+    "explanation": "Spark sums status assessments emitted for each microbatch. Previously accumulated candidate observations can be scored again as later input extends the dirty range; therefore warm-up and gap counters are not a partition of unique source keys."
+  }
 }

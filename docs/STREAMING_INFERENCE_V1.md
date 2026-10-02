@@ -36,6 +36,8 @@ The state Delta table stores canonical weather observations keyed by `(location_
 
 The first forecast needs 24 prior hourly rows plus the current observation: 25 contiguous observations. No missing lag is filled. A gap returns `HISTORY_GAP` until 25 contiguous hourly timestamps are available again; a cold location returns `INSUFFICIENT_HISTORY`. Events later than the retained 48-hour state horizon are rejected as `LATE_BEYOND_STATE_RETENTION`. Temporal operations are isolated by location.
 
+Gap replay counters are summed across microbatch status assessments, not counted as mutually exclusive classifications of unique input keys. As state grows, a prior candidate can be scored again and its status can change from `INSUFFICIENT_HISTORY` to `HISTORY_GAP` or `READY`. In the recorded 38-row gap fixture, 37 unique location-hour keys produced 40 microbatch status assessments: one-pass classification of unique keys is 24 `INSUFFICIENT_HISTORY`, 12 `HISTORY_GAP`, and 1 `READY`; the reported cumulative counters are 26, 13, and 1 because three status assessments are repeats. Batch-level evidence is recorded in `gap_validation.json`.
+
 Source timestamps stay in UTC. Calendar fields use `Asia/Ho_Chi_Minh` with Monday indexed as zero, and the same sinusoidal definitions as offline FE V1. Lags address exact timestamps. Rolling windows include the current row and use arithmetic mean, population standard deviation (`stddev_pop`), or sum as declared by the committed feature specification. No future values, target fields, target time, split labels, IDs, city names, or weather codes enter model input. Before prediction, all 73 values must be finite and their exact order must match the frozen model list.
 
 ```mermaid
