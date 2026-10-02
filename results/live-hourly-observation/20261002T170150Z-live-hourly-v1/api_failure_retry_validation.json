@@ -1,0 +1,11 @@
+{
+  "live_acceptance_retry_count": 0,
+  "live_failed_locations": 0,
+  "partial_location_handling": "a failed location is tracked by canonical ID; bootstrap fails closed as a whole if any location cannot supply contiguous history",
+  "retry_policy": "bounded retry for timeouts, transport failures, HTTP 429 and HTTP 5xx",
+  "status": "PASS",
+  "unit_tests": [
+    "test_retry_helper_retries_transient_http_status_with_bounded_attempts",
+    "test_partial_provider_failure_is_reported_by_location_and_successes_remain_publishable"
+  ]
+}

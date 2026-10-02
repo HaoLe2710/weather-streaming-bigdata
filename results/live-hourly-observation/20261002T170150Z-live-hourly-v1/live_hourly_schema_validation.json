@@ -1,0 +1,60 @@
+{
+  "consumer_validation": {
+    "rejected_rows": 0,
+    "source_rows": 1701
+  },
+  "event_fields_in_order": [
+    "event_id",
+    "event_type",
+    "location_id",
+    "city",
+    "latitude",
+    "longitude",
+    "event_time",
+    "ingestion_time",
+    "temperature_c",
+    "humidity_pct",
+    "precipitation_mm",
+    "pressure_hpa",
+    "weather_code",
+    "wind_speed_kmh",
+    "wind_gust_kmh",
+    "source"
+  ],
+  "event_type": "WEATHER_HOURLY",
+  "hour_aligned_events": 1575,
+  "hour_alignment_violations": 0,
+  "producer_validation": "63 locations passed provider timeline, field, finite/range, timezone, coordinate and unit checks",
+  "source": "OPEN_METEO_LIVE_HOURLY",
+  "status": "PASS",
+  "topic": "weather.hourly.observations.v1",
+  "types": {
+    "city": "string",
+    "event_id": "string",
+    "event_time": "UTC ISO-8601 hour string",
+    "event_type": "string",
+    "humidity_pct": "number",
+    "ingestion_time": "UTC ISO-8601 string",
+    "latitude": "number",
+    "location_id": "string",
+    "longitude": "number",
+    "precipitation_mm": "number",
+    "pressure_hpa": "number",
+    "source": "string",
+    "temperature_c": "number",
+    "weather_code": "integer WMO code",
+    "wind_gust_kmh": "number",
+    "wind_speed_kmh": "number"
+  },
+  "unit_validation": {
+    "precipitation": "mm",
+    "pressure_msl": "hPa",
+    "relative_humidity_2m": "%",
+    "temperature_2m": "°C",
+    "time": "iso8601",
+    "weather_code": "wmo code",
+    "wind_gusts_10m": "km/h",
+    "wind_speed_10m": "km/h"
+  },
+  "validated_event_count": 1575
+}

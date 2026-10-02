@@ -1,0 +1,48 @@
+{
+  "default_poll_interval_seconds": 300,
+  "kafka_publish_latency_nonempty_seconds": {
+    "median": 0.018520912999974826,
+    "p95": 0.05700654199972632,
+    "samples": [
+      0.05700654199972632,
+      0.018520912999974826,
+      0.00802887500003635
+    ]
+  },
+  "next_hour_transition_test": "test_safe_hour_advances_only_after_next_utc_hour_starts passed",
+  "prediction_latency_per_location": {
+    "max_seconds_per_location": 5.443999195999822,
+    "median_seconds_per_location": 0.01829324500022267,
+    "p95_seconds_per_location": 0.02237894800009599
+  },
+  "provider_api_latency_seconds": {
+    "median": 1.2853629815001568,
+    "p95": 1.6182991509999738,
+    "samples": [
+      1.6182991509999738,
+      1.3041566910001166,
+      1.266569272000197,
+      1.2560355450000316
+    ]
+  },
+  "publisher_cycle_seconds": {
+    "max": 1.6999207840003692,
+    "median": 1.3015768284999467,
+    "p95": 1.6999207840003692,
+    "samples": [
+      1.6999207840003692,
+      1.3305424820000553,
+      1.2726111749998381,
+      1.2697589910003444
+    ]
+  },
+  "publishing_cycles": 4,
+  "retry_count_during_live_acceptance": 0,
+  "spark_microbatch_runtime_seconds": {
+    "max": 30.46946670699981,
+    "median": 18.81043791000002,
+    "p95": 30.46946670699981,
+    "total": 57.16943089100005
+  },
+  "status": "PASS"
+}

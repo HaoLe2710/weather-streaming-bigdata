@@ -1,0 +1,10 @@
+{
+  "features_or_forecasts_used_future_observations": false,
+  "future_input_violations": 0,
+  "in_progress_rows_filtered": 63,
+  "live_state_rows_after_safe_hour": 0,
+  "provider_timeline_end_utc": "2026-10-02T17:00:00Z",
+  "safe_cutoff_utc": "2026-10-02T16:00:00Z",
+  "status": "PASS",
+  "unit_regression": "test_future_observations_do_not_change_features_at_t passed"
+}

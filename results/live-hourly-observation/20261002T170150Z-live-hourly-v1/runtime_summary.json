@@ -1,0 +1,49 @@
+{
+  "acceptance_daemon_interval_seconds": 30,
+  "default_daemon_poll_interval_seconds": 300,
+  "kafka_publish_latency_seconds_for_nonempty_sends": {
+    "median": 0.011294593000002351,
+    "p95": 0.10065496200002144,
+    "samples": [
+      0.10065496200002144,
+      0.011294593000002351,
+      0.006435082999928454
+    ]
+  },
+  "next_hour_transition_test": "test_safe_hour_advances_only_after_next_utc_hour_starts passed with deterministic clock",
+  "prediction_seconds_per_location": {
+    "max_seconds_per_location": 5.645161925000025,
+    "median_seconds_per_location": 0.019994741999994403,
+    "p95_seconds_per_location": 0.02632215999994969
+  },
+  "provider_api_latency_seconds": {
+    "median": 1.324817110999959,
+    "p95": 2.603603410000005,
+    "samples": [
+      2.603603410000005,
+      1.3430541239999911,
+      1.3065800979999267,
+      1.2755630710000787
+    ]
+  },
+  "publish_cycles": 4,
+  "publisher_full_cycle_seconds": {
+    "max": 2.7314203150000367,
+    "median": 1.3381340054999669,
+    "p95": 2.7314203150000367,
+    "samples": [
+      2.7314203150000367,
+      1.3645226529999945,
+      1.3117453579999392,
+      1.2875209979999909
+    ]
+  },
+  "retries_during_live_acceptance": 0,
+  "status": "PASS",
+  "streaming_microbatch_runtime_seconds": {
+    "max": 32.26602621999996,
+    "median": 13.990449823000006,
+    "p95": 32.26602621999996,
+    "total": 68.13319191599999
+  }
+}

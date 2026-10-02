@@ -1,0 +1,17 @@
+{
+  "limitation": "Spark per-process CPU/RSS was not sampled.",
+  "model_workers_observed": 2,
+  "publisher_peak_rss_bytes_max": 44457984,
+  "publisher_process_cpu_seconds_total": 0.26675982200000004,
+  "publisher_process_peak_rss_bytes": [
+    44457984,
+    41914368,
+    42180608
+  ],
+  "spark_batch_runtime_total_seconds": 57.16943089100005,
+  "spark_executor_cores_configured": 2,
+  "spark_executor_memory_configured": "2g",
+  "spark_process_cpu_memory_measured": false,
+  "spark_worker_cores_available": 4,
+  "status": "PASS_WITH_SPARK_USAGE_LIMITATION"
+}

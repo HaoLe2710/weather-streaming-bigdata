@@ -1,0 +1,25 @@
+{
+  "baseline_comparison": {
+    "baseline_forecast_rows": 3024,
+    "current_forecast_rows": 3024,
+    "matched_forecast_ids": 3024,
+    "max_abs_prediction_difference_c": 0.0,
+    "prediction_mismatches": 0,
+    "provenance_or_time_mismatches": 0,
+    "unmatched_forecast_ids": 0
+  },
+  "evidence_query": "compare_replay_predictions.sql",
+  "feature_count": 73,
+  "forecasts": 3024,
+  "forecasts_per_location": 48,
+  "history_gap_rows": 0,
+  "hours": 72,
+  "locations": 63,
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "replay_topic": "weather.hourly.observations.replay.20261002t170150z",
+  "source_rows": 4536,
+  "state_rows_retained": 3087,
+  "status": "PASS",
+  "unique_location_hour_keys": 4536,
+  "warmup_rows": 1512
+}

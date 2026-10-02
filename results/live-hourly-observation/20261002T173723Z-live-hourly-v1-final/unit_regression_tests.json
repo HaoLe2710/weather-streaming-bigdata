@@ -1,0 +1,30 @@
+{
+  "notes": [
+    "The original weather_producer.py matches HEAD; its existing current-condition retry behavior passed the compatibility test.",
+    "No training or tuning tests were run."
+  ],
+  "runtime": "Python 3.12 product containers after retry-helper isolation",
+  "status": "PASS",
+  "suites": [
+    {
+      "failed": 0,
+      "passed": 22,
+      "skipped": 0,
+      "suite": "live hourly producer",
+      "tests": 22
+    },
+    {
+      "failed": 0,
+      "passed": 14,
+      "skipped": 0,
+      "suite": "streaming inference contract/model",
+      "tests": 14
+    }
+  ],
+  "total": {
+    "failed": 0,
+    "passed": 36,
+    "skipped": 0,
+    "tests": 36
+  }
+}

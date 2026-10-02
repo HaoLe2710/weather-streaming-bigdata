@@ -1,0 +1,70 @@
+{
+  "historical": {
+    "coverage": "2020-01-01 through 2025-12-31",
+    "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+    "hourly_variables": [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "pressure_msl",
+      "wind_speed_10m",
+      "wind_gusts_10m",
+      "weather_code"
+    ],
+    "stored_fields": [
+      "temperature_c",
+      "humidity_pct",
+      "precipitation_mm",
+      "pressure_hpa",
+      "wind_speed_kmh",
+      "wind_gust_kmh",
+      "weather_code"
+    ],
+    "timezone": "UTC",
+    "units": {
+      "precipitation": "mm",
+      "pressure_msl": "hPa",
+      "relative_humidity_2m": "%",
+      "temperature_2m": "°C",
+      "weather_code": "WMO code",
+      "wind_gusts_10m": "km/h",
+      "wind_speed_10m": "km/h"
+    }
+  },
+  "limitation": "Archive history and live Forecast API are different model products; live values are modelled, not station observations.",
+  "live": {
+    "endpoint": "https://api.open-meteo.com/v1/forecast",
+    "hourly_variables": [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "pressure_msl",
+      "wind_speed_10m",
+      "wind_gusts_10m",
+      "weather_code"
+    ],
+    "timezone": "GMT",
+    "units": {
+      "precipitation": "mm",
+      "pressure_msl": "hPa",
+      "relative_humidity_2m": "%",
+      "temperature_2m": "°C",
+      "time": "iso8601",
+      "weather_code": "wmo code",
+      "wind_gusts_10m": "km/h",
+      "wind_speed_10m": "km/h"
+    },
+    "utc_offset_seconds": 0
+  },
+  "same_field_mapping": true,
+  "same_hourly_variable_names": true,
+  "same_units": true,
+  "semantics_identical": false,
+  "status": "PASS_WITH_SOURCE_PRODUCT_LIMITATION",
+  "training_vs_live_provider_grid_offset_km": {
+    "locations_over_15km": [],
+    "max": 0.0,
+    "median": 0.0,
+    "min": 0.0
+  }
+}

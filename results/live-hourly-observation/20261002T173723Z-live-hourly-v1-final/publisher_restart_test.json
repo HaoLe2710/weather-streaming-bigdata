@@ -1,0 +1,12 @@
+{
+  "canonical_state_rows_after_restart": 1575,
+  "event_id_contract": "OPEN_METEO_LIVE_HOURLY|<location_id>|<event_time>",
+  "new_forecasts_after_duplicate_replays": 63,
+  "restart_events_delivered": 63,
+  "restart_process_mode": "once",
+  "safe_hour_after_restart": "2026-10-02T16:00:00Z",
+  "safe_hour_before_restart": "2026-10-02T16:00:00Z",
+  "spark_duplicate_conflict_keys": 0,
+  "status": "PASS",
+  "unique_location_hour_keys": 63
+}

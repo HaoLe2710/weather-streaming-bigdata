@@ -1,0 +1,16 @@
+{
+  "bootstrap_delivered": 1575,
+  "canonical_duplicates_after_spark_dedup": 0,
+  "canonical_location_hour_keys": 1575,
+  "delivery_failures": 0,
+  "partition_count": 8,
+  "producer_delivery_semantics": "Kafka idempotence within a process, at-least-once across process restarts",
+  "producer_flush_remaining": 0,
+  "replication_factor": 1,
+  "restart_republished": 63,
+  "same_hour_daemon_cache_skipped": 63,
+  "same_hour_daemon_delivered": 63,
+  "status": "PASS",
+  "topic": "weather.hourly.observations.v1",
+  "total_physical_messages_for_live_acceptance": 1701
+}

@@ -1,0 +1,22 @@
+{
+  "limitation": "Spark configuration and batch latency were recorded; process-level Spark CPU/RSS sampling was not collected.",
+  "observed_python_model_workers": 2,
+  "publisher_peak_rss_bytes_by_process": [
+    43745280,
+    41881600,
+    42123264
+  ],
+  "publisher_peak_rss_bytes_max": 43745280,
+  "publisher_process_cpu_seconds_total": 0.24124701200000004,
+  "publisher_process_elapsed_seconds_by_process": [
+    2.7771230360000345,
+    32.73828920799997,
+    1.3206451089999973
+  ],
+  "spark_executor_cores_configured": 2,
+  "spark_executor_memory_configured": "2g",
+  "spark_microbatch_runtime_seconds_total": 68.13319191599999,
+  "spark_process_level_cpu_or_memory_usage_measured": false,
+  "spark_worker_cores_available": 4,
+  "status": "PASS_WITH_SPARK_USAGE_LIMITATION"
+}

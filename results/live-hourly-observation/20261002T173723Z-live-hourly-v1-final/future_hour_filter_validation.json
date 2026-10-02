@@ -1,0 +1,10 @@
+{
+  "features_used_future_observations": false,
+  "future_input_violations": 0,
+  "future_observation_invariance_test": "passed",
+  "future_state_rows": 0,
+  "provider_in_progress_hour_utc": "2026-10-02T17:00:00Z",
+  "provider_rows_filtered": 63,
+  "safe_cutoff_utc": "2026-10-02T16:00:00Z",
+  "status": "PASS"
+}

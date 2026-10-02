@@ -1,0 +1,14 @@
+{
+  "bootstrap_delivered": 1575,
+  "canonical_keys_after_spark": 1575,
+  "daemon_second_poll_skipped": 63,
+  "duplicate_conflicts": 0,
+  "failed_deliveries": 0,
+  "partition_count": 8,
+  "physical_messages_this_run": 1701,
+  "replication_factor": 1,
+  "restart_republished": 63,
+  "same_hour_poll_delivered": 63,
+  "status": "PASS",
+  "topic": "weather.hourly.observations.v1"
+}

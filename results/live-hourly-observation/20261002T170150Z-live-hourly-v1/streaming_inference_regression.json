@@ -1,0 +1,19 @@
+{
+  "baseline_joined_forecast_ids": 3024,
+  "baseline_prediction_max_abs_difference_c": 0.0,
+  "baseline_prediction_mismatches": 0,
+  "baseline_provenance_or_time_mismatches": 0,
+  "baseline_unmatched_forecast_ids": 0,
+  "historical_replay_forecast_rows": 3024,
+  "historical_replay_gap_rows": 0,
+  "historical_replay_locations": 63,
+  "historical_replay_source_rows": 4536,
+  "historical_replay_warmup_rows": 1512,
+  "live_e2e_duplicate_forecast_ids": 0,
+  "live_e2e_duplicate_input_rows": 126,
+  "live_e2e_feature_count": 73,
+  "live_e2e_forecast_count": 63,
+  "live_e2e_history_gap_rows": 0,
+  "live_e2e_model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "status": "PASS"
+}

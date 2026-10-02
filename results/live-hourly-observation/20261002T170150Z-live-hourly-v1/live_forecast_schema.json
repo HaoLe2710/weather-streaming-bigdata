@@ -1,0 +1,62 @@
+{
+  "table_path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/live_20261002T170150Z-live-hourly-v1/forecasts",
+  "fields": [
+    {
+      "field": "forecast_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "location_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "feature_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "field": "target_time",
+      "type": "timestamp",
+      "nullable": true
+    },
+    {
+      "field": "prediction_temperature_c",
+      "type": "double",
+      "nullable": true
+    },
+    {
+      "field": "model_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "model_sha256",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "feature_set_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "feature_list_sha256",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "source_event_id",
+      "type": "string",
+      "nullable": true
+    },
+    {
+      "field": "inference_time",
+      "type": "timestamp",
+      "nullable": true
+    }
+  ],
+  "feature_time_target_time_invariant": "target_time = feature_time + 1 hour",
+  "idempotency_key": "forecast_id"
+}

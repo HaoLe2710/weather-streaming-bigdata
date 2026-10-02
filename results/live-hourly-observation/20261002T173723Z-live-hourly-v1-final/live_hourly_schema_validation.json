@@ -1,0 +1,46 @@
+{
+  "consumer_source_rows": 1701,
+  "event_fields_in_order": [
+    "event_id",
+    "event_type",
+    "location_id",
+    "city",
+    "latitude",
+    "longitude",
+    "event_time",
+    "ingestion_time",
+    "temperature_c",
+    "humidity_pct",
+    "precipitation_mm",
+    "pressure_hpa",
+    "weather_code",
+    "wind_speed_kmh",
+    "wind_gust_kmh",
+    "source"
+  ],
+  "event_type": "WEATHER_HOURLY",
+  "hour_alignment_violations": 0,
+  "hourly_units": {
+    "precipitation": "mm",
+    "pressure_msl": "hPa",
+    "relative_humidity_2m": "%",
+    "temperature_2m": "°C",
+    "time": "iso8601",
+    "weather_code": "wmo code",
+    "wind_gusts_10m": "km/h",
+    "wind_speed_10m": "km/h"
+  },
+  "producer_checks": "63/63 passed schema, finite-value, timezone, coordinate and unit validation",
+  "rejected_rows": 0,
+  "source": "OPEN_METEO_LIVE_HOURLY",
+  "status": "PASS",
+  "topic": "weather.hourly.observations.v1",
+  "types": {
+    "ids_labels_source": "string",
+    "latitude_longitude": "number",
+    "six_continuous_weather_values": "number",
+    "timestamps": "UTC ISO-8601",
+    "weather_code": "integer WMO code"
+  },
+  "validated_event_count": 1575
+}

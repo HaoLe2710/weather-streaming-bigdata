@@ -1,0 +1,40 @@
+{
+  "acceptance_test_total": {
+    "failed": 0,
+    "passed": 36,
+    "skipped": 0,
+    "tests": 36
+  },
+  "coverage": [
+    "canonical 63 catalog",
+    "hourly UTC safe cutoff and boundary",
+    "future-hour filtering",
+    "bootstrap continuity and fail-closed gaps",
+    "schema and provider units",
+    "stable IDs and Kafka keys/partitions",
+    "same-hour cache and process restart",
+    "bounded retry and partial failures",
+    "existing current-producer event schema remains compatible",
+    "frozen model SHA, size, 73-feature order and CPU prediction",
+    "duplicate/out-of-order/gap/future online feature behavior"
+  ],
+  "not_run": "Full modeling/training suite was not rerun because this phase forbids retraining.",
+  "runtime": "Python 3.12 product containers",
+  "status": "PASS",
+  "suites": [
+    {
+      "command": "python -m unittest discover -s /opt/project/tests -p test_live_hourly_observation.py -v",
+      "failed": 0,
+      "passed": 22,
+      "skipped": 0,
+      "tests": 22
+    },
+    {
+      "command": "python -m unittest discover -s /opt/project/tests -p test_streaming_inference.py -v (model path mounted read-only at expected test location)",
+      "failed": 0,
+      "passed": 14,
+      "skipped": 0,
+      "tests": 14
+    }
+  ]
+}

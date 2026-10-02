@@ -10,7 +10,7 @@ The JSON model is local and ignored by Git at `data/models/weather_forecast_xgbo
 
 The inference topic is `weather.hourly.observations.v1`. Each record represents one cleaned observation for one canonical `location_id` at one exact UTC hour. The JSON fields are `event_id`, `location_id`, `city`, `latitude`, `longitude`, `event_time`, `temperature_c`, `humidity_pct`, `precipitation_mm`, `pressure_hpa`, `wind_speed_kmh`, `wind_gust_kmh`, `weather_code`, and `source`.
 
-The existing Open-Meteo live producer remains unchanged. It polls current conditions every 10 seconds and timestamps each response with the provider's `current.time`. That is not a canonical hourly observation contract and cannot safely populate hourly lag or rolling features. The replay publisher reads the validated `NATIONWIDE_63` Delta source and writes a dedicated, sorted hourly feed. A production live-to-hourly publisher remains a separate integration step; the current high-frequency topic is not subscribed to by this model job.
+The existing Open-Meteo current-conditions producer remains on its 10-second `weather.raw` path for the existing telemetry and Bronze/Silver/Gold flow. Its `current.time` records are not canonical hourly observations and must not populate the model's hourly lag or rolling features. Live inference now uses the separate [Live Hourly Observation Pipeline V1](LIVE_HOURLY_OBSERVATION_V1.md), which requests completed UTC hourly values for the canonical 63 locations and publishes a 24-hour lookback bootstrap (25 observations including the feature hour) plus the safe current hour to `weather.hourly.observations.v1`. The historical replay publisher remains available on that inference topic as a separate validation source.
 
 Open-Meteo documents current conditions as being based on 15-minute model data ([Forecast API documentation](https://open-meteo.com/en/docs)). The 10-second poll can therefore see the same provider timestamp on repeated requests. The producer forms `event_id` from `(location_id, event_time)`, and Silver deduplicates that exact ID within its 10-minute watermark. Silver does not aggregate by UTC hour: distinct provider timestamps that fall within one hour can remain as multiple rows for a location. No live Silver row-count sample was collected during this replay, so this describes the source and deduplication contract rather than a measured live row count.
 
@@ -20,8 +20,10 @@ For the acceptance replay, `publish-replay --hours 72` validates the complete NA
 flowchart LR
     L[Open-Meteo current producer<br/>10-second telemetry] --> KT[Existing live topic]
     KT --> B[Existing Bronze / Silver / Gold]
+    LHO[Open-Meteo hourly Forecast API] --> LHP[Live hourly publisher<br/>NATIONWIDE_63 + safe UTC hour]
     H[NATIONWIDE_63 historical Delta] --> RP[Deterministic hourly replay publisher]
-    RP --> KI[weather.hourly.observations.v1]
+    LHP --> KI[weather.hourly.observations.v1]
+    RP --> KI
     KI --> S[Per-location Delta state + Spark checkpoint]
     S --> FE[Online 73-feature builder]
     M[Frozen XGBoost V1<br/>CPU, cached per Python worker] --> I[Vectorized inference]
@@ -106,4 +108,4 @@ docker compose exec -T spark-master /opt/spark/bin/spark-submit `
 
 Run `--mode stream --available-now` to process available Kafka input once, or omit `--available-now` to run continuously. Use a unique topic, checkpoint, output and state path for isolated tests. Do not point the job at `weather.raw`.
 
-Known limitations: live inference from the existing current-conditions producer is not semantically validated because its 10-second cadence differs from the model's hourly training data. V1 therefore validates the dedicated historical replay path. A fresh deployment waits for its first 25 contiguous hourly records per location. The optional forecast Kafka output and production live-hourly publisher are not implemented. Forecast monitoring, evaluation, alerts, APIs, and dashboards are out of scope.
+Known limitations: the Archive training product and live Forecast API product are both Open-Meteo model products but are not distribution-identical; live values are modelled estimates, not station measurements. The live-hourly path and its recent-history bootstrap have been validated end to end against the frozen inference job (see [Live Hourly Observation Pipeline V1](LIVE_HOURLY_OBSERVATION_V1.md)). The optional forecast Kafka output is not implemented. Forecast accuracy monitoring, target-time evaluation, alerts, APIs, and dashboards remain out of scope for this inference phase.

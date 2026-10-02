@@ -1,0 +1,525 @@
+{
+  "canonical_catalog": "NATIONWIDE_63",
+  "canonical_location_count": 63,
+  "catalog_coordinate_distance_km": {
+    "max": 6.151291519208247,
+    "median": 3.368493496214752,
+    "min": 0.7584602129078861
+  },
+  "coordinate_comparisons": [
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.265377,
+      "live_provider_longitude": 106.222,
+      "location_id": "VN_BACGIANG",
+      "training_2025_latitude": 21.265377,
+      "training_2025_longitude": 106.222
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 22.108961,
+      "live_provider_longitude": 105.865974,
+      "location_id": "VN_BACKAN",
+      "training_2025_latitude": 22.108961,
+      "training_2025_longitude": 105.865974
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 9.314587,
+      "live_provider_longitude": 105.703125,
+      "location_id": "VN_BACLIEU",
+      "training_2025_latitude": 9.314587,
+      "training_2025_longitude": 105.703125
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.195078,
+      "live_provider_longitude": 106.11394,
+      "location_id": "VN_BACNINH",
+      "training_2025_latitude": 21.195078,
+      "training_2025_longitude": 106.11394
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.228471,
+      "live_provider_longitude": 106.356445,
+      "location_id": "VN_BENTRE",
+      "training_2025_latitude": 10.228471,
+      "training_2025_longitude": 106.356445
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.931458,
+      "live_provider_longitude": 106.8202,
+      "location_id": "VN_BIENHOA",
+      "training_2025_latitude": 10.931458,
+      "training_2025_longitude": 106.8202
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 12.688928,
+      "live_provider_longitude": 108.01631,
+      "location_id": "VN_BMT",
+      "training_2025_latitude": 12.688928,
+      "training_2025_longitude": 108.01631
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 9.173989,
+      "live_provider_longitude": 105.12998,
+      "location_id": "VN_CAMAU",
+      "training_2025_latitude": 9.173989,
+      "training_2025_longitude": 105.12998
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.017574,
+      "live_provider_longitude": 105.76182,
+      "location_id": "VN_CANTHO",
+      "training_2025_latitude": 10.017574,
+      "training_2025_longitude": 105.76182
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 22.671352,
+      "live_provider_longitude": 106.27859,
+      "location_id": "VN_CAOBANG",
+      "training_2025_latitude": 22.671352,
+      "training_2025_longitude": 106.27859
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.439367,
+      "live_provider_longitude": 105.6074,
+      "location_id": "VN_CAOLANH",
+      "training_2025_latitude": 10.439367,
+      "training_2025_longitude": 105.6074
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.915642,
+      "live_provider_longitude": 108.48431,
+      "location_id": "VN_DALAT",
+      "training_2025_latitude": 11.915642,
+      "training_2025_longitude": 108.48431
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 16.063269,
+      "live_provider_longitude": 108.23864,
+      "location_id": "VN_DANANG",
+      "training_2025_latitude": 16.063269,
+      "training_2025_longitude": 108.23864
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.335676,
+      "live_provider_longitude": 103.02752,
+      "location_id": "VN_DIENBIENPHU",
+      "training_2025_latitude": 21.335676,
+      "training_2025_longitude": 103.02752
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 16.836554,
+      "live_provider_longitude": 107.13876,
+      "location_id": "VN_DONGHA",
+      "training_2025_latitude": 16.836554,
+      "training_2025_longitude": 107.13876
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 17.469244,
+      "live_provider_longitude": 106.59266,
+      "location_id": "VN_DONGHOI",
+      "training_2025_latitude": 17.469244,
+      "training_2025_longitude": 106.59266
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.564148,
+      "live_provider_longitude": 106.875,
+      "location_id": "VN_DONGXOAI",
+      "training_2025_latitude": 11.564148,
+      "training_2025_longitude": 106.875
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.98594,
+      "live_provider_longitude": 107.693,
+      "location_id": "VN_GIANGHIA",
+      "training_2025_latitude": 11.98594,
+      "training_2025_longitude": 107.693
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 22.811949,
+      "live_provider_longitude": 105.0,
+      "location_id": "VN_HAGIANG",
+      "training_2025_latitude": 22.811949,
+      "training_2025_longitude": 105.0
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.913883,
+      "live_provider_longitude": 106.32219,
+      "location_id": "VN_HAIDUONG",
+      "training_2025_latitude": 20.913883,
+      "training_2025_longitude": 106.32219
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.843584,
+      "live_provider_longitude": 106.67004,
+      "location_id": "VN_HAIPHONG",
+      "training_2025_latitude": 20.843584,
+      "training_2025_longitude": 106.67004
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.984182,
+      "live_provider_longitude": 107.06896,
+      "location_id": "VN_HALONG",
+      "training_2025_latitude": 20.984182,
+      "training_2025_longitude": 107.06896
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.05448,
+      "live_provider_longitude": 105.898476,
+      "location_id": "VN_HANOI",
+      "training_2025_latitude": 21.05448,
+      "training_2025_longitude": 105.898476
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 18.312828,
+      "live_provider_longitude": 105.9082,
+      "location_id": "VN_HATINH",
+      "training_2025_latitude": 18.312828,
+      "training_2025_longitude": 105.9082
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.790861,
+      "live_provider_longitude": 106.6313,
+      "location_id": "VN_HCM",
+      "training_2025_latitude": 10.790861,
+      "training_2025_longitude": 106.6313
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.843584,
+      "live_provider_longitude": 105.30364,
+      "location_id": "VN_HOABINH",
+      "training_2025_latitude": 20.843584,
+      "training_2025_longitude": 105.30364
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 16.48506,
+      "live_provider_longitude": 107.571434,
+      "location_id": "VN_HUE",
+      "training_2025_latitude": 16.48506,
+      "training_2025_longitude": 107.571434
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.632689,
+      "live_provider_longitude": 106.07467,
+      "location_id": "VN_HUNGYEN",
+      "training_2025_latitude": 20.632689,
+      "training_2025_longitude": 106.07467
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 14.376099,
+      "live_provider_longitude": 108.0,
+      "location_id": "VN_KONTUM",
+      "training_2025_latitude": 14.376099,
+      "training_2025_longitude": 108.0
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 22.390158,
+      "live_provider_longitude": 103.416145,
+      "location_id": "VN_LAICHAU",
+      "training_2025_latitude": 22.390158,
+      "training_2025_longitude": 103.416145
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.827766,
+      "live_provider_longitude": 106.724846,
+      "location_id": "VN_LANGSON",
+      "training_2025_latitude": 21.827766,
+      "training_2025_longitude": 106.724846
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 22.460455,
+      "live_provider_longitude": 103.98964,
+      "location_id": "VN_LAOCAI",
+      "training_2025_latitude": 22.460455,
+      "training_2025_longitude": 103.98964
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.369068,
+      "live_provider_longitude": 105.43536,
+      "location_id": "VN_LONGXUYEN",
+      "training_2025_latitude": 10.369068,
+      "training_2025_longitude": 105.43536
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.369068,
+      "live_provider_longitude": 106.38523,
+      "location_id": "VN_MYTHO",
+      "training_2025_latitude": 10.369068,
+      "training_2025_longitude": 106.38523
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.421791,
+      "live_provider_longitude": 106.207245,
+      "location_id": "VN_NAMDINH",
+      "training_2025_latitude": 20.421791,
+      "training_2025_longitude": 106.207245
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 12.196836,
+      "live_provider_longitude": 109.19892,
+      "location_id": "VN_NHATRANG",
+      "training_2025_latitude": 12.196836,
+      "training_2025_longitude": 109.19892
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.281195,
+      "live_provider_longitude": 105.99397,
+      "location_id": "VN_NINHBINH",
+      "training_2025_latitude": 20.281195,
+      "training_2025_longitude": 105.99397
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.564148,
+      "live_provider_longitude": 108.96429,
+      "location_id": "VN_PHANRANGTHAPCHAM",
+      "training_2025_latitude": 11.564148,
+      "training_2025_longitude": 108.96429
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.931458,
+      "live_provider_longitude": 108.09566,
+      "location_id": "VN_PHANTHIET",
+      "training_2025_latitude": 10.931458,
+      "training_2025_longitude": 108.09566
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.56239,
+      "live_provider_longitude": 105.87702,
+      "location_id": "VN_PHULY",
+      "training_2025_latitude": 20.56239,
+      "training_2025_longitude": 105.87702
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 13.954306,
+      "live_provider_longitude": 107.98342,
+      "location_id": "VN_PLEIKU",
+      "training_2025_latitude": 13.954306,
+      "training_2025_longitude": 107.98342
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 15.1493845,
+      "live_provider_longitude": 108.77455,
+      "location_id": "VN_QUANGNGAI",
+      "training_2025_latitude": 15.1493845,
+      "training_2025_longitude": 108.77455
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 13.813708,
+      "live_provider_longitude": 109.19117,
+      "location_id": "VN_QUYNHON",
+      "training_2025_latitude": 13.813708,
+      "training_2025_longitude": 109.19117
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.017574,
+      "live_provider_longitude": 105.13135,
+      "location_id": "VN_RACHGIA",
+      "training_2025_latitude": 10.017574,
+      "training_2025_longitude": 105.13135
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 9.595782,
+      "live_provider_longitude": 105.993034,
+      "location_id": "VN_SOCTRANG",
+      "training_2025_latitude": 9.595782,
+      "training_2025_longitude": 105.993034
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.335676,
+      "live_provider_longitude": 103.944954,
+      "location_id": "VN_SONLA",
+      "training_2025_latitude": 21.335676,
+      "training_2025_longitude": 103.944954
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 15.5711775,
+      "live_provider_longitude": 108.45719,
+      "location_id": "VN_TAMKY",
+      "training_2025_latitude": 15.5711775,
+      "training_2025_longitude": 108.45719
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.509666,
+      "live_provider_longitude": 106.41409,
+      "location_id": "VN_TANAN",
+      "training_2025_latitude": 10.509666,
+      "training_2025_longitude": 106.41409
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.282952,
+      "live_provider_longitude": 106.09431,
+      "location_id": "VN_TAYNINH",
+      "training_2025_latitude": 11.282952,
+      "training_2025_longitude": 106.09431
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 20.49209,
+      "live_provider_longitude": 106.3142,
+      "location_id": "VN_THAIBINH",
+      "training_2025_latitude": 20.49209,
+      "training_2025_longitude": 106.3142
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.61687,
+      "live_provider_longitude": 105.84442,
+      "location_id": "VN_THAINGUYEN",
+      "training_2025_latitude": 21.61687,
+      "training_2025_longitude": 105.84442
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 19.789103,
+      "live_provider_longitude": 105.79262,
+      "location_id": "VN_THANHHOA",
+      "training_2025_latitude": 19.789103,
+      "training_2025_longitude": 105.79262
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 11.001758,
+      "live_provider_longitude": 106.67553,
+      "location_id": "VN_THUDAUMOT",
+      "training_2025_latitude": 11.001758,
+      "training_2025_longitude": 106.67553
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 9.947276,
+      "live_provider_longitude": 106.37795,
+      "location_id": "VN_TRAVINH",
+      "training_2025_latitude": 9.947276,
+      "training_2025_longitude": 106.37795
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.827766,
+      "live_provider_longitude": 105.24641,
+      "location_id": "VN_TUYENQUANG",
+      "training_2025_latitude": 21.827766,
+      "training_2025_longitude": 105.24641
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 13.0404215,
+      "live_provider_longitude": 109.32666,
+      "location_id": "VN_TUYHOA",
+      "training_2025_latitude": 13.0404215,
+      "training_2025_longitude": 109.32666
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.335676,
+      "live_provider_longitude": 105.41284,
+      "location_id": "VN_VIETTRI",
+      "training_2025_latitude": 21.335676,
+      "training_2025_longitude": 105.41284
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 18.664322,
+      "live_provider_longitude": 105.7213,
+      "location_id": "VN_VINH",
+      "training_2025_latitude": 18.664322,
+      "training_2025_longitude": 105.7213
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.228471,
+      "live_provider_longitude": 105.961365,
+      "location_id": "VN_VINHLONG",
+      "training_2025_latitude": 10.228471,
+      "training_2025_longitude": 105.961365
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.335676,
+      "live_provider_longitude": 105.59633,
+      "location_id": "VN_VINHYEN",
+      "training_2025_latitude": 21.335676,
+      "training_2025_longitude": 105.59633
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 9.806679,
+      "live_provider_longitude": 105.48472,
+      "location_id": "VN_VITHANH",
+      "training_2025_latitude": 9.806679,
+      "training_2025_longitude": 105.48472
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 10.439367,
+      "live_provider_longitude": 107.11268,
+      "location_id": "VN_VUNGTAU",
+      "training_2025_latitude": 10.439367,
+      "training_2025_longitude": 107.11268
+    },
+    {
+      "distance_km": 0.0,
+      "live_provider_latitude": 21.68717,
+      "live_provider_longitude": 104.93853,
+      "location_id": "VN_YENBAI",
+      "training_2025_latitude": 21.68717,
+      "training_2025_longitude": 104.93853
+    }
+  ],
+  "historical_training_2025_coordinate_distance_km": {
+    "locations_over_15km": [],
+    "max": 0.0,
+    "median": 0.0,
+    "min": 0.0
+  },
+  "maximum_allowed_coordinate_offset_from_catalog_km": 15.0,
+  "provider_success_count": 63,
+  "status": "PASS",
+  "training_location_count": 63
+}

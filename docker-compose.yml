@@ -76,6 +76,7 @@ services:
       - ./data:/opt/project/history-data
       - ./results:/opt/project/results
       - ./ml:/opt/project/ml
+      - ./tests:/opt/project/tests:ro
       - weather-data:/opt/project/data
 
 
@@ -136,6 +137,33 @@ services:
 
     depends_on:
       - broker
+
+  live-hourly-producer:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    container_name: weather-live-hourly-producer
+    hostname: live-hourly-producer
+    profiles:
+      - live
+    environment:
+      PYTHONUNBUFFERED: "1"
+      WEATHER_LIVE_HOURLY_BOOTSTRAP_SERVERS: broker:19092
+      WEATHER_LIVE_HOURLY_TOPIC: weather.hourly.observations.v1
+      WEATHER_LIVE_HOURLY_POLL_INTERVAL_SECONDS: "300"
+      WEATHER_LIVE_HOURLY_ENDPOINT: https://api.open-meteo.com/v1/forecast
+      WEATHER_LIVE_HOURLY_CATALOG: /opt/project/historical/locations.json
+    depends_on:
+      - broker
+    volumes:
+      - ./producer:/opt/project/producer:ro
+      - ./historical:/opt/project/historical:ro
+      - ./ml:/opt/project/ml:ro
+      - ./tests:/opt/project/tests:ro
+      - ./results:/opt/project/results
+    command:
+      - --mode
+      - daemon
 
 volumes:
   weather-data:

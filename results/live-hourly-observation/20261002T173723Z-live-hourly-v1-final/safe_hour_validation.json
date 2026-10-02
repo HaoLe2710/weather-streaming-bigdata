@@ -1,0 +1,11 @@
+{
+  "feature_time_utc": "2026-10-02T16:00:00Z",
+  "history_start_utc": "2026-10-01T16:00:00Z",
+  "provider_timeline_end_utc": "2026-10-02T17:00:00Z",
+  "rule": "UTC floor(current time to hour) minus one hour",
+  "selected_latest_common_safe_hour_utc": "2026-10-02T16:00:00Z",
+  "state_max_event_time_utc": "2026-10-02T16:00:00Z",
+  "state_min_event_time_utc": "2026-10-01T16:00:00Z",
+  "status": "PASS",
+  "target_time_utc": "2026-10-02T17:00:00Z"
+}

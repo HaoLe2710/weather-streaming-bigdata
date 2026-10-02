@@ -1,0 +1,21 @@
+{
+  "canonical_state_rows_after_both_polls": 1575,
+  "duplicate_forecast_id_count": 0,
+  "first_poll": {
+    "cache_skips": 0,
+    "delivered": 63,
+    "enqueued": 63
+  },
+  "poll_interval_seconds": 30,
+  "polls_completed": 2,
+  "publisher_mode": "daemon",
+  "safe_hour_first_poll": "2026-10-02T16:00:00Z",
+  "safe_hour_second_poll": "2026-10-02T16:00:00Z",
+  "second_poll": {
+    "cache_skips": 63,
+    "delivered": 0,
+    "enqueued": 0
+  },
+  "spark_observed_duplicate_input_rows": 126,
+  "status": "PASS"
+}

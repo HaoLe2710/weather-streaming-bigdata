@@ -1,0 +1,436 @@
+{
+  "catalog_location_count": 63,
+  "frozen_history_hours": 24,
+  "history_hours_requested": 24,
+  "mode": "bootstrap",
+  "poll_results": [
+    {
+      "api_cycle_seconds": 2.6037564370000155,
+      "api_latency_median_seconds": 2.603603410000005,
+      "api_latency_p95_seconds": 2.603603410000005,
+      "api_request_count": 1,
+      "bootstrap_observation_hours_accepted": 25,
+      "bootstrap_observation_hours_requested": 25,
+      "coordinate_distance_km_by_location": {
+        "VN_BACGIANG": 2.965285669787702,
+        "VN_BACKAN": 5.310799589370562,
+        "VN_BACLIEU": 3.532258426810245,
+        "VN_BACNINH": 4.027598836340248,
+        "VN_BENTRE": 2.568677162964665,
+        "VN_BIENHOA": 3.781713629363275,
+        "VN_BMT": 4.41211994257968,
+        "VN_CAMAU": 2.4808648357708294,
+        "VN_CANTHO": 3.479265624813244,
+        "VN_CAOBANG": 2.2185444786005335,
+        "VN_CAOLANH": 3.6263891913423802,
+        "VN_DALAT": 3.947940947908365,
+        "VN_DANANG": 4.016779015962802,
+        "VN_DIENBIENPHU": 5.617453835602066,
+        "VN_DONGHA": 4.673862433434566,
+        "VN_DONGHOI": 3.139879420067822,
+        "VN_DONGXOAI": 3.368493496214752,
+        "VN_GIANGHIA": 2.048559521870344,
+        "VN_HAGIANG": 2.1064806362817463,
+        "VN_HAIDUONG": 3.2171995346535542,
+        "VN_HAIPHONG": 1.8824461967394148,
+        "VN_HALONG": 2.894119852377214,
+        "VN_HANOI": 5.427651630425703,
+        "VN_HATINH": 3.3454702667042358,
+        "VN_HCM": 3.5890752832521353,
+        "VN_HOABINH": 4.590824102925154,
+        "VN_HUE": 3.154299045019848,
+        "VN_HUNGYEN": 2.8843591604560532,
+        "VN_KONTUM": 2.5359961859761406,
+        "VN_LAICHAU": 4.383794385973436,
+        "VN_LANGSON": 4.645704098011196,
+        "VN_LAOCAI": 3.4053035013845108,
+        "VN_LONGXUYEN": 1.9273125838519682,
+        "VN_MYTHO": 2.940701977244468,
+        "VN_NAMDINH": 3.398967061149709,
+        "VN_NHATRANG": 4.672423316562449,
+        "VN_NINHBINH": 2.9718263554042434,
+        "VN_PHANRANGTHAPCHAM": 2.646170329210045,
+        "VN_PHANTHIET": 0.7584602129078861,
+        "VN_PHULY": 4.126853925780712,
+        "VN_PLEIKU": 3.6871356118894174,
+        "VN_QUANGNGAI": 3.7383632232513215,
+        "VN_QUYNHON": 4.632781799799531,
+        "VN_RACHGIA": 5.553047235149837,
+        "VN_SOCTRANG": 2.3597726065119056,
+        "VN_SONLA": 2.929612418480097,
+        "VN_TAMKY": 1.824453035123804,
+        "VN_TANAN": 2.916358691807249,
+        "VN_TAYNINH": 3.0430009722301845,
+        "VN_THAIBINH": 5.398056979382862,
+        "VN_THAINGUYEN": 2.5482321551828604,
+        "VN_THANHHOA": 2.105069233600051,
+        "VN_THUDAUMOT": 3.5061630008976357,
+        "VN_TRAVINH": 3.9100011162358075,
+        "VN_TUYENQUANG": 3.3535061312809207,
+        "VN_TUYHOA": 6.151291519208247,
+        "VN_VIETTRI": 1.8260272955095074,
+        "VN_VINH": 4.543273995936634,
+        "VN_VINHLONG": 3.044561760072641,
+        "VN_VINHYEN": 3.105518523076966,
+        "VN_VITHANH": 2.9405616457269317,
+        "VN_VUNGTAU": 4.035675953977738,
+        "VN_YENBAI": 4.866310812533031
+      },
+      "delivery_failures": [],
+      "duplicate_canonical_keys": 0,
+      "duplicate_physical_messages": 0,
+      "event_build_seconds": 0.025954311000077723,
+      "events_built": 1575,
+      "events_delivered": 1575,
+      "events_enqueued": 1575,
+      "failed_location_ids": [],
+      "failed_locations": {},
+      "full_cycle_seconds": 2.7314203150000367,
+      "future_provider_rows_filtered": 63,
+      "history_gap_location_ids": [],
+      "history_hours_requested": 24,
+      "kafka_publish_seconds": 0.10065496200002144,
+      "mode": "bootstrap",
+      "poll_index": 0,
+      "producer_flush_remaining": 0,
+      "provider_coordinates_by_location": {
+        "VN_BACGIANG": [
+          21.265377,
+          106.222
+        ],
+        "VN_BACKAN": [
+          22.108961,
+          105.865974
+        ],
+        "VN_BACLIEU": [
+          9.314587,
+          105.703125
+        ],
+        "VN_BACNINH": [
+          21.195078,
+          106.11394
+        ],
+        "VN_BENTRE": [
+          10.228471,
+          106.356445
+        ],
+        "VN_BIENHOA": [
+          10.931458,
+          106.8202
+        ],
+        "VN_BMT": [
+          12.688928,
+          108.01631
+        ],
+        "VN_CAMAU": [
+          9.173989,
+          105.12998
+        ],
+        "VN_CANTHO": [
+          10.017574,
+          105.76182
+        ],
+        "VN_CAOBANG": [
+          22.671352,
+          106.27859
+        ],
+        "VN_CAOLANH": [
+          10.439367,
+          105.6074
+        ],
+        "VN_DALAT": [
+          11.915642,
+          108.48431
+        ],
+        "VN_DANANG": [
+          16.063269,
+          108.23864
+        ],
+        "VN_DIENBIENPHU": [
+          21.335676,
+          103.02752
+        ],
+        "VN_DONGHA": [
+          16.836554,
+          107.13876
+        ],
+        "VN_DONGHOI": [
+          17.469244,
+          106.59266
+        ],
+        "VN_DONGXOAI": [
+          11.564148,
+          106.875
+        ],
+        "VN_GIANGHIA": [
+          11.98594,
+          107.693
+        ],
+        "VN_HAGIANG": [
+          22.811949,
+          105.0
+        ],
+        "VN_HAIDUONG": [
+          20.913883,
+          106.32219
+        ],
+        "VN_HAIPHONG": [
+          20.843584,
+          106.67004
+        ],
+        "VN_HALONG": [
+          20.984182,
+          107.06896
+        ],
+        "VN_HANOI": [
+          21.05448,
+          105.898476
+        ],
+        "VN_HATINH": [
+          18.312828,
+          105.9082
+        ],
+        "VN_HCM": [
+          10.790861,
+          106.6313
+        ],
+        "VN_HOABINH": [
+          20.843584,
+          105.30364
+        ],
+        "VN_HUE": [
+          16.48506,
+          107.571434
+        ],
+        "VN_HUNGYEN": [
+          20.632689,
+          106.07467
+        ],
+        "VN_KONTUM": [
+          14.376099,
+          108.0
+        ],
+        "VN_LAICHAU": [
+          22.390158,
+          103.416145
+        ],
+        "VN_LANGSON": [
+          21.827766,
+          106.724846
+        ],
+        "VN_LAOCAI": [
+          22.460455,
+          103.98964
+        ],
+        "VN_LONGXUYEN": [
+          10.369068,
+          105.43536
+        ],
+        "VN_MYTHO": [
+          10.369068,
+          106.38523
+        ],
+        "VN_NAMDINH": [
+          20.421791,
+          106.207245
+        ],
+        "VN_NHATRANG": [
+          12.196836,
+          109.19892
+        ],
+        "VN_NINHBINH": [
+          20.281195,
+          105.99397
+        ],
+        "VN_PHANRANGTHAPCHAM": [
+          11.564148,
+          108.96429
+        ],
+        "VN_PHANTHIET": [
+          10.931458,
+          108.09566
+        ],
+        "VN_PHULY": [
+          20.56239,
+          105.87702
+        ],
+        "VN_PLEIKU": [
+          13.954306,
+          107.98342
+        ],
+        "VN_QUANGNGAI": [
+          15.1493845,
+          108.77455
+        ],
+        "VN_QUYNHON": [
+          13.813708,
+          109.19117
+        ],
+        "VN_RACHGIA": [
+          10.017574,
+          105.13135
+        ],
+        "VN_SOCTRANG": [
+          9.595782,
+          105.993034
+        ],
+        "VN_SONLA": [
+          21.335676,
+          103.944954
+        ],
+        "VN_TAMKY": [
+          15.5711775,
+          108.45719
+        ],
+        "VN_TANAN": [
+          10.509666,
+          106.41409
+        ],
+        "VN_TAYNINH": [
+          11.282952,
+          106.09431
+        ],
+        "VN_THAIBINH": [
+          20.49209,
+          106.3142
+        ],
+        "VN_THAINGUYEN": [
+          21.61687,
+          105.84442
+        ],
+        "VN_THANHHOA": [
+          19.789103,
+          105.79262
+        ],
+        "VN_THUDAUMOT": [
+          11.001758,
+          106.67553
+        ],
+        "VN_TRAVINH": [
+          9.947276,
+          106.37795
+        ],
+        "VN_TUYENQUANG": [
+          21.827766,
+          105.24641
+        ],
+        "VN_TUYHOA": [
+          13.0404215,
+          109.32666
+        ],
+        "VN_VIETTRI": [
+          21.335676,
+          105.41284
+        ],
+        "VN_VINH": [
+          18.664322,
+          105.7213
+        ],
+        "VN_VINHLONG": [
+          10.228471,
+          105.961365
+        ],
+        "VN_VINHYEN": [
+          21.335676,
+          105.59633
+        ],
+        "VN_VITHANH": [
+          9.806679,
+          105.48472
+        ],
+        "VN_VUNGTAU": [
+          10.439367,
+          107.11268
+        ],
+        "VN_YENBAI": [
+          21.68717,
+          104.93853
+        ]
+      },
+      "provider_endpoint": "https://api.open-meteo.com/v1/forecast",
+      "provider_source": "OPEN_METEO_LIVE_HOURLY",
+      "provider_timestamps_per_location": {
+        "VN_BACGIANG": 26,
+        "VN_BACKAN": 26,
+        "VN_BACLIEU": 26,
+        "VN_BACNINH": 26,
+        "VN_BENTRE": 26,
+        "VN_BIENHOA": 26,
+        "VN_BMT": 26,
+        "VN_CAMAU": 26,
+        "VN_CANTHO": 26,
+        "VN_CAOBANG": 26,
+        "VN_CAOLANH": 26,
+        "VN_DALAT": 26,
+        "VN_DANANG": 26,
+        "VN_DIENBIENPHU": 26,
+        "VN_DONGHA": 26,
+        "VN_DONGHOI": 26,
+        "VN_DONGXOAI": 26,
+        "VN_GIANGHIA": 26,
+        "VN_HAGIANG": 26,
+        "VN_HAIDUONG": 26,
+        "VN_HAIPHONG": 26,
+        "VN_HALONG": 26,
+        "VN_HANOI": 26,
+        "VN_HATINH": 26,
+        "VN_HCM": 26,
+        "VN_HOABINH": 26,
+        "VN_HUE": 26,
+        "VN_HUNGYEN": 26,
+        "VN_KONTUM": 26,
+        "VN_LAICHAU": 26,
+        "VN_LANGSON": 26,
+        "VN_LAOCAI": 26,
+        "VN_LONGXUYEN": 26,
+        "VN_MYTHO": 26,
+        "VN_NAMDINH": 26,
+        "VN_NHATRANG": 26,
+        "VN_NINHBINH": 26,
+        "VN_PHANRANGTHAPCHAM": 26,
+        "VN_PHANTHIET": 26,
+        "VN_PHULY": 26,
+        "VN_PLEIKU": 26,
+        "VN_QUANGNGAI": 26,
+        "VN_QUYNHON": 26,
+        "VN_RACHGIA": 26,
+        "VN_SOCTRANG": 26,
+        "VN_SONLA": 26,
+        "VN_TAMKY": 26,
+        "VN_TANAN": 26,
+        "VN_TAYNINH": 26,
+        "VN_THAIBINH": 26,
+        "VN_THAINGUYEN": 26,
+        "VN_THANHHOA": 26,
+        "VN_THUDAUMOT": 26,
+        "VN_TRAVINH": 26,
+        "VN_TUYENQUANG": 26,
+        "VN_TUYHOA": 26,
+        "VN_VIETTRI": 26,
+        "VN_VINH": 26,
+        "VN_VINHLONG": 26,
+        "VN_VINHYEN": 26,
+        "VN_VITHANH": 26,
+        "VN_VUNGTAU": 26,
+        "VN_YENBAI": 26
+      },
+      "provider_values_are_modelled": true,
+      "requested_locations": 63,
+      "retry_counts": {},
+      "safe_hour": "2026-10-02T16:00:00Z",
+      "same_hour_cache_skips": 0,
+      "successful_locations": 63,
+      "topic": "weather.hourly.observations.v1",
+      "unique_location_hour_keys": 1575
+    }
+  ],
+  "polls_completed": 1,
+  "provider_endpoint": "https://api.open-meteo.com/v1/forecast",
+  "runtime_resources": {
+    "peak_rss_bytes": 43745280,
+    "process_cpu_seconds": 0.10715676400000002,
+    "process_elapsed_seconds": 2.7771230360000345
+  },
+  "status": "PASS",
+  "topic": "weather.hourly.observations.v1"
+}

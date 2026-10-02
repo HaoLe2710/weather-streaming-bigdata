@@ -1,0 +1,7 @@
+{
+  "boundary_rule": "safe hour remains H during UTC hour H+1 and advances to H+1 only after UTC hour H+2 begins",
+  "passed": true,
+  "real_clock_wait": "not required; deterministic UTC clock boundary test",
+  "status": "PASS",
+  "test": "test_safe_hour_advances_only_after_next_utc_hour_starts"
+}

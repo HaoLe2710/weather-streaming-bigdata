@@ -1,0 +1,13 @@
+{
+  "future_state_rows": 0,
+  "hour_alignment_violations": 0,
+  "locations": 63,
+  "max_event_time_utc": "2026-10-02T16:00:00Z",
+  "max_rows_per_location": 25,
+  "min_event_time_utc": "2026-10-01T16:00:00Z",
+  "min_rows_per_location": 25,
+  "sql_evidence": "validate_live_state_timeline.sql",
+  "state_rows": 1575,
+  "status": "PASS",
+  "unique_location_hour_keys": 1575
+}

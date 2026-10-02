@@ -1,0 +1,13 @@
+{
+  "all_forecasts_use_frozen_contract": true,
+  "feature_count": 73,
+  "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+  "feature_set_id": "WEATHER_FORECAST_FE_V1",
+  "forecast_horizon_hours": 1,
+  "model_bytes": 51662443,
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+  "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+  "observed_model_loads_across_workers": 2,
+  "status": "PASS",
+  "validated_forecasts": 63
+}
