@@ -1,0 +1,77 @@
+{
+  "branch": "model/weather-forecast-xgboost-t2h-v1",
+  "canonical_environment": "GOOGLE_COLAB",
+  "canonical_model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+  "cuda_available": true,
+  "cuda_build_enabled": true,
+  "dataset_manifest_sha256": "c2c725ecd4eb5383baf01a6203ef7f5586ee2907a8325f3aa81698633646837b",
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "git_commit": "28d6b569f7ba9a883ce294edde67ce746dc4ee67",
+  "gpu_name": "Tesla T4",
+  "gpu_rows": [
+    "Tesla T4, 580.82.07, 15360 MiB"
+  ],
+  "is_colab": true,
+  "numpy": "2.1.3",
+  "nvidia_smi_cuda_version": "13.0",
+  "nvidia_smi_error": null,
+  "nvidia_smi_header": [
+    "Sat Oct  3 12:23:49 2026       ",
+    "+-----------------------------------------------------------------------------------------+",
+    "| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |",
+    "+-----------------------------------------+------------------------+----------------------+",
+    "| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |"
+  ],
+  "pandas": "2.2.3",
+  "parquet_read_compatibility": {
+    "modeling_protocol_changed": false,
+    "reader": "pyarrow.ParquetFile.read for individual partition files",
+    "reason": "avoid hive partition inference conflicting with the stored split field"
+  },
+  "protocol_commit": "28d6b569f7ba9a883ce294edde67ce746dc4ee67",
+  "pyarrow": "23.0.1",
+  "python": "3.13.15",
+  "python_executable": "/usr/bin/python3",
+  "run_id": "20261003T122405Z-xgb-t2h-v1-1-colab",
+  "scikit_learn": "1.6.1",
+  "source_contract_sha256": "b47a33200c9153d1ee98bfaaafe7df3bf400512172a2ad3382206a7d7b765db2",
+  "xgboost": "3.4.1",
+  "xgboost_build_info": {
+    "BUILTIN_PREFETCH_PRESENT": true,
+    "CUDA_VERSION": [
+      13,
+      3
+    ],
+    "DEBUG": false,
+    "GCC_VERSION": [
+      10,
+      3,
+      1
+    ],
+    "GLIBC_VERSION": [
+      2,
+      28
+    ],
+    "MM_PREFETCH_PRESENT": true,
+    "NCCL_VERSION": [
+      2,
+      30,
+      7
+    ],
+    "THRUST_VERSION": [
+      3,
+      3,
+      3
+    ],
+    "USE_CUDA": true,
+    "USE_DLOPEN_NCCL": true,
+    "USE_FEDERATED": false,
+    "USE_NCCL": true,
+    "USE_NVCOMP": false,
+    "USE_OPENMP": true,
+    "USE_RMM": false,
+    "libxgboost": "/usr/local/lib/python3.13/dist-packages/xgboost/lib/libxgboost.so"
+  },
+  "xgboost_cuda_probe_error": null,
+  "xgboost_cuda_probe_passed": true
+}

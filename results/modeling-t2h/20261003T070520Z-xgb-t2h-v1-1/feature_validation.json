@@ -1,0 +1,17 @@
+{
+  "aggregate_future_leakage_check": "PASS",
+  "eligible_rows": 3312666,
+  "feature_count": 73,
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "feature_timestamp_max_rule": "Each lag/rolling input is looked up on the UTC hourly index at feature_time or earlier; rolling windows are trailing and include feature_time.",
+  "max_feature_source_time_le_feature_time": true,
+  "no_imputation_or_interpolation": true,
+  "rows_missing_exact_t2h_target_after_features": 126,
+  "rows_missing_required_feature_history": 1512,
+  "sampled_feature_max_source_timestamp_check": "PASS",
+  "status": "PASS",
+  "target_generation": "Exact timestamp lookup by (location_id, feature_time + 2 hours).",
+  "target_is_in_model_feature_columns": false,
+  "target_time_offset_seconds": 7200,
+  "weather_code_is_model_feature": false
+}

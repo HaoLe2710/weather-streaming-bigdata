@@ -1,0 +1,2716 @@
+{
+  "dataset_id": "NATIONWIDE_63",
+  "date_end_inclusive": "2025-12-31",
+  "date_start_inclusive": "2020-01-01",
+  "errors": [],
+  "gap_policy": "No forward fill, backward fill, interpolation, or copied-hour fabrication; feature rows requiring unavailable history are excluded.",
+  "source_contract_id": "WEATHER_FORECAST_SOURCE_T2H_V1_1",
+  "sources": {
+    "predictors": {
+      "duplicate_rows": 0,
+      "endpoint": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+      "expected_rows": 3314304,
+      "gap_or_unexpected_hour_count": 0,
+      "location_count": 63,
+      "model_id": "ecmwf_ifs",
+      "nonfinite_counts": {
+        "humidity_pct": 0,
+        "precipitation_mm": 0,
+        "pressure_hpa": 0,
+        "temperature_c": 0,
+        "weather_code": 0,
+        "wind_gust_kmh": 0,
+        "wind_speed_kmh": 0
+      },
+      "normalized_rows": 3314304,
+      "null_counts": {
+        "humidity_pct": 0,
+        "precipitation_mm": 0,
+        "pressure_hpa": 0,
+        "temperature_c": 0,
+        "weather_code": 0,
+        "wind_gust_kmh": 0,
+        "wind_speed_kmh": 0
+      },
+      "per_location": [
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HCM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HANOI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DANANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CANTHO",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HUE",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAIPHONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NHATRANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DALAT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VUNGTAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_QUYNHON",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BMT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PLEIKU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHANTHIET",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THANHHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HALONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BIENHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LONGXUYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_RACHGIA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAMAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACGIANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACKAN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACLIEU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACNINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BENTRE",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THUDAUMOT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGXOAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAOBANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_GIANGHIA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DIENBIENPHU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAOLANH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAGIANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHULY",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HATINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAIDUONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VITHANH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HOABINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HUNGYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_KONTUM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LAICHAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LANGSON",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LAOCAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TANAN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NAMDINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NINHBINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHANRANGTHAPCHAM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VIETTRI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TUYHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGHOI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TAMKY",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_QUANGNGAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGHA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_SOCTRANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_SONLA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TAYNINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THAIBINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THAINGUYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_MYTHO",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TRAVINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TUYENQUANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINHLONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINHYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_YENBAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "null_counts": {
+            "humidity_pct": 0,
+            "precipitation_mm": 0,
+            "pressure_hpa": 0,
+            "temperature_c": 0,
+            "weather_code": 0,
+            "wind_gust_kmh": 0,
+            "wind_speed_kmh": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        }
+      ],
+      "variables": [
+        "temperature_2m",
+        "relative_humidity_2m",
+        "precipitation",
+        "pressure_msl",
+        "wind_speed_10m",
+        "wind_gusts_10m",
+        "weather_code"
+      ]
+    },
+    "targets": {
+      "duplicate_rows": 0,
+      "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+      "expected_rows": 3314304,
+      "gap_or_unexpected_hour_count": 0,
+      "location_count": 63,
+      "model_id": "era5",
+      "nonfinite_counts": {
+        "temperature_target_c": 0
+      },
+      "normalized_rows": 3314304,
+      "null_counts": {
+        "temperature_target_c": 0
+      },
+      "per_location": [
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HCM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HANOI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DANANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CANTHO",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HUE",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAIPHONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NHATRANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DALAT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VUNGTAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_QUYNHON",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BMT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PLEIKU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHANTHIET",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THANHHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HALONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BIENHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LONGXUYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_RACHGIA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAMAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACGIANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACKAN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACLIEU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BACNINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_BENTRE",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THUDAUMOT",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGXOAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAOBANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_GIANGHIA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DIENBIENPHU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_CAOLANH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAGIANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHULY",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HATINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HAIDUONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VITHANH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HOABINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_HUNGYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_KONTUM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LAICHAU",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LANGSON",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_LAOCAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TANAN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NAMDINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_NINHBINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_PHANRANGTHAPCHAM",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VIETTRI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TUYHOA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGHOI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TAMKY",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_QUANGNGAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_DONGHA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_SOCTRANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_SONLA",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TAYNINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THAIBINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_THAINGUYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_MYTHO",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TRAVINH",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_TUYENQUANG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINHLONG",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_VINHYEN",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        },
+        {
+          "duplicate_rows": 0,
+          "expected_rows": 52608,
+          "gap_intervals": [],
+          "location_id": "VN_YENBAI",
+          "missing_hour_count": 0,
+          "nonfinite_counts": {
+            "temperature_target_c": 0
+          },
+          "null_counts": {
+            "temperature_target_c": 0
+          },
+          "rows": 52608,
+          "unexpected_hour_count": 0
+        }
+      ],
+      "variables": [
+        "temperature_2m"
+      ]
+    }
+  },
+  "status": "PASS",
+  "warnings": []
+}

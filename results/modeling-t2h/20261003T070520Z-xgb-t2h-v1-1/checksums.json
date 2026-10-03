@@ -1,0 +1,224 @@
+{
+  "algorithm": "SHA-256",
+  "files": [
+    {
+      "bytes": 1900,
+      "path": "candidate_results.csv",
+      "sha256": "548d0cd2b820124782826468cc89481fa1aed8f76676d9ea16c782648dbf5527",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 4182,
+      "path": "candidate_results.json",
+      "sha256": "73f74b87c4e9848c199bea4e209e0c794609f7c3ba0474d3a302b23f02a8d5c3",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 131922,
+      "path": "dataset_manifest.json",
+      "sha256": "c2c725ecd4eb5383baf01a6203ef7f5586ee2907a8325f3aa81698633646837b",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 551,
+      "path": "dataset_validation.json",
+      "sha256": "661cdae18f94eeaf8c2b711e03f516daa5a4a4d8576ce558ba665c84a564eab4",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 8557,
+      "path": "distribution_comparison.json",
+      "sha256": "fd197926f2a3637734b52e196cc676348e7e879ed8b904eeab8b048158e4e03b",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 856559,
+      "path": "download_manifest.json",
+      "sha256": "45931d2990fb07b13978bfafb6b8deebc8db81df29f29cabe91d4bdaab176810",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 3439,
+      "path": "feature_contract.json",
+      "sha256": "65a1e50b8718c9832e279e4dbe0b69743c45ba077a701fc7ecf5c797191a7420",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 7791,
+      "path": "feature_importance.json",
+      "sha256": "174ccbc825838db9711d38666c2db364b74a57a4222751b62e2e7ba028bbf2f4",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 2038,
+      "path": "feature_list.json",
+      "sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 23748,
+      "path": "feature_statistics_train.json",
+      "sha256": "1717b96a79d83f1a2ae6add557ce54e6f0d974ccd6d7637904caac18090545c8",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 860,
+      "path": "feature_validation.json",
+      "sha256": "70b8ca2b902da64bcbe4befc21ce3fdc1157c2336e21984038a56bc5615b3f6e",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 2505,
+      "path": "freeze_manifest.json",
+      "sha256": "b0eb7a94c2dc2ce3dc5aa003fd5443699246923b5c87ead6aa8f6335a98af2d5",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 617807,
+      "path": "live_forecast_probe.json",
+      "sha256": "ae7c7cca44b0d7be7fea01e6cbdb95eaf6722b6bcfa999515e35252d7ed3c5e3",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 3864,
+      "path": "model_manifest.json",
+      "sha256": "699ed144e1ed41bdffaf1ce09974d36a1f43d8474868b7014569b549379ce8c3",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 546,
+      "path": "model_manifest_validation.json",
+      "sha256": "edd07139a07deb5c7d689bd1a73f584c9eff99db0e22ca2a97eb5c952a95bade",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 8082,
+      "path": "modeling_summary.json",
+      "sha256": "3212eb6c54eedd3e4d18319411a8993fc091e2af32a854e13abe6112511e249a",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 9970,
+      "path": "per_location_metrics.csv",
+      "sha256": "dc99816036b29c83752150fac83aef5edaa0959170cf230ef7f35f403f02590b",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 25603,
+      "path": "per_location_metrics.json",
+      "sha256": "6f68856489762b117613397f8dc318436eb369d2c77c25e23348f805c3e03589",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 426,
+      "path": "persistence_validation.json",
+      "sha256": "a14e95ce4eecaaafb4b7b3d8154299a211680fc23ef4515e605c5df6dc2f99d7",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 7760,
+      "path": "provider_audit.json",
+      "sha256": "60684d588761667b63eedcc2397542ca14ef650cf0d879de3681108aafc3ce54",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 3805,
+      "path": "provider_quota.json",
+      "sha256": "1375916ecbcc9e2678c20bc137cc349944a79eabbfdc2a6ea2c3bdd5090cfd0a",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 80210,
+      "path": "raw_validation.json",
+      "sha256": "1deca6271b05425e8c476d9081fcab513428f0c692cc243bbedd897869c268be",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 454,
+      "path": "reload_parity.json",
+      "sha256": "2555b3a0ea4d0da7615121e67a6c46e1046ac036a3ac7edcf193bf6d89ab60c0",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 604,
+      "path": "reload_parity_initial_failure.json",
+      "sha256": "1db6edf017b5b0533167cd353e29d266919ea6b144f07f34e2379313aebb1bd6",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 1189,
+      "path": "runtime_summary.json",
+      "sha256": "d62112500346b1ed7853e8438cf61e530f949f92ab3b1426d09b206e5af68fdf",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 5769,
+      "path": "source_alignment.json",
+      "sha256": "892b818cd7ac910ad1df32af0bc55ebea5dae25a92bcdff1d7f303ca9ea9816e",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 5504,
+      "path": "source_contract.json",
+      "sha256": "b47a33200c9153d1ee98bfaaafe7df3bf400512172a2ad3382206a7d7b765db2",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 6937,
+      "path": "split_validation.json",
+      "sha256": "90f27800e41b11605ab5565d2b8c0f918bcd081deed8ea2c770cb597078d9b64",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 7256,
+      "path": "temporal_diagnostics.json",
+      "sha256": "545eb38f4a591a39b7235386c6d29f691fb04146a5625445aa94ca490cb43b16",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 1277,
+      "path": "test_metrics.json",
+      "sha256": "f8db4b8fbe69d83ff6bb1727d4feed1b0086f974eef7d8e4698240c922d5ecce",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 8418728,
+      "path": "test_predictions.parquet",
+      "sha256": "6cf27e3f13f32ae081fa24dfa7f7e495c056ab5c6819e06e32811cd043509c8d",
+      "kind": "external_prediction_artifact",
+      "external_path": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_test_predictions.parquet",
+      "external_drive_file_id": "1esR4vwSRVnHc3wOO5f9Am4__a_xwIgwy",
+      "local_copy_retained": true,
+      "git_tracked": false
+    },
+    {
+      "bytes": 1303,
+      "path": "unit_regression_tests.json",
+      "sha256": "b2b4673eb0493f4dbfb328e89dca679ebe9a0ac31f750fea7b6699b4b9aca51c",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 1683,
+      "path": "winner_selection.json",
+      "sha256": "86894a0ca25c04b4ddd5f3fdc03b72c4879e1b5ef161a78868e59477fd7ae22c",
+      "kind": "tracked_evidence_artifact"
+    },
+    {
+      "bytes": 27726327,
+      "kind": "external_model_artifact",
+      "path": "weather_forecast_xgboost_t2h_v1_1_20261003T070520Z-xgb-t2h-v1-1.json",
+      "sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+      "external_path": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_model.json",
+      "external_drive_file_id": "1PzaXBQDTSgUN03LoQddACt6AN-UU8orb",
+      "local_copy_retained": true,
+      "git_tracked": false
+    }
+  ],
+  "artifact_policy": {
+    "tracked_evidence": "All listed JSON/CSV evidence other than model and prediction binaries stays tracked in Git.",
+    "external_model_artifact": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_model.json",
+    "external_prediction_artifact": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_test_predictions.parquet",
+    "checksums_file_excludes_itself": true,
+    "local_large_copies_retained": true
+  }
+}

@@ -1,0 +1,157 @@
+[
+  {
+    "candidate_id": "gpu_d6_lr005",
+    "attempt": 1,
+    "params": {
+      "candidate_id": "gpu_d6_lr005",
+      "max_depth": 6,
+      "learning_rate": 0.05,
+      "min_child_weight": 1.0,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 1.0,
+      "reg_alpha": 0.0
+    },
+    "train_rows": 2207394,
+    "validation_rows": 553392,
+    "best_iteration": 1494,
+    "best_boost_rounds": 1495,
+    "validation_metrics": {
+      "n": 553392,
+      "mae": 0.6692787966677682,
+      "rmse": 0.8858663106566821,
+      "r2": 0.9637155821908115,
+      "mean_error": -0.07699916219433503
+    },
+    "training_time_seconds": 50.63750316900007,
+    "elapsed_seconds_including_fallback": 51.28605107299995,
+    "device": "cuda",
+    "device_fallback_reason": null,
+    "status": "SUCCESS",
+    "error": null
+  },
+  {
+    "candidate_id": "gpu_d4_regularized",
+    "attempt": 1,
+    "params": {
+      "candidate_id": "gpu_d4_regularized",
+      "max_depth": 4,
+      "learning_rate": 0.05,
+      "min_child_weight": 3.0,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 2.0,
+      "reg_alpha": 0.0
+    },
+    "train_rows": 2207394,
+    "validation_rows": 553392,
+    "best_iteration": 1499,
+    "best_boost_rounds": 1500,
+    "validation_metrics": {
+      "n": 553392,
+      "mae": 0.6908188367517588,
+      "rmse": 0.9111043831169734,
+      "r2": 0.9616186665228034,
+      "mean_error": -0.07462201012536446
+    },
+    "training_time_seconds": 43.481643850999944,
+    "elapsed_seconds_including_fallback": 43.90251155200008,
+    "device": "cuda",
+    "device_fallback_reason": null,
+    "status": "SUCCESS",
+    "error": null
+  },
+  {
+    "candidate_id": "gpu_d8_regularized",
+    "attempt": 1,
+    "params": {
+      "candidate_id": "gpu_d8_regularized",
+      "max_depth": 8,
+      "learning_rate": 0.05,
+      "min_child_weight": 3.0,
+      "subsample": 0.85,
+      "colsample_bytree": 0.9,
+      "reg_lambda": 3.0,
+      "reg_alpha": 0.1
+    },
+    "train_rows": 2207394,
+    "validation_rows": 553392,
+    "best_iteration": 1023,
+    "best_boost_rounds": 1024,
+    "validation_metrics": {
+      "n": 553392,
+      "mae": 0.6644048629419675,
+      "rmse": 0.8801436786253377,
+      "r2": 0.9641828574258745,
+      "mean_error": -0.07948050909165473
+    },
+    "training_time_seconds": 53.07551886500005,
+    "elapsed_seconds_including_fallback": 53.64652776799994,
+    "device": "cuda",
+    "device_fallback_reason": null,
+    "status": "SUCCESS",
+    "error": null
+  },
+  {
+    "candidate_id": "gpu_d6_lr003",
+    "attempt": 1,
+    "params": {
+      "candidate_id": "gpu_d6_lr003",
+      "max_depth": 6,
+      "learning_rate": 0.03,
+      "min_child_weight": 1.0,
+      "subsample": 0.9,
+      "colsample_bytree": 0.8,
+      "reg_lambda": 3.0,
+      "reg_alpha": 0.1
+    },
+    "train_rows": 2207394,
+    "validation_rows": 553392,
+    "best_iteration": 1498,
+    "best_boost_rounds": 1499,
+    "validation_metrics": {
+      "n": 553392,
+      "mae": 0.6744330410064723,
+      "rmse": 0.8916991990797986,
+      "r2": 0.9632361876640778,
+      "mean_error": -0.07691098302046996
+    },
+    "training_time_seconds": 56.70562387700011,
+    "elapsed_seconds_including_fallback": 57.35101160999989,
+    "device": "cuda",
+    "device_fallback_reason": null,
+    "status": "SUCCESS",
+    "error": null
+  },
+  {
+    "candidate_id": "gpu_d5_lr008",
+    "attempt": 1,
+    "params": {
+      "candidate_id": "gpu_d5_lr008",
+      "max_depth": 5,
+      "learning_rate": 0.08,
+      "min_child_weight": 2.0,
+      "subsample": 0.9,
+      "colsample_bytree": 0.95,
+      "reg_lambda": 1.0,
+      "reg_alpha": 0.1
+    },
+    "train_rows": 2207394,
+    "validation_rows": 553392,
+    "best_iteration": 1391,
+    "best_boost_rounds": 1392,
+    "validation_metrics": {
+      "n": 553392,
+      "mae": 0.6734332755799547,
+      "rmse": 0.8915462772514083,
+      "r2": 0.9632487961924597,
+      "mean_error": -0.08028623588043056
+    },
+    "training_time_seconds": 48.302419926999846,
+    "elapsed_seconds_including_fallback": 48.80216402099995,
+    "device": "cuda",
+    "device_fallback_reason": null,
+    "status": "SUCCESS",
+    "error": null
+  }
+]

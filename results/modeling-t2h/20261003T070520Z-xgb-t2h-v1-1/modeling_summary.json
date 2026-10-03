@@ -1,0 +1,225 @@
+{
+  "run_id": "20261003T070520Z-xgb-t2h-v1-1",
+  "created_at_utc": "2026-10-03T09:20:18Z",
+  "overall_status": "READY_TO_MERGE_WITH_LIMITATION",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+  "feature_set_id": "WEATHER_FORECAST_FE_T2H_V1_1",
+  "source_contract_id": "WEATHER_FORECAST_SOURCE_T2H_V1_1",
+  "source_contract": {
+    "predictors": "Open-Meteo Historical Forecast, models=ecmwf_ifs",
+    "target": "Open-Meteo ERA5 temperature_2m at exact same-location feature_time + 2h",
+    "date_range_inclusive": [
+      "2020-01-01",
+      "2025-12-31"
+    ],
+    "locations": 63
+  },
+  "acquisition": {
+    "status": "COMPLETE",
+    "chunks_expected": 84,
+    "chunks_success": 84,
+    "chunks_failed": 0,
+    "chunks_deferred": 0,
+    "raw_validation_status": "PASS",
+    "sources": {
+      "predictors": {
+        "rows": 3314304,
+        "duplicate_rows": 0,
+        "gap_or_unexpected_hours": 0,
+        "null_values": 0,
+        "nonfinite_values": 0
+      },
+      "targets": {
+        "rows": 3314304,
+        "duplicate_rows": 0,
+        "gap_or_unexpected_hours": 0,
+        "null_values": 0,
+        "nonfinite_values": 0
+      }
+    },
+    "live_forecast_probe": {
+      "status": "PASS",
+      "locations": 63,
+      "hours_per_location": [
+        24
+      ],
+      "timestamp_mismatches": 0,
+      "coordinate_mismatches": 0,
+      "value_mismatches_by_variable": {
+        "precipitation": 0,
+        "pressure_msl": 0,
+        "relative_humidity_2m": 0,
+        "temperature_2m": 0,
+        "weather_code": 0,
+        "wind_gusts_10m": 0,
+        "wind_speed_10m": 0
+      }
+    }
+  },
+  "dataset": {
+    "status": "PASS",
+    "feature_count": 73,
+    "total_rows": 3312666,
+    "rows_by_split": {
+      "TEST": 551880,
+      "TRAIN": 2207394,
+      "VALIDATION": 553392
+    },
+    "locations_by_split": {
+      "TEST": 63,
+      "TRAIN": 63,
+      "VALIDATION": 63
+    },
+    "duplicate_location_feature_time_keys": 0,
+    "feature_null_nan_inf_rows": 0,
+    "label_null_nan_inf_rows": 0
+  },
+  "candidate_search": {
+    "successful_candidates": 5,
+    "failed_candidates": 0,
+    "selection_metric": "VALIDATION MAE",
+    "winner_id": "gpu_d8_regularized",
+    "winner_metrics": {
+      "mae": 0.6644048629419675,
+      "mean_error": -0.07948050909165473,
+      "n": 553392,
+      "r2": 0.9641828574258745,
+      "rmse": 0.8801436786253376
+    },
+    "validation_improvement_vs_persistence": {
+      "mae_absolute_improvement": 0.7894331007023155,
+      "mae_percentage_improvement": 54.29993716242435,
+      "n": 553392,
+      "rmse_absolute_improvement": 0.9850424967063838,
+      "rmse_percentage_improvement": 52.812020040369156
+    },
+    "candidate_search_elapsed_seconds": 244.50055939999584,
+    "final_rounds": 1024
+  },
+  "freeze_and_test": {
+    "freeze_time_utc": "2026-10-03T09:01:22.627521Z",
+    "test_first_read_time_utc": "2026-10-03T09:10:54.714164Z",
+    "test_read_count": 1,
+    "test_after_freeze": true,
+    "final_training_rows": 2760786,
+    "test_metrics": {
+      "beats_persistence_mae": true,
+      "beats_persistence_rmse": true,
+      "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+      "feature_set_id": "WEATHER_FORECAST_FE_T2H_V1_1",
+      "freeze_before_test_read": true,
+      "freeze_time": "2026-10-03T09:01:22.627521Z",
+      "improvement_vs_persistence": {
+        "mae_absolute_improvement": 0.7322134773161149,
+        "mae_percentage_improvement": 52.74703436634591,
+        "mae_skill": 0.527470343663459,
+        "n": 551880,
+        "rmse_absolute_improvement": 0.9137692239215375,
+        "rmse_percentage_improvement": 50.98795665640275
+      },
+      "locations": 63,
+      "model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+      "model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+      "persistence": {
+        "bias": -0.6878705485770692,
+        "mae": 1.3881604645877261,
+        "mean_error": -0.6878705485770692,
+        "n": 551880,
+        "r2": 0.8486030285482814,
+        "rmse": 1.7921275607870275
+      },
+      "rows": 551880,
+      "split": "TEST",
+      "test_first_read_time": "2026-10-03T09:10:54.714164Z",
+      "test_read_count": 1,
+      "xgboost": {
+        "bias": 0.12183066821922606,
+        "mae": 0.6559469872716113,
+        "mean_error": 0.12183066821922606,
+        "n": 551880,
+        "r2": 0.9636317163662301,
+        "rmse": 0.87835833686549
+      }
+    },
+    "persistence_test_metrics": {
+      "bias": -0.6878705485770692,
+      "mae": 1.3881604645877261,
+      "mean_error": -0.6878705485770692,
+      "n": 551880,
+      "r2": 0.8486030285482814,
+      "rmse": 1.7921275607870275
+    },
+    "locations_better_than_persistence_mae": 63,
+    "locations_equal": 0,
+    "locations_worse": 0
+  },
+  "model_artifact": {
+    "path": "results\\modeling-t2h\\20261003T070520Z-xgb-t2h-v1-1\\weather_forecast_xgboost_t2h_v1_1_20261003T070520Z-xgb-t2h-v1-1.json",
+    "bytes": 27726327,
+    "sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+    "device": "cuda",
+    "manifest_validation": "PASS",
+    "reload_parity_status": "PASS",
+    "reload_parity_device": "cuda",
+    "reload_max_absolute_difference": 0.0,
+    "reload_tolerance": 1e-06,
+    "initial_device_mismatch_diagnostic": "reload_parity_initial_failure.json"
+  },
+  "quota_limitations": {
+    "attempt_count": 100,
+    "attempt_units_estimated": 10818.7,
+    "non429_or_legacy_success_units_estimated": 8073.7,
+    "http_429_attempt_count": 15,
+    "http_429_attempt_units_estimated": 2745.0,
+    "live_probe_units_estimated": 6.3,
+    "all_attempts_including_probe_units_estimated": 10825.0,
+    "daily_limit_units": 10000,
+    "conditional_daily_excess_units": 825.0,
+    "daily_429_accounting_known": false,
+    "pre_guard_peak_hour_units_estimated": 9791.592857142858,
+    "post_guard_peak_hour_units_estimated": 1027.107142857143,
+    "status": "LIMITATION: provider pricing does not clarify whether HTTP 429 attempts count toward the daily cap; no usage meter or invoice was available."
+  },
+  "tests": {
+    "status": "PASS_WITH_SKIPS",
+    "passed": 169,
+    "skipped": 6,
+    "subtests_passed": 29,
+    "compileall": "PASS",
+    "notebook_code_cells_compiled": 7,
+    "docker_compose_config": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "gitnexus_review": {
+    "scope_all": {
+      "changed_files": 7,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "reported_risk": "low"
+    },
+    "impact_targets_unresolved": [
+      "download_range",
+      "quota_wait_seconds",
+      "train_and_evaluate"
+    ],
+    "interpretation": "The graph did not resolve new T2H symbols; UNKNOWN was not treated as low risk. Direct text searches confirmed the entry points and callers are limited to the new modules, CLI, and tests; no existing producer, inference, or T1H model implementation files were edited."
+  },
+  "limitations": [
+    "Historical Forecast is a stitched valid-time series and does not preserve row-level initialization/run/lead vintage.",
+    "ERA5 is a reanalysis reference, not station truth.",
+    "The Open-Meteo daily accounting treatment for rejected 429 attempts is unverified; see provider_quota.json.",
+    "GitNexus does not resolve the new T2H symbols; graph output is corroborated with direct source searches and tests.",
+    "This is an offline model milestone; the separate streaming inference SLO has not been measured."
+  ],
+  "evidence_files": {
+    "quota": "provider_quota.json",
+    "raw_validation": "raw_validation.json",
+    "dataset_validation": "split_validation.json",
+    "candidate_results": "candidate_results.json",
+    "freeze": "freeze_manifest.json",
+    "reload_parity": "reload_parity.json",
+    "test_metrics": "test_metrics.json",
+    "unit_tests": "unit_regression_tests.json",
+    "checksum_inventory": "checksums.json"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "best_iteration": 1023,
+  "branch": "model/weather-forecast-xgboost-t2h-v1",
+  "dataset_identity": {
+    "archive_checksums": [
+      {
+        "bytes": 59527309,
+        "file": "dataset_split_TRAIN_part_01.zip",
+        "sha256": "365631d1640506d838221f3d48a2de399c658803adef60388be635a4bdca8a3d",
+        "status": "PASS"
+      },
+      {
+        "bytes": 59675395,
+        "file": "dataset_split_TRAIN_part_02.zip",
+        "sha256": "5ae8f4e1543d5f841233f97282309316968ca1573d3388c192482252f8ac99f7",
+        "status": "PASS"
+      },
+      {
+        "bytes": 60313002,
+        "file": "dataset_split_TRAIN_part_03.zip",
+        "sha256": "0a339dfba58752dd9c837c08360b4bac53aefb0f42cafb6e6d932d561f3be7b3",
+        "status": "PASS"
+      },
+      {
+        "bytes": 56113796,
+        "file": "dataset_split_TRAIN_part_04.zip",
+        "sha256": "29383925648da37a9a937b67ab25c9937feac13a3daffa1997f33897f5b8879a",
+        "status": "PASS"
+      },
+      {
+        "bytes": 67880111,
+        "file": "dataset_split_VALIDATION.zip",
+        "sha256": "5eb3cce832d2fbfe456c69ca5de2620d65a695645583971ffd79b9e30cafc2cd",
+        "status": "PASS"
+      },
+      {
+        "bytes": 67826330,
+        "file": "dataset_split_TEST.zip",
+        "sha256": "a6ddec3b8574654f3f3178061efd900361e563a30463948ad2bc665f6ce83ee8",
+        "status": "PASS"
+      }
+    ],
+    "branch": "model/weather-forecast-xgboost-t2h-v1",
+    "dataset_manifest_sha256": "c2c725ecd4eb5383baf01a6203ef7f5586ee2907a8325f3aa81698633646837b",
+    "dataset_version": "20261003T070520Z-xgb-t2h-v1-1",
+    "duplicates": 0,
+    "feature_count": 73,
+    "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+    "feature_null_nan_inf_rows": 0,
+    "git_commit": "28d6b569f7ba9a883ce294edde67ce746dc4ee67",
+    "label_null_nan_inf_rows": 0,
+    "locations_by_split": {
+      "TEST": 63,
+      "TRAIN": 63,
+      "VALIDATION": 63
+    },
+    "parquet_checksums_and_footers": "PASS",
+    "parquet_partition_count": 189,
+    "rows_by_split": {
+      "TEST": 551880,
+      "TRAIN": 2207394,
+      "VALIDATION": 553392
+    },
+    "source_contract_sha256": "b47a33200c9153d1ee98bfaaafe7df3bf400512172a2ad3382206a7d7b765db2",
+    "status": "PASS",
+    "target_location_mismatches": 0,
+    "target_offset_seconds": 7200,
+    "target_offset_violations": 0,
+    "test_values_read": false,
+    "total_rows": 3312666
+  },
+  "drive_path": "/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/",
+  "final_rounds": 1024,
+  "freeze_time": "2026-10-03T12:38:44.982055Z",
+  "git_commit": "28d6b569f7ba9a883ce294edde67ce746dc4ee67",
+  "gpu": "Tesla T4",
+  "local_vs_colab_comparison": "CONSISTENT",
+  "model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+  "model_size_bytes": 27726327,
+  "persistence_test_metrics": {
+    "bias": -0.6878705485770692,
+    "mae": 1.3881604645877261,
+    "mean_error": -0.6878705485770692,
+    "n": 551880,
+    "r2": 0.8486030285482984,
+    "rmse": 1.792127560786997
+  },
+  "reload_parity": {
+    "feature_count": 73,
+    "feature_names_match": true,
+    "max_absolute_prediction_difference": 0.0,
+    "parity_definition": "Both in-memory and JSON-reloaded boosters use the final-fit device before comparing identical VALIDATION rows.",
+    "parity_device": "cuda",
+    "sample_rows": 25000,
+    "serialized_model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+    "split": "VALIDATION",
+    "status": "PASS",
+    "tolerance": 1e-06
+  },
+  "run_id": "20261003T122405Z-xgb-t2h-v1-1-colab",
+  "status": "CANONICAL_PASS",
+  "test_first_read_time": "2026-10-03T12:39:48.544428Z",
+  "test_metrics": {
+    "bias": 0.12183066821922606,
+    "mae": 0.6559469872716113,
+    "mean_error": 0.12183066821922606,
+    "n": 551880,
+    "r2": 0.963631716366233,
+    "rmse": 0.87835833686549
+  },
+  "test_read_count": 1,
+  "winner": "gpu_d8_regularized"
+}

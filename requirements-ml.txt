@@ -4,3 +4,4 @@ pyarrow
 xgboost
 scikit-learn
 matplotlib
+httpx

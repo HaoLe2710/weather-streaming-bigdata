@@ -62,6 +62,8 @@ checkpoints/
 artifacts/modeling/
 results/modeling/**/test_predictions.parquet
 results/modeling/**/weather_forecast_xgboost_v1.json
+results/modeling-t2h/**/test_predictions.parquet
+results/modeling-t2h/**/weather_forecast_xgboost_t2h*.json
 
 # =========================
 # Node

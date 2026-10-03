@@ -1,0 +1,218 @@
+{
+  "algorithm": "SHA-256",
+  "artifact_policy": {
+    "checksums_file_excludes_itself": true,
+    "external_model_artifact": "/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json",
+    "external_prediction_artifact": "/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/test_predictions.parquet",
+    "tracked_evidence": "Small JSON/CSV evidence is copied into Git under results/modeling-t2h/<RUN_ID>/",
+    "transfer_archive_excluded": true
+  },
+  "files": [
+    {
+      "bytes": 1899,
+      "kind": "tracked_evidence_artifact",
+      "path": "candidate_results.csv",
+      "sha256": "f3c78f500c755b9c053de4112a78db589779efbb3d76d9be081ccafd729e1bae"
+    },
+    {
+      "bytes": 4181,
+      "kind": "tracked_evidence_artifact",
+      "path": "candidate_results.json",
+      "sha256": "c562cdd4e37dfed9f573b8b744aa9efb7dd4bdaf6e862d7ad0b4db31a5ebee70"
+    },
+    {
+      "bytes": 3991,
+      "kind": "tracked_evidence_artifact",
+      "path": "canonical_colab_summary.json",
+      "sha256": "97c8086799ec7bab92374ae1d9ff6eb1307b4b5ef591366ba587a777400c62b6"
+    },
+    {
+      "bytes": 3777,
+      "kind": "tracked_evidence_artifact",
+      "path": "canonical_model_manifest.json",
+      "sha256": "1e8083bfef80c632b293c8c543acd4eadcfd4e57211ad949474786970270250b"
+    },
+    {
+      "bytes": 2480,
+      "kind": "tracked_evidence_artifact",
+      "path": "colab_environment.json",
+      "sha256": "8479cb141f4a795c1d39423fa84865e277243c303b4b17a544aba76d2ff28fbe"
+    },
+    {
+      "bytes": 2175,
+      "kind": "tracked_evidence_artifact",
+      "path": "dataset_identity.json",
+      "sha256": "d7e830bc1b5645823ce39056befd6cee6fbb442c77d47442e3ee776c751430de"
+    },
+    {
+      "bytes": 131922,
+      "kind": "tracked_evidence_artifact",
+      "path": "dataset_manifest.json",
+      "sha256": "c2c725ecd4eb5383baf01a6203ef7f5586ee2907a8325f3aa81698633646837b"
+    },
+    {
+      "bytes": 551,
+      "kind": "tracked_evidence_artifact",
+      "path": "dataset_validation.json",
+      "sha256": "661cdae18f94eeaf8c2b711e03f516daa5a4a4d8576ce558ba665c84a564eab4"
+    },
+    {
+      "bytes": 8556,
+      "kind": "tracked_evidence_artifact",
+      "path": "distribution_comparison.json",
+      "sha256": "7a85555247043c5499918120220301634b4e6fab96d93d358db34512c1b64748"
+    },
+    {
+      "bytes": 3439,
+      "kind": "tracked_evidence_artifact",
+      "path": "feature_contract.json",
+      "sha256": "65a1e50b8718c9832e279e4dbe0b69743c45ba077a701fc7ecf5c797191a7420"
+    },
+    {
+      "bytes": 7791,
+      "kind": "tracked_evidence_artifact",
+      "path": "feature_importance.json",
+      "sha256": "174ccbc825838db9711d38666c2db364b74a57a4222751b62e2e7ba028bbf2f4"
+    },
+    {
+      "bytes": 2038,
+      "kind": "tracked_evidence_artifact",
+      "path": "feature_list.json",
+      "sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2"
+    },
+    {
+      "bytes": 860,
+      "kind": "tracked_evidence_artifact",
+      "path": "feature_validation.json",
+      "sha256": "70b8ca2b902da64bcbe4befc21ce3fdc1157c2336e21984038a56bc5615b3f6e"
+    },
+    {
+      "bytes": 1837,
+      "kind": "tracked_evidence_artifact",
+      "path": "freeze_manifest.json",
+      "sha256": "2f810c62c973a7ae860ad4eec60e67c45fb75e7f4d86b684cd08214d92e0f1d8"
+    },
+    {
+      "bytes": 588731,
+      "kind": "tracked_evidence_artifact",
+      "path": "live_forecast_probe.json",
+      "sha256": "d29d763921bce797c411579e0ed312711a71d2d452a1cc0cff6621fa860e2bb4"
+    },
+    {
+      "bytes": 3071,
+      "kind": "tracked_evidence_artifact",
+      "path": "local_vs_colab_comparison.json",
+      "sha256": "cbfb575631825c2350f4a0f729a8aa6415b8ccc4dd8d3cd7fc6ca813915cc6ea"
+    },
+    {
+      "bytes": 3310,
+      "kind": "tracked_evidence_artifact",
+      "path": "model_manifest.json",
+      "sha256": "bcc64733e279b6c665f1450f7d4eecbc30acbd65cc09e838f9045e6ce92d9e0d"
+    },
+    {
+      "bytes": 546,
+      "kind": "tracked_evidence_artifact",
+      "path": "model_manifest_validation.json",
+      "sha256": "edd07139a07deb5c7d689bd1a73f584c9eff99db0e22ca2a97eb5c952a95bade"
+    },
+    {
+      "bytes": 198,
+      "kind": "tracked_evidence_artifact",
+      "path": "parquet_read_compatibility.json",
+      "sha256": "078e5e27bfaeb625ece914cd7928eddac8dc40ed4160e77d879d3543f85942ea"
+    },
+    {
+      "bytes": 9970,
+      "kind": "tracked_evidence_artifact",
+      "path": "per_location_metrics.csv",
+      "sha256": "b47273cb85abe46474b53bc4fb35a8e9bdd6fabd6ae2e723a7b09dfbbf22e299"
+    },
+    {
+      "bytes": 25603,
+      "kind": "tracked_evidence_artifact",
+      "path": "per_location_metrics.json",
+      "sha256": "a09d9137a50a955ef254d02d3f364d8be5c5b1ef21fe28e229df113dfb4aed3d"
+    },
+    {
+      "bytes": 426,
+      "kind": "tracked_evidence_artifact",
+      "path": "persistence_validation.json",
+      "sha256": "d1685af23075272ec6f096e38ba72db4dbd7a6b446e83229d68b797b02054fa4"
+    },
+    {
+      "bytes": 7760,
+      "kind": "tracked_evidence_artifact",
+      "path": "provider_audit.json",
+      "sha256": "60684d588761667b63eedcc2397542ca14ef650cf0d879de3681108aafc3ce54"
+    },
+    {
+      "bytes": 77494,
+      "kind": "tracked_evidence_artifact",
+      "path": "raw_validation.json",
+      "sha256": "32da17437e5ad26ea07f887ffe7b47d66c9be5f5b32c5fef1bb4c7c0e363b292"
+    },
+    {
+      "bytes": 454,
+      "kind": "tracked_evidence_artifact",
+      "path": "reload_parity.json",
+      "sha256": "2555b3a0ea4d0da7615121e67a6c46e1046ac036a3ac7edcf193bf6d89ab60c0"
+    },
+    {
+      "bytes": 1165,
+      "kind": "tracked_evidence_artifact",
+      "path": "runtime_summary.json",
+      "sha256": "0b7211ca0d5a3ab35d719d44a304efddf190570326b6c33a33d5111152ea64f4"
+    },
+    {
+      "bytes": 5769,
+      "kind": "tracked_evidence_artifact",
+      "path": "source_alignment.json",
+      "sha256": "892b818cd7ac910ad1df32af0bc55ebea5dae25a92bcdff1d7f303ca9ea9816e"
+    },
+    {
+      "bytes": 5504,
+      "kind": "tracked_evidence_artifact",
+      "path": "source_contract.json",
+      "sha256": "b47a33200c9153d1ee98bfaaafe7df3bf400512172a2ad3382206a7d7b765db2"
+    },
+    {
+      "bytes": 6937,
+      "kind": "tracked_evidence_artifact",
+      "path": "split_validation.json",
+      "sha256": "90f27800e41b11605ab5565d2b8c0f918bcd081deed8ea2c770cb597078d9b64"
+    },
+    {
+      "bytes": 7256,
+      "kind": "tracked_evidence_artifact",
+      "path": "temporal_diagnostics.json",
+      "sha256": "6524a767da3b1f54225742693b82cec522435b7b221cc7b13ae2c9bb24c26ae1"
+    },
+    {
+      "bytes": 1275,
+      "kind": "tracked_evidence_artifact",
+      "path": "test_metrics.json",
+      "sha256": "1f2de4cc68305fff6a38e7b9c4c7772c6e1b858e5b38cf33c59049fcfc055b0e"
+    },
+    {
+      "bytes": 8418728,
+      "external_path": "/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/test_predictions.parquet",
+      "kind": "external_prediction_artifact",
+      "path": "test_predictions.parquet",
+      "sha256": "d01c16e3c28ced7159a86bab936e4a02e516abec626d4a3a7adc72bb8ebb0f53"
+    },
+    {
+      "bytes": 27726327,
+      "external_path": "/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json",
+      "kind": "external_model_artifact",
+      "path": "weather_forecast_xgboost_t2h_v1_1.json",
+      "sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a"
+    },
+    {
+      "bytes": 1681,
+      "kind": "tracked_evidence_artifact",
+      "path": "winner_selection.json",
+      "sha256": "7c61da79f1544fcac01feadd239434d29d4386ceac378aa3e861ee08f8283f21"
+    }
+  ]
+}

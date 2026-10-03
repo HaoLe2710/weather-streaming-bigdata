@@ -1,0 +1,38 @@
+{
+  "actual_candidate_device": "cuda",
+  "actual_final_device": "cuda",
+  "candidate_search_seconds": 2.0351705999928527,
+  "completed_at_utc": "2026-10-03T09:10:54.706488Z",
+  "configured_max_boost_rounds": 1500,
+  "cpu_count": 12,
+  "device_probe": {
+    "accelerator_type": "NVIDIA GPU",
+    "device": "cuda",
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3050 Laptop GPU"
+    ],
+    "nvidia_smi_available": true,
+    "nvidia_smi_error": null,
+    "xgboost_gpu_probe_error": null,
+    "xgboost_gpu_probe_passed": true,
+    "xgboost_version": "3.4.1"
+  },
+  "early_stopping_rounds": 80,
+  "final_device_fallback_reason": null,
+  "final_fit_elapsed_seconds_including_data_release": 49.474897200008854,
+  "final_fit_seconds": 47.56833739999274,
+  "memory_note": "TEST is excluded from all candidate and final-fit data structures until the persisted freeze point.",
+  "nthread": 8,
+  "random_seed": 42,
+  "run_id": "20261003T070520Z-xgb-t2h-v1-1",
+  "started_at_utc": "2026-10-03T09:09:54.422816Z",
+  "versions": {
+    "httpx": "0.28.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "pyarrow": "25.0.1",
+    "python": "3.13.14",
+    "scikit_learn": "1.9.1",
+    "xgboost": "3.4.1"
+  }
+}

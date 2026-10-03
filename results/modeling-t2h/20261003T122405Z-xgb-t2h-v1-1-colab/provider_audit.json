@@ -1,0 +1,133 @@
+{
+  "audit_id": "20261003T070520Z-xgb-t2h-v1-1",
+  "audit_created_at_utc": "2026-10-03T07:05:20Z",
+  "status": "PASS_WITH_LIMITATIONS",
+  "provider": "Open-Meteo",
+  "official_documentation": {
+    "historical_forecast": "https://open-meteo.com/en/docs/historical-forecast-api",
+    "forecast": "https://open-meteo.com/en/docs",
+    "ecmwf_forecast": "https://open-meteo.com/en/docs/ecmwf-api",
+    "historical_weather": "https://open-meteo.com/en/docs/historical-weather-api",
+    "single_runs": "https://open-meteo.com/en/docs/single-runs-api"
+  },
+  "endpoints": {
+    "historical_forecast": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+    "live_forecast": "https://api.open-meteo.com/v1/forecast",
+    "historical_weather": "https://archive-api.open-meteo.com/v1/archive"
+  },
+  "model_options": [
+    {
+      "model_id": "ecmwf_ifs",
+      "provider_model": "ECMWF IFS HRES 9 km",
+      "region": "global",
+      "official_available_since": "2017-01-01",
+      "native_temporal_resolution": "hourly for the first 90 forecast hours",
+      "probe_result": "accepted by both Historical Forecast and Forecast API; returned non-null data for 63 nationwide locations on 2020-01-01 and 2025-12-31"
+    },
+    {
+      "model_id": "ecmwf_ifs025",
+      "provider_model": "ECMWF IFS 0.25 degree open-data",
+      "region": "global",
+      "official_available_since": "2024-02-03",
+      "probe_result": "accepted, but returned 24 hourly timestamps with null weather values at Hanoi for 2019-01-01, 2022-01-01, and 2024-01-01; usable data was present by 2024-06-01"
+    },
+    {
+      "model_id": "best_match",
+      "provider_model": "location- and time-dependent automatic selection",
+      "probe_result": "not selected for the training source because the response does not identify the selected model"
+    },
+    {
+      "model_id": "ecmwf_ifs_hres",
+      "probe_result": "rejected by the API as an invalid model identifier; the accepted identifier for the ECMWF IFS HRES selection is ecmwf_ifs"
+    }
+  ],
+  "chosen_date_range": {
+    "start_date_inclusive": "2020-01-01",
+    "end_date_inclusive": "2025-12-31",
+    "rationale": "Six contiguous calendar years preserve the established 2020-2025 modeling interval and allow TRAIN before 2024, VALIDATION in 2024, and TEST in 2025. The selected global IFS HRES model is documented from 2017-01-01."
+  },
+  "nationwide_probe": {
+    "catalog": "historical/locations.json",
+    "dataset_id": "NATIONWIDE_63",
+    "unique_location_ids": 63,
+    "valid_coordinates": 63,
+    "batch_request_count_per_source_date": 1,
+    "requested_coordinates_per_batch": 63,
+    "response_count": 63,
+    "tested_dates": ["2020-01-01", "2025-12-31"],
+    "historical_forecast": {
+      "model": "ecmwf_ifs",
+      "hours_per_location": 24,
+      "requested_variables_present_at_all_locations": true,
+      "null_values": 0,
+      "timezone": "GMT",
+      "utc_offset_seconds": 0,
+      "ordering_cross_check": "Batch result order and values matched individual coordinate requests at indexes 0, 31, and 62 for the 2020-01-01 probe."
+    },
+    "historical_weather_target": {
+      "model": "era5",
+      "variable": "temperature_2m",
+      "hours_per_location": 24,
+      "null_values": 0,
+      "timezone": "GMT",
+      "utc_offset_seconds": 0,
+      "ordering_cross_check": "Batch result order and values matched individual coordinate requests at indexes 0, 31, and 62 for the 2020-01-01 probe."
+    }
+  },
+  "forecast_variables": [
+    {"api_name": "temperature_2m", "unit": "°C", "valid_time_semantics": "instantaneous"},
+    {"api_name": "relative_humidity_2m", "unit": "%", "valid_time_semantics": "instantaneous"},
+    {"api_name": "precipitation", "unit": "mm", "valid_time_semantics": "preceding-hour sum"},
+    {"api_name": "pressure_msl", "unit": "hPa", "valid_time_semantics": "instantaneous"},
+    {"api_name": "wind_speed_10m", "unit": "km/h", "valid_time_semantics": "instantaneous"},
+    {"api_name": "wind_gusts_10m", "unit": "km/h", "valid_time_semantics": "preceding 3-hour maximum in the ECMWF API documentation for the selected IFS family"},
+    {"api_name": "weather_code", "unit": "WMO code", "valid_time_semantics": "instantaneous derived weather category"}
+  ],
+  "current_live_alignment_probe": {
+    "probe_date_utc": "2026-10-03",
+    "endpoint": "https://api.open-meteo.com/v1/forecast",
+    "locations": 63,
+    "horizon": "24 hourly timestamps per location",
+    "comparison": "models omitted (automatic Best Match) versus models=ecmwf_ifs",
+    "coordinate_mismatches": 0,
+    "value_mismatches_across_all_seven_variables_and_returned_hours": 0,
+    "model_identity_exposed_in_response": false,
+    "interpretation": "For this probe the automatic Forecast API output exactly matched the explicitly pinned ECMWF IFS output at all 63 catalog coordinates. This is evidence of current compatibility, not a guarantee that Best Match remains fixed."
+  },
+  "vintage_audit": {
+    "historical_forecast_description": "Provider documentation says the first hours of successive model runs are stitched into a continuous hourly time series.",
+    "per_row_initialization_time_exposed": false,
+    "per_row_model_run_exposed": false,
+    "per_row_forecast_lead_exposed": false,
+    "exact_as_issued_reconstruction_proven": false,
+    "single_runs_alternative": "Single Runs preserves individual run structure and identifies a UTC initialization time, but official coverage for ECMWF IFS HRES starts in March 2024, so it cannot supply the full 2020-2025 interval.",
+    "limitation": "Historical Forecast predictors are forecast-product-aligned and explicitly model-family-pinned, but their exact historical initialization/vintage cannot be reconstructed for each row."
+  },
+  "target_contract_comparison": {
+    "contract_a": {
+      "predictors": "Historical Forecast ECMWF IFS HRES",
+      "target": "same Historical Forecast product at feature_time + 2h",
+      "meaning": "Learns to reproduce a future value from the provider forecast product, not a realized-weather reference.",
+      "causal_and_evaluation_note": "Timestamp causality can be enforced, but the target is model output and does not independently represent realized weather; historical run vintage remains absent."
+    },
+    "contract_b": {
+      "predictors": "Historical Forecast ECMWF IFS HRES",
+      "target": "Historical Weather API ERA5 temperature_2m at feature_time + 2h",
+      "meaning": "Predicts a later ERA5 reanalysis temperature reference from forecast-product-aligned inputs.",
+      "causal_and_evaluation_note": "Target is a future valid-time label and never a feature. ERA5 is a model-based reanalysis reference informed by observations, not station truth; it is available retrospectively for evaluation."
+    },
+    "canonical_decision": "B"
+  },
+  "decision": {
+    "status": "SOURCE_CONTRACT_ACCEPTED_WITH_LIMITATIONS",
+    "proceed_to_full_download": true,
+    "proceed_to_training": true,
+    "reason": "Both endpoints returned the required hourly data and units for all 63 canonical locations at the selected interval boundaries. A common global ECMWF IFS model identifier is accepted by Historical Forecast and live Forecast; the current live automatic selection matched that explicit model in a nationwide probe. Contract B defines a clear future reference target.",
+    "required_limitations": [
+      "The Historical Forecast row-level run initialization/vintage and lead time are not exposed.",
+      "The live Forecast Best Match model ID is not exposed and can change; future T2H inference should request models=ecmwf_ifs explicitly.",
+      "ECMWF IFS model versions change over the six-year period.",
+      "ERA5 is a reanalysis target reference, not direct station truth."
+    ]
+  }
+}

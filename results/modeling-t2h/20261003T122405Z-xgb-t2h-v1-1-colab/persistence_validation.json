@@ -1,0 +1,14 @@
+{
+  "baseline_id": "PERSISTENCE_T2H_V1_1",
+  "definition": "temperature_c at feature_time t is held unchanged as prediction for target_temperature_2h at t+2h",
+  "metrics": {
+    "mae": 1.453837963644283,
+    "mean_error": -0.7615142608294135,
+    "n": 553392,
+    "r2": 0.8391473711479527,
+    "rmse": 1.8651861753316874
+  },
+  "prediction_minus_target_bias": -0.7615142608294135,
+  "rows": 553392,
+  "split": "VALIDATION"
+}

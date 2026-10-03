@@ -1,0 +1,45 @@
+{
+  "run_id": "20261003T070520Z-xgb-t2h-v1-1",
+  "created_at_utc": "2026-10-03T09:20:18Z",
+  "status": "PASS_WITH_SKIPS",
+  "commands": [
+    {
+      "command": ".venv/Scripts/python.exe -m pytest -q",
+      "status": "PASS",
+      "passed": 169,
+      "skipped": 6,
+      "subtests_passed": 29
+    },
+    {
+      "command": ".venv/Scripts/python.exe -m pytest tests/test_forecast_t2h_v1_1.py -k serialized_model_reload_parity_uses_the_same_predictor_device -q",
+      "status": "PASS",
+      "passed": 1
+    },
+    {
+      "command": ".venv/Scripts/python.exe -m pytest tests/test_forecast_t2h_v1_1.py -k daily_quota_guard -q",
+      "status": "PASS",
+      "passed": 2
+    },
+    {
+      "command": ".venv/Scripts/python.exe -m compileall -q historical ml spark tests",
+      "status": "PASS"
+    },
+    {
+      "command": "compile notebook JSON and every code cell",
+      "status": "PASS",
+      "code_cells": 7
+    },
+    {
+      "command": "docker compose config",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --check HEAD",
+      "status": "PASS"
+    }
+  ],
+  "notes": [
+    "The full repository suite includes the targeted reload-parity and daily-quota regressions.",
+    "Skipped-test reasons were not expanded in this run."
+  ]
+}

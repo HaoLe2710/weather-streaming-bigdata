@@ -1,0 +1,68 @@
+{
+  "status": "PASS",
+  "dataset_version": "20261003T070520Z-xgb-t2h-v1-1",
+  "dataset_manifest_sha256": "c2c725ecd4eb5383baf01a6203ef7f5586ee2907a8325f3aa81698633646837b",
+  "source_contract_sha256": "b47a33200c9153d1ee98bfaaafe7df3bf400512172a2ad3382206a7d7b765db2",
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "total_rows": 3312666,
+  "rows_by_split": {
+    "TRAIN": 2207394,
+    "VALIDATION": 553392,
+    "TEST": 551880
+  },
+  "locations_by_split": {
+    "TRAIN": 63,
+    "VALIDATION": 63,
+    "TEST": 63
+  },
+  "feature_count": 73,
+  "parquet_partition_count": 189,
+  "target_offset_seconds": 7200,
+  "duplicates": 0,
+  "target_offset_violations": 0,
+  "target_location_mismatches": 0,
+  "feature_null_nan_inf_rows": 0,
+  "label_null_nan_inf_rows": 0,
+  "archive_checksums": [
+    {
+      "file": "dataset_split_TRAIN_part_01.zip",
+      "bytes": 59527309,
+      "sha256": "365631d1640506d838221f3d48a2de399c658803adef60388be635a4bdca8a3d",
+      "status": "PASS"
+    },
+    {
+      "file": "dataset_split_TRAIN_part_02.zip",
+      "bytes": 59675395,
+      "sha256": "5ae8f4e1543d5f841233f97282309316968ca1573d3388c192482252f8ac99f7",
+      "status": "PASS"
+    },
+    {
+      "file": "dataset_split_TRAIN_part_03.zip",
+      "bytes": 60313002,
+      "sha256": "0a339dfba58752dd9c837c08360b4bac53aefb0f42cafb6e6d932d561f3be7b3",
+      "status": "PASS"
+    },
+    {
+      "file": "dataset_split_TRAIN_part_04.zip",
+      "bytes": 56113796,
+      "sha256": "29383925648da37a9a937b67ab25c9937feac13a3daffa1997f33897f5b8879a",
+      "status": "PASS"
+    },
+    {
+      "file": "dataset_split_VALIDATION.zip",
+      "bytes": 67880111,
+      "sha256": "5eb3cce832d2fbfe456c69ca5de2620d65a695645583971ffd79b9e30cafc2cd",
+      "status": "PASS"
+    },
+    {
+      "file": "dataset_split_TEST.zip",
+      "bytes": 67826330,
+      "sha256": "a6ddec3b8574654f3f3178061efd900361e563a30463948ad2bc665f6ce83ee8",
+      "status": "PASS"
+    }
+  ],
+  "parquet_checksums_and_footers": "PASS",
+  "test_values_read": false,
+  "git_commit": "28d6b569f7ba9a883ce294edde67ce746dc4ee67",
+  "branch": "model/weather-forecast-xgboost-t2h-v1"
+}
