@@ -1,0 +1,9 @@
+{
+  "acceptance_policy": "This run is excluded from acceptance counts; corrected replay was rerun and passed.",
+  "cause": "Spark Kafka BinaryType surfaced as bytearray; parser accepted bytes only.",
+  "fix": "Parser now decodes bytes, bytearray, and memoryview; regression test test_spark_binary_values_decode_as_json passes.",
+  "malformed_kafka_json_rows": 4599,
+  "phase": "initial parser smoke run",
+  "source_rows": 4599,
+  "status": "INVALIDATED_BEFORE_ACCEPTANCE"
+}

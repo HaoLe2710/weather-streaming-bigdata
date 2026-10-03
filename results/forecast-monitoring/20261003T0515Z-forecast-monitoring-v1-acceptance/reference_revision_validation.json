@@ -1,0 +1,10 @@
+{
+  "canonical_policy": "first accepted payload wins",
+  "evaluated_evidence_revision_test": "ForecastMonitoringContractTests.test_evaluated_evidence_is_immutable_across_revisions_and_restarts",
+  "identical_duplicate_rows_ignored": 1953,
+  "old_and_new_payload_sha256_persisted": true,
+  "revision_fixture_test": "ForecastMonitoringArchiveTests.test_identical_duplicate_is_ignored_and_conflict_preserves_first_reference",
+  "revision_status": "REFERENCE_REVISION_DETECTED",
+  "runtime_conflict_rows": 0,
+  "status": "PASS"
+}

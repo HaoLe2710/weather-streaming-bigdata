@@ -104,3 +104,5 @@ The publisher API median/p95 latencies over the four cycles were 1.2854/1.6183 s
 The persisted JSON evidence includes provider semantics, schema and units, catalog coordinates, bootstrap continuity, safe-hour selection, future filtering, same-hour polls, publisher restart, live inference, forecast statistics, runtime/resources, replay regression, unit/regression results, and checksums. Raw provider payloads, model files, Delta tables, and checkpoints are not copied into the evidence directory.
 
 This phase does not measure forecast accuracy because target-time observations have not yet been joined and evaluated. Forecast monitoring and per-location error metrics belong to Forecast Monitoring & Evaluation V1. The archive/live model-source distribution difference remains visible in all acceptance reports.
+
+The follow-on [Forecast Monitoring & Evaluation V1](FORECAST_MONITORING_EVALUATION_V1.md) archives these hourly inputs durably and scores a forecast only after its same-source target hour is eligible. Open-Meteo Forecast API values remain model-derived references, not station measurements.

@@ -1,0 +1,37 @@
+{
+  "components": [
+    {
+      "name": "hourly observation archive",
+      "path": "/opt/project/data/streaming/weather_hourly_observations_v1/observations"
+    },
+    {
+      "name": "frozen inference forecasts",
+      "path": "/opt/project/data/streaming/weather_forecast_xgboost_v1/forecasts"
+    },
+    {
+      "name": "forecast evaluator",
+      "source": "spark/jobs/weather_forecast_monitoring.py"
+    },
+    {
+      "name": "canonical evaluation Delta",
+      "path": "/opt/project/data/streaming/weather_forecast_evaluation_v1/evaluations"
+    },
+    {
+      "name": "hourly and rolling metrics",
+      "paths": [
+        "/opt/project/data/streaming/weather_forecast_evaluation_v1/hourly_metrics",
+        "/opt/project/data/streaming/weather_forecast_evaluation_v1/rolling_global_metrics",
+        "/opt/project/data/streaming/weather_forecast_evaluation_v1/rolling_location_metrics"
+      ]
+    },
+    {
+      "name": "isolated checkpoint",
+      "path": "/opt/project/data/checkpoints/weather_forecast_monitoring_v1"
+    }
+  ],
+  "frozen_model_changed": false,
+  "phase": "Forecast Monitoring & Evaluation V1",
+  "retraining_or_tuning": false,
+  "runtime_delta_storage_preserved_in_docker_volume": true,
+  "status": "PASS"
+}

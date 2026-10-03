@@ -1,0 +1,37 @@
+{
+  "live": {
+    "mae_skill_vs_persistence": -0.7291560766,
+    "model": {
+      "bias": -0.4748347812,
+      "mae": 0.5516831292,
+      "r2": 0.8831902097,
+      "rmse": 0.6244337401
+    },
+    "persistence": {
+      "bias": -0.0238095238,
+      "mae": 0.319047619,
+      "r2": 0.9435561419,
+      "rmse": 0.4340653158
+    },
+    "rmse_improvement_pct_vs_persistence": -43.8570918472,
+    "sample_count": 63
+  },
+  "prediction": "temperature_c at feature_time",
+  "replay": {
+    "model": {
+      "bias": -0.0153475513,
+      "mae": 0.2163420706,
+      "r2": 0.9936963631,
+      "rmse": 0.301955221
+    },
+    "persistence": {
+      "bias": -0.0307742144,
+      "mae": 0.6314868805,
+      "r2": 0.9493658943,
+      "rmse": 0.8557925872
+    },
+    "sample_count": 3087
+  },
+  "shared_reference": "same target_time reference as XGBoost",
+  "status": "PASS"
+}

@@ -76,6 +76,7 @@ services:
       - ./data:/opt/project/history-data
       - ./results:/opt/project/results
       - ./ml:/opt/project/ml
+      - ./monitoring:/opt/project/monitoring:ro
       - ./tests:/opt/project/tests:ro
       - weather-data:/opt/project/data
 
@@ -109,6 +110,7 @@ services:
       - ./data:/opt/project/history-data
       - ./results:/opt/project/results
       - ./ml:/opt/project/ml
+      - ./monitoring:/opt/project/monitoring:ro
       - weather-data:/opt/project/data
 
   historical-downloader:

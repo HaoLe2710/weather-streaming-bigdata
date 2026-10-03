@@ -1,0 +1,2520 @@
+{
+  "live": {
+    "archive_reference_mode_counts": {
+      "LIVE_PROSPECTIVE": 1575,
+      "LIVE_SOURCE_BACKFILL": 63
+    },
+    "archive_rows": 6174,
+    "archive_source_counts": {
+      "NATIONWIDE_63_DELTA_REPLAY": 4536,
+      "OPEN_METEO_LIVE_HOURLY": 1638
+    },
+    "distinct_evaluation_ids": 63,
+    "distribution_summary": {
+      "humidity_pct": {
+        "count": 63,
+        "max": 100.0,
+        "mean": 91.746031746,
+        "min": 75.0,
+        "p50": 92.0,
+        "p95": 99.0
+      },
+      "model_error_c": {
+        "count": 63,
+        "max": 0.9321048737,
+        "mean": -0.4748347812,
+        "min": -1.174181366,
+        "p50": -0.5191875458,
+        "p95": 0.2991750717
+      },
+      "model_prediction_temperature_c": {
+        "count": 63,
+        "max": 28.0808124542,
+        "mean": 25.674371568,
+        "min": 15.725818634,
+        "p50": 25.7845306396,
+        "p95": 27.4692495346
+      },
+      "persistence_error_c": {
+        "count": 63,
+        "max": 1.4,
+        "mean": -0.0238095238,
+        "min": -0.8,
+        "p50": -0.1,
+        "p95": 0.69
+      },
+      "persistence_prediction_temperature_c": {
+        "count": 63,
+        "max": 28.8,
+        "mean": 26.1253968254,
+        "min": 16.1,
+        "p50": 26.2,
+        "p95": 28.0
+      },
+      "precipitation_mm": {
+        "count": 63,
+        "max": 1.5,
+        "mean": 0.0523809524,
+        "min": 0.0,
+        "p50": 0.0,
+        "p95": 0.3
+      },
+      "pressure_hpa": {
+        "count": 63,
+        "max": 1018.1,
+        "mean": 1013.5253968254,
+        "min": 1011.5,
+        "p50": 1013.5,
+        "p95": 1015.82
+      },
+      "reference_temperature_c": {
+        "count": 63,
+        "max": 28.6,
+        "mean": 26.1492063492,
+        "min": 16.9,
+        "p50": 26.2,
+        "p95": 28.0
+      },
+      "temperature_c": {
+        "count": 63,
+        "max": 28.6,
+        "mean": 26.1492063492,
+        "min": 16.9,
+        "p50": 26.2,
+        "p95": 28.0
+      },
+      "weather_code": {
+        "count": 63,
+        "max": 80.0,
+        "mean": 8.1746031746,
+        "min": 0.0,
+        "p50": 3.0,
+        "p95": 51.0
+      },
+      "wind_gust_kmh": {
+        "count": 63,
+        "max": 23.8,
+        "mean": 11.1365079365,
+        "min": 4.0,
+        "p50": 10.1,
+        "p95": 20.47
+      },
+      "wind_speed_kmh": {
+        "count": 63,
+        "max": 12.3,
+        "mean": 5.173015873,
+        "min": 0.4,
+        "p50": 4.4,
+        "p95": 10.78
+      }
+    },
+    "evaluation_mode_counts": {
+      "LIVE_SOURCE_BACKFILL": 63
+    },
+    "evaluation_rows": 63,
+    "evaluation_status_counts": {
+      "EVALUATED": 63
+    },
+    "feature_and_target_join_validation": {
+      "evaluated_rows": 63,
+      "feature_join_or_persistence_mismatches": 0,
+      "target_join_or_gate_mismatches": 0
+    },
+    "independent_metrics": {
+      "mae_skill_vs_persistence": -0.7291560766,
+      "model": {
+        "bias": -0.4748347812,
+        "mae": 0.5516831292,
+        "r2": 0.8831902097,
+        "rmse": 0.6244337401
+      },
+      "persistence": {
+        "bias": -0.0238095238,
+        "mae": 0.319047619,
+        "r2": 0.9435561419,
+        "rmse": 0.4340653158
+      },
+      "rmse_improvement_pct_vs_persistence": -43.8570918472,
+      "sample_count": 63
+    },
+    "locations_evaluated": 63,
+    "locations_model_mae_better": 13,
+    "locations_model_mae_equal_or_worse": 50,
+    "locations_tied": 0,
+    "per_location": {
+      "VN_BACGIANG": {
+        "mae_skill_vs_persistence": -3.000629425,
+        "model": {
+          "bias": -0.800125885,
+          "mae": 0.800125885,
+          "r2": null,
+          "rmse": 0.800125885
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -300.0629425049,
+        "sample_count": 1
+      },
+      "VN_BACKAN": {
+        "mae_skill_vs_persistence": -0.6067848206,
+        "model": {
+          "bias": -0.3213569641,
+          "mae": 0.3213569641,
+          "r2": null,
+          "rmse": 0.3213569641
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -60.6784820557,
+        "sample_count": 1
+      },
+      "VN_BACLIEU": {
+        "mae_skill_vs_persistence": -0.2480036418,
+        "model": {
+          "bias": -0.7488021851,
+          "mae": 0.7488021851,
+          "r2": null,
+          "rmse": 0.7488021851
+        },
+        "persistence": {
+          "bias": -0.6,
+          "mae": 0.6,
+          "r2": null,
+          "rmse": 0.6
+        },
+        "rmse_improvement_pct_vs_persistence": -24.8003641764,
+        "sample_count": 1
+      },
+      "VN_BACNINH": {
+        "mae_skill_vs_persistence": -5.8582267761,
+        "model": {
+          "bias": -0.6858226776,
+          "mae": 0.6858226776,
+          "r2": null,
+          "rmse": 0.6858226776
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -585.8226776123,
+        "sample_count": 1
+      },
+      "VN_BENTRE": {
+        "mae_skill_vs_persistence": -2.8146724701,
+        "model": {
+          "bias": -0.762934494,
+          "mae": 0.762934494,
+          "r2": null,
+          "rmse": 0.762934494
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -281.4672470093,
+        "sample_count": 1
+      },
+      "VN_BIENHOA": {
+        "mae_skill_vs_persistence": 0.4147655487,
+        "model": {
+          "bias": 0.5852344513,
+          "mae": 0.5852344513,
+          "r2": null,
+          "rmse": 0.5852344513
+        },
+        "persistence": {
+          "bias": 1.0,
+          "mae": 1.0,
+          "r2": null,
+          "rmse": 1.0
+        },
+        "rmse_improvement_pct_vs_persistence": 41.4765548706,
+        "sample_count": 1
+      },
+      "VN_BMT": {
+        "mae_skill_vs_persistence": -2.1879882813,
+        "model": {
+          "bias": -0.3187988281,
+          "mae": 0.3187988281,
+          "r2": null,
+          "rmse": 0.3187988281
+        },
+        "persistence": {
+          "bias": 0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -218.798828125,
+        "sample_count": 1
+      },
+      "VN_CAMAU": {
+        "mae_skill_vs_persistence": -0.2906656265,
+        "model": {
+          "bias": -1.0325325012,
+          "mae": 1.0325325012,
+          "r2": null,
+          "rmse": 1.0325325012
+        },
+        "persistence": {
+          "bias": -0.8,
+          "mae": 0.8,
+          "r2": null,
+          "rmse": 0.8
+        },
+        "rmse_improvement_pct_vs_persistence": -29.0665626526,
+        "sample_count": 1
+      },
+      "VN_CANTHO": {
+        "mae_skill_vs_persistence": -0.5204413278,
+        "model": {
+          "bias": -1.0643089294,
+          "mae": 1.0643089294,
+          "r2": null,
+          "rmse": 1.0643089294
+        },
+        "persistence": {
+          "bias": -0.7,
+          "mae": 0.7,
+          "r2": null,
+          "rmse": 0.7
+        },
+        "rmse_improvement_pct_vs_persistence": -52.0441327776,
+        "sample_count": 1
+      },
+      "VN_CAOBANG": {
+        "mae_skill_vs_persistence": 0.9690612793,
+        "model": {
+          "bias": -0.0154693604,
+          "mae": 0.0154693604,
+          "r2": null,
+          "rmse": 0.0154693604
+        },
+        "persistence": {
+          "bias": 0.5,
+          "mae": 0.5,
+          "r2": null,
+          "rmse": 0.5
+        },
+        "rmse_improvement_pct_vs_persistence": 96.9061279297,
+        "sample_count": 1
+      },
+      "VN_CAOLANH": {
+        "mae_skill_vs_persistence": -4.354057312,
+        "model": {
+          "bias": -0.5354057312,
+          "mae": 0.5354057312,
+          "r2": null,
+          "rmse": 0.5354057312
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -435.4057312012,
+        "sample_count": 1
+      },
+      "VN_DALAT": {
+        "mae_skill_vs_persistence": -0.4677267075,
+        "model": {
+          "bias": -1.174181366,
+          "mae": 1.174181366,
+          "r2": null,
+          "rmse": 1.174181366
+        },
+        "persistence": {
+          "bias": -0.8,
+          "mae": 0.8,
+          "r2": null,
+          "rmse": 0.8
+        },
+        "rmse_improvement_pct_vs_persistence": -46.7726707458,
+        "sample_count": 1
+      },
+      "VN_DANANG": {
+        "mae_skill_vs_persistence": 0.5549945831,
+        "model": {
+          "bias": -0.1780021667,
+          "mae": 0.1780021667,
+          "r2": null,
+          "rmse": 0.1780021667
+        },
+        "persistence": {
+          "bias": 0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": 55.499458313,
+        "sample_count": 1
+      },
+      "VN_DIENBIENPHU": {
+        "mae_skill_vs_persistence": -1.0988721848,
+        "model": {
+          "bias": -0.8395488739,
+          "mae": 0.8395488739,
+          "r2": null,
+          "rmse": 0.8395488739
+        },
+        "persistence": {
+          "bias": -0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": -109.8872184753,
+        "sample_count": 1
+      },
+      "VN_DONGHA": {
+        "mae_skill_vs_persistence": -0.2551498413,
+        "model": {
+          "bias": -0.2510299683,
+          "mae": 0.2510299683,
+          "r2": null,
+          "rmse": 0.2510299683
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -25.5149841309,
+        "sample_count": 1
+      },
+      "VN_DONGHOI": {
+        "mae_skill_vs_persistence": -1.7936916351,
+        "model": {
+          "bias": -0.558738327,
+          "mae": 0.558738327,
+          "r2": null,
+          "rmse": 0.558738327
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -179.3691635132,
+        "sample_count": 1
+      },
+      "VN_DONGXOAI": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.3233898163,
+          "mae": 0.3233898163,
+          "r2": null,
+          "rmse": 0.3233898163
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_GIANGHIA": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.3927677155,
+          "mae": 0.3927677155,
+          "r2": null,
+          "rmse": 0.3927677155
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_HAGIANG": {
+        "mae_skill_vs_persistence": 0.7720217024,
+        "model": {
+          "bias": -0.1595848083,
+          "mae": 0.1595848083,
+          "r2": null,
+          "rmse": 0.1595848083
+        },
+        "persistence": {
+          "bias": 0.7,
+          "mae": 0.7,
+          "r2": null,
+          "rmse": 0.7
+        },
+        "rmse_improvement_pct_vs_persistence": 77.2021702358,
+        "sample_count": 1
+      },
+      "VN_HAIDUONG": {
+        "mae_skill_vs_persistence": -4.2874565125,
+        "model": {
+          "bias": -0.5287456512,
+          "mae": 0.5287456512,
+          "r2": null,
+          "rmse": 0.5287456512
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -428.7456512451,
+        "sample_count": 1
+      },
+      "VN_HAIPHONG": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.688835907,
+          "mae": 0.688835907,
+          "r2": null,
+          "rmse": 0.688835907
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_HALONG": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.4114360809,
+          "mae": 0.4114360809,
+          "r2": null,
+          "rmse": 0.4114360809
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_HANOI": {
+        "mae_skill_vs_persistence": -6.1528968811,
+        "model": {
+          "bias": -0.7152896881,
+          "mae": 0.7152896881,
+          "r2": null,
+          "rmse": 0.7152896881
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -615.2896881103,
+        "sample_count": 1
+      },
+      "VN_HATINH": {
+        "mae_skill_vs_persistence": -2.1956424713,
+        "model": {
+          "bias": -0.6391284943,
+          "mae": 0.6391284943,
+          "r2": null,
+          "rmse": 0.6391284943
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -219.5642471313,
+        "sample_count": 1
+      },
+      "VN_HCM": {
+        "mae_skill_vs_persistence": -0.3250018529,
+        "model": {
+          "bias": -0.927501297,
+          "mae": 0.927501297,
+          "r2": null,
+          "rmse": 0.927501297
+        },
+        "persistence": {
+          "bias": -0.7,
+          "mae": 0.7,
+          "r2": null,
+          "rmse": 0.7
+        },
+        "rmse_improvement_pct_vs_persistence": -32.5001852853,
+        "sample_count": 1
+      },
+      "VN_HOABINH": {
+        "mae_skill_vs_persistence": -1.1278305054,
+        "model": {
+          "bias": -0.4255661011,
+          "mae": 0.4255661011,
+          "r2": null,
+          "rmse": 0.4255661011
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -112.7830505371,
+        "sample_count": 1
+      },
+      "VN_HUE": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.3262657166,
+          "mae": 0.3262657166,
+          "r2": null,
+          "rmse": 0.3262657166
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_HUNGYEN": {
+        "mae_skill_vs_persistence": -4.5117263794,
+        "model": {
+          "bias": -0.5511726379,
+          "mae": 0.5511726379,
+          "r2": null,
+          "rmse": 0.5511726379
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -451.1726379395,
+        "sample_count": 1
+      },
+      "VN_KONTUM": {
+        "mae_skill_vs_persistence": -4.1648254395,
+        "model": {
+          "bias": -0.5164825439,
+          "mae": 0.5164825439,
+          "r2": null,
+          "rmse": 0.5164825439
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -416.4825439453,
+        "sample_count": 1
+      },
+      "VN_LAICHAU": {
+        "mae_skill_vs_persistence": -7.88306427,
+        "model": {
+          "bias": -0.888306427,
+          "mae": 0.888306427,
+          "r2": null,
+          "rmse": 0.888306427
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -788.3064270019,
+        "sample_count": 1
+      },
+      "VN_LANGSON": {
+        "mae_skill_vs_persistence": -4.0809593201,
+        "model": {
+          "bias": -0.508095932,
+          "mae": 0.508095932,
+          "r2": null,
+          "rmse": 0.508095932
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -408.0959320068,
+        "sample_count": 1
+      },
+      "VN_LAOCAI": {
+        "mae_skill_vs_persistence": -6.0787162781,
+        "model": {
+          "bias": -0.7078716278,
+          "mae": 0.7078716278,
+          "r2": null,
+          "rmse": 0.7078716278
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -607.8716278076,
+        "sample_count": 1
+      },
+      "VN_LONGXUYEN": {
+        "mae_skill_vs_persistence": -1.1331621806,
+        "model": {
+          "bias": -0.6399486542,
+          "mae": 0.6399486542,
+          "r2": null,
+          "rmse": 0.6399486542
+        },
+        "persistence": {
+          "bias": -0.3,
+          "mae": 0.3,
+          "r2": null,
+          "rmse": 0.3
+        },
+        "rmse_improvement_pct_vs_persistence": -113.3162180583,
+        "sample_count": 1
+      },
+      "VN_MYTHO": {
+        "mae_skill_vs_persistence": -1.164853096,
+        "model": {
+          "bias": -0.8659412384,
+          "mae": 0.8659412384,
+          "r2": null,
+          "rmse": 0.8659412384
+        },
+        "persistence": {
+          "bias": -0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": -116.4853096008,
+        "sample_count": 1
+      },
+      "VN_NAMDINH": {
+        "mae_skill_vs_persistence": -5.0090827942,
+        "model": {
+          "bias": -0.6009082794,
+          "mae": 0.6009082794,
+          "r2": null,
+          "rmse": 0.6009082794
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -500.9082794189,
+        "sample_count": 1
+      },
+      "VN_NHATRANG": {
+        "mae_skill_vs_persistence": 0.6126200358,
+        "model": {
+          "bias": 0.2324279785,
+          "mae": 0.2324279785,
+          "r2": null,
+          "rmse": 0.2324279785
+        },
+        "persistence": {
+          "bias": 0.6,
+          "mae": 0.6,
+          "r2": null,
+          "rmse": 0.6
+        },
+        "rmse_improvement_pct_vs_persistence": 61.2620035807,
+        "sample_count": 1
+      },
+      "VN_NINHBINH": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.4674854279,
+          "mae": 0.4674854279,
+          "r2": null,
+          "rmse": 0.4674854279
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_PHANRANGTHAPCHAM": {
+        "mae_skill_vs_persistence": -1.5321235657,
+        "model": {
+          "bias": -0.5064247131,
+          "mae": 0.5064247131,
+          "r2": null,
+          "rmse": 0.5064247131
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -153.2123565674,
+        "sample_count": 1
+      },
+      "VN_PHANTHIET": {
+        "mae_skill_vs_persistence": 0.9653110504,
+        "model": {
+          "bias": -0.0069377899,
+          "mae": 0.0069377899,
+          "r2": null,
+          "rmse": 0.0069377899
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": 96.5311050415,
+        "sample_count": 1
+      },
+      "VN_PHULY": {
+        "mae_skill_vs_persistence": -5.1114463806,
+        "model": {
+          "bias": -0.6111446381,
+          "mae": 0.6111446381,
+          "r2": null,
+          "rmse": 0.6111446381
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -511.1446380615,
+        "sample_count": 1
+      },
+      "VN_PLEIKU": {
+        "mae_skill_vs_persistence": -0.259147644,
+        "model": {
+          "bias": -0.2518295288,
+          "mae": 0.2518295288,
+          "r2": null,
+          "rmse": 0.2518295288
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -25.9147644043,
+        "sample_count": 1
+      },
+      "VN_QUANGNGAI": {
+        "mae_skill_vs_persistence": 0.9054893494,
+        "model": {
+          "bias": -0.0472553253,
+          "mae": 0.0472553253,
+          "r2": null,
+          "rmse": 0.0472553253
+        },
+        "persistence": {
+          "bias": 0.5,
+          "mae": 0.5,
+          "r2": null,
+          "rmse": 0.5
+        },
+        "rmse_improvement_pct_vs_persistence": 90.5489349365,
+        "sample_count": 1
+      },
+      "VN_QUYNHON": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.2574970245,
+          "mae": 0.2574970245,
+          "r2": null,
+          "rmse": 0.2574970245
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_RACHGIA": {
+        "mae_skill_vs_persistence": 0.3312950134,
+        "model": {
+          "bias": -0.200611496,
+          "mae": 0.200611496,
+          "r2": null,
+          "rmse": 0.200611496
+        },
+        "persistence": {
+          "bias": 0.3,
+          "mae": 0.3,
+          "r2": null,
+          "rmse": 0.3
+        },
+        "rmse_improvement_pct_vs_persistence": 33.1295013428,
+        "sample_count": 1
+      },
+      "VN_SOCTRANG": {
+        "mae_skill_vs_persistence": -2.9271240234,
+        "model": {
+          "bias": -0.3927124023,
+          "mae": 0.3927124023,
+          "r2": null,
+          "rmse": 0.3927124023
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -292.7124023437,
+        "sample_count": 1
+      },
+      "VN_SONLA": {
+        "mae_skill_vs_persistence": -0.4166302681,
+        "model": {
+          "bias": -1.1333042145,
+          "mae": 1.1333042145,
+          "r2": null,
+          "rmse": 1.1333042145
+        },
+        "persistence": {
+          "bias": -0.8,
+          "mae": 0.8,
+          "r2": null,
+          "rmse": 0.8
+        },
+        "rmse_improvement_pct_vs_persistence": -41.6630268097,
+        "sample_count": 1
+      },
+      "VN_TAMKY": {
+        "mae_skill_vs_persistence": 0.9164520264,
+        "model": {
+          "bias": 0.0417739868,
+          "mae": 0.0417739868,
+          "r2": null,
+          "rmse": 0.0417739868
+        },
+        "persistence": {
+          "bias": 0.5,
+          "mae": 0.5,
+          "r2": null,
+          "rmse": 0.5
+        },
+        "rmse_improvement_pct_vs_persistence": 91.6452026367,
+        "sample_count": 1
+      },
+      "VN_TANAN": {
+        "mae_skill_vs_persistence": -0.4082084656,
+        "model": {
+          "bias": -0.7041042328,
+          "mae": 0.7041042328,
+          "r2": null,
+          "rmse": 0.7041042328
+        },
+        "persistence": {
+          "bias": -0.5,
+          "mae": 0.5,
+          "r2": null,
+          "rmse": 0.5
+        },
+        "rmse_improvement_pct_vs_persistence": -40.8208465576,
+        "sample_count": 1
+      },
+      "VN_TAYNINH": {
+        "mae_skill_vs_persistence": -0.6999120712,
+        "model": {
+          "bias": -0.6799648285,
+          "mae": 0.6799648285,
+          "r2": null,
+          "rmse": 0.6799648285
+        },
+        "persistence": {
+          "bias": -0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": -69.9912071228,
+        "sample_count": 1
+      },
+      "VN_THAIBINH": {
+        "mae_skill_vs_persistence": -2.3347530365,
+        "model": {
+          "bias": -0.6669506073,
+          "mae": 0.6669506073,
+          "r2": null,
+          "rmse": 0.6669506073
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -233.4753036499,
+        "sample_count": 1
+      },
+      "VN_THAINGUYEN": {
+        "mae_skill_vs_persistence": -0.6852455139,
+        "model": {
+          "bias": -0.5055736542,
+          "mae": 0.5055736542,
+          "r2": null,
+          "rmse": 0.5055736542
+        },
+        "persistence": {
+          "bias": 0.3,
+          "mae": 0.3,
+          "r2": null,
+          "rmse": 0.3
+        },
+        "rmse_improvement_pct_vs_persistence": -68.5245513916,
+        "sample_count": 1
+      },
+      "VN_THANHHOA": {
+        "mae_skill_vs_persistence": -3.2579879761,
+        "model": {
+          "bias": -0.8515975952,
+          "mae": 0.8515975952,
+          "r2": null,
+          "rmse": 0.8515975952
+        },
+        "persistence": {
+          "bias": -0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -325.7987976074,
+        "sample_count": 1
+      },
+      "VN_THUDAUMOT": {
+        "mae_skill_vs_persistence": 0.4890143077,
+        "model": {
+          "bias": 0.3065914154,
+          "mae": 0.3065914154,
+          "r2": null,
+          "rmse": 0.3065914154
+        },
+        "persistence": {
+          "bias": 0.6,
+          "mae": 0.6,
+          "r2": null,
+          "rmse": 0.6
+        },
+        "rmse_improvement_pct_vs_persistence": 48.9014307658,
+        "sample_count": 1
+      },
+      "VN_TRAVINH": {
+        "mae_skill_vs_persistence": -2.8487243652,
+        "model": {
+          "bias": -0.3848724365,
+          "mae": 0.3848724365,
+          "r2": null,
+          "rmse": 0.3848724365
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -284.8724365234,
+        "sample_count": 1
+      },
+      "VN_TUYENQUANG": {
+        "mae_skill_vs_persistence": 0.6415663825,
+        "model": {
+          "bias": 0.3225902557,
+          "mae": 0.3225902557,
+          "r2": null,
+          "rmse": 0.3225902557
+        },
+        "persistence": {
+          "bias": 0.9,
+          "mae": 0.9,
+          "r2": null,
+          "rmse": 0.9
+        },
+        "rmse_improvement_pct_vs_persistence": 64.1566382514,
+        "sample_count": 1
+      },
+      "VN_TUYHOA": {
+        "mae_skill_vs_persistence": 0.8839747111,
+        "model": {
+          "bias": -0.0348075867,
+          "mae": 0.0348075867,
+          "r2": null,
+          "rmse": 0.0348075867
+        },
+        "persistence": {
+          "bias": 0.3,
+          "mae": 0.3,
+          "r2": null,
+          "rmse": 0.3
+        },
+        "rmse_improvement_pct_vs_persistence": 88.39747111,
+        "sample_count": 1
+      },
+      "VN_VIETTRI": {
+        "mae_skill_vs_persistence": -1.5959377289,
+        "model": {
+          "bias": -0.5191875458,
+          "mae": 0.5191875458,
+          "r2": null,
+          "rmse": 0.5191875458
+        },
+        "persistence": {
+          "bias": 0.2,
+          "mae": 0.2,
+          "r2": null,
+          "rmse": 0.2
+        },
+        "rmse_improvement_pct_vs_persistence": -159.5937728882,
+        "sample_count": 1
+      },
+      "VN_VINH": {
+        "mae_skill_vs_persistence": -1.301279068,
+        "model": {
+          "bias": -0.9205116272,
+          "mae": 0.9205116272,
+          "r2": null,
+          "rmse": 0.9205116272
+        },
+        "persistence": {
+          "bias": -0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": -130.1279067993,
+        "sample_count": 1
+      },
+      "VN_VINHLONG": {
+        "mae_skill_vs_persistence": -1.2286453247,
+        "model": {
+          "bias": -0.8914581299,
+          "mae": 0.8914581299,
+          "r2": null,
+          "rmse": 0.8914581299
+        },
+        "persistence": {
+          "bias": -0.4,
+          "mae": 0.4,
+          "r2": null,
+          "rmse": 0.4
+        },
+        "rmse_improvement_pct_vs_persistence": -122.8645324707,
+        "sample_count": 1
+      },
+      "VN_VINHYEN": {
+        "mae_skill_vs_persistence": null,
+        "model": {
+          "bias": -0.6192207336,
+          "mae": 0.6192207336,
+          "r2": null,
+          "rmse": 0.6192207336
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.0,
+          "r2": null,
+          "rmse": 0.0
+        },
+        "rmse_improvement_pct_vs_persistence": null,
+        "sample_count": 1
+      },
+      "VN_VITHANH": {
+        "mae_skill_vs_persistence": -0.3990588188,
+        "model": {
+          "bias": -1.1192470551,
+          "mae": 1.1192470551,
+          "r2": null,
+          "rmse": 1.1192470551
+        },
+        "persistence": {
+          "bias": -0.8,
+          "mae": 0.8,
+          "r2": null,
+          "rmse": 0.8
+        },
+        "rmse_improvement_pct_vs_persistence": -39.9058818817,
+        "sample_count": 1
+      },
+      "VN_VUNGTAU": {
+        "mae_skill_vs_persistence": -3.5831871033,
+        "model": {
+          "bias": -0.4583187103,
+          "mae": 0.4583187103,
+          "r2": null,
+          "rmse": 0.4583187103
+        },
+        "persistence": {
+          "bias": -0.1,
+          "mae": 0.1,
+          "r2": null,
+          "rmse": 0.1
+        },
+        "rmse_improvement_pct_vs_persistence": -358.3187103271,
+        "sample_count": 1
+      },
+      "VN_YENBAI": {
+        "mae_skill_vs_persistence": 0.3342108045,
+        "model": {
+          "bias": 0.9321048737,
+          "mae": 0.9321048737,
+          "r2": null,
+          "rmse": 0.9321048737
+        },
+        "persistence": {
+          "bias": 1.4,
+          "mae": 1.4,
+          "r2": null,
+          "rmse": 1.4
+        },
+        "rmse_improvement_pct_vs_persistence": 33.4210804531,
+        "sample_count": 1
+      }
+    },
+    "persisted_hourly_metrics": {
+      "evaluation_lag_median_seconds": 43630.332983,
+      "evaluation_lag_p95_seconds": 43630.332983,
+      "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+      "expected_references": 63.0,
+      "expected_sample_count": 63.0,
+      "locations_evaluated": 63.0,
+      "locations_model_beats_persistence": 13.0,
+      "locations_model_equals_or_trails_persistence": 50.0,
+      "mae_skill": -0.7291560766,
+      "missing_references": 0.0,
+      "model_bias": -0.4748347812,
+      "model_mae": 0.5516831292,
+      "model_rmse": 0.6244337401,
+      "persistence_bias": -0.0238095238,
+      "persistence_mae": 0.319047619,
+      "persistence_rmse": 0.4340653158,
+      "quality_status": "MODEL_TRAILS_PERSISTENCE",
+      "received_references": 63.0,
+      "reference_arrival_lag_median_seconds": 43610.0,
+      "reference_arrival_lag_p95_seconds": 43610.0,
+      "reference_coverage_pct": 100.0,
+      "rmse_improvement_pct": -43.8570918472,
+      "sample_count": 63.0,
+      "target_time": "2026-10-02T17:00:00Z",
+      "window_complete": true
+    },
+    "persisted_hourly_metrics_parity": {
+      "field_differences": {
+        "mae_skill": 0.0,
+        "model_bias": 0.0,
+        "model_mae": 0.0,
+        "model_rmse": 0.0,
+        "persistence_bias": 0.0,
+        "persistence_mae": 0.0,
+        "persistence_rmse": 0.0,
+        "rmse_improvement_pct": 0.0
+      },
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "tolerance": 1e-09
+    },
+    "rejection_rows": 0,
+    "revision_rows": 0,
+    "rolling_24h_and_168h": {
+      "168": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 10584.0,
+          "expected_sample_count": 10584.0,
+          "location_count": 63.0,
+          "mae_skill": -0.7291560766,
+          "missing_references": 10521.0,
+          "model_bias": -0.4748347812,
+          "model_mae": 0.5516831292,
+          "model_rmse": 0.6244337401,
+          "persistence_bias": -0.0238095238,
+          "persistence_mae": 0.319047619,
+          "persistence_rmse": 0.4340653158,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 63.0,
+          "reference_coverage_pct": 0.5952380952,
+          "rmse_improvement_pct": -43.8570918472,
+          "sample_count": 63.0,
+          "target_time": "2026-10-02T17:00:00Z",
+          "window_complete": false
+        }
+      },
+      "24": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": -0.7291560766,
+          "missing_references": 1449.0,
+          "model_bias": -0.4748347812,
+          "model_mae": 0.5516831292,
+          "model_rmse": 0.6244337401,
+          "persistence_bias": -0.0238095238,
+          "persistence_mae": 0.319047619,
+          "persistence_rmse": 0.4340653158,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 63.0,
+          "reference_coverage_pct": 4.1666666667,
+          "rmse_improvement_pct": -43.8570918472,
+          "sample_count": 63.0,
+          "target_time": "2026-10-02T17:00:00Z",
+          "window_complete": false
+        }
+      }
+    },
+    "rolling_location_rows": 252
+  },
+  "paths": {
+    "live_archive": "/opt/project/data/streaming/weather_hourly_observations_v1/observations",
+    "live_evaluations": "/opt/project/data/streaming/weather_forecast_evaluation_v1/evaluations",
+    "replay_archive": "/opt/project/data/streaming/weather_forecast_monitoring_v1_validation/20261003T0455Z-monitoring-fixed/hourly_archive",
+    "replay_evaluations": "/opt/project/data/streaming/weather_forecast_monitoring_v1_validation/20261003T0455Z-monitoring-fixed/evaluation/evaluations"
+  },
+  "replay": {
+    "archive_rows": 4662,
+    "archive_source_counts": {
+      "NATIONWIDE_63_DELTA_REPLAY": 4662
+    },
+    "distinct_evaluation_ids": 3150,
+    "evaluation_mode_counts": {
+      "REPLAY": 3150
+    },
+    "evaluation_rows": 3150,
+    "evaluation_status_counts": {
+      "EVALUATED": 3087,
+      "PENDING_REFERENCE": 63
+    },
+    "feature_and_target_join_validation": {
+      "evaluated_rows": 3087,
+      "feature_join_or_persistence_mismatches": 0,
+      "target_join_or_gate_mismatches": 0
+    },
+    "independent_metrics_all_evaluated": {
+      "mae_skill_vs_persistence": 0.6574084478,
+      "model": {
+        "bias": -0.0153475513,
+        "mae": 0.2163420706,
+        "r2": 0.9936963631,
+        "rmse": 0.301955221
+      },
+      "persistence": {
+        "bias": -0.0307742144,
+        "mae": 0.6314868805,
+        "r2": 0.9493658943,
+        "rmse": 0.8557925872
+      },
+      "rmse_improvement_pct_vs_persistence": 64.716307956,
+      "sample_count": 3087
+    },
+    "locations_evaluated": 63,
+    "locations_model_mae_better": 63,
+    "locations_model_mae_equal_or_worse": 0,
+    "locations_tied": 0,
+    "per_location": {
+      "VN_BACGIANG": {
+        "mae_skill_vs_persistence": 0.5297546988,
+        "model": {
+          "bias": -0.0781017926,
+          "mae": 0.3042199193,
+          "r2": 0.9696709152,
+          "rmse": 0.4297664484
+        },
+        "persistence": {
+          "bias": -0.0224489796,
+          "mae": 0.6469387755,
+          "r2": 0.8873667221,
+          "rmse": 0.828201888
+        },
+        "rmse_improvement_pct_vs_persistence": 48.1084920722,
+        "sample_count": 49
+      },
+      "VN_BACKAN": {
+        "mae_skill_vs_persistence": 0.3819546484,
+        "model": {
+          "bias": -0.0005092699,
+          "mae": 0.3065000417,
+          "r2": 0.8993283412,
+          "rmse": 0.4582575586
+        },
+        "persistence": {
+          "bias": -0.0346938776,
+          "mae": 0.4959183673,
+          "r2": 0.7813399728,
+          "rmse": 0.6753683802
+        },
+        "rmse_improvement_pct_vs_persistence": 32.147021976,
+        "sample_count": 49
+      },
+      "VN_BACLIEU": {
+        "mae_skill_vs_persistence": 0.7644608153,
+        "model": {
+          "bias": -0.0552539203,
+          "mae": 0.1384393575,
+          "r2": 0.9939259436,
+          "rmse": 0.1792226366
+        },
+        "persistence": {
+          "bias": -0.0571428571,
+          "mae": 0.587755102,
+          "r2": 0.8630756702,
+          "rmse": 0.8509298635
+        },
+        "rmse_improvement_pct_vs_persistence": 78.9380248222,
+        "sample_count": 49
+      },
+      "VN_BACNINH": {
+        "mae_skill_vs_persistence": 0.6731856811,
+        "model": {
+          "bias": -0.0637269779,
+          "mae": 0.1874180074,
+          "r2": 0.9865701078,
+          "rmse": 0.2599992742
+        },
+        "persistence": {
+          "bias": -0.0265306122,
+          "mae": 0.5734693878,
+          "r2": 0.8963276593,
+          "rmse": 0.7223826788
+        },
+        "rmse_improvement_pct_vs_persistence": 64.0080968387,
+        "sample_count": 49
+      },
+      "VN_BENTRE": {
+        "mae_skill_vs_persistence": 0.7300002588,
+        "model": {
+          "bias": -0.0230073189,
+          "mae": 0.2082855147,
+          "r2": 0.9899643496,
+          "rmse": 0.2728955218
+        },
+        "persistence": {
+          "bias": -0.0448979592,
+          "mae": 0.7714285714,
+          "r2": 0.8754181353,
+          "rmse": 0.961503924
+        },
+        "rmse_improvement_pct_vs_persistence": 71.6178462779,
+        "sample_count": 49
+      },
+      "VN_BIENHOA": {
+        "mae_skill_vs_persistence": 0.6999705547,
+        "model": {
+          "bias": 0.0086574632,
+          "mae": 0.2718634158,
+          "r2": 0.9894747028,
+          "rmse": 0.352481519
+        },
+        "persistence": {
+          "bias": -0.0367346939,
+          "mae": 0.906122449,
+          "r2": 0.8941923647,
+          "rmse": 1.1175775552
+        },
+        "rmse_improvement_pct_vs_persistence": 68.460218504,
+        "sample_count": 49
+      },
+      "VN_BMT": {
+        "mae_skill_vs_persistence": 0.7081706242,
+        "model": {
+          "bias": -0.0210832713,
+          "mae": 0.2066628437,
+          "r2": 0.9925682382,
+          "rmse": 0.2512550845
+        },
+        "persistence": {
+          "bias": -0.0183673469,
+          "mae": 0.7081632653,
+          "r2": 0.8962834575,
+          "rmse": 0.9386268738
+        },
+        "rmse_improvement_pct_vs_persistence": 73.2316331955,
+        "sample_count": 49
+      },
+      "VN_CAMAU": {
+        "mae_skill_vs_persistence": 0.7199049971,
+        "model": {
+          "bias": -0.0519101123,
+          "mae": 0.2012111041,
+          "r2": 0.9911568818,
+          "rmse": 0.2699193688
+        },
+        "persistence": {
+          "bias": -0.0530612245,
+          "mae": 0.7183673469,
+          "r2": 0.8829824127,
+          "rmse": 0.9818765873
+        },
+        "rmse_improvement_pct_vs_persistence": 72.5098477431,
+        "sample_count": 49
+      },
+      "VN_CANTHO": {
+        "mae_skill_vs_persistence": 0.7962213837,
+        "model": {
+          "bias": -0.0017859245,
+          "mae": 0.150962526,
+          "r2": 0.994770672,
+          "rmse": 0.197648394
+        },
+        "persistence": {
+          "bias": -0.0510204082,
+          "mae": 0.7408163265,
+          "r2": 0.8837580772,
+          "rmse": 0.9318623004
+        },
+        "rmse_improvement_pct_vs_persistence": 78.7899570677,
+        "sample_count": 49
+      },
+      "VN_CAOBANG": {
+        "mae_skill_vs_persistence": 0.5634497649,
+        "model": {
+          "bias": 0.04034367,
+          "mae": 0.2512391149,
+          "r2": 0.9673378642,
+          "rmse": 0.3422539472
+        },
+        "persistence": {
+          "bias": -0.0163265306,
+          "mae": 0.5755102041,
+          "r2": 0.8545504377,
+          "rmse": 0.7222414091
+        },
+        "rmse_improvement_pct_vs_persistence": 52.612250849,
+        "sample_count": 49
+      },
+      "VN_CAOLANH": {
+        "mae_skill_vs_persistence": 0.7350934277,
+        "model": {
+          "bias": 0.0061953564,
+          "mae": 0.1973283651,
+          "r2": 0.9932149775,
+          "rmse": 0.2388611809
+        },
+        "persistence": {
+          "bias": -0.0387755102,
+          "mae": 0.7448979592,
+          "r2": 0.898674083,
+          "rmse": 0.9230605702
+        },
+        "rmse_improvement_pct_vs_persistence": 74.1229136402,
+        "sample_count": 49
+      },
+      "VN_DALAT": {
+        "mae_skill_vs_persistence": 0.7333690415,
+        "model": {
+          "bias": -0.0933422595,
+          "mae": 0.1730380506,
+          "r2": 0.9933293671,
+          "rmse": 0.2188174728
+        },
+        "persistence": {
+          "bias": -0.0204081633,
+          "mae": 0.6489795918,
+          "r2": 0.8874662588,
+          "rmse": 0.8987519691
+        },
+        "rmse_improvement_pct_vs_persistence": 75.6531857137,
+        "sample_count": 49
+      },
+      "VN_DANANG": {
+        "mae_skill_vs_persistence": 0.3363164622,
+        "model": {
+          "bias": 0.0124890386,
+          "mae": 0.1936872366,
+          "r2": 0.943184556,
+          "rmse": 0.2462084488
+        },
+        "persistence": {
+          "bias": 0.0020408163,
+          "mae": 0.2918367347,
+          "r2": 0.8609410865,
+          "rmse": 0.3851848218
+        },
+        "rmse_improvement_pct_vs_persistence": 36.080438554,
+        "sample_count": 49
+      },
+      "VN_DIENBIENPHU": {
+        "mae_skill_vs_persistence": 0.823956069,
+        "model": {
+          "bias": -0.0348424911,
+          "mae": 0.2069414372,
+          "r2": 0.9960474908,
+          "rmse": 0.2977363397
+        },
+        "persistence": {
+          "bias": -0.0897959184,
+          "mae": 1.1755102041,
+          "r2": 0.8972494905,
+          "rmse": 1.518054609
+        },
+        "rmse_improvement_pct_vs_persistence": 80.3869809491,
+        "sample_count": 49
+      },
+      "VN_DONGHA": {
+        "mae_skill_vs_persistence": 0.5288015093,
+        "model": {
+          "bias": -0.0203482258,
+          "mae": 0.1413595472,
+          "r2": 0.9740966793,
+          "rmse": 0.1787754537
+        },
+        "persistence": {
+          "bias": -0.0183673469,
+          "mae": 0.3,
+          "r2": 0.8595727875,
+          "rmse": 0.4162514938
+        },
+        "rmse_improvement_pct_vs_persistence": 57.051096188,
+        "sample_count": 49
+      },
+      "VN_DONGHOI": {
+        "mae_skill_vs_persistence": 0.3944695938,
+        "model": {
+          "bias": -0.0211360309,
+          "mae": 0.1594151477,
+          "r2": 0.9494309427,
+          "rmse": 0.195620449
+        },
+        "persistence": {
+          "bias": -0.006122449,
+          "mae": 0.2632653061,
+          "r2": 0.8524811219,
+          "rmse": 0.3341147304
+        },
+        "rmse_improvement_pct_vs_persistence": 41.4511150771,
+        "sample_count": 49
+      },
+      "VN_DONGXOAI": {
+        "mae_skill_vs_persistence": 0.7470543686,
+        "model": {
+          "bias": -0.0334735637,
+          "mae": 0.2529456314,
+          "r2": 0.9922863168,
+          "rmse": 0.3394816049
+        },
+        "persistence": {
+          "bias": -0.0367346939,
+          "mae": 1.0,
+          "r2": 0.9055312411,
+          "rmse": 1.1880355935
+        },
+        "rmse_improvement_pct_vs_persistence": 71.4249634618,
+        "sample_count": 49
+      },
+      "VN_GIANGHIA": {
+        "mae_skill_vs_persistence": 0.7606942654,
+        "model": {
+          "bias": 0.0310801136,
+          "mae": 0.2500500737,
+          "r2": 0.9894154301,
+          "rmse": 0.4413948818
+        },
+        "persistence": {
+          "bias": -0.0163265306,
+          "mae": 1.0448979592,
+          "r2": 0.898795883,
+          "rmse": 1.3648652471
+        },
+        "rmse_improvement_pct_vs_persistence": 67.6601860355,
+        "sample_count": 49
+      },
+      "VN_HAGIANG": {
+        "mae_skill_vs_persistence": 0.4301901393,
+        "model": {
+          "bias": -0.0838995019,
+          "mae": 0.3349086528,
+          "r2": 0.8996546948,
+          "rmse": 0.4962115449
+        },
+        "persistence": {
+          "bias": -0.0408163265,
+          "mae": 0.587755102,
+          "r2": 0.7671237062,
+          "rmse": 0.755928946
+        },
+        "rmse_improvement_pct_vs_persistence": 34.3573827289,
+        "sample_count": 49
+      },
+      "VN_HAIDUONG": {
+        "mae_skill_vs_persistence": 0.6307476057,
+        "model": {
+          "bias": -0.0775424334,
+          "mae": 0.2162764024,
+          "r2": 0.9868434084,
+          "rmse": 0.2678642596
+        },
+        "persistence": {
+          "bias": -0.0306122449,
+          "mae": 0.5857142857,
+          "r2": 0.8897197075,
+          "rmse": 0.7755182599
+        },
+        "rmse_improvement_pct_vs_persistence": 65.4599674191,
+        "sample_count": 49
+      },
+      "VN_HAIPHONG": {
+        "mae_skill_vs_persistence": 0.6412885757,
+        "model": {
+          "bias": -0.0330264422,
+          "mae": 0.1691068143,
+          "r2": 0.9881723933,
+          "rmse": 0.2128846669
+        },
+        "persistence": {
+          "bias": -0.0265306122,
+          "mae": 0.4714285714,
+          "r2": 0.8875653267,
+          "rmse": 0.6563660004
+        },
+        "rmse_improvement_pct_vs_persistence": 67.5661648053,
+        "sample_count": 49
+      },
+      "VN_HALONG": {
+        "mae_skill_vs_persistence": 0.4816306387,
+        "model": {
+          "bias": 0.0031022364,
+          "mae": 0.2253319877,
+          "r2": 0.9723473411,
+          "rmse": 0.2773142344
+        },
+        "persistence": {
+          "bias": -0.0183673469,
+          "mae": 0.4346938776,
+          "r2": 0.8762025855,
+          "rmse": 0.5867586508
+        },
+        "rmse_improvement_pct_vs_persistence": 52.7379385013,
+        "sample_count": 49
+      },
+      "VN_HANOI": {
+        "mae_skill_vs_persistence": 0.5680046815,
+        "model": {
+          "bias": -0.0268743632,
+          "mae": 0.2292220057,
+          "r2": 0.9740508161,
+          "rmse": 0.3119589879
+        },
+        "persistence": {
+          "bias": -0.012244898,
+          "mae": 0.5306122449,
+          "r2": 0.8771269732,
+          "rmse": 0.6788345355
+        },
+        "rmse_improvement_pct_vs_persistence": 54.0449149761,
+        "sample_count": 49
+      },
+      "VN_HATINH": {
+        "mae_skill_vs_persistence": 0.5427983697,
+        "model": {
+          "bias": 0.0576194296,
+          "mae": 0.2500612998,
+          "r2": 0.9769242537,
+          "rmse": 0.309366674
+        },
+        "persistence": {
+          "bias": -0.0204081633,
+          "mae": 0.5469387755,
+          "r2": 0.8863355646,
+          "rmse": 0.6866065623
+        },
+        "rmse_improvement_pct_vs_persistence": 54.9426569827,
+        "sample_count": 49
+      },
+      "VN_HCM": {
+        "mae_skill_vs_persistence": 0.7499193489,
+        "model": {
+          "bias": -0.0005819515,
+          "mae": 0.2225207426,
+          "r2": 0.9902817005,
+          "rmse": 0.3352005503
+        },
+        "persistence": {
+          "bias": -0.0326530612,
+          "mae": 0.8897959184,
+          "r2": 0.8978323801,
+          "rmse": 1.0868415201
+        },
+        "rmse_improvement_pct_vs_persistence": 69.158286269,
+        "sample_count": 49
+      },
+      "VN_HOABINH": {
+        "mae_skill_vs_persistence": 0.6180766677,
+        "model": {
+          "bias": -0.0280862069,
+          "mae": 0.2252568225,
+          "r2": 0.9802249444,
+          "rmse": 0.2925019375
+        },
+        "persistence": {
+          "bias": -0.0306122449,
+          "mae": 0.5897959184,
+          "r2": 0.854009434,
+          "rmse": 0.7947532026
+        },
+        "rmse_improvement_pct_vs_persistence": 63.1958780996,
+        "sample_count": 49
+      },
+      "VN_HUE": {
+        "mae_skill_vs_persistence": 0.6064229428,
+        "model": {
+          "bias": 0.0379080792,
+          "mae": 0.1654630077,
+          "r2": 0.9799521055,
+          "rmse": 0.2156964903
+        },
+        "persistence": {
+          "bias": 0.0,
+          "mae": 0.4204081633,
+          "r2": 0.8705522992,
+          "rmse": 0.5480950312
+        },
+        "rmse_improvement_pct_vs_persistence": 60.6461511234,
+        "sample_count": 49
+      },
+      "VN_HUNGYEN": {
+        "mae_skill_vs_persistence": 0.5228397369,
+        "model": {
+          "bias": -0.0400417795,
+          "mae": 0.2629250429,
+          "r2": 0.9609782906,
+          "rmse": 0.3704715267
+        },
+        "persistence": {
+          "bias": -0.0408163265,
+          "mae": 0.5510204082,
+          "r2": 0.8554065639,
+          "rmse": 0.7131419414
+        },
+        "rmse_improvement_pct_vs_persistence": 48.050800948,
+        "sample_count": 49
+      },
+      "VN_KONTUM": {
+        "mae_skill_vs_persistence": 0.7652933156,
+        "model": {
+          "bias": 0.0083340586,
+          "mae": 0.2586563461,
+          "r2": 0.9943226451,
+          "rmse": 0.3387316498
+        },
+        "persistence": {
+          "bias": -0.0285714286,
+          "mae": 1.1020408163,
+          "r2": 0.9013418481,
+          "rmse": 1.4120472906
+        },
+        "rmse_improvement_pct_vs_persistence": 76.0113098142,
+        "sample_count": 49
+      },
+      "VN_LAICHAU": {
+        "mae_skill_vs_persistence": 0.5023085261,
+        "model": {
+          "bias": -0.187401141,
+          "mae": 0.4245612981,
+          "r2": 0.9651032858,
+          "rmse": 0.5516091051
+        },
+        "persistence": {
+          "bias": -0.0816326531,
+          "mae": 0.8530612245,
+          "r2": 0.8719228388,
+          "rmse": 1.0567566862
+        },
+        "rmse_improvement_pct_vs_persistence": 47.8016924488,
+        "sample_count": 49
+      },
+      "VN_LANGSON": {
+        "mae_skill_vs_persistence": 0.6232893033,
+        "model": {
+          "bias": -0.0470932824,
+          "mae": 0.2406335675,
+          "r2": 0.9841477459,
+          "rmse": 0.3211611697
+        },
+        "persistence": {
+          "bias": -0.0183673469,
+          "mae": 0.6387755102,
+          "r2": 0.9023599477,
+          "rmse": 0.7970609277
+        },
+        "rmse_improvement_pct_vs_persistence": 59.7068230867,
+        "sample_count": 49
+      },
+      "VN_LAOCAI": {
+        "mae_skill_vs_persistence": 0.5393265128,
+        "model": {
+          "bias": 0.0174197061,
+          "mae": 0.3008479916,
+          "r2": 0.9472530013,
+          "rmse": 0.4431860983
+        },
+        "persistence": {
+          "bias": -0.0489795918,
+          "mae": 0.6530612245,
+          "r2": 0.8060957878,
+          "rmse": 0.849729849
+        },
+        "rmse_improvement_pct_vs_persistence": 47.8438825203,
+        "sample_count": 49
+      },
+      "VN_LONGXUYEN": {
+        "mae_skill_vs_persistence": 0.724420148,
+        "model": {
+          "bias": -0.0248974469,
+          "mae": 0.214839803,
+          "r2": 0.9849492996,
+          "rmse": 0.364725063
+        },
+        "persistence": {
+          "bias": -0.0408163265,
+          "mae": 0.7795918367,
+          "r2": 0.8853336123,
+          "rmse": 1.0067121673
+        },
+        "rmse_improvement_pct_vs_persistence": 63.7706710215,
+        "sample_count": 49
+      },
+      "VN_MYTHO": {
+        "mae_skill_vs_persistence": 0.7423917798,
+        "model": {
+          "bias": 0.0146074723,
+          "mae": 0.2176526595,
+          "r2": 0.9897871455,
+          "rmse": 0.2925255807
+        },
+        "persistence": {
+          "bias": -0.0489795918,
+          "mae": 0.8448979592,
+          "r2": 0.8635522214,
+          "rmse": 1.0692358515
+        },
+        "rmse_improvement_pct_vs_persistence": 72.6416224944,
+        "sample_count": 49
+      },
+      "VN_NAMDINH": {
+        "mae_skill_vs_persistence": 0.4817991799,
+        "model": {
+          "bias": -0.0128498467,
+          "mae": 0.2601579627,
+          "r2": 0.9572785974,
+          "rmse": 0.3546636838
+        },
+        "persistence": {
+          "bias": -0.0326530612,
+          "mae": 0.5020408163,
+          "r2": 0.8468178166,
+          "rmse": 0.6715805299
+        },
+        "rmse_improvement_pct_vs_persistence": 47.1897013119,
+        "sample_count": 49
+      },
+      "VN_NHATRANG": {
+        "mae_skill_vs_persistence": 0.5887581961,
+        "model": {
+          "bias": -0.0137845098,
+          "mae": 0.1468720728,
+          "r2": 0.9810570563,
+          "rmse": 0.1958950874
+        },
+        "persistence": {
+          "bias": -0.006122449,
+          "mae": 0.3571428571,
+          "r2": 0.8900920645,
+          "rmse": 0.4718612733
+        },
+        "rmse_improvement_pct_vs_persistence": 58.4846016303,
+        "sample_count": 49
+      },
+      "VN_NINHBINH": {
+        "mae_skill_vs_persistence": 0.4765512924,
+        "model": {
+          "bias": -0.0261562659,
+          "mae": 0.2585195658,
+          "r2": 0.9577197615,
+          "rmse": 0.357517965
+        },
+        "persistence": {
+          "bias": -0.0326530612,
+          "mae": 0.493877551,
+          "r2": 0.8589114094,
+          "rmse": 0.6530931115
+        },
+        "rmse_improvement_pct_vs_persistence": 45.2577345044,
+        "sample_count": 49
+      },
+      "VN_PHANRANGTHAPCHAM": {
+        "mae_skill_vs_persistence": 0.7855142496,
+        "model": {
+          "bias": -0.0183046146,
+          "mae": 0.1549550115,
+          "r2": 0.9948094778,
+          "rmse": 0.2016839092
+        },
+        "persistence": {
+          "bias": -0.0204081633,
+          "mae": 0.7224489796,
+          "r2": 0.8921865832,
+          "rmse": 0.919183311
+        },
+        "rmse_improvement_pct_vs_persistence": 78.0583582454,
+        "sample_count": 49
+      },
+      "VN_PHANTHIET": {
+        "mae_skill_vs_persistence": 0.7005643595,
+        "model": {
+          "bias": 0.0448273406,
+          "mae": 0.2572702135,
+          "r2": 0.986639204,
+          "rmse": 0.3577481486
+        },
+        "persistence": {
+          "bias": -0.0224489796,
+          "mae": 0.8591836735,
+          "r2": 0.8833125356,
+          "rmse": 1.0572393778
+        },
+        "rmse_improvement_pct_vs_persistence": 66.1620484348,
+        "sample_count": 49
+      },
+      "VN_PHULY": {
+        "mae_skill_vs_persistence": 0.6070330291,
+        "model": {
+          "bias": -0.0137910337,
+          "mae": 0.1932755918,
+          "r2": 0.979307171,
+          "rmse": 0.2735399378
+        },
+        "persistence": {
+          "bias": -0.0306122449,
+          "mae": 0.4918367347,
+          "r2": 0.8818723594,
+          "rmse": 0.6535616705
+        },
+        "rmse_improvement_pct_vs_persistence": 58.1462698731,
+        "sample_count": 49
+      },
+      "VN_PLEIKU": {
+        "mae_skill_vs_persistence": 0.7992530768,
+        "model": {
+          "bias": -0.0354439716,
+          "mae": 0.1716591037,
+          "r2": 0.9963927183,
+          "rmse": 0.2218522183
+        },
+        "persistence": {
+          "bias": -0.0183673469,
+          "mae": 0.8551020408,
+          "r2": 0.9046165897,
+          "rmse": 1.1408017231
+        },
+        "rmse_improvement_pct_vs_persistence": 80.5529555388,
+        "sample_count": 49
+      },
+      "VN_QUANGNGAI": {
+        "mae_skill_vs_persistence": 0.4866329443,
+        "model": {
+          "bias": -0.0092422797,
+          "mae": 0.2242052039,
+          "r2": 0.9701310436,
+          "rmse": 0.2837245786
+        },
+        "persistence": {
+          "bias": -0.0163265306,
+          "mae": 0.4367346939,
+          "r2": 0.8555197715,
+          "rmse": 0.6240094191
+        },
+        "rmse_improvement_pct_vs_persistence": 54.5320038495,
+        "sample_count": 49
+      },
+      "VN_QUYNHON": {
+        "mae_skill_vs_persistence": 0.5223567669,
+        "model": {
+          "bias": 0.0110206215,
+          "mae": 0.1647381763,
+          "r2": 0.9735977628,
+          "rmse": 0.2063946745
+        },
+        "persistence": {
+          "bias": -0.0142857143,
+          "mae": 0.3448979592,
+          "r2": 0.8625080668,
+          "rmse": 0.4709954721
+        },
+        "rmse_improvement_pct_vs_persistence": 56.1790533568,
+        "sample_count": 49
+      },
+      "VN_RACHGIA": {
+        "mae_skill_vs_persistence": 0.7651086161,
+        "model": {
+          "bias": 0.0063192562,
+          "mae": 0.1711351511,
+          "r2": 0.9932155187,
+          "rmse": 0.2334007489
+        },
+        "persistence": {
+          "bias": -0.0387755102,
+          "mae": 0.7285714286,
+          "r2": 0.8888535594,
+          "rmse": 0.9446951781
+        },
+        "rmse_improvement_pct_vs_persistence": 75.2935386674,
+        "sample_count": 49
+      },
+      "VN_SOCTRANG": {
+        "mae_skill_vs_persistence": 0.7180368927,
+        "model": {
+          "bias": -0.0237141979,
+          "mae": 0.1547919916,
+          "r2": 0.9894568997,
+          "rmse": 0.2134972103
+        },
+        "persistence": {
+          "bias": -0.0551020408,
+          "mae": 0.5489795918,
+          "r2": 0.8536173468,
+          "rmse": 0.7955231881
+        },
+        "rmse_improvement_pct_vs_persistence": 73.162666593,
+        "sample_count": 49
+      },
+      "VN_SONLA": {
+        "mae_skill_vs_persistence": 0.7624961573,
+        "model": {
+          "bias": -0.0526258741,
+          "mae": 0.1846713553,
+          "r2": 0.9932038148,
+          "rmse": 0.2472413863
+        },
+        "persistence": {
+          "bias": -0.0428571429,
+          "mae": 0.7775510204,
+          "r2": 0.8965127478,
+          "rmse": 0.9647882289
+        },
+        "rmse_improvement_pct_vs_persistence": 74.3735071668,
+        "sample_count": 49
+      },
+      "VN_TAMKY": {
+        "mae_skill_vs_persistence": 0.4313205174,
+        "model": {
+          "bias": 0.0513727227,
+          "mae": 0.2030998152,
+          "r2": 0.9688242561,
+          "rmse": 0.2534411571
+        },
+        "persistence": {
+          "bias": 0.0142857143,
+          "mae": 0.3571428571,
+          "r2": 0.8840092503,
+          "rmse": 0.4888553895
+        },
+        "rmse_improvement_pct_vs_persistence": 48.1562109153,
+        "sample_count": 49
+      },
+      "VN_TANAN": {
+        "mae_skill_vs_persistence": 0.7549425966,
+        "model": {
+          "bias": -0.0116332229,
+          "mae": 0.2165507258,
+          "r2": 0.9924976425,
+          "rmse": 0.2765868732
+        },
+        "persistence": {
+          "bias": -0.0469387755,
+          "mae": 0.8836734694,
+          "r2": 0.8825766054,
+          "rmse": 1.0942334937
+        },
+        "rmse_improvement_pct_vs_persistence": 74.7232309345,
+        "sample_count": 49
+      },
+      "VN_TAYNINH": {
+        "mae_skill_vs_persistence": 0.7178954632,
+        "model": {
+          "bias": 0.0652711907,
+          "mae": 0.246409677,
+          "r2": 0.9898427879,
+          "rmse": 0.3233780179
+        },
+        "persistence": {
+          "bias": -0.0285714286,
+          "mae": 0.8734693878,
+          "r2": 0.8798362746,
+          "rmse": 1.1122692377
+        },
+        "rmse_improvement_pct_vs_persistence": 70.9262823289,
+        "sample_count": 49
+      },
+      "VN_THAIBINH": {
+        "mae_skill_vs_persistence": 0.4886637957,
+        "model": {
+          "bias": -0.0069148472,
+          "mae": 0.2441891262,
+          "r2": 0.9590360522,
+          "rmse": 0.3367664108
+        },
+        "persistence": {
+          "bias": -0.0244897959,
+          "mae": 0.4775510204,
+          "r2": 0.8512457615,
+          "rmse": 0.6417450699
+        },
+        "rmse_improvement_pct_vs_persistence": 47.5233349532,
+        "sample_count": 49
+      },
+      "VN_THAINGUYEN": {
+        "mae_skill_vs_persistence": 0.5529444671,
+        "model": {
+          "bias": 0.0236593441,
+          "mae": 0.2207906918,
+          "r2": 0.9714985251,
+          "rmse": 0.2816208622
+        },
+        "persistence": {
+          "bias": -0.0204081633,
+          "mae": 0.493877551,
+          "r2": 0.8594803329,
+          "rmse": 0.6253162465
+        },
+        "rmse_improvement_pct_vs_persistence": 54.9634502877,
+        "sample_count": 49
+      },
+      "VN_THANHHOA": {
+        "mae_skill_vs_persistence": 0.5429308875,
+        "model": {
+          "bias": 0.0180293725,
+          "mae": 0.2126770564,
+          "r2": 0.9640350763,
+          "rmse": 0.2703601774
+        },
+        "persistence": {
+          "bias": -0.0408163265,
+          "mae": 0.4653061224,
+          "r2": 0.8005762578,
+          "rmse": 0.6366365701
+        },
+        "rmse_improvement_pct_vs_persistence": 57.5330431727,
+        "sample_count": 49
+      },
+      "VN_THUDAUMOT": {
+        "mae_skill_vs_persistence": 0.6954368957,
+        "model": {
+          "bias": 0.0157830297,
+          "mae": 0.2722421218,
+          "r2": 0.9904950888,
+          "rmse": 0.3375625664
+        },
+        "persistence": {
+          "bias": -0.0285714286,
+          "mae": 0.893877551,
+          "r2": 0.9009244687,
+          "rmse": 1.0898417784
+        },
+        "rmse_improvement_pct_vs_persistence": 69.0264611701,
+        "sample_count": 49
+      },
+      "VN_TRAVINH": {
+        "mae_skill_vs_persistence": 0.6591369356,
+        "model": {
+          "bias": -0.0024293082,
+          "mae": 0.1947788939,
+          "r2": 0.9821094323,
+          "rmse": 0.2561736268
+        },
+        "persistence": {
+          "bias": -0.0448979592,
+          "mae": 0.5714285714,
+          "r2": 0.8456645601,
+          "rmse": 0.7524110904
+        },
+        "rmse_improvement_pct_vs_persistence": 65.9529703816,
+        "sample_count": 49
+      },
+      "VN_TUYENQUANG": {
+        "mae_skill_vs_persistence": 0.6046920975,
+        "model": {
+          "bias": -0.0230283075,
+          "mae": 0.217015971,
+          "r2": 0.9773714104,
+          "rmse": 0.2907969724
+        },
+        "persistence": {
+          "bias": -0.0265306122,
+          "mae": 0.5489795918,
+          "r2": 0.8602499632,
+          "rmse": 0.7226651354
+        },
+        "rmse_improvement_pct_vs_persistence": 59.7604812844,
+        "sample_count": 49
+      },
+      "VN_TUYHOA": {
+        "mae_skill_vs_persistence": 0.3064601314,
+        "model": {
+          "bias": -0.0105062524,
+          "mae": 0.1571080111,
+          "r2": 0.9305894438,
+          "rmse": 0.1934211481
+        },
+        "persistence": {
+          "bias": 0.0020408163,
+          "mae": 0.2265306122,
+          "r2": 0.8481670942,
+          "rmse": 0.2860712056
+        },
+        "rmse_improvement_pct_vs_persistence": 32.3870615932,
+        "sample_count": 49
+      },
+      "VN_VIETTRI": {
+        "mae_skill_vs_persistence": 0.6395331266,
+        "model": {
+          "bias": -0.0321192994,
+          "mae": 0.1677274432,
+          "r2": 0.9848739747,
+          "rmse": 0.2201591692
+        },
+        "persistence": {
+          "bias": -0.0326530612,
+          "mae": 0.4653061224,
+          "r2": 0.8728794614,
+          "rmse": 0.6382373687
+        },
+        "rmse_improvement_pct_vs_persistence": 65.5051270876,
+        "sample_count": 49
+      },
+      "VN_VINH": {
+        "mae_skill_vs_persistence": 0.5830042097,
+        "model": {
+          "bias": 0.0530918744,
+          "mae": 0.1991367651,
+          "r2": 0.9759130766,
+          "rmse": 0.2716162868
+        },
+        "persistence": {
+          "bias": -0.0081632653,
+          "mae": 0.4775510204,
+          "r2": 0.8901927936,
+          "rmse": 0.5799366609
+        },
+        "rmse_improvement_pct_vs_persistence": 53.1644910341,
+        "sample_count": 49
+      },
+      "VN_VINHLONG": {
+        "mae_skill_vs_persistence": 0.7378785092,
+        "model": {
+          "bias": -0.0238600439,
+          "mae": 0.196858589,
+          "r2": 0.9895069827,
+          "rmse": 0.2825528001
+        },
+        "persistence": {
+          "bias": -0.0530612245,
+          "mae": 0.7510204082,
+          "r2": 0.8811210861,
+          "rmse": 0.9510466844
+        },
+        "rmse_improvement_pct_vs_persistence": 70.2903332952,
+        "sample_count": 49
+      },
+      "VN_VINHYEN": {
+        "mae_skill_vs_persistence": 0.553478698,
+        "model": {
+          "bias": -0.0229910325,
+          "mae": 0.197745148,
+          "r2": 0.975328779,
+          "rmse": 0.2637666455
+        },
+        "persistence": {
+          "bias": -0.0265306122,
+          "mae": 0.4428571429,
+          "r2": 0.8709654074,
+          "rmse": 0.603222638
+        },
+        "rmse_improvement_pct_vs_persistence": 56.2737488874,
+        "sample_count": 49
+      },
+      "VN_VITHANH": {
+        "mae_skill_vs_persistence": 0.7925537152,
+        "model": {
+          "bias": -0.0204994202,
+          "mae": 0.1515627958,
+          "r2": 0.9950248705,
+          "rmse": 0.1895413022
+        },
+        "persistence": {
+          "bias": -0.0571428571,
+          "mae": 0.7306122449,
+          "r2": 0.8785305684,
+          "rmse": 0.9365590516
+        },
+        "rmse_improvement_pct_vs_persistence": 79.7619486099,
+        "sample_count": 49
+      },
+      "VN_VUNGTAU": {
+        "mae_skill_vs_persistence": 0.7481133955,
+        "model": {
+          "bias": -0.0198516301,
+          "mae": 0.2112763152,
+          "r2": 0.9910628174,
+          "rmse": 0.2829776262
+        },
+        "persistence": {
+          "bias": -0.0469387755,
+          "mae": 0.8387755102,
+          "r2": 0.8737459756,
+          "rmse": 1.0635903769
+        },
+        "rmse_improvement_pct_vs_persistence": 73.3941155925,
+        "sample_count": 49
+      },
+      "VN_YENBAI": {
+        "mae_skill_vs_persistence": 0.5579914061,
+        "model": {
+          "bias": -0.0663154446,
+          "mae": 0.2182981219,
+          "r2": 0.9630700649,
+          "rmse": 0.3208454006
+        },
+        "persistence": {
+          "bias": -0.0326530612,
+          "mae": 0.493877551,
+          "r2": 0.8471303319,
+          "rmse": 0.6527805519
+        },
+        "rmse_improvement_pct_vs_persistence": 50.8494241119,
+        "sample_count": 49
+      }
+    },
+    "persisted_168h_metrics_parity": {
+      "field_differences": {
+        "mae_skill": 0.0,
+        "model_bias": 0.0,
+        "model_mae": 0.0,
+        "model_rmse": 0.0,
+        "persistence_bias": 0.0,
+        "persistence_mae": 0.0,
+        "persistence_rmse": 0.0,
+        "rmse_improvement_pct": 0.0
+      },
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "tolerance": 1e-09
+    },
+    "rejection_rows": 0,
+    "revision_rows": 0,
+    "rolling_24h_and_168h": {
+      "168": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 10584.0,
+          "expected_sample_count": 10584.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6574084478,
+          "missing_references": 7497.0,
+          "model_bias": -0.0153475513,
+          "model_mae": 0.2163420706,
+          "model_rmse": 0.301955221,
+          "persistence_bias": -0.0307742144,
+          "persistence_mae": 0.6314868805,
+          "persistence_rmse": 0.8557925872,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 3087.0,
+          "reference_coverage_pct": 29.1666666667,
+          "rmse_improvement_pct": 64.716307956,
+          "sample_count": 3087.0,
+          "target_time": "2020-01-04T02:00:00Z",
+          "window_complete": false
+        }
+      },
+      "24": {
+        "latest_complete_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6362229486,
+          "missing_references": 0.0,
+          "model_bias": -0.0132493963,
+          "model_mae": 0.2193489007,
+          "model_rmse": 0.3086914584,
+          "persistence_bias": 0.0121031746,
+          "persistence_mae": 0.6029761905,
+          "persistence_rmse": 0.8137175452,
+          "quality_status": "MODEL_BEATS_PERSISTENCE",
+          "received_references": 1512.0,
+          "reference_coverage_pct": 100.0,
+          "rmse_improvement_pct": 62.0640527892,
+          "sample_count": 1512.0,
+          "target_time": "2020-01-04T01:00:00Z",
+          "window_complete": true
+        },
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6153840197,
+          "missing_references": 63.0,
+          "model_bias": -0.0136418021,
+          "model_mae": 0.2197009295,
+          "model_rmse": 0.3106370802,
+          "persistence_bias": 0.0706004141,
+          "persistence_mae": 0.5712215321,
+          "persistence_rmse": 0.7750464711,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 1449.0,
+          "reference_coverage_pct": 95.8333333333,
+          "rmse_improvement_pct": 59.9201993976,
+          "sample_count": 1449.0,
+          "target_time": "2020-01-04T02:00:00Z",
+          "window_complete": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "accepted_monitor_cycles": 7,
+  "cycle_seconds": {
+    "maximum": 48.358819606,
+    "median": 40.782968470000014,
+    "p95_nearest_rank": 48.358819606,
+    "samples": [
+      32.85708262100002,
+      38.00829233800005,
+      38.57749590200001,
+      40.782968470000014,
+      43.14076729499993,
+      46.22695140899998,
+      48.358819606
+    ]
+  },
+  "cycle_stage_seconds": {
+    "duplicate_replay": {
+      "aggregation": 16.73899613399999,
+      "archive": 14.677067362000003,
+      "evaluation": 6.271944588999986,
+      "join": 0.08930258999998841,
+      "rows_per_second": 0.0,
+      "total": 46.22695140899998
+    },
+    "live_archive": {
+      "aggregation": 10.07605334799996,
+      "archive": 12.296096066000018,
+      "evaluation": 3.4408318060000056,
+      "join": 0.033907171999999264,
+      "rows_per_second": 18.30952617042854,
+      "total": 32.85708262100002
+    },
+    "live_backfill": {
+      "aggregation": 9.871675376999974,
+      "archive": 19.580689082999925,
+      "evaluation": 3.9846991879999223,
+      "join": 0.022142597000083697,
+      "rows_per_second": 0.0,
+      "total": 40.782968470000014
+    },
+    "live_backfill_repeat": {
+      "aggregation": 11.1065241230001,
+      "archive": 13.930011014999991,
+      "evaluation": 5.136654923000151,
+      "join": 0.011738957000034134,
+      "rows_per_second": 0.0,
+      "total": 38.57749590200001
+    },
+    "replay_73h": {
+      "aggregation": 14.713063325000007,
+      "archive": 11.995615617999988,
+      "evaluation": 4.057954089000077,
+      "join": 0.2388702570000305,
+      "rows_per_second": 760.7281729401402,
+      "total": 38.00829233800005
+    },
+    "replay_late_reference": {
+      "aggregation": 16.382482592999963,
+      "archive": 18.475013568999998,
+      "evaluation": 4.944605452000019,
+      "join": 0.08772246800003813,
+      "rows_per_second": 12.741158139223716,
+      "total": 48.358819606
+    },
+    "restart": {
+      "aggregation": 17.738182752999933,
+      "archive": 1.3657814370000096,
+      "evaluation": 7.809127138000008,
+      "join": 0.08356836399991607,
+      "rows_per_second": 0.0,
+      "total": 43.14076729499993
+    }
+  },
+  "inference_appended_hour": {
+    "input_rows": 63,
+    "invalid_rows": 0,
+    "model_loads": 2,
+    "new_forecasts": 63,
+    "predicted_rows": 63,
+    "seconds": 49.36343231600006
+  },
+  "status": "PASS"
+}

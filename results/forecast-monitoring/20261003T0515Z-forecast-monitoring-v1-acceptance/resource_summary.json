@@ -1,0 +1,36 @@
+{
+  "monitor_cycles": {
+    "duplicate_replay": {
+      "cpu_seconds": 7.333067000000001,
+      "peak_rss_bytes": 377139200
+    },
+    "live_archive": {
+      "cpu_seconds": 3.357587,
+      "peak_rss_bytes": 224866304
+    },
+    "live_backfill": {
+      "cpu_seconds": 2.523396,
+      "peak_rss_bytes": 224821248
+    },
+    "live_backfill_repeat": {
+      "cpu_seconds": 2.47185,
+      "peak_rss_bytes": 223543296
+    },
+    "replay_73h": {
+      "cpu_seconds": 7.723425,
+      "peak_rss_bytes": 358584320
+    },
+    "replay_late_reference": {
+      "cpu_seconds": 7.438889,
+      "peak_rss_bytes": 376991744
+    },
+    "restart": {
+      "cpu_seconds": 7.375367,
+      "peak_rss_bytes": 376569856
+    }
+  },
+  "peak_cpu_seconds": 7.723425,
+  "peak_rss_bytes": 377139200,
+  "scope": "Observed Spark driver process resources per monitoring cycle; observational, not a performance benchmark.",
+  "status": "PASS"
+}

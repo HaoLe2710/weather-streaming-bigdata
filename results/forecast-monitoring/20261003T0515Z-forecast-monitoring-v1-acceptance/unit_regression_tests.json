@@ -1,0 +1,12 @@
+{
+  "command": "python -m unittest discover -s tests",
+  "compileall_passed": true,
+  "docker_compose_config_passed": true,
+  "failed": 0,
+  "git_diff_check_passed": true,
+  "monitoring_specific_passed": 20,
+  "passed": 144,
+  "skip_note": "Six existing Spark feature-engineering semantics tests require the Spark container.",
+  "skipped": 6,
+  "status": "PASS"
+}

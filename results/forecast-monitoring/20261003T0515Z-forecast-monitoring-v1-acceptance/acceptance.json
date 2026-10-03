@@ -1,0 +1,455 @@
+{
+  "evidence_files": [
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/architecture_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/hourly_archive_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/initial_attempt_diagnosis.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/late_reference_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/live_reference_evaluation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/metric_parity_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/persisted_metrics_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/persistence_baseline_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/reference_contract.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/reference_revision_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/replay_evaluation_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/replay_publish.jsonl",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/resource_summary.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/restart_idempotency.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/rolling_metrics_validation.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/runtime_summary.json",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/unit_regression_tests.json",
+    "results/forecast-monitoring/20261003T0455Z-forecast-monitoring-v1-replay-73h-fixed/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0459Z-forecast-monitoring-v1-replay-74h-late-reference/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0502Z-forecast-monitoring-v1-restart/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0503Z-forecast-monitoring-v1-duplicate-reference/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0505Z-live-cohort-archive/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0507Z-live-cohort-backfill/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0512Z-live-cohort-backfill-repeat/monitoring_cycles.jsonl",
+    "results/forecast-monitoring/20261003T0459Z-forecast-monitoring-v1-replay-74h/inference/inference_batches.jsonl",
+    "results/streaming-inference/local-streaming-inference-v1/replay_publish.jsonl",
+    "results/forecast-monitoring/20261003T044804Z-forecast-monitoring-v1/inference/inference_batches.jsonl",
+    "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/checksums.json"
+  ],
+  "frozen_provenance": {
+    "feature_count": 73,
+    "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+    "feature_set_id": "WEATHER_FORECAST_FE_V1",
+    "model_bytes": 51662443,
+    "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+    "model_path": "/opt/project/history-data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json",
+    "model_retrained_or_tuned": false,
+    "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a"
+  },
+  "generated_at_utc": "2026-10-03T05:18:24Z",
+  "git": {
+    "base_commit": "3c518f5936af396d07ccea603865442ac30bfb9c",
+    "branch": "feature/forecast-monitoring-evaluation-v1",
+    "merge_or_tag_created": false
+  },
+  "live": {
+    "archive_rows": 6174,
+    "backfill_repeat_rows_added": 0,
+    "cohort_id": "live-20261002T173723Z-live-hourly-v1-final",
+    "evaluated": 63,
+    "evaluation_ids": 63,
+    "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+    "feature_persistence_and_target_reference_join_validation": {
+      "evaluated_rows": 63,
+      "feature_join_or_persistence_mismatches": 0,
+      "target_join_or_gate_mismatches": 0
+    },
+    "feature_time_utc": "2026-10-02T16:00:00Z",
+    "first_topic_duplicates_ignored": 1827,
+    "forecasts": 63,
+    "independent_metrics": {
+      "mae_skill_vs_persistence": -0.7291560766,
+      "model": {
+        "bias": -0.4748347812,
+        "mae": 0.5516831292,
+        "r2": 0.8831902097,
+        "rmse": 0.6244337401
+      },
+      "persistence": {
+        "bias": -0.0238095238,
+        "mae": 0.319047619,
+        "r2": 0.9435561419,
+        "rmse": 0.4340653158
+      },
+      "rmse_improvement_pct_vs_persistence": -43.8570918472,
+      "sample_count": 63
+    },
+    "invalid_rows": 0,
+    "location_comparison": {
+      "equal_or_worse": 50,
+      "evaluated": 63,
+      "model_mae_better": 13
+    },
+    "metric_parity": {
+      "field_differences": {
+        "mae_skill": 0.0,
+        "model_bias": 0.0,
+        "model_mae": 0.0,
+        "model_rmse": 0.0,
+        "persistence_bias": 0.0,
+        "persistence_mae": 0.0,
+        "persistence_rmse": 0.0,
+        "rmse_improvement_pct": 0.0
+      },
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "tolerance": 1e-09
+    },
+    "original_target_reference_present": false,
+    "pending": 0,
+    "persisted_metrics": {
+      "evaluation_lag_median_seconds": 43630.332983,
+      "evaluation_lag_p95_seconds": 43630.332983,
+      "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+      "expected_references": 63.0,
+      "expected_sample_count": 63.0,
+      "locations_evaluated": 63.0,
+      "locations_model_beats_persistence": 13.0,
+      "locations_model_equals_or_trails_persistence": 50.0,
+      "mae_skill": -0.7291560766,
+      "missing_references": 0.0,
+      "model_bias": -0.4748347812,
+      "model_mae": 0.5516831292,
+      "model_rmse": 0.6244337401,
+      "persistence_bias": -0.0238095238,
+      "persistence_mae": 0.319047619,
+      "persistence_rmse": 0.4340653158,
+      "quality_status": "MODEL_TRAILS_PERSISTENCE",
+      "received_references": 63.0,
+      "reference_arrival_lag_median_seconds": 43610.0,
+      "reference_arrival_lag_p95_seconds": 43610.0,
+      "reference_coverage_pct": 100.0,
+      "rmse_improvement_pct": -43.8570918472,
+      "sample_count": 63.0,
+      "target_time": "2026-10-02T17:00:00Z",
+      "window_complete": true
+    },
+    "reference_conflict_rows": 0,
+    "repeated_backfill_duplicates_ignored": 63,
+    "rolling_windows": {
+      "168": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 10584.0,
+          "expected_sample_count": 10584.0,
+          "location_count": 63.0,
+          "mae_skill": -0.7291560766,
+          "missing_references": 10521.0,
+          "model_bias": -0.4748347812,
+          "model_mae": 0.5516831292,
+          "model_rmse": 0.6244337401,
+          "persistence_bias": -0.0238095238,
+          "persistence_mae": 0.319047619,
+          "persistence_rmse": 0.4340653158,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 63.0,
+          "reference_coverage_pct": 0.5952380952,
+          "rmse_improvement_pct": -43.8570918472,
+          "sample_count": 63.0,
+          "target_time": "2026-10-02T17:00:00Z",
+          "window_complete": false
+        }
+      },
+      "24": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": -0.7291560766,
+          "missing_references": 1449.0,
+          "model_bias": -0.4748347812,
+          "model_mae": 0.5516831292,
+          "model_rmse": 0.6244337401,
+          "persistence_bias": -0.0238095238,
+          "persistence_mae": 0.319047619,
+          "persistence_rmse": 0.4340653158,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 63.0,
+          "reference_coverage_pct": 4.1666666667,
+          "rmse_improvement_pct": -43.8570918472,
+          "sample_count": 63.0,
+          "target_time": "2026-10-02T17:00:00Z",
+          "window_complete": false
+        }
+      }
+    },
+    "source": "OPEN_METEO_LIVE_HOURLY",
+    "source_is_station_ground_truth": false,
+    "source_rows_added": 6111,
+    "target_references": 63,
+    "target_time_utc": "2026-10-02T17:00:00Z"
+  },
+  "merge_recommendation": "READY_TO_MERGE_WITH_LIMITATION: implementation and delayed-loop acceptance passed; only one backfilled live target hour is available and it shows XGBoost below persistence, so this is not long-term accuracy evidence",
+  "next_milestone": "Forecast API & Alerting V1",
+  "paths": {
+    "checkpoint": "/opt/project/data/checkpoints/weather_forecast_monitoring_v1",
+    "evaluations": "/opt/project/data/streaming/weather_forecast_evaluation_v1/evaluations",
+    "hourly_archive": "/opt/project/data/streaming/weather_hourly_observations_v1/observations",
+    "hourly_metrics": "/opt/project/data/streaming/weather_forecast_evaluation_v1/hourly_metrics",
+    "rolling_global_metrics": "/opt/project/data/streaming/weather_forecast_evaluation_v1/rolling_global_metrics",
+    "rolling_location_metrics": "/opt/project/data/streaming/weather_forecast_evaluation_v1/rolling_location_metrics"
+  },
+  "phase": "Forecast Monitoring & Evaluation V1",
+  "post_change_gitnexus": {
+    "affected_processes": 0,
+    "changed_files": 43,
+    "clusters": 92,
+    "detect_changes_scope": "all",
+    "edges": 4938,
+    "flows": 173,
+    "mapped_changed_symbols": 4,
+    "nodes": 2815,
+    "partial_or_truncated_flags": "not returned in the result",
+    "reindex_command": "node .gitnexus/run.cjs analyze --skills --embeddings --verbose",
+    "repo_specific_skills_generated": 10,
+    "risk_interpretation": "The low summary applies to mapped symbols. New Python evaluator/aggregation symbols were not mapped, so it is not an all-clear.",
+    "risk_level": "low",
+    "semantic_vector_index": "unavailable; exact-scan fallback reported",
+    "symbol_checks": {
+      "build_rolling_metrics": {
+        "context": "not found",
+        "upstream_impact": "UNKNOWN"
+      },
+      "evaluate_forecasts": {
+        "context": "not found",
+        "upstream_impact": "UNKNOWN"
+      }
+    },
+    "text_search_confirmation": {
+      "definitions": [
+        "monitoring/forecast_evaluator.py",
+        "monitoring/rolling_metrics.py"
+      ],
+      "runtime_call_sites": [
+        "spark/jobs/weather_forecast_monitoring.py"
+      ],
+      "test_call_sites": [
+        "tests/test_forecast_monitoring.py"
+      ]
+    }
+  },
+  "replay": {
+    "appended_hour": {
+      "archive_rows_added": 63,
+      "forecasts_added": 63,
+      "inference_rejected": 0,
+      "new_evaluations": 63,
+      "pending_rows_advanced_to_evaluated": 63,
+      "source_rows": 63
+    },
+    "duplicate_replay": {
+      "archive_rows_added": 0,
+      "duplicate_evaluation_rows": 0,
+      "evaluation_rows_inserted": 0,
+      "evaluation_rows_updated": 0,
+      "ignored_duplicate_rows": 63,
+      "repeated_observation_rows": 63,
+      "revision_rows": 0
+    },
+    "expected_locations": 63,
+    "final_74h": {
+      "archive_rows": 4662,
+      "duplicate_evaluation_rows": 0,
+      "evaluated": 3087,
+      "evaluation_ids": 3150,
+      "feature_or_target_join_mismatches": 0,
+      "forecasts": 3150,
+      "invalid": 0,
+      "pending": 63,
+      "reference_conflict_rows": 0,
+      "target_gate_or_join_mismatches": 0
+    },
+    "independent_metrics": {
+      "mae_skill_vs_persistence": 0.6574084478,
+      "model": {
+        "bias": -0.0153475513,
+        "mae": 0.2163420706,
+        "r2": 0.9936963631,
+        "rmse": 0.301955221
+      },
+      "persistence": {
+        "bias": -0.0307742144,
+        "mae": 0.6314868805,
+        "r2": 0.9493658943,
+        "rmse": 0.8557925872
+      },
+      "rmse_improvement_pct_vs_persistence": 64.716307956,
+      "sample_count": 3087
+    },
+    "location_comparison": {
+      "equal_or_worse": 0,
+      "evaluated": 63,
+      "model_mae_better": 63
+    },
+    "persisted_metric_parity": {
+      "field_differences": {
+        "mae_skill": 0.0,
+        "model_bias": 0.0,
+        "model_mae": 0.0,
+        "model_rmse": 0.0,
+        "persistence_bias": 0.0,
+        "persistence_mae": 0.0,
+        "persistence_rmse": 0.0,
+        "rmse_improvement_pct": 0.0
+      },
+      "max_abs_difference": 0.0,
+      "passed": true,
+      "tolerance": 1e-09
+    },
+    "restart": {
+      "archive_rows_added": 0,
+      "duplicate_evaluation_rows": 0,
+      "evaluation_rows_inserted": 0,
+      "evaluation_rows_updated": 0,
+      "evaluations_before": 3150,
+      "source_rows": 0
+    },
+    "rolling_windows": {
+      "168": {
+        "latest_complete_snapshot": null,
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 10584.0,
+          "expected_sample_count": 10584.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6574084478,
+          "missing_references": 7497.0,
+          "model_bias": -0.0153475513,
+          "model_mae": 0.2163420706,
+          "model_rmse": 0.301955221,
+          "persistence_bias": -0.0307742144,
+          "persistence_mae": 0.6314868805,
+          "persistence_rmse": 0.8557925872,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 3087.0,
+          "reference_coverage_pct": 29.1666666667,
+          "rmse_improvement_pct": 64.716307956,
+          "sample_count": 3087.0,
+          "target_time": "2020-01-04T02:00:00Z",
+          "window_complete": false
+        }
+      },
+      "24": {
+        "latest_complete_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6362229486,
+          "missing_references": 0.0,
+          "model_bias": -0.0132493963,
+          "model_mae": 0.2193489007,
+          "model_rmse": 0.3086914584,
+          "persistence_bias": 0.0121031746,
+          "persistence_mae": 0.6029761905,
+          "persistence_rmse": 0.8137175452,
+          "quality_status": "MODEL_BEATS_PERSISTENCE",
+          "received_references": 1512.0,
+          "reference_coverage_pct": 100.0,
+          "rmse_improvement_pct": 62.0640527892,
+          "sample_count": 1512.0,
+          "target_time": "2020-01-04T01:00:00Z",
+          "window_complete": true
+        },
+        "latest_snapshot": {
+          "expected_location_count": 63.0,
+          "expected_references": 1512.0,
+          "expected_sample_count": 1512.0,
+          "location_count": 63.0,
+          "mae_skill": 0.6153840197,
+          "missing_references": 63.0,
+          "model_bias": -0.0136418021,
+          "model_mae": 0.2197009295,
+          "model_rmse": 0.3106370802,
+          "persistence_bias": 0.0706004141,
+          "persistence_mae": 0.5712215321,
+          "persistence_rmse": 0.7750464711,
+          "quality_status": "INSUFFICIENT_SAMPLE",
+          "received_references": 1449.0,
+          "reference_coverage_pct": 95.8333333333,
+          "rmse_improvement_pct": 59.9201993976,
+          "sample_count": 1449.0,
+          "target_time": "2020-01-04T02:00:00Z",
+          "window_complete": false
+        }
+      }
+    },
+    "topic": "weather.forecast-monitoring.replay.v1",
+    "window_73h": {
+      "archive_rows_added": 4599,
+      "duplicate_rows": 0,
+      "evaluated": 3024,
+      "forecasts": 3087,
+      "pending": 63,
+      "reference_conflicts": 0,
+      "rejected": 0,
+      "source_rows": 4599
+    }
+  },
+  "runtime": {
+    "inference_74th_hour": {
+      "input_rows": 63,
+      "invalid_rows": 0,
+      "model_loads": 2,
+      "new_forecasts": 63,
+      "predicted_rows": 63,
+      "seconds": 49.36343231600006
+    },
+    "live_archive_cycle": {
+      "aggregation_seconds": 10.07605334799996,
+      "archive_seconds": 12.296096066000018,
+      "cpu_seconds": 3.357587,
+      "evaluation_seconds": 3.4408318060000056,
+      "peak_rss_bytes": 224866304,
+      "seconds": 32.85708262100002
+    },
+    "live_backfill_cycle": {
+      "aggregation_seconds": 9.871675376999974,
+      "archive_seconds": 19.580689082999925,
+      "cpu_seconds": 2.523396,
+      "evaluation_seconds": 3.9846991879999223,
+      "peak_rss_bytes": 224821248,
+      "seconds": 40.782968470000014
+    },
+    "live_repeat_cycle": {
+      "aggregation_seconds": 11.1065241230001,
+      "archive_seconds": 13.930011014999991,
+      "cpu_seconds": 2.47185,
+      "evaluation_seconds": 5.136654923000151,
+      "peak_rss_bytes": 223543296,
+      "seconds": 38.57749590200001
+    },
+    "replay_73h_cycle": {
+      "aggregation_seconds": 14.713063325000007,
+      "archive_seconds": 11.995615617999988,
+      "cpu_seconds": 7.723425,
+      "evaluation_seconds": 4.057954089000077,
+      "peak_rss_bytes": 358584320,
+      "seconds": 38.00829233800005
+    },
+    "replay_74h_cycle": {
+      "aggregation_seconds": 16.382482592999963,
+      "archive_seconds": 18.475013568999998,
+      "cpu_seconds": 7.438889,
+      "evaluation_seconds": 4.944605452000019,
+      "peak_rss_bytes": 376991744,
+      "seconds": 48.358819606
+    }
+  },
+  "validation": {
+    "compileall_passed": true,
+    "delta_join_gate_and_persistence_checks_passed": true,
+    "docker_compose_config_passed": true,
+    "git_diff_check_passed": true,
+    "persisted_delta_metric_parity": true,
+    "unit_tests_failed": 0,
+    "unit_tests_passed": 144,
+    "unit_tests_skipped": 6
+  }
+}

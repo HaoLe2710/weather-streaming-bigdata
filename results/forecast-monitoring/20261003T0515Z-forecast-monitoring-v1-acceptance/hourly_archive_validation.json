@@ -1,0 +1,39 @@
+{
+  "canonical_live_archive_path": "/opt/project/data/streaming/weather_hourly_observations_v1/observations",
+  "canonical_live_archive_rows": 6174,
+  "duplicate_rows_ignored_total_across_live_cycles": 1890,
+  "invalid_rows": 0,
+  "live_backfill": {
+    "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+    "rows_added": 63,
+    "source": "OPEN_METEO_LIVE_HOURLY"
+  },
+  "live_kafka_capture": {
+    "canonical_rows_added": 6111,
+    "duplicate_messages_ignored": 1827,
+    "physical_messages_read": 7938
+  },
+  "live_source_rows_added": 6111,
+  "policy": "first accepted canonical payload wins; identical duplicates ignored; changed payloads logged as revisions",
+  "reference_conflicts": 0,
+  "repeated_backfill": {
+    "duplicates_ignored": 63,
+    "rows_added": 0,
+    "rows_seen": 63
+  },
+  "replay_validation_archive": {
+    "path": "/opt/project/data/streaming/weather_forecast_monitoring_v1_validation/20261003T0455Z-monitoring-fixed/hourly_archive",
+    "rows": 4662,
+    "source_rows_73h": 4599
+  },
+  "source_counts": {
+    "NATIONWIDE_63_DELTA_REPLAY": 4536,
+    "OPEN_METEO_LIVE_HOURLY": 1638
+  },
+  "status": "PASS",
+  "uniqueness_key": [
+    "source",
+    "location_id",
+    "event_time"
+  ]
+}

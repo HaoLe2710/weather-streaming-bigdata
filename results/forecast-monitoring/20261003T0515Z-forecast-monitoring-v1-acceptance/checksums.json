@@ -1,0 +1,217 @@
+{
+  "algorithm": "SHA-256",
+  "file_count": 42,
+  "files": [
+    {
+      "bytes": 5039,
+      "path": "docker-compose.yml",
+      "sha256": "b233ab4391002671f556057789d0a3aaac6d90003c1a85f30fae40337289d266"
+    },
+    {
+      "bytes": 11228,
+      "path": "docs/FORECAST_MONITORING_EVALUATION_V1.md",
+      "sha256": "de8833303cdd2a30ee21e39c32098ecc1fb82dc54fc0e2ed4efb3407435c6cd2"
+    },
+    {
+      "bytes": 13272,
+      "path": "docs/FORECAST_MONITORING_EVALUATION_V1_REPORT.md",
+      "sha256": "e4649d930ed8ab85a2faf00e1c937b531a350d2fcbf155fbcb426cf32c49c430"
+    },
+    {
+      "bytes": 13962,
+      "path": "docs/LIVE_HOURLY_OBSERVATION_V1.md",
+      "sha256": "5618289c030b563998365499415780685f71548b04591dd58170b71bbabe0b6d"
+    },
+    {
+      "bytes": 11957,
+      "path": "docs/STREAMING_INFERENCE_V1.md",
+      "sha256": "f9b0c8d83f1f0d3a65af2162af535a399e549f9ad918eaa1434ed8a77146a5b1"
+    },
+    {
+      "bytes": 144,
+      "path": "monitoring/__init__.py",
+      "sha256": "1c986fa61a5096231c43d6a438f9e64bb0f2fb79493d69e836874ef6d4e09396"
+    },
+    {
+      "bytes": 7955,
+      "path": "monitoring/evaluation_contract.py",
+      "sha256": "f3f9dabd634c7ba148f56c5d7d083233c9d9dc971e06806e1bd6184760a27256"
+    },
+    {
+      "bytes": 18764,
+      "path": "monitoring/forecast_evaluator.py",
+      "sha256": "31e7ac12847b7d06492ae771195da8dbddb7e6bf3f655ab5b1a9277e515274a2"
+    },
+    {
+      "bytes": 7917,
+      "path": "monitoring/hourly_archive.py",
+      "sha256": "b2a43781eda55fabdf9aaabbe1ffa90979d2df34856ec871a1df365d655588e2"
+    },
+    {
+      "bytes": 7951,
+      "path": "monitoring/live_reference_backfill.py",
+      "sha256": "55e0fc49af2fd4b274274eff6daa0912a4d6eaf0d1913c7f1f36160f47ee36e0"
+    },
+    {
+      "bytes": 11746,
+      "path": "monitoring/metrics.py",
+      "sha256": "47f71e644ec02a3f9a3ff403af5a008214aae54619e354dd360cdede8ba1b2df"
+    },
+    {
+      "bytes": 8630,
+      "path": "monitoring/rolling_metrics.py",
+      "sha256": "859eba3258b843219b07d5f6c26cc2f00dde550088f08db66bb87482b76a68bf"
+    },
+    {
+      "bytes": 1082,
+      "path": "results/forecast-monitoring/20261003T044804Z-forecast-monitoring-v1/inference/inference_batches.jsonl",
+      "sha256": "1cd902d15da931a268401068399e9a250a81e9a147bfcc9b4e3a9b3a939c8ea0"
+    },
+    {
+      "bytes": 2351,
+      "path": "results/forecast-monitoring/20261003T0455Z-forecast-monitoring-v1-replay-73h-fixed/monitoring_cycles.jsonl",
+      "sha256": "1ae7ce16dbaee35ec90943a0052f2727d52016acb3b6062c437f471ddced2b8e"
+    },
+    {
+      "bytes": 2321,
+      "path": "results/forecast-monitoring/20261003T0459Z-forecast-monitoring-v1-replay-74h-late-reference/monitoring_cycles.jsonl",
+      "sha256": "ca4a038bb38716cacfd8df8dfbada9fb9c65013cd4edcf0af918e15e001656da"
+    },
+    {
+      "bytes": 1072,
+      "path": "results/forecast-monitoring/20261003T0459Z-forecast-monitoring-v1-replay-74h/inference/inference_batches.jsonl",
+      "sha256": "6fe66323cd413109dd97b366cd4bf6226acbcb2a2d6ecc53a34b1c0d85c1670a"
+    },
+    {
+      "bytes": 2308,
+      "path": "results/forecast-monitoring/20261003T0502Z-forecast-monitoring-v1-restart/monitoring_cycles.jsonl",
+      "sha256": "215c540b703f413c68c7fb6f6fcfa116a2cea196c370d96738afc1f3e8a54e00"
+    },
+    {
+      "bytes": 2317,
+      "path": "results/forecast-monitoring/20261003T0503Z-forecast-monitoring-v1-duplicate-reference/monitoring_cycles.jsonl",
+      "sha256": "5faf17626b852cb7175e3e5782e29db79b7a81d57d1ed9d694284938eed6ba09"
+    },
+    {
+      "bytes": 2203,
+      "path": "results/forecast-monitoring/20261003T0505Z-live-cohort-archive/monitoring_cycles.jsonl",
+      "sha256": "a27976501d591afcce7d610dd7c353bc1f1aead7830017a8734020953efec46a"
+    },
+    {
+      "bytes": 2208,
+      "path": "results/forecast-monitoring/20261003T0507Z-live-cohort-backfill/monitoring_cycles.jsonl",
+      "sha256": "0b92a8ba69350e75723350519715df16c5745062c7f22ab01c0b114b42a9b6b2"
+    },
+    {
+      "bytes": 2204,
+      "path": "results/forecast-monitoring/20261003T0512Z-live-cohort-backfill-repeat/monitoring_cycles.jsonl",
+      "sha256": "9fb10acb8cd8f18c3ac713a7f6656899c8752ee14b6a7f8158b414a38c45e03e"
+    },
+    {
+      "bytes": 18194,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/acceptance.json",
+      "sha256": "3e1d24a8231d7b5dfaaf22123b49cdf3aa5c672f0c90acaf3dc2b956d1c2b9d0"
+    },
+    {
+      "bytes": 1276,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/architecture_validation.json",
+      "sha256": "e2c1555a04ddd110b5271311d5f3fe4443cf93a0e82113c06315fd7811e7157f"
+    },
+    {
+      "bytes": 1241,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/hourly_archive_validation.json",
+      "sha256": "011d439be6fdba6d48b5a775058f16f219b1c530c2b2169a04a022a972705f0d"
+    },
+    {
+      "bytes": 483,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/initial_attempt_diagnosis.json",
+      "sha256": "61766b471383ad586cb9806a6a795f676b9f2879024fe64bd1e05d6d09c4f719"
+    },
+    {
+      "bytes": 3107,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/late_reference_validation.json",
+      "sha256": "adf32000cbfe69826f0b1543fe18d3585549297e7a5aac35eabf2387a09aef97"
+    },
+    {
+      "bytes": 1970,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/live_reference_evaluation.json",
+      "sha256": "c7f08afce8019cf388ece2d6cb8123753b86ce280d058adddb30232e7f0225c0"
+    },
+    {
+      "bytes": 986,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/metric_parity_validation.json",
+      "sha256": "7f38920301451a7f73eaae2d211ffaa22690c84472798feeb0af34d3bb66656a"
+    },
+    {
+      "bytes": 69854,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/persisted_metrics_validation.json",
+      "sha256": "161dcd669781482b02d0140993c9e6ed81e0c606899e6cbb81efd732f3cacb90"
+    },
+    {
+      "bytes": 896,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/persistence_baseline_validation.json",
+      "sha256": "69cb6c4c38d68cbab97299ba2d7d5423040c164bf3f1ac536d7ab19449bd956c"
+    },
+    {
+      "bytes": 874,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/reference_contract.json",
+      "sha256": "604d73cc7ad8c73d110560707dd0d0cb7080ebf1cc76f257bcd1219d842aa5ba"
+    },
+    {
+      "bytes": 536,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/reference_revision_validation.json",
+      "sha256": "140568848c15e540c1fd61fd67b8dfa5361ae7c6b58ee6f1ad3805daa3b8cfad"
+    },
+    {
+      "bytes": 1313,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/replay_evaluation_validation.json",
+      "sha256": "577ee05f4f4cf154d8473fc89c8b1887298b0f7b4480c819044947d5e7f4b557"
+    },
+    {
+      "bytes": 550,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/replay_publish.jsonl",
+      "sha256": "ae1635890673a4f08252f60e24257240f663167147e8169853f5296bb52aaa07"
+    },
+    {
+      "bytes": 949,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/resource_summary.json",
+      "sha256": "b0e5e14f58b3cbd687780b614d248f056049f456040e574b1dc2a4fd819b9134"
+    },
+    {
+      "bytes": 3392,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/restart_idempotency.json",
+      "sha256": "4596e71c0b3c6fba4466737eaf5b2f3cb454c05497e633c193eff8e02f276401"
+    },
+    {
+      "bytes": 4529,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/rolling_metrics_validation.json",
+      "sha256": "a7e8f8c1fd3eaf57e1f22b9276f2984eb891cdb05e85dc86d171add4946bde2b"
+    },
+    {
+      "bytes": 2438,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/runtime_summary.json",
+      "sha256": "ffb42d180da9bf20172e80f26583a92deb0226251a9b2631d3ae6b1598f24333"
+    },
+    {
+      "bytes": 376,
+      "path": "results/forecast-monitoring/20261003T0515Z-forecast-monitoring-v1-acceptance/unit_regression_tests.json",
+      "sha256": "1009976c8686dca1d25c563fdb4ec30142674925f6013c0f70e53fdb3ecd5c08"
+    },
+    {
+      "bytes": 550,
+      "path": "results/streaming-inference/local-streaming-inference-v1/replay_publish.jsonl",
+      "sha256": "ae1635890673a4f08252f60e24257240f663167147e8169853f5296bb52aaa07"
+    },
+    {
+      "bytes": 40136,
+      "path": "spark/jobs/weather_forecast_monitoring.py",
+      "sha256": "751768d7cac518553dc3f09968884a50e0699a1e1cbb47942a7e972b142cd750"
+    },
+    {
+      "bytes": 22064,
+      "path": "tests/test_forecast_monitoring.py",
+      "sha256": "2d9d59b4b06ae3afd4552893570c1521a5f5c62ee98c1465abc4faa22d26f8b8"
+    }
+  ],
+  "manifest_scope": "All changed and committed phase files present at generation time, excluding this self-referential checksums.json file."
+}

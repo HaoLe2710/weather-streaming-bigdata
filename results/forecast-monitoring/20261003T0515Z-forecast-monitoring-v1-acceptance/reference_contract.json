@@ -1,0 +1,21 @@
+{
+  "canonical_revision_policy": "First accepted value wins; do not rewrite canonical or evaluated evidence.",
+  "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+  "feature_reference_join": [
+    "source",
+    "location_id",
+    "event_time == feature_time"
+  ],
+  "future_forecast_api_scoring": "forbidden",
+  "live_source": "OPEN_METEO_LIVE_HOURLY",
+  "not_station_ground_truth": true,
+  "reference_definition": "Same-source canonical hourly Forecast API record for the forecast location at target_time.",
+  "reference_payload_sha256": "Persisted on evaluation rows for payload provenance.",
+  "status": "PASS",
+  "target_gate": "evaluation_time >= target_time and target reference exists; live records must have been accepted through safe-hour pipeline.",
+  "target_reference_join": [
+    "source",
+    "location_id",
+    "event_time == target_time"
+  ]
+}

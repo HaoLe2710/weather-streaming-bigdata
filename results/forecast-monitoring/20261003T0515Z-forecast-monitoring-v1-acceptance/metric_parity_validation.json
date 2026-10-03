@@ -1,0 +1,40 @@
+{
+  "bias_definition": "mean(prediction - reference)",
+  "independent_metric_validation": {
+    "max_abs_difference": 0.0,
+    "passed": true,
+    "tolerance": 1e-09
+  },
+  "live": {
+    "field_differences": {
+      "mae_skill": 0.0,
+      "model_bias": 0.0,
+      "model_mae": 0.0,
+      "model_rmse": 0.0,
+      "persistence_bias": 0.0,
+      "persistence_mae": 0.0,
+      "persistence_rmse": 0.0,
+      "rmse_improvement_pct": 0.0
+    },
+    "max_abs_difference": 0.0,
+    "passed": true,
+    "tolerance": 1e-09
+  },
+  "replay": {
+    "field_differences": {
+      "mae_skill": 0.0,
+      "model_bias": 0.0,
+      "model_mae": 0.0,
+      "model_rmse": 0.0,
+      "persistence_bias": 0.0,
+      "persistence_mae": 0.0,
+      "persistence_rmse": 0.0,
+      "rmse_improvement_pct": 0.0
+    },
+    "max_abs_difference": 0.0,
+    "passed": true,
+    "tolerance": 1e-09
+  },
+  "rmse_definition": "sqrt(mean(row_squared_error))",
+  "status": "PASS"
+}

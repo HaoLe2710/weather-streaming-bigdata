@@ -1,0 +1,46 @@
+{
+  "73h": {
+    "archive_rows_added": 4599,
+    "duplicate_rows": 0,
+    "evaluated": 3024,
+    "forecasts": 3087,
+    "pending": 63,
+    "reference_conflicts": 0,
+    "rejected": 0,
+    "source_rows": 4599
+  },
+  "74h_appended_hour": {
+    "archive_rows_added": 63,
+    "forecasts_added": 63,
+    "inference_rejected": 0,
+    "new_evaluations": 63,
+    "pending_rows_advanced_to_evaluated": 63,
+    "source_rows": 63
+  },
+  "cycle_evidence": "results/forecast-monitoring/20261003T0455Z-forecast-monitoring-v1-replay-73h-fixed/monitoring_cycles.jsonl",
+  "duplicate_replay": {
+    "archive_rows_added": 0,
+    "duplicate_evaluation_rows": 0,
+    "evaluation_rows_inserted": 0,
+    "evaluation_rows_updated": 0,
+    "ignored_duplicate_rows": 63,
+    "repeated_observation_rows": 63,
+    "revision_rows": 0
+  },
+  "expected_locations": 63,
+  "final_74h": {
+    "archive_rows": 4662,
+    "duplicate_evaluation_rows": 0,
+    "evaluated": 3087,
+    "evaluation_ids": 3150,
+    "feature_or_target_join_mismatches": 0,
+    "forecasts": 3150,
+    "invalid": 0,
+    "pending": 63,
+    "reference_conflict_rows": 0,
+    "target_gate_or_join_mismatches": 0
+  },
+  "source": "NATIONWIDE_63_DELTA_REPLAY",
+  "status": "PASS",
+  "topic": "weather.forecast-monitoring.replay.v1"
+}

@@ -1,0 +1,60 @@
+{
+  "cohort_id": "live-20261002T173723Z-live-hourly-v1-final",
+  "evaluated": 63,
+  "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+  "feature_time_utc": "2026-10-02T16:00:00Z",
+  "forecasts": 63,
+  "mae_skill_vs_persistence": -0.7291560766,
+  "missing_references": 0,
+  "model_metrics": {
+    "bias": -0.4748347812,
+    "mae": 0.5516831292,
+    "r2": 0.8831902097,
+    "rmse": 0.6244337401
+  },
+  "original_target_reference_present": false,
+  "per_location": {
+    "equal_or_worse": 50,
+    "evaluated": 63,
+    "model_mae_better": 13
+  },
+  "persisted_metrics": {
+    "evaluation_lag_median_seconds": 43630.332983,
+    "evaluation_lag_p95_seconds": 43630.332983,
+    "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+    "expected_references": 63.0,
+    "expected_sample_count": 63.0,
+    "locations_evaluated": 63.0,
+    "locations_model_beats_persistence": 13.0,
+    "locations_model_equals_or_trails_persistence": 50.0,
+    "mae_skill": -0.7291560766,
+    "missing_references": 0.0,
+    "model_bias": -0.4748347812,
+    "model_mae": 0.5516831292,
+    "model_rmse": 0.6244337401,
+    "persistence_bias": -0.0238095238,
+    "persistence_mae": 0.319047619,
+    "persistence_rmse": 0.4340653158,
+    "quality_status": "MODEL_TRAILS_PERSISTENCE",
+    "received_references": 63.0,
+    "reference_arrival_lag_median_seconds": 43610.0,
+    "reference_arrival_lag_p95_seconds": 43610.0,
+    "reference_coverage_pct": 100.0,
+    "rmse_improvement_pct": -43.8570918472,
+    "sample_count": 63.0,
+    "target_time": "2026-10-02T17:00:00Z",
+    "window_complete": true
+  },
+  "persistence_metrics": {
+    "bias": -0.0238095238,
+    "mae": 0.319047619,
+    "r2": 0.9435561419,
+    "rmse": 0.4340653158
+  },
+  "references": 63,
+  "rmse_improvement_pct_vs_persistence": -43.8570918472,
+  "source": "OPEN_METEO_LIVE_HOURLY",
+  "source_is_station_ground_truth": false,
+  "status": "PASS",
+  "target_time_utc": "2026-10-02T17:00:00Z"
+}
