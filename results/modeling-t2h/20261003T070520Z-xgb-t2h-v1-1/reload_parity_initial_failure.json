@@ -1,0 +1,11 @@
+{
+  "feature_count": 73,
+  "feature_names_match": true,
+  "max_absolute_prediction_difference": 0.000102996826171875,
+  "sample_rows": 25000,
+  "serialized_model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+  "split": "VALIDATION",
+  "status": "FAIL",
+  "tolerance": 1e-06,
+  "diagnosis": "The final in-memory booster used CUDA while the JSON-reloaded booster used its default predictor device. Independent CPU/GPU prediction on the same serialized model differs by about 1e-4 on this machine; parity must compare both boosters on the same final-fit device."
+}

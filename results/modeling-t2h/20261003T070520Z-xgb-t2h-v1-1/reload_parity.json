@@ -1,0 +1,12 @@
+{
+  "feature_count": 73,
+  "feature_names_match": true,
+  "max_absolute_prediction_difference": 0.0,
+  "parity_definition": "Both in-memory and JSON-reloaded boosters use the final-fit device before comparing identical VALIDATION rows.",
+  "parity_device": "cuda",
+  "sample_rows": 25000,
+  "serialized_model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+  "split": "VALIDATION",
+  "status": "PASS",
+  "tolerance": 1e-06
+}

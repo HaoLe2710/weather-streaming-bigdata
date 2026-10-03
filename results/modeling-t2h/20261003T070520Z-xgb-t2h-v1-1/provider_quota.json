@@ -1,0 +1,70 @@
+{
+  "audit_time_utc": "2026-10-03T09:18:08Z",
+  "provider": "Open-Meteo",
+  "official_source": "https://open-meteo.com/en/pricing",
+  "free_tier_limits": {
+    "calls_per_minute": 600,
+    "calls_per_hour": 5000,
+    "calls_per_day": 10000,
+    "commercial_use": false
+  },
+  "provider_call_accounting": {
+    "description": "Provider documentation describes fractional call accounting by duration, variables, and locations; periods longer than two weeks or more than ten weather variables may count as multiple calls.",
+    "estimate_formula_used_for_pacing": "location_count * inclusive_days / 14 * variable_count / 10",
+    "six_year_predictor_and_target_estimate": 7891.2,
+    "estimate_is_provider_invoice": false,
+    "acquisition_attempt_count": 100,
+    "acquisition_attempt_units_estimated": 10818.7,
+    "non_429_or_legacy_success_units_estimated": 8073.7,
+    "http_429_attempt_count": 15,
+    "http_429_attempt_units_estimated": 2745.0,
+    "live_probe_http_request_count": 2,
+    "live_probe_units_estimated": 6.3,
+    "all_attempts_including_live_probe_units_estimated": 10825.0,
+    "daily_limit_if_all_rejected_requests_count": 10000,
+    "conditional_attempt_estimate_excess_units_including_probe": 825.0,
+    "daily_limit_interpretation": "The public pricing page does not specify whether rejected HTTP 429 attempts count toward the daily cap. No provider usage meter or invoice was available. Treat 10,825.0 as an upper-bound attempt estimate, not confirmed billed or provider-accounted usage."
+  },
+  "observed_response": {
+    "status_code": 429,
+    "response_headers_retry_after": null,
+    "response_body": "{\"error\":true,\"reason\":\"Minutely API request limit exceeded. Please try again in one minute.\"}",
+    "observed_at_utc": "2026-10-03",
+    "handling": "The initial 30-second-only pacing was stopped after the local ledger showed a 9,791.6-unit rolling-hour estimate. The downloader now counts every attempt, including HTTP 429, in minute/hour/daily safety guards. It resumed from checksummed chunks after quota windows cleared; the 10 remaining chunk attempts completed with no 429. A separate local non-429 estimate is retained, but provider accounting for rejected requests remains unverified."
+  },
+  "source_contract_impact": "No source/model/date contract change. Full 2020-2025 range is complete and checksum-valid. Quota limitation is recorded; no additional API requests are planned.",
+  "observed_request_ledger_snapshot_before_guard": {
+    "attempts_in_rolling_hour": 90,
+    "estimated_call_units_in_rolling_hour": 9791.592857142858,
+    "estimated_units_marked_charged_in_rolling_hour": 7046.592857142858,
+    "provider_rejected_http_429_attempts_in_snapshot": 15,
+    "interpretation": "Local estimates from this run manifest; not provider telemetry or an invoice. This peak occurred under the initial 30-second-only pacing before the rolling guard was added."
+  },
+  "post_guard_resume": {
+    "first_resumed_success_at_utc": "2026-10-03T08:47:32Z",
+    "attempt_count": 10,
+    "estimated_attempt_units": 1027.107142857143,
+    "http_429_attempt_count": 0,
+    "peak_estimated_units_per_rolling_minute": 366.0,
+    "peak_estimated_units_per_rolling_hour": 1027.107142857143,
+    "all_remaining_chunks_completed": true,
+    "raw_validation": "PASS"
+  },
+  "live_probe": {
+    "status": "PASS",
+    "locations": 63,
+    "hours_per_location": 24,
+    "timestamp_mismatches": 0,
+    "coordinate_mismatches": 0,
+    "value_mismatches_by_variable": {
+      "temperature_2m": 0,
+      "relative_humidity_2m": 0,
+      "precipitation": 0,
+      "pressure_msl": 0,
+      "wind_speed_10m": 0,
+      "wind_gusts_10m": 0,
+      "weather_code": 0
+    },
+    "estimated_api_call_units": 6.3
+  }
+}
