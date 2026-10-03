@@ -1,0 +1,43 @@
+{
+  "decision": "RETRAIN_T2H_WITH_COMPLETED_HOUR_INPUT",
+  "current_contract_prospective": false,
+  "current_lead_time_example_seconds": -300,
+  "latest_semantically_valid_feature_time_rule": "Until training/live feature parity is proven, use the latest completed UTC hour: floor(now_utc_hour) - 1 hour.",
+  "selected_production_feature_time_rule": "Latest completed common provider UTC hour; do not include the in-progress provider hour.",
+  "selected_model_horizon_hours": 2,
+  "requires_model_retraining": true,
+  "target_contract": "target_temperature_2h = same-location temperature exactly 2 chronological hours after feature_time",
+  "example": {
+    "wall_clock_utc": "2026-10-03T17:05:00Z",
+    "feature_time_utc": "2026-10-03T16:00:00Z",
+    "target_time_utc": "2026-10-03T18:00:00Z",
+    "forecast_lead_seconds": 3300
+  },
+  "rationale": "The current safe-hour + frozen T1H contract emits after its target has started. B preserves completed-hour inputs and gives an exact +2h target that remains 55 minutes ahead at H+5. A has positive lead in one probe but the frozen model was trained on Archive Best Match, live uses Forecast Best Match, and Archive training does not persist its selected model/vintage; wind-gust interval semantics are not proven equivalent. Do not claim frozen T1H reuse is a no-compromise design.",
+  "rejected_alternatives": [
+    {
+      "contract": "KEEP_T1H_WITH_CURRENT_HOUR_INPUT",
+      "reason": "Time-causal in the probe but semantic compatibility with the frozen Archive-trained model is not established, including model-specific wind-gust time basis."
+    },
+    {
+      "contract": "TIMING_CONTRACT_UNRESOLVED",
+      "reason": "The conservative completed-hour + exact +2h option resolves target timing without relabeling; remaining feature-source pinning belongs in the explicitly named V1.1 modeling milestone."
+    }
+  ],
+  "timestamp_relabeling_required": false,
+  "recommended_next_milestone": "Weather Forecast Modeling V1.1 — +2h Horizon",
+  "next_milestone_requirements": [
+    "Train the target at exactly feature_time + 2h.",
+    "Pin the predictor source/vintage to match live Forecast API semantics; Historical Forecast API is the documented aligned archive option.",
+    "Document and pin target/reference semantics.",
+    "Keep lags and trailing rolling windows causal and ending at the completed feature hour.",
+    "Only after a new frozen model passes validation, collect the prospective 24-hour cohort."
+  ],
+  "scope": {
+    "model_retrained": false,
+    "safe_hour_rule_changed": false,
+    "prospective_24h_cohort_collected": false,
+    "api_dashboard_alerts_built": false,
+    "validation_branch_merged_or_deleted": false
+  }
+}

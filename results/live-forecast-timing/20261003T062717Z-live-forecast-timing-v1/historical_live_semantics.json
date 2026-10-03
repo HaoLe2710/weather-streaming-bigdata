@@ -1,0 +1,74 @@
+{
+  "historical_endpoint": "https://archive-api.open-meteo.com/v1/archive",
+  "live_endpoint": "https://api.open-meteo.com/v1/forecast",
+  "historical_model_selection": "default Best Match; models parameter omitted by historical downloader; documented default combines IFS HRES, ERA5, ERA5-Land seamlessly",
+  "live_model_selection": "default Best Match; models parameter omitted by live producer; documented Forecast API combines operational model outputs and chooses highest-resolution applicable model",
+  "repository_prior_comparison": {
+    "same_field_mapping": true,
+    "same_hourly_variable_names": true,
+    "same_units": true,
+    "semantics_identical": false,
+    "status": "PASS_WITH_SOURCE_PRODUCT_LIMITATION"
+  },
+  "variables": [
+    {
+      "variable": "temperature_2m",
+      "historical_semantics": "Instant at t",
+      "live_semantics": "Instant at t",
+      "live_availability": "Current-hour row returned at H+27m in probe",
+      "safe_for_A_temporally": true,
+      "compatibility": "valid-time aligned; source/model vintage differs"
+    },
+    {
+      "variable": "relative_humidity_2m",
+      "historical_semantics": "Instant at t",
+      "live_semantics": "Instant at t",
+      "live_availability": "Current-hour row returned at H+27m in probe",
+      "safe_for_A_temporally": true,
+      "compatibility": "valid-time aligned; source/model vintage differs"
+    },
+    {
+      "variable": "precipitation",
+      "historical_semantics": "Sum over preceding hour [t-1h,t]",
+      "live_semantics": "Sum over preceding hour [t-1h,t]",
+      "live_availability": "At row t, preceding interval has ended; probe returned a current-hour model estimate",
+      "safe_for_A_temporally": true,
+      "compatibility": "same interval semantics; live amount is model estimate, not measured accumulation"
+    },
+    {
+      "variable": "pressure_msl",
+      "historical_semantics": "Instant at t",
+      "live_semantics": "Instant at t",
+      "live_availability": "Current-hour row returned at H+27m in probe",
+      "safe_for_A_temporally": true,
+      "compatibility": "valid-time aligned; source/model vintage differs"
+    },
+    {
+      "variable": "wind_speed_10m",
+      "historical_semantics": "Instant at t",
+      "live_semantics": "Instant at t",
+      "live_availability": "Current-hour row returned at H+27m in probe",
+      "safe_for_A_temporally": true,
+      "compatibility": "valid-time aligned; source/model vintage differs"
+    },
+    {
+      "variable": "wind_gusts_10m",
+      "historical_semantics": "Generic Archive docs say instant at t; model-specific interpretation varies (CERRA is preceding-hour max)",
+      "live_semantics": "Maximum over preceding hour",
+      "live_availability": "Probe returned current-hour row; previous hour interval is complete",
+      "safe_for_A_temporally": "not proven equivalent to training",
+      "compatibility": "mismatch/model-specific; Archive Best Match model is not recorded in training rows"
+    },
+    {
+      "variable": "weather_code",
+      "historical_semantics": "Instant WMO code derived from weather variables",
+      "live_semantics": "Instant WMO code derived from forecast variables",
+      "live_availability": "Current-hour row returned at H+27m in probe",
+      "safe_for_A_temporally": true,
+      "compatibility": "context field, not one of the 73 numeric model features; source product differs"
+    }
+  ],
+  "causality_conclusion": "At H+epsilon the Forecast API can return a row valid at H, and preceding-hour accumulations refer to the completed [H-1,H] interval. The probe does not establish a fixed availability SLA or frozen-model training/live semantic parity.",
+  "training_source_metadata_limitation": "Historical downloader does not pass a models parameter or persist selected model/vintage per record. Existing feature specification uses the word observed although its input is Archive reanalysis, not station ground truth.",
+  "recommended_training_source_note": "For a future model with Forecast API predictors, pin a source/vintage intended to align with live forecasts (Open-Meteo Historical Forecast API is documented for that use) and document the target/reference source explicitly."
+}

@@ -1,0 +1,51 @@
+{
+  "probe_type": "single direct live Forecast API request",
+  "request_time_utc": "2026-10-03T06:27:17Z",
+  "endpoint": "https://api.open-meteo.com/v1/forecast",
+  "query": {
+    "latitude": 21.0285,
+    "longitude": 105.8542,
+    "hourly": "temperature_2m,relative_humidity_2m,precipitation,pressure_msl,wind_speed_10m,wind_gusts_10m,weather_code",
+    "timezone": "UTC",
+    "past_hours": 2,
+    "forecast_hours": 1
+  },
+  "response_timezone": "GMT",
+  "utc_offset_seconds": 0,
+  "row_for_current_utc_hour_returned": true,
+  "current_hour_offset_minutes": 27,
+  "rows": [
+    {
+      "time_utc": "2026-10-03T04:00:00Z",
+      "temperature_2m_c": 31.9,
+      "relative_humidity_2m_pct": 70,
+      "precipitation_mm": 0.0,
+      "pressure_msl_hpa": 1012.3,
+      "wind_speed_10m_kmh": 14.8,
+      "wind_gusts_10m_kmh": 32.8,
+      "weather_code": 3
+    },
+    {
+      "time_utc": "2026-10-03T05:00:00Z",
+      "temperature_2m_c": 30.6,
+      "relative_humidity_2m_pct": 75,
+      "precipitation_mm": 0.6,
+      "pressure_msl_hpa": 1011.3,
+      "wind_speed_10m_kmh": 17.0,
+      "wind_gusts_10m_kmh": 34.6,
+      "weather_code": 96
+    },
+    {
+      "time_utc": "2026-10-03T06:00:00Z",
+      "temperature_2m_c": 30.2,
+      "relative_humidity_2m_pct": 78,
+      "precipitation_mm": 1.4,
+      "pressure_msl_hpa": 1010.2,
+      "wind_speed_10m_kmh": 11.1,
+      "wind_gusts_10m_kmh": 37.4,
+      "weather_code": 95
+    }
+  ],
+  "interpretation": "The current-hour row existed at H+27m in this response. This is one observation, not a provider availability SLA. Forecast values are numerical weather-model output, not measured hourly observations.",
+  "raw_response_persistence": "Selected fields and returned rows persisted here; no API key was used."
+}

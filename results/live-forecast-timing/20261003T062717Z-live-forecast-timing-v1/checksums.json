@@ -1,0 +1,76 @@
+{
+  "algorithm": "SHA-256",
+  "scope_note": "Checksums cover the listed evidence, source, test, and documentation files. checksums.json is intentionally excluded to avoid a self-referential hash.",
+  "files": [
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/current_contract.json",
+      "sha256": "995f17a5d4224122a52bf41f3f85c4a71ff83263dc6e8d36fdfbe0411fb3fb8d",
+      "bytes": 2454
+    },
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/provider_timing_probe.json",
+      "sha256": "dbac5d800825cc5b476f4f41f7b7fe767ef0c2d8295626a3c9905ec17ae4e2ad",
+      "bytes": 1806
+    },
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/historical_live_semantics.json",
+      "sha256": "f295ba3db9e6f08ec0f3e1554ae2d04868f0f5df44882a9571b5e512d2a85f76",
+      "bytes": 4275
+    },
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/timing_candidates.json",
+      "sha256": "07d8c2968f77e27722c58828274b9610fed1c343085fbcb2fb27be39dd86321f",
+      "bytes": 1746
+    },
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/decision.json",
+      "sha256": "0ae3cdfab47f836fc1fb9ce4644f27f4923d9da329eca2ad092cb854e795943f",
+      "bytes": 2740
+    },
+    {
+      "path": "results/live-forecast-timing/20261003T062717Z-live-forecast-timing-v1/unit_tests.json",
+      "sha256": "fa858d85824c145f5ae93c72c305e457ec671b60c944bef9a43fbce7d5b48c54",
+      "bytes": 842
+    },
+    {
+      "path": "validation/forecast_timing.py",
+      "sha256": "f21c64fdda71a59e2e11e1a48946b9ac7c4991ccbf4b52558897f092cc818d0b",
+      "bytes": 2101
+    },
+    {
+      "path": "tests/test_live_forecast_timing.py",
+      "sha256": "850ac41fef4c66b99d24ec87ebccff4ee815892751c29f9a3b617d09b335dbbc",
+      "bytes": 3545
+    },
+    {
+      "path": "docs/LIVE_FORECAST_TIMING_CONTRACT_V1.md",
+      "sha256": "ae860b3e6e616c050bac443b4dfa4d3a4e26e17731e6530d9c9885fd25fb0c82",
+      "bytes": 6630
+    },
+    {
+      "path": "producer/live_hourly_weather_producer.py",
+      "sha256": "c70dfc3115e093bbb6c4ebcccbd71eb50555328c1b92e45e8e344553b5c0c506",
+      "bytes": 41259
+    },
+    {
+      "path": "historical/download_historical.py",
+      "sha256": "f644668f490cce3f4f753d59957b76bf033c9883fcb60e12e5ef01531be67516",
+      "bytes": 28918
+    },
+    {
+      "path": "ml/streaming_inference/online_features.py",
+      "sha256": "068ec939795120b55cd26c7aa634906f23773b1a524287913d30513de46bfe9d",
+      "bytes": 12609
+    },
+    {
+      "path": "spark/jobs/weather_streaming_inference.py",
+      "sha256": "d82c1a8e2fd65a78858c47a7835eda5bf4b301d81c7ff63f467106aae8f77155",
+      "bytes": 40878
+    },
+    {
+      "path": "results/live-hourly-observation/20261002T173723Z-live-hourly-v1-final/historical_live_semantic_comparison.json",
+      "sha256": "8d88d589004f2734bb601ca906e42ec5b6cb26bccbf1839ddbe6213bd863a39e",
+      "bytes": 1908
+    }
+  ]
+}

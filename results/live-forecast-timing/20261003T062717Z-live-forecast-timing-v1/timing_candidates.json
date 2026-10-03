@@ -1,0 +1,40 @@
+{
+  "example_wall_clock_utc": "2026-10-03T17:05:00Z",
+  "lead_time_definition": "target_time - forecast_created_at; positive means future-facing",
+  "candidates": [
+    {
+      "contract": "Current implementation",
+      "feature_time_utc": "2026-10-03T16:00:00Z",
+      "model_horizon_hours": 1,
+      "target_time_utc": "2026-10-03T17:00:00Z",
+      "forecast_created_at_utc": "2026-10-03T17:05:00Z",
+      "lead_time_seconds": -300,
+      "prospective": false,
+      "requires_retraining": false,
+      "semantic_risk": "Target is already 5 minutes in the past."
+    },
+    {
+      "contract": "A — current-hour input",
+      "feature_time_utc": "2026-10-03T17:00:00Z",
+      "model_horizon_hours": 1,
+      "target_time_utc": "2026-10-03T18:00:00Z",
+      "forecast_created_at_utc": "2026-10-03T17:05:00Z",
+      "lead_time_seconds": 3300,
+      "prospective": true,
+      "requires_retraining": false,
+      "semantic_risk": "Positive lead is possible, but current Forecast Best Match features are not proven semantically equivalent to unpinned Archive Best Match training features; wind-gust time basis is model-dependent."
+    },
+    {
+      "contract": "B — completed-hour input",
+      "feature_time_utc": "2026-10-03T16:00:00Z",
+      "model_horizon_hours": 2,
+      "target_time_utc": "2026-10-03T18:00:00Z",
+      "forecast_created_at_utc": "2026-10-03T17:05:00Z",
+      "lead_time_seconds": 3300,
+      "prospective": true,
+      "requires_retraining": true,
+      "semantic_risk": "Lowest timing risk; V1.1 must pin predictor source/vintage to live Forecast semantics and target source."
+    }
+  ],
+  "selected_contract": "B — completed-hour input, exact +2h feature-to-target label"
+}

@@ -1,0 +1,64 @@
+{
+  "run_id": "20261003T062717Z-live-forecast-timing-v1",
+  "audited_at_utc": "2026-10-03T06:34:25Z",
+  "git": {
+    "branch": "design/live-forecast-timing-v1",
+    "commit": "fdede8607218d33333ef88f827b08b5f58de026f",
+    "working_tree_clean_at_start": true,
+    "baseline_tag": "forecast-monitoring-v1"
+  },
+  "frozen_model": {
+    "model_id": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+    "model_sha256": "07fffbaed3e4934017a03135eddba8fc200fbcd22b799d246ea816695f98704a",
+    "feature_set_id": "WEATHER_FORECAST_FE_V1",
+    "feature_count": 73,
+    "feature_list_sha256": "ec716f47ac4eca99a945a2ba1c50ba1297c1509a2aa5f80cff063042e40295bf",
+    "horizon_hours": 1,
+    "training_label": "target_temperature_1h"
+  },
+  "historical_training_source": {
+    "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+    "models_parameter_pinned": false,
+    "coverage_utc": "2020-01-01 through 2025-12-31",
+    "evidence": [
+      "historical/download_historical.py:32-43",
+      "historical/download_historical.py:86-97",
+      "results/live-hourly-observation/20261002T173723Z-live-hourly-v1-final/historical_live_semantic_comparison.json"
+    ]
+  },
+  "live_source": {
+    "endpoint": "https://api.open-meteo.com/v1/forecast",
+    "models_parameter_pinned": false,
+    "hourly_variables": [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "precipitation",
+      "pressure_msl",
+      "wind_speed_10m",
+      "wind_gusts_10m",
+      "weather_code"
+    ],
+    "request_timezone": "UTC",
+    "request_forecast_hours": 1,
+    "safe_hour_rule": "floor(now_utc_hour) - 1 hour",
+    "safe_hour_reason_in_code": "only consider the last completed UTC hour; conservative closed-hour selection"
+  },
+  "current_timing_example": {
+    "wall_clock_utc": "2026-10-03T17:05:00Z",
+    "feature_time_utc": "2026-10-03T16:00:00Z",
+    "model_horizon_hours": 1,
+    "target_time_utc": "2026-10-03T17:00:00Z",
+    "forecast_created_at_utc": "2026-10-03T17:05:00Z",
+    "lead_time_seconds": -300,
+    "prospective": false,
+    "equation": "target_time - forecast_created_at"
+  },
+  "actual_prior_live_evidence": {
+    "cohort_id": "live-20261002T173723Z-live-hourly-v1-final",
+    "feature_time_utc": "2026-10-02T16:00:00Z",
+    "target_time_utc": "2026-10-02T17:00:00Z",
+    "evaluation_mode": "LIVE_SOURCE_BACKFILL",
+    "forecasts_target_time_passed": 63,
+    "decision_cohort_eligible": false
+  }
+}

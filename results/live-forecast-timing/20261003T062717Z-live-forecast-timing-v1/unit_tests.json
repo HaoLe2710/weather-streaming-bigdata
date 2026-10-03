@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "commands": [
+    {
+      "command": "python -m unittest discover -s tests -p test_live_forecast_timing.py",
+      "status": "PASS",
+      "tests": 8
+    },
+    {
+      "command": "python -m unittest discover -s tests -p test_live_hourly_observation.py",
+      "status": "PASS",
+      "tests": 22
+    },
+    {
+      "command": "python -m compileall -q validation/forecast_timing.py tests/test_live_forecast_timing.py",
+      "status": "PASS"
+    }
+  ],
+  "coverage": [
+    "current contract negative lead",
+    "candidate A and B lead calculations",
+    "strict prospective classification",
+    "hourly target semantics",
+    "UTC offset normalization",
+    "safe-hour cutoff at exact boundary",
+    "hour rollover",
+    "midnight rollover",
+    "invalid naive/non-hour timestamps"
+  ]
+}
