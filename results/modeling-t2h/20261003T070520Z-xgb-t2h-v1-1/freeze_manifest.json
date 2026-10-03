@@ -40,5 +40,11 @@
     "rmse": 0.8801436786253376
   },
   "validation_selection_metric": "mae",
-  "winner_candidate_id": "gpu_d8_regularized"
+  "winner_candidate_id": "gpu_d8_regularized",
+  "run_classification": "LOCAL_PRELIMINARY",
+  "test_predictions_storage": "Google Drive external artifact; local copy retained and Git-ignored",
+  "test_predictions_external_path": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_test_predictions.parquet",
+  "test_predictions_drive_file_id": "1esR4vwSRVnHc3wOO5f9Am4__a_xwIgwy",
+  "model_artifact_external_path": "/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T070520Z-xgb-t2h-v1-1-LOCAL_PRELIMINARY/local_preliminary_model.json",
+  "model_artifact_drive_file_id": "1PzaXBQDTSgUN03LoQddACt6AN-UU8orb"
 }

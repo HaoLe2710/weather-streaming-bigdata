@@ -64,7 +64,7 @@ The official baseline is two-hour persistence: prediction is `temperature_c(t)` 
 
 ## Acquisition and run layout
 
-Large provider responses and derived Parquet live outside Git under ignored `data/` paths. Machine-readable run evidence and the frozen XGBoost JSON are stored together under `results/modeling-t2h/20261003T070520Z-xgb-t2h-v1-1/`; the model size and SHA-256 are recorded in the tracked model manifest and checksum inventory.
+Large provider responses and derived Parquet live outside Git under ignored `data/` paths. Small machine-readable run evidence is tracked under `results/modeling-t2h/20261003T070520Z-xgb-t2h-v1-1/`. The model JSON and full TEST prediction Parquet are preserved as local ignored copies and in Google Drive; their sizes, SHA-256 values, and external paths remain in the tracked manifests and checksum inventory.
 
 ```powershell
 .\.venv\Scripts\python.exe -m historical.forecast_t2h_v1_1 `
@@ -85,11 +85,13 @@ Large provider responses and derived Parquet live outside Git under ignored `dat
 
 The downloader resumes valid checksummed chunks, records each request attempt and estimated provider call units, enforces rolling 600-unit/minute and 5,000-unit/hour windows, limits retries, honors `Retry-After`, waits 60 seconds after a 429 without that header, and stops before its configured 10,000-unit daily ceiling. Open-Meteo's [current free-tier limits](https://open-meteo.com/en/pricing) are 600 calls/minute, 5,000/hour, and 10,000/day; long ranges and variable counts contribute fractional call units. For safety, both rolling and daily guards count every attempted request, including rejected 429s and transport-ambiguous requests. The manifest separately records a local non-429 `charged` estimate; Open-Meteo does not return a billing receipt for this run. The 30-second inter-request delay is only a minimum; a quota wait is recorded in the manifest when either rolling window is full. If a daily ceiling defers any chunk, re-run the same command after quota reset; completed chunks are skipped.
 
-For Colab, `notebooks/weather_forecast_xgboost_t2h_v1_1.ipynb` writes to a run-specific Drive dataset folder and a separate run-specific model-artifact folder. It clones the pinned branch and does not modify the V1 notebook.
+For canonical Colab training, `notebooks/weather_forecast_xgboost_t2h_v1_1.ipynb` reads the validated dataset archives from Drive, checks their hashes and Parquet footers, extracts them to the Colab runtime, and writes run-specific evidence and large artifacts to Drive. It performs no Open-Meteo download and checks out the frozen protocol commit `28d6b569f7ba9a883ce294edde67ce746dc4ee67` before importing training code.
 
-## Executed run result
+## Local preliminary run (not canonical)
 
-The acquisition completed all 84 chunks. Each source contains 3,314,304 hourly rows for 63 locations; validation found no missing hours, duplicate timestamps, nulls, or non-finite values. The materializer produced 3,312,666 eligible rows: 2,207,394 TRAIN, 553,392 VALIDATION, and 551,880 TEST, with all locations in each split and no non-finite model inputs or labels.
+The following local CUDA run is historical comparison evidence only. It is `LOCAL_PRELIMINARY`; it is not the canonical model artifact and does not satisfy the Colab execution gate.
+
+The local acquisition completed all 84 chunks. Each source contains 3,314,304 hourly rows for 63 locations; validation found no missing hours, duplicate timestamps, nulls, or non-finite values. The materializer produced 3,312,666 eligible rows: 2,207,394 TRAIN, 553,392 VALIDATION, and 551,880 TEST, with all locations in each split and no non-finite model inputs or labels.
 
 Five GPU candidates completed. `gpu_d8_regularized` won on VALIDATION MAE (0.664405 °C; RMSE 0.880144 °C; R² 0.964183). After refitting on TRAIN+VALIDATION for 1,024 rounds, the single TEST read scored 551,880 rows: MAE 0.655947 °C, RMSE 0.878358 °C, R² 0.963632, and bias +0.121831 °C. Two-hour persistence scored MAE 1.388160 °C and RMSE 1.792128 °C; the model lowered TEST MAE by 52.75%. The JSON model is 27,726,327 bytes (SHA-256 `bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a`). Same-device CUDA reload parity passed on 25,000 VALIDATION rows with maximum prediction difference 0.0. The winner was frozen at `2026-10-03T09:01:22.627521Z`; TEST was first read once at `2026-10-03T09:10:54.714164Z`.
 
@@ -101,9 +103,13 @@ The controlled family contains five GPU profiles or four CPU profiles based on t
 
 ## Evidence artifacts
 
-The run directory contains the provider audit and source contract plus acquisition manifest, raw validation, feature list and contract, dataset and split validation, TRAIN-only feature statistics, persistence baseline, candidate records and winner selection, freeze record, final model manifest, reload parity, TEST metrics, per-location metrics, temporal diagnostics, prediction Parquet, runtime details, test report, and checksums. Raw and normalized datasets are checksum-linked by source chunk ID.
+The run directory contains the provider audit and source contract plus acquisition manifest, raw validation, feature list and contract, dataset and split validation, TRAIN-only feature statistics, persistence baseline, candidate records and winner selection, freeze record, final model manifest, reload parity, TEST metrics, per-location metrics, temporal diagnostics, runtime details, test report, and checksums. The full prediction Parquet and model JSON are external artifacts; the tracked checksum inventory classifies them separately from tracked evidence. Raw and normalized datasets are checksum-linked by source chunk ID.
 
-The run status is `READY_TO_MERGE_WITH_LIMITATION`: all expected source chunks validate, all 63 locations appear in every split, leakage and target-offset checks pass, five candidates succeed, TEST is read once after freeze, and same-device reload parity passes. The final GitNexus pass reports no affected indexed symbols, but does not resolve the new T2H entry points; direct source search and the test suite corroborate their callers. Source-vintage and conditional API quota accounting limitations remain part of the review. This status does not mean the model has been merged or integrated into streaming inference.
+The local run passed its modeling checks, but its status is `LOCAL_PRELIMINARY` pending canonical Colab execution. GitNexus did not resolve some T2H Python entry points; direct source inspection and the test suite provide supporting evidence. Source-vintage and conditional API quota accounting limitations remain part of the review. No merge or model tag has been created.
+
+## Canonical Training Environment
+
+Canonical Colab status: `PENDING_CANONICAL_COLAB_RUN`. The canonical RUN_ID, assigned GPU, dataset identity, frozen winner, TEST metrics, model SHA-256, reload parity, and Drive artifact path will be recorded here after the fixed-commit notebook run completes. The local preliminary run above remains historical evidence and cannot substitute for this run.
 
 ## Downstream operational SLO proposal
 
