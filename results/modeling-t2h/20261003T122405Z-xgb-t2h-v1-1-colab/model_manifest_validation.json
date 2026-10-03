@@ -1,0 +1,20 @@
+{
+  "checks": {
+    "feature_count": true,
+    "feature_list_sha256": true,
+    "feature_names": true,
+    "feature_set_id": true,
+    "model_id": true,
+    "model_sha256": true,
+    "serialization_format": true,
+    "source_contract_id": true,
+    "target_column": true,
+    "target_offset_seconds": true
+  },
+  "errors": [],
+  "feature_count": 73,
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+  "status": "PASS",
+  "target_offset_seconds": 7200
+}

@@ -1,0 +1,159 @@
+{
+  "current_provider_audit_status": "PASS_WITH_LIMITATIONS",
+  "feature_set_id": "WEATHER_FORECAST_FE_T2H_V1_1",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+  "production_requirement": "Pin models=ecmwf_ifs for T2H live inference and establish offline/online feature parity in the next milestone.",
+  "sources": {
+    "current_live_forecast": {
+      "endpoint": "https://api.open-meteo.com/v1/forecast",
+      "explicit_common_selection_available": "ecmwf_ifs",
+      "known_limitations": [
+        "The response does not expose the model selected by Best Match.",
+        "A probe is a snapshot and does not prove future Best Match stability."
+      ],
+      "model_selection": "Best Match; models parameter omitted by the current generic live request",
+      "probe_comparison": {
+        "coordinate_mismatches": 0,
+        "exact_match": true,
+        "interpretation": "Current sample only; Best Match model identity is not returned and can change in future responses.",
+        "null_counts": {
+          "best_match": {
+            "precipitation": 0,
+            "pressure_msl": 0,
+            "relative_humidity_2m": 0,
+            "temperature_2m": 0,
+            "weather_code": 0,
+            "wind_gusts_10m": 0,
+            "wind_speed_10m": 0
+          },
+          "ecmwf_ifs": {
+            "precipitation": 0,
+            "pressure_msl": 0,
+            "relative_humidity_2m": 0,
+            "temperature_2m": 0,
+            "weather_code": 0,
+            "wind_gusts_10m": 0,
+            "wind_speed_10m": 0
+          }
+        },
+        "selection": "automatic Best Match versus explicit ecmwf_ifs",
+        "timestamp_mismatches": 0,
+        "unit_mismatches": 0,
+        "value_mismatches_by_variable": {
+          "precipitation": 0,
+          "pressure_msl": 0,
+          "relative_humidity_2m": 0,
+          "temperature_2m": 0,
+          "weather_code": 0,
+          "wind_gusts_10m": 0,
+          "wind_speed_10m": 0
+        }
+      },
+      "probe_observed_at_utc": "2026-10-03T08:55:52Z",
+      "timezone": "GMT request; hourly forecast valid times"
+    },
+    "new_v1_1_historical_predictor": {
+      "endpoint": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+      "known_limitations": [
+        "Historical Forecast is a stitched valid-time series and exposes no per-row init/run/lead.",
+        "Model versions may change during the historical interval."
+      ],
+      "model_family": "ECMWF IFS HRES 9 km global operational forecast family",
+      "model_id": "ecmwf_ifs",
+      "timezone": "GMT request; UTC valid_time",
+      "variable_semantics": [
+        {
+          "name": "temperature_2m",
+          "timestamp_semantics": "instantaneous valid-time value",
+          "unit": "°C"
+        },
+        {
+          "name": "relative_humidity_2m",
+          "timestamp_semantics": "instantaneous valid-time value",
+          "unit": "%"
+        },
+        {
+          "name": "precipitation",
+          "timestamp_semantics": "preceding-hour sum",
+          "unit": "mm"
+        },
+        {
+          "name": "pressure_msl",
+          "timestamp_semantics": "instantaneous valid-time value",
+          "unit": "hPa"
+        },
+        {
+          "name": "wind_speed_10m",
+          "timestamp_semantics": "instantaneous valid-time value",
+          "unit": "km/h"
+        },
+        {
+          "name": "wind_gusts_10m",
+          "timestamp_semantics": "preceding 3-hour maximum per ECMWF documentation",
+          "unit": "km/h"
+        },
+        {
+          "name": "weather_code",
+          "timestamp_semantics": "derived category; metadata only",
+          "unit": "WMO code"
+        }
+      ]
+    },
+    "old_v1_archive": {
+      "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+      "known_limitations": [
+        "Legacy Archive source is a retrospective archive/reanalysis-style product, not an operational forecast vintage.",
+        "The selected model was not explicitly pinned in the legacy downloader."
+      ],
+      "model_family": "Historical Weather / Archive product; legacy request omitted the models parameter, so model identity was not pinned in historical/download_historical.py.",
+      "timezone": "UTC request and normalized UTC event_time",
+      "variable_semantics": [
+        {
+          "name": "temperature_2m",
+          "timestamp_semantics": "hourly valid time",
+          "unit": "°C"
+        },
+        {
+          "name": "relative_humidity_2m",
+          "timestamp_semantics": "hourly valid time",
+          "unit": "%"
+        },
+        {
+          "name": "precipitation",
+          "timestamp_semantics": "provider archive hourly value",
+          "unit": "mm"
+        },
+        {
+          "name": "pressure_msl",
+          "timestamp_semantics": "hourly valid time",
+          "unit": "hPa"
+        },
+        {
+          "name": "wind_speed_10m",
+          "timestamp_semantics": "hourly valid time",
+          "unit": "km/h"
+        },
+        {
+          "name": "wind_gusts_10m",
+          "timestamp_semantics": "provider archive hourly value",
+          "unit": "km/h"
+        },
+        {
+          "name": "weather_code",
+          "timestamp_semantics": "hourly derived category",
+          "unit": "WMO code"
+        }
+      ]
+    },
+    "target_v1_1": {
+      "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+      "model_id": "era5",
+      "scientific_interpretation": "ERA5 reanalysis reference, not independent station truth.",
+      "timestamp_semantics": "exact same-location target_time = feature_time + 2h",
+      "unit": "°C",
+      "variable": "temperature_2m"
+    }
+  },
+  "status": "PASS_WITH_LIMITATIONS",
+  "training_source_classification": "forecast-family-aligned; exact source parity is not claimed"
+}

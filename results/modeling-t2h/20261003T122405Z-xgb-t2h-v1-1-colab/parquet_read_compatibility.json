@@ -1,0 +1,5 @@
+{
+  "modeling_protocol_changed": false,
+  "reader": "pyarrow.ParquetFile.read for individual partition files",
+  "reason": "avoid hive partition inference conflicting with the stored split field"
+}

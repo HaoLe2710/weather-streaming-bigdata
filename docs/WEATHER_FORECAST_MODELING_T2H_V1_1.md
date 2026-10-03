@@ -109,7 +109,13 @@ The local run passed its modeling checks, but its status is `LOCAL_PRELIMINARY` 
 
 ## Canonical Training Environment
 
-Canonical Colab status: `PENDING_CANONICAL_COLAB_RUN`. The canonical RUN_ID, assigned GPU, dataset identity, frozen winner, TEST metrics, model SHA-256, reload parity, and Drive artifact path will be recorded here after the fixed-commit notebook run completes. The local preliminary run above remains historical evidence and cannot substitute for this run.
+Canonical Colab status: `CANONICAL_PASS` for run `20261003T122405Z-xgb-t2h-v1-1-colab`. The notebook checked out frozen protocol commit `28d6b569f7ba9a883ce294edde67ce746dc4ee67` on branch `model/weather-forecast-xgboost-t2h-v1` and trained on a Google Colab Tesla T4 GPU (Python 3.13.15, XGBoost 3.4.1 with CUDA). The transferred dataset passed identity checks: 3,312,666 rows (2,207,394 TRAIN, 553,392 VALIDATION, 551,880 TEST), 63 locations, 73 features, and feature-list SHA-256 `20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2`.
+
+All five frozen GPU candidates completed; `gpu_d8_regularized` won by full-VALIDATION MAE (0.664405 °C; RMSE 0.880144 °C; R² 0.964183), with best iteration 1023 and 1,024 final rounds. The winner was frozen at `2026-10-03T12:38:44.982055Z`; TEST was first read once at `2026-10-03T12:39:48.544428Z`. On 551,880 TEST rows, XGBoost scored MAE 0.655947 °C, RMSE 0.878358 °C, R² 0.963632, and bias +0.121831 °C. Two-hour persistence scored MAE 1.388160 °C, RMSE 1.792128 °C, R² 0.848603, and bias -0.687871 °C. XGBoost reduced MAE by 52.75% and RMSE by 50.99%, and beat persistence on MAE for all 63 locations.
+
+The canonical model is 27,726,327 bytes with SHA-256 `bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a`. Its SHA happens to match the local preliminary model; only the verified Colab GPU run is marked canonical. The JSON and full TEST predictions remain external in Google Drive at `/content/drive/MyDrive/weather-streaming-bigdata/artifacts/weather_forecast_xgboost_t2h_v1_1/20261003T122405Z-xgb-t2h-v1-1-colab/`; the tracked run evidence is `results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/`. CUDA reload parity passed on 25,000 VALIDATION rows with maximum difference 0.0 at tolerance `1e-6`; local-versus-Colab status is `CONSISTENT`.
+
+Colab's PyArrow 23 single-file reader inferred a Hive partition column that conflicted with the stored `split` field. The notebook now applies a narrow compatibility wrapper for direct reads of individual Parquet partition files using `ParquetFile.read`; archive checksums, dataset identity, feature/target/split contracts, candidate selection, and model semantics are unchanged. This runtime-only adjustment was recorded in `parquet_read_compatibility.json` and `colab_environment.json`.
 
 ## Downstream operational SLO proposal
 

@@ -1,0 +1,49 @@
+{
+  "beats_persistence_mae": true,
+  "beats_persistence_rmse": true,
+  "best_boost_rounds": 1024,
+  "best_iteration": 1023,
+  "candidate_id": "gpu_d8_regularized",
+  "candidate_search_elapsed_seconds": 261.1092059650001,
+  "candidate_search_resumed_from_checkpoint": false,
+  "candidate_search_seconds_this_invocation": 261.1092059650001,
+  "device": "cuda",
+  "failed_candidate_count": 0,
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "feature_set_id": "WEATHER_FORECAST_FE_T2H_V1_1",
+  "model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+  "params": {
+    "candidate_id": "gpu_d8_regularized",
+    "colsample_bytree": 0.9,
+    "learning_rate": 0.05,
+    "max_depth": 8,
+    "min_child_weight": 3.0,
+    "reg_alpha": 0.1,
+    "reg_lambda": 3.0,
+    "subsample": 0.85
+  },
+  "selection_metric": "validation MAE",
+  "selection_reason": "Lowest full VALIDATION MAE among the controlled successful candidates; TEST is not loaded or scored before freeze.",
+  "successful_candidate_count": 5,
+  "test_read_before_freeze": false,
+  "tie_break_order": [
+    "validation_rmse",
+    "best_boost_rounds*max_depth",
+    "training_time_seconds"
+  ],
+  "training_time_seconds": 53.07551886500005,
+  "validation_baseline_comparison": {
+    "mae_absolute_improvement": 0.7894331007023155,
+    "mae_percentage_improvement": 54.29993716242435,
+    "n": 553392,
+    "rmse_absolute_improvement": 0.9850424967063497,
+    "rmse_percentage_improvement": 52.812020040368296
+  },
+  "validation_metrics": {
+    "mae": 0.6644048629419675,
+    "mean_error": -0.07948050909165473,
+    "n": 553392,
+    "r2": 0.9641828574258745,
+    "rmse": 0.8801436786253377
+  }
+}

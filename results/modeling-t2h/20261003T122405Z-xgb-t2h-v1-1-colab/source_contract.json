@@ -1,0 +1,87 @@
+{
+  "source_contract_id": "WEATHER_FORECAST_SOURCE_T2H_V1_1",
+  "contract_version": "1.1",
+  "decision_time_utc": "2026-10-03T07:05:20Z",
+  "decision_status": "ACCEPTED_WITH_LIMITATIONS",
+  "canonical_target_contract": "B",
+  "prediction_contract": {
+    "feature_time": "completed UTC hour t",
+    "target_time": "feature_time + exactly 2 chronological hours",
+    "target_column": "target_temperature_2h",
+    "target_key": ["location_id", "target_time"],
+    "matching_rule": "exact same-location timestamp join; no nearest timestamp, interpolation, row-offset assumption, or timestamp relabeling",
+    "features_may_use_source_times": "<= feature_time only"
+  },
+  "predictor_source": {
+    "provider": "Open-Meteo",
+    "product": "Historical Forecast API",
+    "endpoint": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+    "model_selection": "explicitly pinned",
+    "model_id": "ecmwf_ifs",
+    "model_family": "ECMWF IFS HRES 9 km global operational forecast family",
+    "date_start_inclusive": "2020-01-01",
+    "date_end_inclusive": "2025-12-31",
+    "locations_catalog": "NATIONWIDE_63",
+    "timezone_parameter": "GMT",
+    "canonical_timezone": "UTC",
+    "variables": [
+      {"name": "temperature_2m", "unit": "°C", "feature_column": "temperature_c"},
+      {"name": "relative_humidity_2m", "unit": "%", "feature_column": "humidity_pct"},
+      {"name": "precipitation", "unit": "mm", "feature_column": "precipitation_mm", "valid_time_semantics": "preceding-hour sum"},
+      {"name": "pressure_msl", "unit": "hPa", "feature_column": "pressure_hpa"},
+      {"name": "wind_speed_10m", "unit": "km/h", "feature_column": "wind_speed_kmh"},
+      {"name": "wind_gusts_10m", "unit": "km/h", "feature_column": "wind_gust_kmh", "valid_time_semantics": "preceding 3-hour maximum per the ECMWF API documentation for the pinned IFS model"},
+      {"name": "weather_code", "unit": "WMO code", "feature_role": "context only; excluded from numeric model feature list as in V1"}
+    ],
+    "vintage_policy": "Treat each row as a value from the archived forecast-product time series. Do not claim an exact per-row historical initialization time, issuance time, or forecast lead because the API response does not expose those fields."
+  },
+  "target_source": {
+    "provider": "Open-Meteo",
+    "product": "Historical Weather API / ERA5 reanalysis",
+    "endpoint": "https://archive-api.open-meteo.com/v1/archive",
+    "model_selection": "explicitly pinned",
+    "model_id": "era5",
+    "variable": "temperature_2m",
+    "unit": "°C",
+    "date_start_inclusive": "2020-01-01",
+    "date_end_inclusive": "2025-12-31",
+    "locations_catalog": "NATIONWIDE_63",
+    "timezone_parameter": "GMT",
+    "canonical_timezone": "UTC",
+    "scientific_interpretation": "Retrospective ERA5 reanalysis temperature at the requested future valid time. ERA5 assimilates observations through a numerical weather model and is not direct station truth."
+  },
+  "contract_b_rationale": {
+    "selected": true,
+    "reason": "The objective is future temperature forecasting against a later weather reference. ERA5 supplies an explicit, stable target product, while Historical Forecast predictors retain alignment with the operational forecast API family. This keeps target values out of the feature vector and permits strict chronological evaluation.",
+    "contract_a_rejected_as_canonical": "Using the same Historical Forecast product at t+2h would train the model to reproduce that provider's forecast-product values rather than a realized/reanalysis-like future reference; the missing historical run vintage would remain."
+  },
+  "source_alignment": {
+    "classification": "forecast-family-aligned",
+    "exact_source_parity_claimed": false,
+    "evidence": "On 2026-10-03, the current generic Forecast API Best Match response and an explicit models=ecmwf_ifs response had identical coordinates and all seven requested variable values for 63 NATIONWIDE_63 locations across all 24 returned hours.",
+    "limitation": "The live Best Match response does not expose its model identity and may change by location or over time. T2H production inference must pin models=ecmwf_ifs or establish new source parity evidence. The provider also updates model versions over time."
+  },
+  "source_provenance": {
+    "provider": "Open-Meteo",
+    "retrieval_timestamp_required_per_chunk": true,
+    "request_parameters_required_per_chunk": true,
+    "requested_and_returned_coordinates_required": true,
+    "valid_time_required_per_row": true,
+    "source_contract_id_required_per_partition": true
+  },
+  "accepted_limitations": [
+    "Historical Forecast does not expose row-level model-run initialization time or forecast lead time; exact historical as-issued reconstruction is unavailable for this interval.",
+    "ERA5 is reanalysis, not independent station truth.",
+    "Open-Meteo documents IFS HRES from 2017 globally, but operational model versions can change during 2020-2025.",
+    "The current production request uses automatic Forecast Best Match; this modeling phase does not change the producer or inference job."
+  ],
+  "scope_guards": {
+    "previous_model_id_immutable": "WEATHER_XGBOOST_GLOBAL_T1H_V1",
+    "new_model_id": "WEATHER_XGBOOST_GLOBAL_T2H_V1_1",
+    "new_feature_contract_id": "WEATHER_FORECAST_FE_T2H_V1_1",
+    "production_producer_modified": false,
+    "streaming_inference_modified": false,
+    "prospective_24h_validation_run": false
+  },
+  "audit_artifact": "provider_audit.json"
+}

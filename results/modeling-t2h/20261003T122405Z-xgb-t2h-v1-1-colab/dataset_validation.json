@@ -1,0 +1,19 @@
+{
+  "duplicate_keys": "checked during generation per location using unique UTC feature_time",
+  "errors": [],
+  "locations_by_split": {
+    "TEST": 63,
+    "TRAIN": 63,
+    "VALIDATION": 63
+  },
+  "note": "Split inventory validation reads manifest metadata and Parquet footers only; it does not materialize TEST feature or target values.",
+  "parquet_checksums_and_footers": "PASS",
+  "rows_by_split": {
+    "TEST": 551880,
+    "TRAIN": 2207394,
+    "VALIDATION": 553392
+  },
+  "status": "PASS",
+  "test_values_read": false,
+  "total_rows": 3312666
+}
