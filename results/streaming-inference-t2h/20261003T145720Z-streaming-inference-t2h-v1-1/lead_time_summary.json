@@ -1,0 +1,30 @@
+{
+  "count": 63,
+  "execution_origin": "LIVE_PROSPECTIVE",
+  "forecast_lead_seconds": {
+    "max": 2570.762159,
+    "mean": 2570.0076341904755,
+    "median": 2569.883357,
+    "min": 2569.195731,
+    "p95": 2570.694409
+  },
+  "metrics_instrumentation_reverification": {
+    "execution_origin": "LIVE_PROSPECTIVE",
+    "forecast_lead_seconds": {
+      "max": 1802.030264,
+      "mean": 1801.078410079365,
+      "median": 1801.087093,
+      "min": 1800.164856,
+      "p95": 1801.853008
+    },
+    "live_positive_lead_forecast_count": 63,
+    "nonpositive_live_lead_rows": 0,
+    "separate_state_checkpoint_output": "spark_live_metrics_check_v3/inference_batches.jsonl",
+    "status": "PASS",
+    "total_batch_seconds": 43.74337525699957
+  },
+  "nonpositive_live_leads": 0,
+  "source": "persisted primary replay+live Delta audit",
+  "status": "PASS",
+  "unit": "seconds"
+}

@@ -13,6 +13,21 @@ from ml.streaming_inference.contract import (
     MODEL_SHA256,
 )
 from ml.streaming_inference.online_features import deterministic_forecast_id
+from ml.streaming_inference.t2h_contract import (
+    FEATURE_COUNT as T2H_FEATURE_COUNT,
+    FEATURE_LIST_SHA256 as T2H_FEATURE_LIST_SHA256,
+    FEATURE_SET_ID as T2H_FEATURE_SET_ID,
+    FORECAST_HORIZON_HOURS as T2H_FORECAST_HORIZON_HOURS,
+    HISTORICAL_FORECAST_ENDPOINT as T2H_HISTORICAL_ENDPOINT,
+    LIVE_ENDPOINT as T2H_LIVE_ENDPOINT,
+    LIVE_SOURCE as T2H_LIVE_SOURCE,
+    MODEL_ID as T2H_MODEL_ID,
+    MODEL_SHA256 as T2H_MODEL_SHA256,
+    PROVIDER_MODEL as T2H_PROVIDER_MODEL,
+    PROVIDER_NAME as T2H_PROVIDER_NAME,
+    REPLAY_SOURCE as T2H_REPLAY_SOURCE,
+)
+from ml.streaming_inference.t2h_runtime import deterministic_t2h_forecast_id
 
 
 EVALUATION_VERSION = "FORECAST_EVALUATION_V1"
@@ -22,6 +37,21 @@ SUPPORTED_MODEL_SHA256 = MODEL_SHA256
 SUPPORTED_FEATURE_SET_ID = FEATURE_SET_ID
 SUPPORTED_FEATURE_LIST_SHA256 = FEATURE_LIST_SHA256
 FORECAST_HORIZON = timedelta(hours=1)
+T2H_FORECAST_HORIZON = timedelta(hours=T2H_FORECAST_HORIZON_HOURS)
+SUPPORTED_FORECAST_CONTRACTS = {
+    SUPPORTED_MODEL_ID: {
+        "model_sha256": SUPPORTED_MODEL_SHA256,
+        "feature_set_id": SUPPORTED_FEATURE_SET_ID,
+        "feature_list_sha256": SUPPORTED_FEATURE_LIST_SHA256,
+        "horizon": FORECAST_HORIZON,
+    },
+    T2H_MODEL_ID: {
+        "model_sha256": T2H_MODEL_SHA256,
+        "feature_set_id": T2H_FEATURE_SET_ID,
+        "feature_list_sha256": T2H_FEATURE_LIST_SHA256,
+        "horizon": T2H_FORECAST_HORIZON,
+    },
+}
 
 WEATHER_PAYLOAD_FIELDS = (
     "temperature_c",
@@ -174,25 +204,69 @@ def forecast_validation_errors(
     location_id = str(forecast.get("location_id") or "")
     if not location_id or location_id not in known_location_ids:
         errors.append("UNKNOWN_LOCATION")
-    if forecast.get("model_id") != SUPPORTED_MODEL_ID:
+    model_id = forecast.get("model_id")
+    model_contract = SUPPORTED_FORECAST_CONTRACTS.get(model_id)
+    if model_contract is None:
         errors.append("UNSUPPORTED_MODEL_ID")
-    if forecast.get("model_sha256") != SUPPORTED_MODEL_SHA256:
+    elif forecast.get("model_sha256") != model_contract["model_sha256"]:
         errors.append("UNSUPPORTED_MODEL_SHA256")
-    if forecast.get("feature_set_id") != SUPPORTED_FEATURE_SET_ID:
+    if model_contract is not None and forecast.get("feature_set_id") != model_contract["feature_set_id"]:
         errors.append("UNSUPPORTED_FEATURE_SET_ID")
-    if forecast.get("feature_list_sha256") != SUPPORTED_FEATURE_LIST_SHA256:
+    if model_contract is not None and forecast.get("feature_list_sha256") != model_contract["feature_list_sha256"]:
         errors.append("UNSUPPORTED_FEATURE_LIST_SHA256")
     if not forecast.get("forecast_id"):
         errors.append("MISSING_FORECAST_ID")
     try:
         feature_time = parse_utc_hour(forecast.get("feature_time"), assume_naive_utc=assume_naive_utc)
         target_time = parse_utc_hour(forecast.get("target_time"), assume_naive_utc=assume_naive_utc)
-        if target_time != feature_time + FORECAST_HORIZON:
+        expected_horizon = model_contract["horizon"] if model_contract is not None else FORECAST_HORIZON
+        if target_time != feature_time + expected_horizon:
             errors.append("INVALID_FORECAST_HORIZON")
         if location_id and forecast.get("forecast_id"):
-            expected_id = deterministic_forecast_id(location_id, feature_time)
+            if model_id == T2H_MODEL_ID:
+                expected_id = deterministic_t2h_forecast_id(location_id, feature_time, target_time)
+            else:
+                expected_id = deterministic_forecast_id(location_id, feature_time)
             if forecast.get("forecast_id") != expected_id:
                 errors.append("INVALID_FORECAST_ID")
+        if model_id == T2H_MODEL_ID:
+            if forecast.get("feature_count") != T2H_FEATURE_COUNT:
+                errors.append("INVALID_FEATURE_COUNT")
+            if forecast.get("forecast_horizon_hours") != T2H_FORECAST_HORIZON_HOURS:
+                errors.append("INVALID_FORECAST_HORIZON_HOURS")
+            origin = forecast.get("execution_origin")
+            if origin not in {"LIVE_PROSPECTIVE", "REPLAY_VALIDATION", "BACKFILL"}:
+                errors.append("INVALID_EXECUTION_ORIGIN")
+            if forecast.get("provider") != T2H_PROVIDER_NAME or forecast.get("provider_model") != T2H_PROVIDER_MODEL:
+                errors.append("INVALID_T2H_PROVIDER")
+            if not forecast.get("provider_endpoint") or not forecast.get("source_event_id"):
+                errors.append("INVALID_T2H_PROVENANCE")
+            try:
+                inference_time = parse_utc_timestamp(forecast.get("inference_time"), assume_naive_utc=assume_naive_utc)
+                lead_seconds = finite_number(forecast.get("forecast_lead_seconds"), field="forecast_lead_seconds")
+                if lead_seconds != (target_time - inference_time).total_seconds():
+                    errors.append("INVALID_FORECAST_LEAD")
+                retrieval_time = parse_utc_timestamp(
+                    forecast.get("source_retrieved_at"), assume_naive_utc=assume_naive_utc
+                )
+                if retrieval_time > inference_time:
+                    errors.append("INVALID_SOURCE_RETRIEVAL_TIME")
+                if origin == "LIVE_PROSPECTIVE":
+                    if forecast.get("source") != T2H_LIVE_SOURCE or forecast.get("provider_endpoint") != T2H_LIVE_ENDPOINT:
+                        errors.append("INVALID_LIVE_SOURCE")
+                    if target_time <= inference_time or lead_seconds <= 0:
+                        errors.append("NON_POSITIVE_LIVE_FORECAST_LEAD")
+                    safe_hour = inference_time.replace(minute=0, second=0, microsecond=0) - timedelta(hours=1)
+                    if feature_time > safe_hour:
+                        errors.append("INVALID_COMPLETED_SAFE_HOUR")
+                elif origin == "REPLAY_VALIDATION":
+                    if (
+                        forecast.get("source") != T2H_REPLAY_SOURCE
+                        or forecast.get("provider_endpoint") != T2H_HISTORICAL_ENDPOINT
+                    ):
+                        errors.append("INVALID_REPLAY_SOURCE")
+            except (TypeError, ValueError):
+                errors.append("INVALID_FORECAST_LEAD")
     except (TypeError, ValueError):
         errors.append("INVALID_FORECAST_TIME")
     try:

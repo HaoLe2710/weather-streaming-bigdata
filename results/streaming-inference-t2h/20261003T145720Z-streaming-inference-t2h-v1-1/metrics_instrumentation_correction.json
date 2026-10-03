@@ -1,0 +1,14 @@
+{
+  "batch_seconds": 43.74337525699957,
+  "change": "Compute live lead metrics and validate the positive-lead gate from the cached output frame before Delta MERGE consumes it.",
+  "finding": "The first live batch had valid persisted forecast leads but the post-Delta-MERGE metric aggregation returned an empty result.",
+  "status": "PASS",
+  "verification": "Repeated the same actual Open-Meteo bootstrap input in an isolated state/checkpoint; 63 LIVE_PROSPECTIVE outputs, 63 positive leads, 0 invalid leads.",
+  "verified_live_lead_seconds": {
+    "max": 1802.030264,
+    "mean": 1801.078410079365,
+    "median": 1801.087093,
+    "min": 1800.164856,
+    "p95": 1801.853008
+  }
+}

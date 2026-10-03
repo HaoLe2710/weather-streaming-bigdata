@@ -1,0 +1,172 @@
+{
+  "algorithm": "SHA-256",
+  "files": [
+    {
+      "bytes": 2537,
+      "path": "feature_contract_validation.json",
+      "sha256": "6d06026296d95b84dc9c4b6bfbd3ce6e402e9efdbb17d45212aeae72f484a83e"
+    },
+    {
+      "bytes": 1317,
+      "path": "feature_parity.json",
+      "sha256": "b6285d74a6e19d0290198d5cb408c213d192f130250629c672299253d692b7ad"
+    },
+    {
+      "bytes": 709,
+      "path": "gap_handling.json",
+      "sha256": "826753368412a56caaf56b4ee8ecb9fe6cedc9b0ae26eb946280ea26d04891b9"
+    },
+    {
+      "bytes": 899,
+      "path": "lead_time_summary.json",
+      "sha256": "c5537b41879d08f46cc8b682f78296759077623e602220be52323775e3177a4c"
+    },
+    {
+      "bytes": 2383,
+      "path": "live_metrics_delta_check.json",
+      "sha256": "7fe0c9f5f56dbe5de7888f60273913cabaf253c8088539044f8ef74af6a1c07c"
+    },
+    {
+      "bytes": 11008,
+      "path": "live_producer.json",
+      "sha256": "e0eabbe1a51f54a21f0e9dc6ab427d27008ea62c737f70d11aaff1ad01492558"
+    },
+    {
+      "bytes": 2552,
+      "path": "live_smoke.json",
+      "sha256": "35a159cb0dd87db1ff1e8229f3c025f8e6d2efb117d6e8610c824e148d2a764b"
+    },
+    {
+      "bytes": 694,
+      "path": "metrics_instrumentation_correction.json",
+      "sha256": "f51cc559d379aec66b47fc386661b66d80a3379d9bb049ed9ec73d2e10e05aae"
+    },
+    {
+      "bytes": 940,
+      "path": "model_identity.json",
+      "sha256": "3950b52fa4a77ed87401e7875eb2091392827a33a8c2ea52b2ed009a1d956f9e"
+    },
+    {
+      "bytes": 534,
+      "path": "model_startup_validation.json",
+      "sha256": "4a4773abe4f37bc8e3c803b1d9c1077419533ed99e9333053df1e3101604d8a0"
+    },
+    {
+      "bytes": 378,
+      "path": "monitoring_compatibility.json",
+      "sha256": "9e5a11df08fb906b18664637f4d7540faa05b8cd0938a185d3804ce72bf9d528"
+    },
+    {
+      "bytes": 480,
+      "path": "prediction_parity.json",
+      "sha256": "91e47cd1102ec4582ab485605d078e7f9e7b104918427762601bd3aed5723b7d"
+    },
+    {
+      "bytes": 812,
+      "path": "provider_contract.json",
+      "sha256": "2ebb0081a8957de05978a48ed52a73221f4da202f58e488942ecbca58392af07"
+    },
+    {
+      "bytes": 2669,
+      "path": "replay_delta_validation.json",
+      "sha256": "b835fbdea9ad551c32ff113fb4c368a411cef91e1bdaa5c1dc287906acd0c0db"
+    },
+    {
+      "bytes": 502,
+      "path": "replay_input_summary.json",
+      "sha256": "a4f54b35dfdb8c7696454c18a9ede938bb1ae5c9389c63632e50e285eccc14ab"
+    },
+    {
+      "bytes": 1909,
+      "path": "replay_result.json",
+      "sha256": "64e50620c481f3ed71de3a2a41283c9a78ae435a6fe8d40e110d21340b7198b0"
+    },
+    {
+      "bytes": 742,
+      "path": "restart_idempotency.json",
+      "sha256": "3ce6b6fde3ad945714bc9a89f97884b30c584b696f269b4a178ed85e736d28d1"
+    },
+    {
+      "bytes": 1218,
+      "path": "runtime_summary.json",
+      "sha256": "eaa35ec564bf3a01a97dbcce39cb168435e96991b131993c85cb323fec949d58"
+    },
+    {
+      "bytes": 1418,
+      "path": "spark_live/inference_batches.jsonl",
+      "sha256": "bf419a87b12e8f3f0f88e08f217738e487ac9060ace592a71a90df91fb21ce04"
+    },
+    {
+      "bytes": 398,
+      "path": "spark_live/model_startup_validation.json",
+      "sha256": "02f7984c3ac7ef2f2f13eb9751f12338d9c3570bc1037aed87f5dfd785f271df"
+    },
+    {
+      "bytes": 1416,
+      "path": "spark_live_metrics_check/inference_batches.jsonl",
+      "sha256": "a9c3ccda4dcb328dfdb16d33c2a1543b502ac007ca7a3cb5388f447b7ad3e6c0"
+    },
+    {
+      "bytes": 398,
+      "path": "spark_live_metrics_check/model_startup_validation.json",
+      "sha256": "2295b8cc996caac1d298dd6e138420337b5adea5bce9edcbb4725582296c0054"
+    },
+    {
+      "bytes": 1418,
+      "path": "spark_live_metrics_check_v2/inference_batches.jsonl",
+      "sha256": "94385204a9cc49bde06de015a7e361e9679892af8ed3e3b2d7fdc2c0a3028c0f"
+    },
+    {
+      "bytes": 398,
+      "path": "spark_live_metrics_check_v2/model_startup_validation.json",
+      "sha256": "3a176f7b148506c51dee0ac75ac310fd17c092e850ee4ee18d048650768cf7c8"
+    },
+    {
+      "bytes": 1460,
+      "path": "spark_live_metrics_check_v3/inference_batches.jsonl",
+      "sha256": "10d61b66f52b6d21f2beeee8cc177d8cad027d10a2034322757b1b299b2bcd05"
+    },
+    {
+      "bytes": 398,
+      "path": "spark_live_metrics_check_v3/model_startup_validation.json",
+      "sha256": "fa6e0f21997c1e689ce4049f735df9e9dfb48d75bef9159b63a2380d52653daa"
+    },
+    {
+      "bytes": 2833,
+      "path": "spark_replay/inference_batches.jsonl",
+      "sha256": "df15883aec7ffd244f5fb5a2b40b3566add53b3ab79cb102d9c2e04bb32af03d"
+    },
+    {
+      "bytes": 1591,
+      "path": "spark_replay/model_startup_validation.json",
+      "sha256": "b8f91d5c2ab80657665c9a311e1a52b358805d2094a31e005f36500afdd1f3af"
+    },
+    {
+      "bytes": 1431,
+      "path": "spark_replay/t2h_replay_publish.jsonl",
+      "sha256": "59cd970d18f0a69d03058c66c179d1cb5cd73042df97e725bf1d9edaeec80e4e"
+    },
+    {
+      "bytes": 466,
+      "path": "unit_regression_tests.json",
+      "sha256": "64036ce1c1a956cb2919099395e12d447d73751a42b24ef0395775171f18bf26"
+    },
+    {
+      "bytes": 27726327,
+      "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\results\\modeling-t2h\\20261003T122405Z-xgb-t2h-v1-1-colab\\weather_forecast_xgboost_t2h_v1_1.json",
+      "sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a"
+    },
+    {
+      "bytes": 2119,
+      "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\results\\modeling-t2h\\20261003T122405Z-xgb-t2h-v1-1-colab\\feature_list.json",
+      "sha256": "3fae60607346cc3a0307091fb83c95d263d53cb6e7460b23dd2aa4a41a88ef6d"
+    },
+    {
+      "bytes": 7078,
+      "path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\docs\\STREAMING_FORECAST_INFERENCE_T2H_V1_1.md",
+      "sha256": "5efb1c42bb14a5fbce74b226384ca827ceee3ae9d9cef5812313f6ea64ecfbd8"
+    }
+  ],
+  "scope": "run JSON/JSONL evidence except this manifest, canonical model and feature list, and inference documentation",
+  "status": "PASS"
+}

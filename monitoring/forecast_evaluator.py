@@ -140,7 +140,13 @@ def _deduplicate_forecasts(forecasts: Iterable[Mapping[str, Any]]):
     return unique, conflicting, duplicate_count
 
 
-def _evaluation_mode(source: str | None, retrieval_mode: Any) -> str:
+def _evaluation_mode(source: str | None, retrieval_mode: Any, execution_origin: Any = None) -> str:
+    if execution_origin in {"REPLAY_VALIDATION", "BACKFILL"}:
+        return "REPLAY"
+    if execution_origin == "LIVE_PROSPECTIVE":
+        if source != LIVE_REFERENCE_SOURCE:
+            return "UNCLASSIFIED"
+        return "LIVE_SOURCE_BACKFILL" if retrieval_mode == "LIVE_SOURCE_BACKFILL" else "LIVE_PROSPECTIVE"
     if source == LIVE_REFERENCE_SOURCE:
         return "LIVE_SOURCE_BACKFILL" if retrieval_mode == "LIVE_SOURCE_BACKFILL" else "LIVE_PROSPECTIVE"
     return "REPLAY" if source else "UNCLASSIFIED"
@@ -226,15 +232,17 @@ def evaluate_forecasts(
         if forecast_id in conflicting_forecasts:
             errors.append("CONFLICTING_FORECAST_ID")
         if errors:
-            rows.append(
-                _base_evaluation(
-                    persisted_forecast,
-                    evaluation_time=evaluation_time,
-                    status="INVALID_PROVENANCE",
-                    reason=";".join(sorted(set(errors))),
-                    cohort_id=cohort_id,
-                )
+            invalid = _base_evaluation(
+                persisted_forecast,
+                evaluation_time=evaluation_time,
+                status="INVALID_PROVENANCE",
+                reason=";".join(sorted(set(errors))),
+                cohort_id=cohort_id,
             )
+            invalid["evaluation_mode"] = _evaluation_mode(
+                None, None, persisted_forecast.get("execution_origin")
+            )
+            rows.append(invalid)
             rows[-1]["target_time_passed"] = target_time_passed
             continue
 
@@ -256,7 +264,9 @@ def evaluate_forecasts(
             cohort_id=cohort_id,
         )
         base["target_time_passed"] = evaluation_time >= target_time
-        base["evaluation_mode"] = _evaluation_mode(source, feature_retrieval_mode)
+        base["evaluation_mode"] = _evaluation_mode(
+            source, feature_retrieval_mode, persisted_forecast.get("execution_origin")
+        )
 
         if not feature_reference:
             base["status"] = "PENDING_BASELINE"
@@ -314,7 +324,7 @@ def evaluate_forecasts(
         )
         arrival_lag = (reference_ingestion_time - target_time).total_seconds()
         retrieval_mode = str(target_reference.get("reference_retrieval_mode") or "")
-        evaluation_mode = _evaluation_mode(source, retrieval_mode)
+        evaluation_mode = _evaluation_mode(source, retrieval_mode, persisted_forecast.get("execution_origin"))
         target_weather = {
             name: finite_number(target_reference.get(name), field=name, required=False)
             for name in (

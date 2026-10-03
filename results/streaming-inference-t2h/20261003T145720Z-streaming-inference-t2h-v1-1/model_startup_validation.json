@@ -1,0 +1,12 @@
+{
+  "device": "cpu",
+  "feature_count": 73,
+  "feature_names_match": true,
+  "load_and_probe_seconds": 1.4751395999919623,
+  "model_bytes": 27726327,
+  "model_path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\results\\modeling-t2h\\20261003T122405Z-xgb-t2h-v1-1-colab\\weather_forecast_xgboost_t2h_v1_1.json",
+  "model_sha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+  "probe_prediction_temperature_c": 7.872618198394775,
+  "status": "PASS",
+  "xgboost_version": "3.4.1"
+}

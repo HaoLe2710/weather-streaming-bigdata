@@ -266,12 +266,17 @@ def _request_live_json_with_retry(
     raise RuntimeError("Open-Meteo request failed without an error response")
 
 
-def hourly_request_params(locations: Sequence[dict[str, Any]], history_hours: int) -> dict[str, Any]:
+def hourly_request_params(
+    locations: Sequence[dict[str, Any]],
+    history_hours: int,
+    *,
+    provider_model: str | None = None,
+) -> dict[str, Any]:
     if not locations:
         raise ValueError("cannot request an empty location batch")
     if history_hours < 0:
         raise ValueError("history_hours cannot be negative")
-    return {
+    params = {
         "latitude": ",".join(str(location["latitude"]) for location in locations),
         "longitude": ",".join(str(location["longitude"]) for location in locations),
         "hourly": ",".join(HOURLY_VARIABLES),
@@ -286,6 +291,9 @@ def hourly_request_params(locations: Sequence[dict[str, Any]], history_hours: in
         # deliberately filtered by safe_hour_cutoff until it is complete.
         "forecast_hours": 1,
     }
+    if provider_model:
+        params["models"] = provider_model
+    return params
 
 
 def fetch_hourly_responses(
@@ -297,6 +305,7 @@ def fetch_hourly_responses(
     batch_size: int = DEFAULT_BATCH_SIZE,
     request_timeout_seconds: float = DEFAULT_REQUEST_TIMEOUT_SECONDS,
     max_retries: int = DEFAULT_MAX_RETRIES,
+    provider_model: str | None = None,
     sleep=time.sleep,
 ) -> dict[str, Any]:
     """Fetch ordered hourly responses; failed batches are reported by exact ID."""
@@ -314,7 +323,7 @@ def fetch_hourly_responses(
     for batch in chunks(list(locations), batch_size):
         ids = [str(location["location_id"]) for location in batch]
         batch_key = ",".join(ids)
-        params = hourly_request_params(batch, history_hours)
+        params = hourly_request_params(batch, history_hours, provider_model=provider_model)
 
         def count_retry() -> None:
             retry_counts[batch_key] = retry_counts.get(batch_key, 0) + 1
@@ -480,6 +489,8 @@ def build_hourly_events(
     bootstrap: bool,
     ingestion_time: datetime | None = None,
     prior_failures: Mapping[str, str] | None = None,
+    provider_model: str | None = None,
+    provider_endpoint: str = OPEN_METEO_URL,
 ) -> dict[str, Any]:
     """Select common safe UTC data, enforce continuity, and build canonical events."""
     if now.tzinfo is None or now.utcoffset() is None:
@@ -561,15 +572,32 @@ def build_hourly_events(
             for event_time in selected_times:
                 if event_time > safe_hour or event_time > cutoff:
                     raise ValueError("future or incomplete provider hour crossed the safe-hour cutoff")
-                location_events.append(
-                    _event_for_hour(
+                event = _event_for_hour(
                         location_by_id[location_id],
                         metadata_by_id[location_id],
                         event_time,
                         timeline[event_time],
                         ingestion_time,
                     )
-                )
+                if provider_model:
+                    # Keep the shared V1 event builder unchanged. T2H carries
+                    # canonical catalog coordinates for feature parity while
+                    # retaining provider grid coordinates as provenance.
+                    event.update(
+                        {
+                            "latitude": float(location_by_id[location_id]["latitude"]),
+                            "longitude": float(location_by_id[location_id]["longitude"]),
+                            "provider": "Open-Meteo",
+                            "provider_endpoint": provider_endpoint,
+                            "provider_model": provider_model,
+                            "source_retrieved_at": ingestion_time.astimezone(timezone.utc)
+                            .isoformat(timespec="seconds")
+                            .replace("+00:00", "Z"),
+                            "provider_grid_latitude": float(metadata_by_id[location_id]["provider_latitude"]),
+                            "provider_grid_longitude": float(metadata_by_id[location_id]["provider_longitude"]),
+                        }
+                    )
+                location_events.append(event)
         except (TypeError, ValueError, KeyError) as exc:
             failures[location_id] = f"INVALID_LIVE_OBSERVATION: {exc}"
             if bootstrap and location_id not in gap_locations:
@@ -736,6 +764,7 @@ def run_cycle(
     batch_size: int = DEFAULT_BATCH_SIZE,
     request_timeout_seconds: float = DEFAULT_REQUEST_TIMEOUT_SECONDS,
     max_retries: int = DEFAULT_MAX_RETRIES,
+    provider_model: str | None = None,
     cache: PublishedHourCache | None = None,
     now: datetime | None = None,
     sleep=time.sleep,
@@ -750,8 +779,10 @@ def run_cycle(
         batch_size=batch_size,
         request_timeout_seconds=request_timeout_seconds,
         max_retries=max_retries,
+        provider_model=provider_model,
         sleep=sleep,
     )
+    retrieved_at = datetime.now(timezone.utc) if provider_model else None
     build_started = time.perf_counter()
     built = build_hourly_events(
         locations,
@@ -759,7 +790,10 @@ def run_cycle(
         now=current_time,
         history_hours=history_hours,
         bootstrap=bootstrap,
+        ingestion_time=retrieved_at,
         prior_failures=fetch["failed_locations"],
+        provider_model=provider_model,
+        provider_endpoint=endpoint,
     )
     event_build_seconds = time.perf_counter() - build_started
     events = built["events"]
@@ -792,6 +826,7 @@ def run_cycle(
         "topic": topic,
         "provider_endpoint": endpoint,
         "provider_source": LIVE_SOURCE,
+        "provider_model": provider_model,
         "provider_values_are_modelled": True,
         "requested_locations": len(locations),
         "successful_locations": len(locations) - len(failed),
@@ -844,6 +879,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--bootstrap-servers", default=os.getenv("WEATHER_LIVE_HOURLY_BOOTSTRAP_SERVERS", DEFAULT_BOOTSTRAP_SERVERS))
     parser.add_argument("--topic", default=os.getenv("WEATHER_LIVE_HOURLY_TOPIC", DEFAULT_TOPIC))
     parser.add_argument("--endpoint", default=os.getenv("WEATHER_LIVE_HOURLY_ENDPOINT", OPEN_METEO_URL))
+    parser.add_argument("--provider-model", default=os.getenv("WEATHER_LIVE_HOURLY_PROVIDER_MODEL"))
     parser.add_argument("--catalog", type=Path, default=Path(os.getenv("WEATHER_LIVE_HOURLY_CATALOG", str(PROJECT_ROOT / "historical" / "locations.json"))))
     parser.add_argument("--poll-interval-seconds", type=float, default=float(os.getenv("WEATHER_LIVE_HOURLY_POLL_INTERVAL_SECONDS", str(DEFAULT_POLL_INTERVAL_SECONDS))))
     parser.add_argument("--request-timeout-seconds", type=float, default=float(os.getenv("WEATHER_LIVE_HOURLY_REQUEST_TIMEOUT_SECONDS", str(DEFAULT_REQUEST_TIMEOUT_SECONDS))))
@@ -862,6 +898,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("retry count and batch size must be positive; max polls cannot be negative")
     if args.kafka_startup_timeout_seconds <= 0:
         parser.error("Kafka startup timeout must be positive")
+    if args.provider_model and not args.provider_model.strip():
+        parser.error("provider model cannot be blank")
     return args
 
 
@@ -908,6 +946,7 @@ def main(argv: list[str] | None = None) -> int:
                     batch_size=args.batch_size,
                     request_timeout_seconds=args.request_timeout_seconds,
                     max_retries=args.max_retries,
+                    provider_model=args.provider_model,
                     cache=cache,
                 )
                 summary["poll_index"] = poll_index

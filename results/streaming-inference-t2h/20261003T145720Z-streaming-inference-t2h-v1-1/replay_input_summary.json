@@ -1,0 +1,13 @@
+{
+  "contiguous": true,
+  "end_exclusive_utc": "2025-01-04T00:00:00Z",
+  "hours_per_location": 72,
+  "locations": 63,
+  "provider_model": "ecmwf_ifs",
+  "rows": 4536,
+  "source_contract": "WEATHER_FORECAST_SOURCE_T2H_V1_1",
+  "source_path": "D:\\HK1-2026-2027\\Nhom11_BigData\\weather-streaming-bigdata\\data\\historical_forecast_t2h_v1_1\\normalized\\predictors\\model_id=ecmwf_ifs\\year=2025",
+  "start_utc": "2025-01-01T00:00:00Z",
+  "status": "PASS",
+  "unique_location_hours": 4536
+}

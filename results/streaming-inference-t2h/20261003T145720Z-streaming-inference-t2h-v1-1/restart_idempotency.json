@@ -1,0 +1,24 @@
+{
+  "checkpoint_and_delta_state_reused_after_first_available_now_run": true,
+  "deterministic_forecast_id_consistency": "PASS; stable model/location/feature_time/target_time key and zero duplicate Delta IDs",
+  "duplicate_forecast_ids_after_restart": 0,
+  "duplicate_logical_forecasts_after_restart": 0,
+  "duplicate_output_rows_by_batch": [
+    0,
+    0
+  ],
+  "forecasts_after_restart": 3024,
+  "forecasts_before_restart": 756,
+  "new_logical_forecasts_after_restart": 2268,
+  "overlap_observations_resent": 756,
+  "state_restoration": {
+    "duplicate_location_hours": 0,
+    "locations": 63,
+    "rows_after_restart": 3087,
+    "rows_per_location": [
+      49
+    ],
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

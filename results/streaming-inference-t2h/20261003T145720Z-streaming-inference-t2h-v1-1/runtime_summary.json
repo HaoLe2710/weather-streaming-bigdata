@@ -1,0 +1,30 @@
+{
+  "distributed_model_load_count_per_live_batch": 4,
+  "live_batch_cycle_seconds": 47.711988572002156,
+  "live_delta_sink_seconds": 2.2399027749997913,
+  "live_feature_generation_seconds_per_location": {
+    "max": 0.015850097996008117,
+    "median": 0.005834179995872546,
+    "p95": 0.01160264499776531
+  },
+  "live_metrics_reverification_batch_seconds": 43.74337525699957,
+  "live_prediction_seconds_per_location": {
+    "max": 6.399512526004401,
+    "median": 0.02620850200037239,
+    "p95": 6.3292443200043635
+  },
+  "model_cpu_load_and_probe_seconds": 1.4751395999919623,
+  "producer_api_request_cycle_seconds": 1.8528929140011314,
+  "producer_full_cycle_seconds": 1.9476179400007823,
+  "proposed_issuance_slo": {
+    "reason": "live bootstrap began mid-hour; available-now batch duration alone does not establish end-to-end boundary-to-publish latency",
+    "status": "NOT_MEASURED",
+    "target": "all 63 forecasts within approximately 60 seconds after a UTC hour begins"
+  },
+  "replay_batch_cycle_seconds": [
+    45.69221358699724,
+    47.45430719599972
+  ],
+  "scope_note": "basic 63-location production-path timing; no scale benchmark in this milestone",
+  "status": "PASS"
+}

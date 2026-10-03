@@ -30,28 +30,66 @@ from ml.streaming_inference.online_features import (  # noqa: E402
 )
 
 
-INPUT_TOPIC = os.getenv("WEATHER_INFERENCE_TOPIC", "weather.hourly.observations.v1")
+INFERENCE_PROFILE = os.getenv("WEATHER_INFERENCE_PROFILE", "T1H").strip().upper()
+if INFERENCE_PROFILE not in {"T1H", "T2H"}:
+    raise ValueError(f"unsupported WEATHER_INFERENCE_PROFILE: {INFERENCE_PROFILE!r}")
+T2H_PROFILE = INFERENCE_PROFILE == "T2H"
+EXECUTION_ORIGIN = os.getenv("WEATHER_INFERENCE_EXECUTION_ORIGIN", "REPLAY_VALIDATION")
+FORECAST_HORIZON_HOURS = 2 if T2H_PROFILE else 1
+INPUT_TOPIC = os.getenv(
+    "WEATHER_INFERENCE_TOPIC",
+    "weather.hourly.observations.t2h.v1" if T2H_PROFILE else "weather.hourly.observations.v1",
+)
 BOOTSTRAP_SERVERS = os.getenv("WEATHER_INFERENCE_BOOTSTRAP_SERVERS", "broker:19092")
 SOURCE_DELTA_PATH = os.getenv(
     "WEATHER_INFERENCE_REPLAY_SOURCE",
     "/opt/project/data/historical/weather_hourly_vn63",
 )
-OUTPUT_ROOT = Path(os.getenv("WEATHER_INFERENCE_OUTPUT_ROOT", "/opt/project/data/streaming/weather_forecast_xgboost_v1"))
+DEFAULT_OUTPUT_ROOT = (
+    "/opt/project/data/streaming/weather_forecast_xgboost_t2h_v1_1"
+    if T2H_PROFILE
+    else "/opt/project/data/streaming/weather_forecast_xgboost_v1"
+)
+OUTPUT_ROOT = Path(os.getenv("WEATHER_INFERENCE_OUTPUT_ROOT", DEFAULT_OUTPUT_ROOT))
 FORECAST_PATH = Path(os.getenv("WEATHER_INFERENCE_FORECAST_PATH", str(OUTPUT_ROOT / "forecasts")))
 STATE_PATH = Path(os.getenv("WEATHER_INFERENCE_STATE_PATH", str(OUTPUT_ROOT / "state_hourly_observations")))
 REJECTION_PATH = Path(os.getenv("WEATHER_INFERENCE_REJECTION_PATH", str(OUTPUT_ROOT / "rejected_observations")))
-CHECKPOINT_PATH = Path(
-    os.getenv(
-        "WEATHER_INFERENCE_CHECKPOINT",
-        "/opt/project/data/checkpoints/weather_forecast_xgboost_v1",
-    )
+DEFAULT_CHECKPOINT_PATH = (
+    "/opt/project/data/checkpoints/weather_forecast_xgboost_t2h_v1_1"
+    if T2H_PROFILE
+    else "/opt/project/data/checkpoints/weather_forecast_xgboost_v1"
 )
-RUN_ID = os.getenv("WEATHER_INFERENCE_RUN_ID", "local-streaming-inference-v1")
-RUN_RESULTS = Path(os.getenv("WEATHER_INFERENCE_RESULTS_DIR", f"/opt/project/results/streaming-inference/{RUN_ID}"))
+CHECKPOINT_PATH = Path(os.getenv("WEATHER_INFERENCE_CHECKPOINT", DEFAULT_CHECKPOINT_PATH))
+DEFAULT_RUN_ID = "local-streaming-inference-t2h-v1-1" if T2H_PROFILE else "local-streaming-inference-v1"
+RUN_ID = os.getenv("WEATHER_INFERENCE_RUN_ID", DEFAULT_RUN_ID)
+DEFAULT_RESULTS_ROOT = (
+    f"/opt/project/results/streaming-inference-t2h/{RUN_ID}"
+    if T2H_PROFILE
+    else f"/opt/project/results/streaming-inference/{RUN_ID}"
+)
+RUN_RESULTS = Path(os.getenv("WEATHER_INFERENCE_RESULTS_DIR", DEFAULT_RESULTS_ROOT))
 MAX_OFFSETS_PER_TRIGGER = int(os.getenv("WEATHER_INFERENCE_MAX_OFFSETS_PER_TRIGGER", "100000"))
 HISTORY_RETAIN_HOURS = int(os.getenv("WEATHER_INFERENCE_HISTORY_RETAIN_HOURS", "48"))
-FORECAST_HORIZON_HOURS = 1
 CATALOG_PATH = Path(os.getenv("WEATHER_INFERENCE_CATALOG_PATH", "/opt/project/historical/locations.json"))
+T2H_REPLAY_SOURCE = Path(os.getenv(
+    "WEATHER_T2H_REPLAY_SOURCE",
+    "/opt/project/history-data/historical_forecast_t2h_v1_1/normalized/predictors/model_id=ecmwf_ifs/year=2025",
+))
+T2H_REPLAY_START_UTC = os.getenv("WEATHER_T2H_REPLAY_START_UTC", "2025-01-01T00:00:00Z")
+T2H_FORECAST_EXTRA_COLUMNS = (
+    "source_timestamp",
+    "forecast_lead_seconds",
+    "feature_count",
+    "forecast_horizon_hours",
+    "execution_origin",
+    "provider",
+    "provider_endpoint",
+    "provider_model",
+    "source_retrieved_at",
+    "source",
+    "minimum_useful_lead_seconds",
+    "minimum_useful_lead_met",
+)
 
 WEATHER_COLUMNS = (
     "temperature_c",
@@ -61,7 +99,7 @@ WEATHER_COLUMNS = (
     "wind_speed_kmh",
     "wind_gust_kmh",
 )
-STATE_COLUMNS = (
+BASE_STATE_COLUMNS = (
     "location_id",
     "event_time",
     "event_id",
@@ -73,7 +111,14 @@ STATE_COLUMNS = (
     "source",
     "payload_hash",
 )
-OBSERVATION_JSON_FIELDS = (
+T2H_PROVENANCE_COLUMNS = (
+    "provider",
+    "provider_endpoint",
+    "provider_model",
+    "source_retrieved_at",
+)
+STATE_COLUMNS = BASE_STATE_COLUMNS + (T2H_PROVENANCE_COLUMNS if T2H_PROFILE else ())
+BASE_OBSERVATION_JSON_FIELDS = (
     "event_id",
     "location_id",
     "city",
@@ -84,6 +129,21 @@ OBSERVATION_JSON_FIELDS = (
     "weather_code",
     "source",
 )
+OBSERVATION_JSON_FIELDS = BASE_OBSERVATION_JSON_FIELDS + (T2H_PROVENANCE_COLUMNS if T2H_PROFILE else ())
+
+
+def _inference_contract():
+    global _INFERENCE_CONTRACT
+    try:
+        return _INFERENCE_CONTRACT
+    except NameError:
+        if T2H_PROFILE:
+            from ml.streaming_inference.t2h_contract import load_t2h_feature_contract
+
+            _INFERENCE_CONTRACT = load_t2h_feature_contract()
+        else:
+            _INFERENCE_CONTRACT = load_feature_contract()
+        return _INFERENCE_CONTRACT
 
 
 def _worker_contract():
@@ -139,7 +199,8 @@ def _score_location(pdf):
             candidate_times.add(instant)
 
     feature_started = time.perf_counter()
-    results = build_online_feature_series(observations, contract=_worker_contract())
+    inference_contract = _inference_contract()
+    results = build_online_feature_series(observations, contract=inference_contract)
     feature_seconds = time.perf_counter() - feature_started
     result_by_time = {result.feature_time: result for result in results}
     ready_results = [
@@ -151,30 +212,66 @@ def _score_location(pdf):
     predictions = []
     worker_loads = 0
     if ready_results:
-        from ml.streaming_inference.model_loader import model_load_count, predict_feature_matrix
-
         prediction_started = time.perf_counter()
-        predictions = predict_feature_matrix(
-            [result.values for result in ready_results],
-            ready_results[0].feature_names,
-        ).tolist()
+        if T2H_PROFILE:
+            from ml.streaming_inference.t2h_model_loader import predict_t2h_feature_matrix, t2h_model_load_count
+
+            predictions = predict_t2h_feature_matrix(
+                [result.values for result in ready_results], ready_results[0].feature_names
+            ).tolist()
+            worker_loads = t2h_model_load_count()
+        else:
+            from ml.streaming_inference.model_loader import model_load_count, predict_feature_matrix
+
+            predictions = predict_feature_matrix(
+                [result.values for result in ready_results],
+                ready_results[0].feature_names,
+            ).tolist()
+            worker_loads = model_load_count()
         prediction_seconds = time.perf_counter() - prediction_started
-        worker_loads = model_load_count()
+    if T2H_PROFILE:
+        from ml.streaming_inference.t2h_model_loader import t2h_model_load_count
 
-    from ml.streaming_inference.model_loader import model_load_count
+        worker_loads = max(worker_loads, t2h_model_load_count())
+    else:
+        from ml.streaming_inference.model_loader import model_load_count
 
-    worker_loads = max(worker_loads, model_load_count())
+        worker_loads = max(worker_loads, model_load_count())
     inference_time = datetime.now(timezone.utc)
     forecast_by_time = {}
+    t2h_outcome_by_time = {}
     for result, prediction in zip(ready_results, predictions, strict=True):
         source_row = event_rows[result.feature_time]
-        forecast_by_time[result.feature_time] = make_forecast_record(
-            location_id=location_id,
-            feature_time=result.feature_time,
-            prediction_temperature_c=float(prediction),
-            source_event_id=None if pd.isna(source_row.get("event_id")) else str(source_row.get("event_id")),
-            inference_time=inference_time,
-        )
+        if T2H_PROFILE:
+            from ml.streaming_inference.t2h_runtime import build_t2h_forecast_record
+
+            try:
+                outcome = build_t2h_forecast_record(
+                    location_id=location_id,
+                    feature_time=result.feature_time,
+                    prediction_temperature_c=float(prediction),
+                    source_event_id=None if pd.isna(source_row.get("event_id")) else str(source_row.get("event_id")),
+                    inference_time=inference_time,
+                    provider=None if pd.isna(source_row.get("provider")) else str(source_row.get("provider")),
+                    provider_endpoint=None if pd.isna(source_row.get("provider_endpoint")) else str(source_row.get("provider_endpoint")),
+                    provider_model=None if pd.isna(source_row.get("provider_model")) else str(source_row.get("provider_model")),
+                    source_retrieved_at=None if pd.isna(source_row.get("source_retrieved_at")) else source_row.get("source_retrieved_at"),
+                    source=None if pd.isna(source_row.get("source")) else str(source_row.get("source")),
+                    execution_origin=EXECUTION_ORIGIN,
+                )
+                t2h_outcome_by_time[result.feature_time] = outcome
+                if outcome.forecast is not None:
+                    forecast_by_time[result.feature_time] = outcome.forecast
+            except (TypeError, ValueError) as exc:
+                t2h_outcome_by_time[result.feature_time] = ("INVALID_PROVENANCE", None, str(exc))
+        else:
+            forecast_by_time[result.feature_time] = make_forecast_record(
+                location_id=location_id,
+                feature_time=result.feature_time,
+                prediction_temperature_c=float(prediction),
+                source_event_id=None if pd.isna(source_row.get("event_id")) else str(source_row.get("event_id")),
+                inference_time=inference_time,
+            )
 
     output = []
     for instant in sorted(candidate_times):
@@ -184,7 +281,18 @@ def _score_location(pdf):
             forecast = None
         else:
             status = result.status
+            if T2H_PROFILE and status == "HISTORY_GAP":
+                status = "GAP_IN_HISTORY"
             forecast = forecast_by_time.get(instant)
+        lead = None
+        detail = None
+        if T2H_PROFILE and result is not None and result.ready:
+            outcome = t2h_outcome_by_time.get(instant)
+            if isinstance(outcome, tuple):
+                status, _, detail = outcome
+            elif outcome is not None:
+                status = outcome.status
+                lead = float(outcome.forecast_lead_seconds)
         output.append(
             {
                 "location_id": location_id,
@@ -193,16 +301,31 @@ def _score_location(pdf):
                 "forecast_id": None if forecast is None else forecast["forecast_id"],
                 "target_time": None if forecast is None else _spark_utc(forecast["target_time"]),
                 "prediction_temperature_c": None if forecast is None else forecast["prediction_temperature_c"],
-                "model_id": None if forecast is None else MODEL_ID,
-                "model_sha256": None if forecast is None else MODEL_SHA256,
-                "feature_set_id": None if forecast is None else FEATURE_SET_ID,
-                "feature_list_sha256": None if forecast is None else FEATURE_LIST_SHA256,
+                "model_id": None if forecast is None else forecast["model_id"],
+                "model_sha256": None if forecast is None else forecast["model_sha256"],
+                "feature_set_id": None if forecast is None else forecast["feature_set_id"],
+                "feature_list_sha256": None if forecast is None else forecast["feature_list_sha256"],
                 "source_event_id": None if forecast is None else forecast["source_event_id"],
                 "inference_time": None if forecast is None else _spark_utc(forecast["inference_time"]),
                 "worker_pid": int(os.getpid()),
                 "worker_model_loads": int(worker_loads),
                 "feature_build_seconds": float(feature_seconds),
                 "prediction_seconds": float(prediction_seconds),
+                **({
+                    "execution_origin": EXECUTION_ORIGIN,
+                    "forecast_lead_seconds": lead,
+                    "forecast_horizon_hours": FORECAST_HORIZON_HOURS,
+                    "feature_count": len(result.feature_names) if result is not None and result.ready else 73,
+                    "provider": None if pd.isna(event_rows.get(instant, {}).get("provider")) else event_rows.get(instant, {}).get("provider"),
+                    "provider_endpoint": None if pd.isna(event_rows.get(instant, {}).get("provider_endpoint")) else event_rows.get(instant, {}).get("provider_endpoint"),
+                    "provider_model": None if pd.isna(event_rows.get(instant, {}).get("provider_model")) else event_rows.get(instant, {}).get("provider_model"),
+                    "source_retrieved_at": None if forecast is None else _spark_utc(forecast["source_retrieved_at"]),
+                    "source_timestamp": None if forecast is None else _spark_utc(forecast["source_timestamp"]),
+                    "source": None if pd.isna(event_rows.get(instant, {}).get("source")) else event_rows.get(instant, {}).get("source"),
+                    "minimum_useful_lead_seconds": None if forecast is None else forecast["minimum_useful_lead_seconds"],
+                    "minimum_useful_lead_met": None if forecast is None else forecast["minimum_useful_lead_met"],
+                    "forecast_status_detail": detail,
+                } if T2H_PROFILE else {}),
             }
         )
     return pd.DataFrame(output)
@@ -225,7 +348,7 @@ def _canonical_locations() -> list[dict[str, Any]]:
 def _spark_session(app_name: str):
     from pyspark.sql import SparkSession
 
-    return (
+    builder = (
         SparkSession.builder.appName(app_name)
         .config("spark.sql.session.timeZone", "UTC")
         .config("spark.sql.shuffle.partitions", os.getenv("WEATHER_INFERENCE_SHUFFLE_PARTITIONS", "8"))
@@ -234,8 +357,24 @@ def _spark_session(app_name: str):
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
         .config("spark.python.worker.reuse", "true")
-        .getOrCreate()
     )
+    for name in (
+        "WEATHER_INFERENCE_PROFILE",
+        "WEATHER_INFERENCE_EXECUTION_ORIGIN",
+        "WEATHER_T2H_MODEL_PATH",
+        "WEATHER_T2H_FEATURE_LIST_PATH",
+        "WEATHER_T2H_MODEL_ID",
+        "WEATHER_T2H_MODEL_SHA256",
+        "WEATHER_T2H_FEATURE_SET_ID",
+        "WEATHER_T2H_FEATURE_LIST_SHA256",
+        "WEATHER_T2H_FORECAST_HORIZON_HOURS",
+        "WEATHER_T2H_PROVIDER_MODEL",
+        "WEATHER_T2H_MINIMUM_USEFUL_LEAD_SECONDS",
+        "WEATHER_INFERENCE_MODEL_THREADS",
+    ):
+        if name in os.environ:
+            builder = builder.config(f"spark.executorEnv.{name}", os.environ[name])
+    return builder.getOrCreate()
 
 
 def publish_nationwide_replay(spark, topic: str = INPUT_TOPIC, replay_hours: int = 72) -> dict[str, Any]:
@@ -358,6 +497,158 @@ def publish_nationwide_replay(spark, topic: str = INPUT_TOPIC, replay_hours: int
     return report
 
 
+def publish_t2h_replay(
+    spark,
+    topic: str = INPUT_TOPIC,
+    replay_hours: int = 72,
+    offset_hours: int = 0,
+) -> dict[str, Any]:
+    """Publish a deterministic ECMWF IFS Historical Forecast window for all 63 locations."""
+    from datetime import timedelta
+
+    from pyspark.sql import functions as F
+
+    from ml.streaming_inference.t2h_contract import (
+        HISTORICAL_FORECAST_ENDPOINT,
+        PROVIDER_MODEL,
+    )
+
+    if not T2H_PROFILE:
+        raise ValueError("T2H historical replay is available only with WEATHER_INFERENCE_PROFILE=T2H")
+    if replay_hours < 1 or offset_hours < 0:
+        raise ValueError("T2H replay hours must be positive and offset_hours cannot be negative")
+    replay_start = datetime.fromisoformat(T2H_REPLAY_START_UTC.replace("Z", "+00:00")).astimezone(timezone.utc)
+    window_start = replay_start + timedelta(hours=offset_hours)
+    window_end = window_start + timedelta(hours=replay_hours)
+
+    source = (
+        spark.read.option("recursiveFileLookup", "true")
+        .parquet(str(T2H_REPLAY_SOURCE))
+        .filter(
+            (F.col("model_id") == F.lit(PROVIDER_MODEL))
+            & (F.col("source_role") == F.lit("predictors"))
+            & (F.col("valid_time") >= F.lit(window_start.replace(tzinfo=None)))
+            & (F.col("valid_time") < F.lit(window_end.replace(tzinfo=None)))
+        )
+    )
+    required_columns = {
+        "provider",
+        "endpoint",
+        "model_id",
+        "retrieved_at_utc",
+        "location_id",
+        "city",
+        "latitude",
+        "longitude",
+        "valid_time",
+        *WEATHER_COLUMNS,
+        "weather_code",
+    }
+    missing_columns = sorted(required_columns - set(source.columns))
+    if missing_columns:
+        raise ValueError(f"T2H replay source is missing canonical columns: {missing_columns}")
+
+    locations = _canonical_locations()
+    catalog = spark.createDataFrame(
+        [
+            (item["location_id"], item.get("name") or item.get("province_name") or "", float(item["latitude"]), float(item["longitude"]))
+            for item in locations
+        ],
+        ["location_id", "catalog_city", "catalog_latitude", "catalog_longitude"],
+    )
+    source = source.join(catalog, "location_id", "inner")
+    bad_source = source.filter(
+        (F.lower(F.col("provider")) != F.lit("open-meteo"))
+        | (F.col("endpoint") != F.lit(HISTORICAL_FORECAST_ENDPOINT))
+        | F.col("retrieved_at_utc").isNull()
+        | (F.abs(F.col("latitude") - F.col("catalog_latitude")) > F.lit(1e-5))
+        | (F.abs(F.col("longitude") - F.col("catalog_longitude")) > F.lit(1e-5))
+        | (F.col("valid_time").cast("long") % F.lit(3600) != F.lit(0))
+    )
+    bad_source_count = bad_source.count()
+    if bad_source_count:
+        raise ValueError(f"T2H replay source has {bad_source_count} rows with invalid provenance, coordinates, or hour alignment")
+
+    hourly = source.select(
+        F.concat_ws(
+            "|",
+            F.lit("OPEN_METEO_HISTORICAL_FORECAST"),
+            F.col("location_id"),
+            F.date_format("valid_time", "yyyy-MM-dd'T'HH:mm:ss'Z'"),
+        ).alias("event_id"),
+        "location_id",
+        F.col("catalog_city").alias("city"),
+        F.col("catalog_latitude").cast("double").alias("latitude"),
+        F.col("catalog_longitude").cast("double").alias("longitude"),
+        F.date_format("valid_time", "yyyy-MM-dd'T'HH:mm:ss'Z'").alias("event_time"),
+        *WEATHER_COLUMNS,
+        "weather_code",
+        F.lit("OPEN_METEO_HISTORICAL_FORECAST").alias("source"),
+        F.lit("Open-Meteo").alias("provider"),
+        F.col("endpoint").alias("provider_endpoint"),
+        F.col("model_id").alias("provider_model"),
+        F.col("retrieved_at_utc").alias("source_retrieved_at"),
+    )
+    stats = hourly.agg(
+        F.count(F.lit(1)).alias("rows"),
+        F.countDistinct(F.struct("location_id", "event_time")).alias("location_hours"),
+        F.countDistinct("location_id").alias("locations"),
+        F.countDistinct("event_time").alias("hours"),
+        F.min("event_time").alias("min_time"),
+        F.max("event_time").alias("max_time"),
+    ).first()
+    per_location = {row["location_id"]: int(row["count"]) for row in hourly.groupBy("location_id").count().collect()}
+    expected_rows = replay_hours * len(locations)
+    if (
+        int(stats["rows"]) != expected_rows
+        or int(stats["location_hours"]) != expected_rows
+        or int(stats["locations"]) != len(locations)
+        or int(stats["hours"]) != replay_hours
+        or set(per_location) != {item["location_id"] for item in locations}
+        or set(per_location.values()) != {replay_hours}
+    ):
+        raise ValueError(
+            "T2H replay window must contain one row per location-hour with no gaps: "
+            f"rows={stats['rows']}, location_hours={stats['location_hours']}, "
+            f"locations={stats['locations']}, hours={stats['hours']}, "
+            f"per_location_counts={sorted(set(per_location.values()))}"
+        )
+
+    payload = F.to_json(
+        F.struct(*[F.col(name) for name in OBSERVATION_JSON_FIELDS]),
+        options={"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'", "timeZone": "UTC"},
+    )
+    kafka = (
+        hourly.repartition(8, "location_id")
+        .sortWithinPartitions("location_id", "event_time")
+        .select(F.col("location_id").cast("binary").alias("key"), payload.cast("binary").alias("value"))
+    )
+    kafka.write.format("kafka").option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS).option("topic", topic).save()
+    report = {
+        "status": "PASS",
+        "topic": topic,
+        "source_path": str(T2H_REPLAY_SOURCE),
+        "source_contract": "WEATHER_FORECAST_SOURCE_T2H_V1_1",
+        "provider": "Open-Meteo",
+        "endpoint": HISTORICAL_FORECAST_ENDPOINT,
+        "provider_model": PROVIDER_MODEL,
+        "source_role": "predictors",
+        "execution_origin": "REPLAY_VALIDATION",
+        "window_offset_hours": offset_hours,
+        "replay_hours": replay_hours,
+        "published_rows": int(stats["rows"]),
+        "unique_location_hours": int(stats["location_hours"]),
+        "location_count": int(stats["locations"]),
+        "event_time_min_utc": window_start.isoformat().replace("+00:00", "Z"),
+        "event_time_max_utc": (window_end - timedelta(hours=1)).isoformat().replace("+00:00", "Z"),
+        "rows_per_location": replay_hours,
+        "bad_source_rows": bad_source_count,
+    }
+    _jsonl_append(RUN_RESULTS / "t2h_replay_publish.jsonl", report)
+    print(json.dumps(report, indent=2))
+    return report
+
+
 def _empty_delta(spark, path: Path, schema) -> None:
     from delta.tables import DeltaTable
 
@@ -374,6 +665,7 @@ def _merge_delta(spark, path: Path, source_df, condition: str) -> None:
 
 def _observation_schemas():
     from pyspark.sql.types import (
+        BooleanType,
         DoubleType,
         IntegerType,
         LongType,
@@ -395,6 +687,16 @@ def _observation_schemas():
             StructField("weather_code", IntegerType(), True),
             StructField("source", StringType(), True),
             StructField("payload_hash", StringType(), False),
+            *(
+                [
+                    StructField("provider", StringType(), True),
+                    StructField("provider_endpoint", StringType(), True),
+                    StructField("provider_model", StringType(), True),
+                    StructField("source_retrieved_at", StringType(), True),
+                ]
+                if T2H_PROFILE
+                else []
+            ),
         ]
     )
     forecast_schema = StructType(
@@ -410,6 +712,24 @@ def _observation_schemas():
             StructField("feature_list_sha256", StringType(), False),
             StructField("source_event_id", StringType(), True),
             StructField("inference_time", TimestampType(), False),
+            *(
+                [
+                    StructField("source_timestamp", TimestampType(), False),
+                    StructField("forecast_lead_seconds", DoubleType(), False),
+                    StructField("feature_count", IntegerType(), False),
+                    StructField("forecast_horizon_hours", IntegerType(), False),
+                    StructField("execution_origin", StringType(), False),
+                    StructField("provider", StringType(), False),
+                    StructField("provider_endpoint", StringType(), False),
+                    StructField("provider_model", StringType(), False),
+                    StructField("source_retrieved_at", TimestampType(), False),
+                    StructField("source", StringType(), False),
+                    StructField("minimum_useful_lead_seconds", IntegerType(), True),
+                    StructField("minimum_useful_lead_met", BooleanType(), True),
+                ]
+                if T2H_PROFILE
+                else []
+            ),
         ]
     )
     score_schema = StructType(
@@ -430,6 +750,25 @@ def _observation_schemas():
             StructField("worker_model_loads", IntegerType(), False),
             StructField("feature_build_seconds", DoubleType(), False),
             StructField("prediction_seconds", DoubleType(), False),
+            *(
+                [
+                    StructField("execution_origin", StringType(), False),
+                    StructField("forecast_lead_seconds", DoubleType(), True),
+                    StructField("forecast_horizon_hours", IntegerType(), False),
+                    StructField("feature_count", IntegerType(), False),
+                    StructField("provider", StringType(), True),
+                    StructField("provider_endpoint", StringType(), True),
+                    StructField("provider_model", StringType(), True),
+                    StructField("source_retrieved_at", TimestampType(), True),
+                    StructField("source_timestamp", TimestampType(), True),
+                    StructField("source", StringType(), True),
+                    StructField("minimum_useful_lead_seconds", IntegerType(), True),
+                    StructField("minimum_useful_lead_met", BooleanType(), True),
+                    StructField("forecast_status_detail", StringType(), True),
+                ]
+                if T2H_PROFILE
+                else []
+            ),
         ]
     )
     rejection_schema = StructType(
@@ -531,6 +870,16 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
             *[StructField(name, DoubleType(), True) for name in WEATHER_COLUMNS],
             StructField("weather_code", IntegerType(), True),
             StructField("source", StringType(), True),
+            *(
+                [
+                    StructField("provider", StringType(), True),
+                    StructField("provider_endpoint", StringType(), True),
+                    StructField("provider_model", StringType(), True),
+                    StructField("source_retrieved_at", StringType(), True),
+                ]
+                if T2H_PROFILE
+                else []
+            ),
         ]
     )
     parsed = (
@@ -554,6 +903,9 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
     finite = F.lit(True)
     for name in required_numeric:
         finite = finite & F.col(name).isNotNull() & ~F.isnan(F.col(name)) & (F.abs(F.col(name)) < F.lit(float("inf")))
+    payload_fields = ["latitude", "longitude", *WEATHER_COLUMNS]
+    if T2H_PROFILE:
+        payload_fields.extend(["source", "provider", "provider_endpoint", "provider_model"])
     classified = (
         joined.withColumn(
             "reject_reason",
@@ -566,10 +918,7 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
         .withColumn("event_time", F.col("parsed_event_time"))
         .withColumn(
             "payload_hash",
-            F.sha2(
-                F.to_json(F.struct("latitude", "longitude", *WEATHER_COLUMNS)),
-                256,
-            ),
+            F.sha2(F.to_json(F.struct(*payload_fields)), 256),
         )
         .cache()
     )
@@ -707,24 +1056,52 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
         )
         if not per_location_metrics and status_counts:
             raise RuntimeError("inference status rows were produced but worker metrics were not returned")
-        predictions = (
-            scored.filter(F.col("status") == "READY")
-            .select(
-                "forecast_id",
-                "location_id",
-                F.col("feature_time"),
-                "target_time",
-                "prediction_temperature_c",
-                "model_id",
-                "model_sha256",
-                "feature_set_id",
-                "feature_list_sha256",
-                "source_event_id",
-                "inference_time",
-            )
-            .cache()
-        )
+        prediction_columns = [
+            "forecast_id",
+            "location_id",
+            "feature_time",
+            "target_time",
+            "prediction_temperature_c",
+            "model_id",
+            "model_sha256",
+            "feature_set_id",
+            "feature_list_sha256",
+            "source_event_id",
+            "inference_time",
+        ]
+        if T2H_PROFILE:
+            prediction_columns.extend(T2H_FORECAST_EXTRA_COLUMNS)
+        predictions = scored.filter(F.col("status") == "READY").select(*prediction_columns).cache()
         predicted_count = predictions.count()
+        t2h_live_leads = None
+        t2h_invalid_live_leads = 0
+        if T2H_PROFILE:
+            output_origin_mismatches = predictions.filter(F.col("execution_origin") != EXECUTION_ORIGIN).count()
+            if output_origin_mismatches:
+                raise RuntimeError(
+                    f"T2H output origin differs from configured execution origin in {output_origin_mismatches} rows"
+                )
+            live_predictions = predictions if EXECUTION_ORIGIN == "LIVE_PROSPECTIVE" else predictions.limit(0)
+            # Materialize lead metrics before the Delta MERGE consumes the cached source frame.
+            t2h_live_leads = (
+                live_predictions
+                .agg(
+                    F.count(F.lit(1)).alias("count"),
+                    F.min("forecast_lead_seconds").alias("min"),
+                    F.avg("forecast_lead_seconds").alias("mean"),
+                    F.expr("percentile_approx(forecast_lead_seconds, 0.5, 10000)").alias("median"),
+                    F.expr("percentile_approx(forecast_lead_seconds, 0.95, 10000)").alias("p95"),
+                    F.max("forecast_lead_seconds").alias("max"),
+                )
+                .first()
+            )
+            t2h_invalid_live_leads = live_predictions.filter(
+                F.col("forecast_lead_seconds").isNull() | (F.col("forecast_lead_seconds") <= 0)
+            ).count()
+            if t2h_invalid_live_leads:
+                raise RuntimeError(
+                    f"T2H emitted {t2h_invalid_live_leads} LIVE_PROSPECTIVE forecasts without positive lead"
+                )
         existing_ids = spark.read.format("delta").load(str(FORECAST_PATH)).select("forecast_id")
         duplicate_output_rows = predictions.join(existing_ids, "forecast_id", "inner").count()
         sink_started = time.perf_counter()
@@ -774,7 +1151,7 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
             "history_too_late_rows": int(late_count),
             "feature_ready_rows": int(status_counts.get("READY", 0)),
             "insufficient_history_rows": int(status_counts.get("INSUFFICIENT_HISTORY", 0)),
-            "history_gap_rows": int(status_counts.get("HISTORY_GAP", 0)),
+            "history_gap_rows": int(status_counts.get("HISTORY_GAP", 0) + status_counts.get("GAP_IN_HISTORY", 0)),
             "invalid_feature_rows": int(status_counts.get("INVALID_FEATURES", 0)),
             "predicted_rows": int(predicted_count),
             "duplicate_output_rows": int(duplicate_output_rows),
@@ -795,6 +1172,21 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
             "state_rows_retained": int(spark.read.format("delta").load(str(STATE_PATH)).count()),
             "total_batch_seconds": time.perf_counter() - started,
         }
+        if T2H_PROFILE:
+            metrics.update(
+                {
+                    "execution_origin": EXECUTION_ORIGIN,
+                    "gap_in_history_rows": int(status_counts.get("GAP_IN_HISTORY", 0)),
+                    "non_prospective_skipped_rows": int(status_counts.get("NON_PROSPECTIVE_SKIPPED", 0)),
+                    "invalid_provenance_rows": int(status_counts.get("INVALID_PROVENANCE", 0)),
+                    "live_positive_lead_forecast_count": int(t2h_live_leads["count"]),
+                    "live_forecast_lead_seconds": {
+                        name: None if t2h_live_leads[name] is None else float(t2h_live_leads[name])
+                        for name in ("min", "mean", "median", "p95", "max")
+                    },
+                    "nonpositive_live_lead_rows": int(t2h_invalid_live_leads),
+                }
+            )
         _write_metrics(metrics)
         scored.unpersist()
         predictions.unpersist()
@@ -829,6 +1221,24 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
             "state_rows_retained": int(previous_state.count()),
             "total_batch_seconds": time.perf_counter() - started,
         }
+        if T2H_PROFILE:
+            metrics.update(
+                {
+                    "execution_origin": EXECUTION_ORIGIN,
+                    "gap_in_history_rows": 0,
+                    "non_prospective_skipped_rows": 0,
+                    "invalid_provenance_rows": 0,
+                    "live_positive_lead_forecast_count": 0,
+                    "live_forecast_lead_seconds": {
+                        "min": None,
+                        "mean": None,
+                        "median": None,
+                        "p95": None,
+                        "max": None,
+                    },
+                    "nonpositive_live_lead_rows": 0,
+                }
+            )
         _write_metrics(metrics)
 
     for frame in (previous_state, parsed, classified, invalid, valid, group_stats, incoming, existing_conflicts, accepted):
@@ -848,18 +1258,23 @@ def _percentile(values: list[float], quantile: float) -> float:
 def start_stream(spark, *, available_now: bool, topic: str = INPUT_TOPIC) -> None:
     if not CHECKPOINT_PATH.exists():
         CHECKPOINT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    _worker_contract()
-    model_path = default_model_path()
-    configured_sha = os.getenv("WEATHER_FORECAST_MODEL_SHA256", MODEL_SHA256)
-    if configured_sha != MODEL_SHA256:
-        raise ValueError(
-            f"configured model SHA must match frozen V1 contract: expected {MODEL_SHA256}, found {configured_sha}"
-        )
-    actual_sha = sha256_file(model_path)
-    if actual_sha != MODEL_SHA256:
-        raise ValueError(f"model SHA mismatch before stream start: expected {MODEL_SHA256}, found {actual_sha}")
-    if model_path.stat().st_size != 51_662_443:
-        raise ValueError(f"model byte count mismatch before stream start: {model_path.stat().st_size}")
+    if T2H_PROFILE:
+        from ml.streaming_inference.t2h_model_loader import validate_t2h_model
+
+        validate_t2h_model()
+    else:
+        _worker_contract()
+        model_path = default_model_path()
+        configured_sha = os.getenv("WEATHER_FORECAST_MODEL_SHA256", MODEL_SHA256)
+        if configured_sha != MODEL_SHA256:
+            raise ValueError(
+                f"configured model SHA must match frozen V1 contract: expected {MODEL_SHA256}, found {configured_sha}"
+            )
+        actual_sha = sha256_file(model_path)
+        if actual_sha != MODEL_SHA256:
+            raise ValueError(f"model SHA mismatch before stream start: expected {MODEL_SHA256}, found {actual_sha}")
+        if model_path.stat().st_size != 51_662_443:
+            raise ValueError(f"model byte count mismatch before stream start: {model_path.stat().st_size}")
 
     stream = (
         spark.readStream.format("kafka")
@@ -874,7 +1289,7 @@ def start_stream(spark, *, available_now: bool, topic: str = INPUT_TOPIC) -> Non
     writer = (
         source.writeStream.foreachBatch(lambda frame, batch_id: process_microbatch(frame, batch_id, spark))
         .option("checkpointLocation", str(CHECKPOINT_PATH))
-        .queryName("weatherForecastXgboostV1")
+        .queryName("weatherForecastXgboostT2hV11" if T2H_PROFILE else "weatherForecastXgboostV1")
     )
     if available_now:
         writer = writer.trigger(availableNow=True)
@@ -885,20 +1300,53 @@ def start_stream(spark, *, available_now: bool, topic: str = INPUT_TOPIC) -> Non
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Frozen XGBoost V1 hourly streaming inference")
+    parser = argparse.ArgumentParser(description="Frozen XGBoost hourly streaming inference")
     parser.add_argument("--mode", choices=("stream", "publish-replay"), default="stream")
     parser.add_argument("--topic", default=INPUT_TOPIC)
-    parser.add_argument("--hours", type=int, default=72, help="contiguous hours to publish for NATIONWIDE_63 replay")
+    parser.add_argument(
+        "--hours",
+        type=int,
+        default=int(os.getenv("WEATHER_T2H_REPLAY_HOURS", "72")),
+        help="contiguous hours to publish for replay",
+    )
+    parser.add_argument(
+        "--offset-hours",
+        type=int,
+        default=int(os.getenv("WEATHER_T2H_REPLAY_OFFSET_HOURS", "0")),
+        help="start replay this many hours after the canonical T2H replay start",
+    )
     parser.add_argument("--available-now", action="store_true", default=os.getenv("WEATHER_INFERENCE_AVAILABLE_NOW", "false").lower() in {"1", "true", "yes"})
     args = parser.parse_args(argv)
-    contract = load_feature_contract()
-    if len(contract.feature_names) != 73 or contract.feature_list_sha256 != FEATURE_LIST_SHA256:
+    if T2H_PROFILE:
+        from ml.streaming_inference.t2h_runtime import EXECUTION_ORIGINS
+        from ml.streaming_inference.t2h_model_loader import validate_t2h_model
+
+        contract = _inference_contract()
+        if EXECUTION_ORIGIN not in EXECUTION_ORIGINS:
+            raise ValueError(f"unsupported T2H execution origin: {EXECUTION_ORIGIN!r}")
+        if args.mode == "publish-replay" and EXECUTION_ORIGIN != "REPLAY_VALIDATION":
+            raise ValueError("T2H replay publishing requires WEATHER_INFERENCE_EXECUTION_ORIGIN=REPLAY_VALIDATION")
+        if args.hours < 1 or args.offset_hours < 0:
+            parser.error("--hours must be positive and --offset-hours cannot be negative")
+        if len(contract.feature_names) != 73:
+            raise ValueError("T2H inference feature contract must contain exactly 73 features")
+        startup_model = validate_t2h_model()
+        _jsonl_append(RUN_RESULTS / "model_startup_validation.json", startup_model)
+    else:
+        contract = load_feature_contract()
+        if len(contract.feature_names) != 73 or contract.feature_list_sha256 != FEATURE_LIST_SHA256:
+            raise ValueError("inference feature contract failed startup verification")
+        startup_model = None
+    if len(contract.feature_names) != 73:
         raise ValueError("inference feature contract failed startup verification")
-    spark = _spark_session("weather-streaming-inference-v1")
+    spark = _spark_session("weather-streaming-inference-t2h-v1-1" if T2H_PROFILE else "weather-streaming-inference-v1")
     spark.sparkContext.setLogLevel("WARN")
     try:
         if args.mode == "publish-replay":
-            publish_nationwide_replay(spark, args.topic, args.hours)
+            if T2H_PROFILE:
+                publish_t2h_replay(spark, args.topic, args.hours, args.offset_hours)
+            else:
+                publish_nationwide_replay(spark, args.topic, args.hours)
         else:
             start_stream(spark, available_now=args.available_now, topic=args.topic)
     finally:

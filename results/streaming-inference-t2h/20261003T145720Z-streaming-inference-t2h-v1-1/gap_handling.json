@@ -1,0 +1,19 @@
+{
+  "canonical_72h_replay_gap_skips": 0,
+  "contiguous_hours_after_missing_time_until_recovery": 25,
+  "dropped_event_time_utc": "2025-01-01T10:00:00Z",
+  "first_ready_feature_time_after_gap_utc": "2025-01-02T11:00:00Z",
+  "fixture_observations_after_gap_injection": 39,
+  "forecast_emitted_for_gap_rows": false,
+  "injected_fixture": "40 hourly observations with hour index 10 removed; no forecast-ready output across an incomplete lookback",
+  "online_status_counts": {
+    "HISTORY_GAP": 10,
+    "INSUFFICIENT_HISTORY": 24,
+    "READY": 5
+  },
+  "recovery_requires_full_contiguous_history": true,
+  "spark_status_mapping": {
+    "HISTORY_GAP": "GAP_IN_HISTORY"
+  },
+  "status": "PASS"
+}

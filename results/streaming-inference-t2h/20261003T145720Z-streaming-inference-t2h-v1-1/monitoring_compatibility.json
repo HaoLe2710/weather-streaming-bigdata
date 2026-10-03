@@ -1,0 +1,12 @@
+{
+  "T1H_compatibility": "full repository regression suite passed; existing T1H tests remain green",
+  "T2H_live_contract_errors": [],
+  "T2H_replay_contract_errors": [],
+  "evaluation_modes": {
+    "backfill": "REPLAY",
+    "live": "LIVE_PROSPECTIVE",
+    "replay": "REPLAY"
+  },
+  "replay_and_backfill_excluded_from_prospective_cohort": true,
+  "status": "PASS"
+}

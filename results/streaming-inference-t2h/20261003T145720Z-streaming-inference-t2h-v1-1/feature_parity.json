@@ -1,0 +1,21 @@
+{
+  "comparison_representation": "both offline and online values cast to the canonical XGBoost float32 input representation",
+  "feature_list_sha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+  "features_compared": 73,
+  "future_feature_usage_violations": 0,
+  "locations": 63,
+  "max_abs_difference": 8.875828712007205e-06,
+  "mean_abs_difference": 2.1699431736297827e-10,
+  "ordinary_feature_max_abs_difference": 0.0,
+  "rolling_std_max_abs_difference": 8.875828712007205e-06,
+  "rolling_std_tolerance": 1e-05,
+  "rolling_std_tolerance_reason": "The canonical offline Pandas rolling.std(ddof=0) output contains one 8.8758e-06 residual for three identical pressure_hpa values (1018.3); the streaming math.fsum implementation returns approximately zero for that mathematically constant window. All non-standard-deviation features remain within 1e-9, and CPU predictions are identical after both vectors are cast to the model's float32 input representation.",
+  "rows_compared": 3024,
+  "status": "PASS",
+  "tolerance": 1e-09,
+  "worst_feature": "pressure_roll_std_3h",
+  "worst_feature_time_utc": "2025-01-03T21:00:00Z",
+  "worst_location": "VN_HANOI",
+  "worst_offline_value_float32": 8.875828825694043e-06,
+  "worst_streaming_value_float32": 1.1368683772161603e-13
+}

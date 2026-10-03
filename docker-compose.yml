@@ -78,6 +78,7 @@ services:
       - ./ml:/opt/project/ml
       - ./monitoring:/opt/project/monitoring:ro
       - ./tests:/opt/project/tests:ro
+      - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
       - weather-data:/opt/project/data
 
 
@@ -111,6 +112,7 @@ services:
       - ./results:/opt/project/results
       - ./ml:/opt/project/ml
       - ./monitoring:/opt/project/monitoring:ro
+      - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
       - weather-data:/opt/project/data
 
   historical-downloader:
@@ -166,6 +168,251 @@ services:
     command:
       - --mode
       - daemon
+
+  streaming-inference-t2h-publisher:
+    image: weather-spark:4.0.4-delta4.0.0
+    hostname: streaming-inference-t2h-publisher
+    profiles:
+      - t2h
+    depends_on:
+      - broker
+      - spark-master
+      - spark-worker
+    environment:
+      HOME: /tmp
+      SPARK_MASTER_HOST: spark-master
+      WEATHER_INFERENCE_PROFILE: T2H
+      WEATHER_INFERENCE_EXECUTION_ORIGIN: REPLAY_VALIDATION
+      WEATHER_INFERENCE_TOPIC: weather.hourly.observations.t2h.replay.v1
+      WEATHER_INFERENCE_RUN_ID: ${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_OUTPUT_ROOT: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_STATE_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/state_replay
+      WEATHER_INFERENCE_REJECTION_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/rejected_replay
+      WEATHER_INFERENCE_CHECKPOINT: /opt/project/data/checkpoints/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/replay
+      WEATHER_INFERENCE_RESULTS_DIR: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_replay
+      WEATHER_T2H_MODEL_PATH: /opt/project/models/weather_forecast_xgboost_t2h_v1_1.json
+      WEATHER_T2H_FEATURE_LIST_PATH: /opt/project/results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/feature_list.json
+      WEATHER_T2H_MODEL_ID: WEATHER_XGBOOST_GLOBAL_T2H_V1_1
+      WEATHER_T2H_MODEL_SHA256: bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a
+      WEATHER_T2H_FEATURE_SET_ID: WEATHER_FORECAST_FE_T2H_V1_1
+      WEATHER_T2H_FEATURE_LIST_SHA256: 20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2
+      WEATHER_T2H_FORECAST_HORIZON_HOURS: "2"
+      WEATHER_T2H_PROVIDER_MODEL: ecmwf_ifs
+      WEATHER_T2H_REPLAY_START_UTC: "2025-01-01T00:00:00Z"
+      WEATHER_T2H_REPLAY_HOURS: ${WEATHER_T2H_REPLAY_HOURS:-72}
+      WEATHER_T2H_REPLAY_OFFSET_HOURS: ${WEATHER_T2H_REPLAY_OFFSET_HOURS:-0}
+      WEATHER_INFERENCE_BOOTSTRAP_SERVERS: broker:19092
+      WEATHER_INFERENCE_CATALOG_PATH: /opt/project/historical/locations.json
+      PYTHONPATH: /opt/inference-python:/opt/delta-python:/opt/project:/opt/project/spark:/opt/project/spark/jobs
+      PYSPARK_PYTHON: /usr/local/bin/python3.12
+      PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
+    entrypoint: /opt/spark/bin/spark-submit
+    command:
+      - --master
+      - spark://spark-master:7077
+      - --deploy-mode
+      - client
+      - --packages
+      - io.delta:delta-spark_2.13:4.0.0,org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.4
+      - --conf
+      - spark.jars.ivy=/tmp/weather-spark-ivy
+      - --conf
+      - spark.sql.session.timeZone=UTC
+      - --conf
+      - spark.driver.host=streaming-inference-t2h-publisher
+      - --conf
+      - spark.driver.bindAddress=0.0.0.0
+      - --conf
+      - spark.cores.max=4
+      - --conf
+      - spark.executor.cores=4
+      - --conf
+      - spark.executor.memory=3g
+      - --conf
+      - spark.executor.instances=1
+      - /opt/project/spark/jobs/weather_streaming_inference.py
+      - --mode
+      - publish-replay
+    volumes:
+      - ./spark:/opt/project/spark:ro
+      - ./historical:/opt/project/historical:ro
+      - ./data:/opt/project/history-data:ro
+      - ./results:/opt/project/results
+      - ./ml:/opt/project/ml:ro
+      - ./monitoring:/opt/project/monitoring:ro
+      - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
+      - weather-data:/opt/project/data
+
+  streaming-inference-t2h:
+    image: weather-spark:4.0.4-delta4.0.0
+    hostname: streaming-inference-t2h
+    profiles:
+      - t2h
+    depends_on:
+      - broker
+      - spark-master
+      - spark-worker
+    environment:
+      HOME: /tmp
+      SPARK_MASTER_HOST: spark-master
+      WEATHER_INFERENCE_PROFILE: T2H
+      WEATHER_INFERENCE_EXECUTION_ORIGIN: REPLAY_VALIDATION
+      WEATHER_INFERENCE_TOPIC: weather.hourly.observations.t2h.replay.v1
+      WEATHER_INFERENCE_RUN_ID: ${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_OUTPUT_ROOT: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_STATE_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/state_replay
+      WEATHER_INFERENCE_REJECTION_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/rejected_replay
+      WEATHER_INFERENCE_CHECKPOINT: /opt/project/data/checkpoints/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/replay
+      WEATHER_INFERENCE_RESULTS_DIR: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_replay
+      WEATHER_T2H_MODEL_PATH: /opt/project/models/weather_forecast_xgboost_t2h_v1_1.json
+      WEATHER_T2H_FEATURE_LIST_PATH: /opt/project/results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/feature_list.json
+      WEATHER_T2H_MODEL_ID: WEATHER_XGBOOST_GLOBAL_T2H_V1_1
+      WEATHER_T2H_MODEL_SHA256: bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a
+      WEATHER_T2H_FEATURE_SET_ID: WEATHER_FORECAST_FE_T2H_V1_1
+      WEATHER_T2H_FEATURE_LIST_SHA256: 20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2
+      WEATHER_T2H_FORECAST_HORIZON_HOURS: "2"
+      WEATHER_T2H_PROVIDER_MODEL: ecmwf_ifs
+      WEATHER_T2H_REPLAY_START_UTC: "2025-01-01T00:00:00Z"
+      WEATHER_INFERENCE_BOOTSTRAP_SERVERS: broker:19092
+      WEATHER_INFERENCE_CATALOG_PATH: /opt/project/historical/locations.json
+      WEATHER_INFERENCE_AVAILABLE_NOW: "true"
+      PYTHONPATH: /opt/inference-python:/opt/delta-python:/opt/project:/opt/project/spark:/opt/project/spark/jobs
+      PYSPARK_PYTHON: /usr/local/bin/python3.12
+      PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
+    entrypoint: /opt/spark/bin/spark-submit
+    command:
+      - --master
+      - spark://spark-master:7077
+      - --deploy-mode
+      - client
+      - --packages
+      - io.delta:delta-spark_2.13:4.0.0,org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.4
+      - --conf
+      - spark.jars.ivy=/tmp/weather-spark-ivy
+      - --conf
+      - spark.sql.session.timeZone=UTC
+      - --conf
+      - spark.driver.host=streaming-inference-t2h
+      - --conf
+      - spark.driver.bindAddress=0.0.0.0
+      - --conf
+      - spark.cores.max=4
+      - --conf
+      - spark.executor.cores=4
+      - --conf
+      - spark.executor.memory=3g
+      - --conf
+      - spark.executor.instances=1
+      - /opt/project/spark/jobs/weather_streaming_inference.py
+      - --mode
+      - stream
+    volumes:
+      - ./spark:/opt/project/spark:ro
+      - ./historical:/opt/project/historical:ro
+      - ./data:/opt/project/history-data:ro
+      - ./results:/opt/project/results
+      - ./ml:/opt/project/ml:ro
+      - ./monitoring:/opt/project/monitoring:ro
+      - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
+      - weather-data:/opt/project/data
+
+  live-hourly-producer-t2h:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    profiles:
+      - t2h-live
+    environment:
+      PYTHONUNBUFFERED: "1"
+      WEATHER_LIVE_HOURLY_BOOTSTRAP_SERVERS: broker:19092
+      WEATHER_LIVE_HOURLY_TOPIC: weather.hourly.observations.t2h.live.v1
+      WEATHER_LIVE_HOURLY_POLL_INTERVAL_SECONDS: "300"
+      WEATHER_LIVE_HOURLY_HISTORY_HOURS: "48"
+      WEATHER_LIVE_HOURLY_ENDPOINT: https://api.open-meteo.com/v1/forecast
+      WEATHER_LIVE_HOURLY_PROVIDER_MODEL: ecmwf_ifs
+      WEATHER_LIVE_HOURLY_CATALOG: /opt/project/historical/locations.json
+    depends_on:
+      - broker
+    volumes:
+      - ./producer:/opt/project/producer:ro
+      - ./historical:/opt/project/historical:ro
+      - ./ml:/opt/project/ml:ro
+      - ./tests:/opt/project/tests:ro
+      - ./results:/opt/project/results
+    command:
+      - --mode
+      - daemon
+
+  streaming-inference-t2h-live:
+    image: weather-spark:4.0.4-delta4.0.0
+    hostname: streaming-inference-t2h-live
+    profiles:
+      - t2h-live
+    depends_on:
+      - broker
+      - spark-master
+      - spark-worker
+    environment:
+      HOME: /tmp
+      SPARK_MASTER_HOST: spark-master
+      WEATHER_INFERENCE_PROFILE: T2H
+      WEATHER_INFERENCE_EXECUTION_ORIGIN: LIVE_PROSPECTIVE
+      WEATHER_INFERENCE_TOPIC: weather.hourly.observations.t2h.live.v1
+      WEATHER_INFERENCE_RUN_ID: ${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_OUTPUT_ROOT: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_INFERENCE_STATE_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/state_live
+      WEATHER_INFERENCE_REJECTION_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/rejected_live
+      WEATHER_INFERENCE_CHECKPOINT: /opt/project/data/checkpoints/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/live
+      WEATHER_INFERENCE_RESULTS_DIR: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_live
+      WEATHER_T2H_MODEL_PATH: /opt/project/models/weather_forecast_xgboost_t2h_v1_1.json
+      WEATHER_T2H_FEATURE_LIST_PATH: /opt/project/results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/feature_list.json
+      WEATHER_T2H_MODEL_ID: WEATHER_XGBOOST_GLOBAL_T2H_V1_1
+      WEATHER_T2H_MODEL_SHA256: bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a
+      WEATHER_T2H_FEATURE_SET_ID: WEATHER_FORECAST_FE_T2H_V1_1
+      WEATHER_T2H_FEATURE_LIST_SHA256: 20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2
+      WEATHER_T2H_FORECAST_HORIZON_HOURS: "2"
+      WEATHER_T2H_PROVIDER_MODEL: ecmwf_ifs
+      WEATHER_INFERENCE_BOOTSTRAP_SERVERS: broker:19092
+      WEATHER_INFERENCE_CATALOG_PATH: /opt/project/historical/locations.json
+      PYTHONPATH: /opt/inference-python:/opt/delta-python:/opt/project:/opt/project/spark:/opt/project/spark/jobs
+      PYSPARK_PYTHON: /usr/local/bin/python3.12
+      PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
+    entrypoint: /opt/spark/bin/spark-submit
+    command:
+      - --master
+      - spark://spark-master:7077
+      - --deploy-mode
+      - client
+      - --packages
+      - io.delta:delta-spark_2.13:4.0.0,org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.4
+      - --conf
+      - spark.jars.ivy=/tmp/weather-spark-ivy
+      - --conf
+      - spark.sql.session.timeZone=UTC
+      - --conf
+      - spark.driver.host=streaming-inference-t2h-live
+      - --conf
+      - spark.driver.bindAddress=0.0.0.0
+      - --conf
+      - spark.cores.max=4
+      - --conf
+      - spark.executor.cores=4
+      - --conf
+      - spark.executor.memory=3g
+      - --conf
+      - spark.executor.instances=1
+      - /opt/project/spark/jobs/weather_streaming_inference.py
+      - --mode
+      - stream
+    volumes:
+      - ./spark:/opt/project/spark:ro
+      - ./historical:/opt/project/historical:ro
+      - ./data:/opt/project/history-data:ro
+      - ./results:/opt/project/results
+      - ./ml:/opt/project/ml:ro
+      - ./monitoring:/opt/project/monitoring:ro
+      - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
+      - weather-data:/opt/project/data
 
 volumes:
   weather-data:

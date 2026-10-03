@@ -1,0 +1,22 @@
+{
+  "bootstrap_hours_accepted": 49,
+  "bootstrap_hours_requested": 49,
+  "endpoint_and_model_are_pinned_in_compose_and_producer": true,
+  "historical_replay_endpoint": "https://historical-forecast-api.open-meteo.com/v1/forecast",
+  "historical_replay_source": "OPEN_METEO_HISTORICAL_FORECAST",
+  "live_api_request_count": 1,
+  "live_endpoint": "https://api.open-meteo.com/v1/forecast",
+  "live_source": "OPEN_METEO_LIVE_HOURLY",
+  "models_parameter_explicit": true,
+  "provider": "Open-Meteo",
+  "provider_model": "ecmwf_ifs",
+  "provider_values_are_modelled": true,
+  "request_parameters": {
+    "models": "ecmwf_ifs"
+  },
+  "requested_locations": 63,
+  "safe_hour_utc": "2026-10-03T14:00:00Z",
+  "status": "PASS",
+  "successful_locations": 63,
+  "unique_location_hours_published": 3087
+}
