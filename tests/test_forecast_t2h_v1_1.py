@@ -477,7 +477,7 @@ def test_full_download_is_resumable_and_raw_validation_reports_exact_coverage(tm
         / f"location_id={first_location['location_id']}"
     )
     predictor_file = next(predictor_directory.glob("*.parquet"))
-    table = pq.read_table(predictor_file)
+    table = pq.ParquetFile(predictor_file).read()
     pq.write_table(table.slice(1), predictor_file, compression="snappy")
     gap_report = validate_normalized_sources(
         data_root=data_root,

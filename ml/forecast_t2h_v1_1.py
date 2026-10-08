@@ -420,7 +420,7 @@ def _read_location_source(
     files = sorted(location_dir.glob("*.parquet"))
     if not files:
         raise FileNotFoundError(f"No normalized source files found under {location_dir}")
-    return pd.concat([pq.read_table(path).to_pandas() for path in files], ignore_index=True)
+    return pd.concat([pq.ParquetFile(path).read().to_pandas() for path in files], ignore_index=True)
 
 
 def _requested_hour_bounds(start_date: date, end_date: date) -> tuple[pd.Timestamp, pd.Timestamp]:
@@ -441,7 +441,7 @@ def _feature_statistics(root: Path, partitions: Sequence[Mapping[str, Any]]) -> 
     statistics: dict[str, Any] = {}
     for feature in MODEL_FEATURE_COLUMNS:
         arrays = [
-            pq.read_table(path, columns=[feature])[feature].combine_chunks().to_numpy(zero_copy_only=False)
+            pq.ParquetFile(path).read(columns=[feature])[feature].combine_chunks().to_numpy(zero_copy_only=False)
             for path in train_files
         ]
         values = np.concatenate(arrays).astype(np.float64, copy=False)
@@ -691,7 +691,7 @@ def load_split_arrays(
     event_times: list[np.ndarray] = []
     target_times: list[np.ndarray] = []
     for path in files:
-        table = pq.read_table(path, columns=[*MODEL_FEATURE_COLUMNS, TARGET_COLUMN, "location_id", "feature_time", "target_time"])
+        table = pq.ParquetFile(path).read(columns=[*MODEL_FEATURE_COLUMNS, TARGET_COLUMN, "location_id", "feature_time", "target_time"])
         matrix = table.select(list(MODEL_FEATURE_COLUMNS)).to_pandas().to_numpy(dtype=np.float32, copy=True)
         label = table[TARGET_COLUMN].to_numpy(zero_copy_only=False).astype(np.float32, copy=False)
         if not np.isfinite(matrix).all() or not np.isfinite(label).all():
@@ -847,7 +847,7 @@ def write_distribution_comparison(
     distributions: dict[str, Any] = {}
     for api_name, (feature_name, unit) in mapping.items():
         train_chunks = [
-            pq.read_table(path, columns=[feature_name])[feature_name].combine_chunks().to_numpy(zero_copy_only=False)
+            pq.ParquetFile(path).read(columns=[feature_name])[feature_name].combine_chunks().to_numpy(zero_copy_only=False)
             for path in train_files
         ]
         train_values = np.concatenate(train_chunks).astype(np.float64, copy=False)
@@ -875,7 +875,7 @@ def write_distribution_comparison(
     training_weather_codes = [
         value
         for path in train_files
-        for value in pq.read_table(path, columns=["weather_code"])["weather_code"].to_pylist()
+        for value in pq.ParquetFile(path).read(columns=["weather_code"])["weather_code"].to_pylist()
     ]
     live_weather_codes = {}
     for source_name in ("best_match", "ecmwf_ifs"):

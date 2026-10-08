@@ -1038,7 +1038,7 @@ def validate_normalized_sources(
                 )
                 files = sorted(location_dir.glob("*.parquet"))
                 for path in files:
-                    table = pq.read_table(path)
+                    table = pq.ParquetFile(path).read()
                     all_times.extend(table["valid_time"].to_pylist())
                     for column in variable_columns:
                         values = table[column].to_pylist()
