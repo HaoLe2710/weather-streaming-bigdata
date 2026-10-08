@@ -322,6 +322,7 @@ services:
       dockerfile: producer/Dockerfile
     profiles:
       - t2h-live
+    restart: unless-stopped
     environment:
       PYTHONUNBUFFERED: "1"
       WEATHER_LIVE_HOURLY_BOOTSTRAP_SERVERS: broker:19092
@@ -348,6 +349,7 @@ services:
     hostname: streaming-inference-t2h-live
     profiles:
       - t2h-live
+    restart: unless-stopped
     depends_on:
       - broker
       - spark-master
@@ -364,6 +366,12 @@ services:
       WEATHER_INFERENCE_REJECTION_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/rejected_live
       WEATHER_INFERENCE_CHECKPOINT: /opt/project/data/checkpoints/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/live
       WEATHER_INFERENCE_RESULTS_DIR: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_live
+      WEATHER_PROSPECTIVE_STATE_DIR: /opt/project/prospective-runtime/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
+      WEATHER_PROSPECTIVE_PREFLIGHT_PATH: /opt/project/prospective-runtime/preflight_test_results.json
+      WEATHER_PROSPECTIVE_RESULTS_ROOT: /opt/project/results/prospective-live-t2h
+      WEATHER_PROSPECTIVE_RECEIPTS_PATH: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_live/forecast_persistence_receipts.jsonl
+      WEATHER_PROSPECTIVE_REVISION_PATH: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_live/reference_revisions.jsonl
+      WEATHER_PROSPECTIVE_STARTUP_VALIDATION_PATH: /opt/project/results/streaming-inference-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/spark_live/model_startup_validation.json
       WEATHER_T2H_MODEL_PATH: /opt/project/models/weather_forecast_xgboost_t2h_v1_1.json
       WEATHER_T2H_FEATURE_LIST_PATH: /opt/project/results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/feature_list.json
       WEATHER_T2H_MODEL_ID: WEATHER_XGBOOST_GLOBAL_T2H_V1_1
@@ -411,6 +419,8 @@ services:
       - ./results:/opt/project/results
       - ./ml:/opt/project/ml:ro
       - ./monitoring:/opt/project/monitoring:ro
+      - ./validation:/opt/project/validation:ro
+      - ./data/runtime/prospective-live-t2h:/opt/project/prospective-runtime
       - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
       - weather-data:/opt/project/data
 

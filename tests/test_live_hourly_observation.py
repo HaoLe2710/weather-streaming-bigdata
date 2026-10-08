@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 import httpx
 
@@ -55,6 +57,16 @@ class FakeProducer:
         return 0
 
 
+class SequenceClient:
+    def __init__(self, responses):
+        self.responses = list(responses)
+        self.calls = 0
+
+    def get(self, url, *, params, timeout):
+        self.calls += 1
+        return self.responses[min(self.calls - 1, len(self.responses) - 1)]
+
+
 class LiveHourlyContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -64,6 +76,24 @@ class LiveHourlyContractTests(unittest.TestCase):
             location["location_id"]: provider_response(location, offset=index / 10)
             for index, location in enumerate(cls.locations)
         }
+
+    def run_live_cycle(self, client, producer, *, cache, now=NOW, max_retries=3, sleep=lambda _: None, locations=None):
+        return live.run_cycle(
+            client,
+            producer,
+            locations=locations or self.locations,
+            topic=live.DEFAULT_TOPIC,
+            endpoint=live.OPEN_METEO_URL,
+            history_hours=24,
+            bootstrap=False,
+            partition_count=6,
+            batch_size=63,
+            max_retries=max_retries,
+            provider_model="ecmwf_ifs",
+            cache=cache,
+            now=now,
+            sleep=sleep,
+        )
 
     def test_catalog_uses_the_canonical_nationwide_63(self):
         self.assertEqual(len(self.locations), 63)
@@ -211,6 +241,168 @@ class LiveHourlyContractTests(unittest.TestCase):
         )["events"]
         third, duplicates = cache.filter_new(next_events)
         self.assertEqual((len(third), duplicates), (63, 0))
+
+    def test_same_safe_hour_preflight_skips_provider_and_kafka(self):
+        cache = live.PublishedHourCache()
+        completed = live.build_hourly_events(self.locations, self.payloads, now=NOW, history_hours=24, bootstrap=False)["events"]
+        cache.mark_published(completed)
+
+        class NeverCalledClient:
+            calls = 0
+
+            def get(self, *args, **kwargs):
+                self.calls += 1
+                raise AssertionError("provider must not be called for an already-published safe hour")
+
+        client = NeverCalledClient()
+        producer = FakeProducer()
+        summary = self.run_live_cycle(client, producer, cache=cache)
+        self.assertEqual(client.calls, 0)
+        self.assertEqual(summary["safe_hour"], live.format_utc_hour(SAFE_HOUR))
+        self.assertEqual(summary["api_request_count"], 0)
+        self.assertEqual(summary["same_hour_cache_skips"], 63)
+        self.assertEqual(summary["events_enqueued"], 0)
+        self.assertEqual(summary["events_delivered"], 0)
+        self.assertEqual(producer.messages, [])
+
+    def test_new_safe_hour_fetches_once_and_delivers_63_unique_events(self):
+        cache = live.PublishedHourCache()
+        completed = live.build_hourly_events(self.locations, self.payloads, now=NOW, history_hours=24, bootstrap=False)["events"]
+        cache.mark_published(completed)
+        payload = [self.payloads[location["location_id"]] for location in self.locations]
+        request = httpx.Request("GET", live.OPEN_METEO_URL)
+        client = SequenceClient([httpx.Response(200, json=payload, request=request)])
+        producer = FakeProducer()
+
+        summary = self.run_live_cycle(client, producer, cache=cache, now=NOW + timedelta(hours=1))
+        keys = [message["key"] for message in producer.messages]
+        self.assertEqual(client.calls, 1)
+        self.assertEqual(summary["api_request_count"], 1)
+        self.assertEqual(summary["safe_hour"], live.format_utc_hour(SAFE_HOUR + timedelta(hours=1)))
+        self.assertEqual(summary["successful_locations"], 63)
+        self.assertEqual(summary["events_built"], 63)
+        self.assertEqual(summary["events_delivered"], 63)
+        self.assertEqual(summary["unique_location_hour_keys"], 63)
+        self.assertEqual(len(keys), 63)
+        self.assertEqual(len(set(keys)), 63)
+
+    def test_429_honors_retry_after_and_does_not_mark_hour_complete(self):
+        location = self.locations[0]
+        request = httpx.Request("GET", live.OPEN_METEO_URL)
+        client = SequenceClient([
+            httpx.Response(429, headers={"Retry-After": "17"}, request=request),
+            httpx.Response(429, headers={"Retry-After": "17"}, request=request),
+        ])
+        producer = FakeProducer()
+        cache = live.PublishedHourCache()
+        waits = []
+
+        summary = self.run_live_cycle(
+            client,
+            producer,
+            cache=cache,
+            max_retries=2,
+            sleep=waits.append,
+            locations=[location],
+        )
+        batch_key = location["location_id"]
+        self.assertEqual(client.calls, 2)
+        self.assertEqual(waits, [17.0])
+        self.assertEqual(summary["retry_counts"], {batch_key: 1})
+        self.assertEqual(summary["retry_delays_seconds"], {batch_key: [17.0]})
+        self.assertEqual(producer.messages, [])
+        self.assertFalse(cache.has_completed(SAFE_HOUR, [batch_key]))
+
+    def test_429_fallback_uses_jittered_backoff_and_stops_at_attempt_limit(self):
+        location = self.locations[0]
+        request = httpx.Request("GET", live.OPEN_METEO_URL)
+        client = SequenceClient([
+            httpx.Response(429, request=request),
+            httpx.Response(429, request=request),
+        ])
+        producer = FakeProducer()
+        waits = []
+
+        with patch.object(live.random, "uniform", return_value=55.0):
+            summary = self.run_live_cycle(
+                client,
+                producer,
+                cache=live.PublishedHourCache(),
+                max_retries=2,
+                sleep=waits.append,
+                locations=[location],
+            )
+        self.assertEqual(client.calls, 2)
+        self.assertEqual(waits, [55.0])
+        self.assertEqual(summary["retry_delays_seconds"], {location["location_id"]: [55.0]})
+        self.assertEqual(producer.messages, [])
+
+    def test_429_does_not_retry_after_the_safe_hour_expires(self):
+        location = self.locations[0]
+        request = httpx.Request("GET", live.OPEN_METEO_URL)
+        client = SequenceClient([httpx.Response(429, headers={"Retry-After": "30"}, request=request)])
+        producer = FakeProducer()
+        waits = []
+        just_before_boundary = datetime(2026, 10, 2, 16, 59, 50, tzinfo=timezone.utc)
+
+        summary = self.run_live_cycle(
+            client,
+            producer,
+            cache=live.PublishedHourCache(),
+            now=just_before_boundary,
+            sleep=waits.append,
+            locations=[location],
+        )
+        self.assertEqual(client.calls, 1)
+        self.assertEqual(len(waits), 1)
+        self.assertAlmostEqual(waits[0], 10.0, delta=0.1)
+        self.assertAlmostEqual(summary["retry_delays_seconds"][location["location_id"]][0], 10.0, delta=0.1)
+        self.assertEqual(producer.messages, [])
+
+    def test_429_then_recovery_publishes_one_canonical_event_per_location(self):
+        request = httpx.Request("GET", live.OPEN_METEO_URL)
+        payload = [self.payloads[location["location_id"]] for location in self.locations]
+        client = SequenceClient([
+            httpx.Response(429, headers={"Retry-After": "10"}, request=request),
+            httpx.Response(200, json=payload, request=request),
+        ])
+        producer = FakeProducer()
+        cache = live.PublishedHourCache()
+        waits = []
+
+        summary = self.run_live_cycle(client, producer, cache=cache, max_retries=2, sleep=waits.append)
+        keys = [message["key"] for message in producer.messages]
+        event_ids = [json.loads(message["value"])["event_id"] for message in producer.messages]
+        self.assertEqual(client.calls, 2)
+        self.assertEqual(waits, [10.0])
+        self.assertEqual(len(producer.messages), 63)
+        self.assertEqual(len(set(keys)), 63)
+        self.assertEqual(len(set(event_ids)), 63)
+        self.assertEqual(summary["events_delivered"], 63)
+        self.assertTrue(cache.has_completed(SAFE_HOUR, [location["location_id"] for location in self.locations]))
+
+    def test_restart_loads_completed_hour_and_skips_refetch(self):
+        completed = live.build_hourly_events(self.locations, self.payloads, now=NOW, history_hours=24, bootstrap=False)["events"]
+        with TemporaryDirectory() as temporary_directory:
+            state_path = Path(temporary_directory) / "published_hours.json"
+            first_process_cache = live.PublishedHourCache(state_path)
+            first_process_cache.mark_published(completed)
+            restarted_cache = live.PublishedHourCache(state_path)
+            producer = FakeProducer()
+
+            class NeverCalledClient:
+                calls = 0
+
+                def get(self, *args, **kwargs):
+                    self.calls += 1
+                    raise AssertionError("restarted producer must trust its completed-hour cache")
+
+            client = NeverCalledClient()
+            summary = self.run_live_cycle(client, producer, cache=restarted_cache)
+            self.assertEqual(client.calls, 0)
+            self.assertEqual(summary["api_request_count"], 0)
+            self.assertEqual(summary["same_hour_cache_skips"], 63)
+            self.assertEqual(producer.messages, [])
 
     def test_partial_provider_failure_is_reported_by_location_and_successes_remain_publishable(self):
         locations = self.locations[:3]

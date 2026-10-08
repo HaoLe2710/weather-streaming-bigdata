@@ -840,6 +840,79 @@ def _write_metrics(metrics: dict[str, Any]) -> None:
     print(json.dumps(metrics, sort_keys=True))
 
 
+def _prospective_validation_enabled() -> bool:
+    return bool(
+        T2H_PROFILE
+        and EXECUTION_ORIGIN == "LIVE_PROSPECTIVE"
+        and os.getenv("WEATHER_PROSPECTIVE_STATE_DIR")
+    )
+
+
+def _record_prospective_forecast_receipts(
+    predictions,
+    existing_ids,
+    persisted_at: datetime,
+    new_forecast_ids: set[str] | None = None,
+) -> None:
+    if not _prospective_validation_enabled():
+        return
+    from validation.prospective_t2h import record_forecast_persistence_receipts
+
+    receipt_path = Path(
+        os.getenv("WEATHER_PROSPECTIVE_RECEIPTS_PATH", str(RUN_RESULTS / "forecast_persistence_receipts.jsonl"))
+    )
+    record_forecast_persistence_receipts(
+        predictions,
+        existing_ids=existing_ids,
+        new_forecast_ids=new_forecast_ids,
+        sink_path=receipt_path,
+        persisted_at=persisted_at,
+    )
+
+
+def _record_prospective_reference_revisions(existing_conflicts, previous_state) -> None:
+    if not _prospective_validation_enabled():
+        return
+    from validation.prospective_t2h import record_reference_revisions_from_spark
+
+    revision_path = Path(
+        os.getenv("WEATHER_PROSPECTIVE_REVISION_PATH", str(RUN_RESULTS / "reference_revisions.jsonl"))
+    )
+    record_reference_revisions_from_spark(
+        existing_conflicts,
+        previous_state,
+        revision_path,
+        state_columns=STATE_COLUMNS,
+    )
+
+
+def _update_prospective_validation(spark) -> None:
+    if not _prospective_validation_enabled():
+        return
+    from validation.prospective_t2h import update_from_spark
+
+    status = update_from_spark(
+        spark,
+        forecast_path=FORECAST_PATH,
+        state_path=STATE_PATH,
+        rejection_path=REJECTION_PATH,
+        receipts_path=os.getenv(
+            "WEATHER_PROSPECTIVE_RECEIPTS_PATH", str(RUN_RESULTS / "forecast_persistence_receipts.jsonl")
+        ),
+        revision_path=os.getenv(
+            "WEATHER_PROSPECTIVE_REVISION_PATH", str(RUN_RESULTS / "reference_revisions.jsonl")
+        ),
+        state_dir=os.getenv("WEATHER_PROSPECTIVE_STATE_DIR"),
+        known_locations=_canonical_locations(),
+        results_root=os.getenv("WEATHER_PROSPECTIVE_RESULTS_ROOT", "/opt/project/results/prospective-live-t2h"),
+        startup_validation_path=os.getenv(
+            "WEATHER_PROSPECTIVE_STARTUP_VALIDATION_PATH", str(RUN_RESULTS / "model_startup_validation.json")
+        ),
+    )
+    if status and status.get("status") == "COHORT_CONTRACT_DRIFT":
+        raise RuntimeError("COHORT_CONTRACT_DRIFT: stopping canonical prospective collection")
+
+
 def process_microbatch(batch_df, batch_id: int, spark) -> None:
     from pyspark.sql import Window
     from pyspark.sql import functions as F
@@ -849,6 +922,8 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
     state_schema, forecast_schema, score_schema, rejection_schema = _observation_schemas()
     _empty_delta(spark, STATE_PATH, state_schema)
     _empty_delta(spark, FORECAST_PATH, forecast_schema)
+    if _prospective_validation_enabled():
+        _empty_delta(spark, REJECTION_PATH, rejection_schema)
     previous_state = spark.read.format("delta").load(str(STATE_PATH)).select(*STATE_COLUMNS).cache()
 
     from pyspark.sql.types import (
@@ -1005,6 +1080,7 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
     accepted_count = accepted.count()
     late_count = late.count()
     existing_conflict_count = existing_conflicts.count()
+    _record_prospective_reference_revisions(existing_conflicts, previous_state)
 
     reject_count = 0
     for rejection_frame in rejection_parts:
@@ -1104,8 +1180,19 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
                 )
         existing_ids = spark.read.format("delta").load(str(FORECAST_PATH)).select("forecast_id")
         duplicate_output_rows = predictions.join(existing_ids, "forecast_id", "inner").count()
+        new_forecast_ids = None
+        if _prospective_validation_enabled():
+            new_forecast_ids = {
+                str(row["forecast_id"])
+                for row in predictions.join(existing_ids, "forecast_id", "left_anti")
+                .select("forecast_id")
+                .distinct()
+                .collect()
+            }
         sink_started = time.perf_counter()
         _merge_delta(spark, FORECAST_PATH, predictions, "target.forecast_id = source.forecast_id")
+        forecast_persisted_at = datetime.now(timezone.utc)
+        _record_prospective_forecast_receipts(predictions, existing_ids, forecast_persisted_at, new_forecast_ids)
         sink_seconds = time.perf_counter() - sink_started
 
         _merge_delta(
@@ -1188,6 +1275,7 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
                 }
             )
         _write_metrics(metrics)
+        _update_prospective_validation(spark)
         scored.unpersist()
         predictions.unpersist()
     else:
@@ -1240,6 +1328,7 @@ def process_microbatch(batch_df, batch_id: int, spark) -> None:
                 }
             )
         _write_metrics(metrics)
+        _update_prospective_validation(spark)
 
     for frame in (previous_state, parsed, classified, invalid, valid, group_stats, incoming, existing_conflicts, accepted):
         try:
@@ -1321,6 +1410,14 @@ def main(argv: list[str] | None = None) -> int:
         from ml.streaming_inference.t2h_runtime import EXECUTION_ORIGINS
         from ml.streaming_inference.t2h_model_loader import validate_t2h_model
 
+        prospective_state_dir = os.getenv("WEATHER_PROSPECTIVE_STATE_DIR")
+        if EXECUTION_ORIGIN == "LIVE_PROSPECTIVE" and prospective_state_dir:
+            from validation.prospective_t2h import record_startup_contract_validation
+
+            startup_contract = record_startup_contract_validation(prospective_state_dir)
+            if startup_contract.get("status") != "PASS":
+                raise RuntimeError("COHORT_CONTRACT_DRIFT: startup contract validation failed")
+
         contract = _inference_contract()
         if EXECUTION_ORIGIN not in EXECUTION_ORIGINS:
             raise ValueError(f"unsupported T2H execution origin: {EXECUTION_ORIGIN!r}")
@@ -1330,7 +1427,14 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--hours must be positive and --offset-hours cannot be negative")
         if len(contract.feature_names) != 73:
             raise ValueError("T2H inference feature contract must contain exactly 73 features")
-        startup_model = validate_t2h_model()
+        try:
+            startup_model = validate_t2h_model()
+        except Exception as exc:
+            if EXECUTION_ORIGIN == "LIVE_PROSPECTIVE" and prospective_state_dir:
+                from validation.prospective_t2h import record_startup_model_failure
+
+                record_startup_model_failure(prospective_state_dir, exc)
+            raise
         _jsonl_append(RUN_RESULTS / "model_startup_validation.json", startup_model)
     else:
         contract = load_feature_contract()

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 import json
 import math
 import os
 from pathlib import Path
+import random
 import re
 import sys
 import time
@@ -209,9 +211,18 @@ def _live_retry_delay(response: httpx.Response | None, attempt: int) -> float:
         retry_after = response.headers.get("Retry-After")
         if retry_after:
             try:
-                return min(max(float(retry_after), 0), 120)
+                return max(0.0, float(retry_after))
             except ValueError:
-                pass
+                try:
+                    retry_at = parsedate_to_datetime(retry_after)
+                    if retry_at.tzinfo is None:
+                        retry_at = retry_at.replace(tzinfo=timezone.utc)
+                    return max(0.0, (retry_at - datetime.now(timezone.utc)).total_seconds())
+                except (TypeError, ValueError, OverflowError):
+                    pass
+        if response.status_code == 429:
+            base_delay = (60.0, 120.0, 300.0)[min(max(attempt - 1, 0), 2)]
+            return random.uniform(base_delay * 0.8, base_delay)
     return float(min(2 ** (attempt - 1), 30))
 
 
@@ -223,12 +234,31 @@ def _request_live_json_with_retry(
     max_retries: int,
     timeout: float,
     sleep: Callable[[float], None],
-    on_retry: Callable[[], None] | None = None,
+    on_retry: Callable[[float], None] | None = None,
+    retry_deadline_monotonic: float | None = None,
 ) -> Any:
-    """Use bounded retries for the hourly endpoint without changing weather.raw."""
+    """Retry provider failures without crossing into a different safe hour."""
     if max_retries <= 0:
         raise ValueError("max_retries must be positive")
     last_error: Exception | None = None
+
+    def wait_before_retry(response: httpx.Response | None, attempt: int) -> bool:
+        delay = _live_retry_delay(response, attempt)
+        remaining = None
+        if retry_deadline_monotonic is not None:
+            remaining = retry_deadline_monotonic - time.monotonic()
+            if remaining <= 0:
+                return False
+            delay = min(delay, remaining)
+        if on_retry is not None:
+            on_retry(delay)
+        sleep(delay)
+        # If the rate limit expires after this safe hour, let the daemon's next
+        # poll select the then-current hour instead of retrying stale work.
+        if remaining is not None and delay >= remaining:
+            return False
+        return True
+
     for attempt in range(1, max_retries + 1):
         response = None
         try:
@@ -241,9 +271,8 @@ def _request_live_json_with_retry(
                 )
                 if attempt >= max_retries:
                     break
-                if on_retry is not None:
-                    on_retry()
-                sleep(_live_retry_delay(response, attempt))
+                if not wait_before_retry(response, attempt):
+                    break
                 continue
             response.raise_for_status()
             return response.json()
@@ -254,9 +283,8 @@ def _request_live_json_with_retry(
             )
             if not retryable or attempt >= max_retries:
                 break
-            if on_retry is not None:
-                on_retry()
-            sleep(_live_retry_delay(response, attempt))
+            if not wait_before_retry(response, attempt):
+                break
         except (ValueError, KeyError) as exc:
             last_error = exc
             break
@@ -307,6 +335,7 @@ def fetch_hourly_responses(
     max_retries: int = DEFAULT_MAX_RETRIES,
     provider_model: str | None = None,
     sleep=time.sleep,
+    retry_deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Fetch ordered hourly responses; failed batches are reported by exact ID."""
     if batch_size <= 0:
@@ -317,6 +346,7 @@ def fetch_hourly_responses(
     responses_by_id: dict[str, dict[str, Any]] = {}
     failed: dict[str, str] = {}
     retry_counts: dict[str, int] = {}
+    retry_delays: dict[str, list[float]] = {}
     api_latencies: list[float] = []
     api_requests = 0
 
@@ -325,8 +355,9 @@ def fetch_hourly_responses(
         batch_key = ",".join(ids)
         params = hourly_request_params(batch, history_hours, provider_model=provider_model)
 
-        def count_retry() -> None:
+        def record_retry(delay: float) -> None:
             retry_counts[batch_key] = retry_counts.get(batch_key, 0) + 1
+            retry_delays.setdefault(batch_key, []).append(round(delay, 3))
 
         request_started = time.perf_counter()
         api_requests += 1
@@ -338,7 +369,8 @@ def fetch_hourly_responses(
                 max_retries=max_retries,
                 timeout=request_timeout_seconds,
                 sleep=sleep,
-                on_retry=count_retry,
+                on_retry=record_retry,
+                retry_deadline_monotonic=retry_deadline_monotonic,
             )
             api_latencies.append(time.perf_counter() - request_started)
             normalized = _normalize_responses(batch, payload)
@@ -357,6 +389,7 @@ def fetch_hourly_responses(
         "responses_by_id": responses_by_id,
         "failed_locations": failed,
         "retry_counts": retry_counts,
+        "retry_delays_seconds": retry_delays,
         "api_request_count": api_requests,
         "api_latencies_seconds": api_latencies,
         "api_cycle_seconds": time.perf_counter() - started,
@@ -629,10 +662,51 @@ def build_hourly_events(
 
 
 class PublishedHourCache:
-    """Daemon-only optimization; downstream deterministic-key dedupe is authoritative."""
+    """Track published location-hours, optionally persisting them across restarts."""
 
-    def __init__(self) -> None:
+    def __init__(self, state_path: Path | None = None) -> None:
         self._last_published: dict[str, datetime] = {}
+        self._state_path = state_path
+        if state_path is not None and state_path.exists():
+            self._load()
+
+    def _load(self) -> None:
+        assert self._state_path is not None
+        try:
+            state = json.loads(self._state_path.read_text(encoding="utf-8"))
+            if not isinstance(state, dict) or state.get("version") != 1 or not isinstance(state.get("last_published"), dict):
+                raise ValueError("unsupported published-hour cache format")
+            self._last_published = {
+                str(location_id): parse_utc_hour(hour)
+                for location_id, hour in state["last_published"].items()
+            }
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            raise ValueError(f"could not load published-hour cache {self._state_path}: {exc}") from exc
+
+    def _save(self) -> None:
+        if self._state_path is None:
+            return
+        state = {
+            "version": 1,
+            "last_published": {
+                location_id: format_utc_hour(hour)
+                for location_id, hour in sorted(self._last_published.items())
+            },
+        }
+        self._state_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self._state_path.with_name(self._state_path.name + ".partial")
+        temporary.write_text(json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        temporary.replace(self._state_path)
+
+    def has_completed(self, safe_hour: datetime, location_ids: Sequence[str]) -> bool:
+        if not location_ids:
+            return False
+        target = parse_utc_hour(format_utc_hour(safe_hour))
+        earliest = datetime.min.replace(tzinfo=timezone.utc)
+        return all(
+            self._last_published.get(str(location_id), earliest) >= target
+            for location_id in location_ids
+        )
 
     def filter_new(self, events: Sequence[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
         selected: list[dict[str, Any]] = []
@@ -649,6 +723,8 @@ class PublishedHourCache:
     def mark_published(self, events: Sequence[dict[str, Any]]) -> None:
         for event in events:
             self._last_published[str(event["location_id"])] = parse_utc_hour(event["event_time"])
+        if events:
+            self._save()
 
 
 def kafka_key(event: Mapping[str, Any]) -> str:
@@ -771,34 +847,69 @@ def run_cycle(
 ) -> dict[str, Any]:
     cycle_started = time.perf_counter()
     current_time = now or datetime.now(timezone.utc)
-    fetch = fetch_hourly_responses(
-        client,
-        locations,
-        history_hours=history_hours,
-        endpoint=endpoint,
-        batch_size=batch_size,
-        request_timeout_seconds=request_timeout_seconds,
-        max_retries=max_retries,
-        provider_model=provider_model,
-        sleep=sleep,
+    desired_safe_hour = safe_hour_cutoff(current_time)
+    already_published = (
+        cache is not None
+        and not bootstrap
+        and cache.has_completed(desired_safe_hour, [str(location["location_id"]) for location in locations])
     )
-    retrieved_at = datetime.now(timezone.utc) if provider_model else None
-    build_started = time.perf_counter()
-    built = build_hourly_events(
-        locations,
-        fetch["responses_by_id"],
-        now=current_time,
-        history_hours=history_hours,
-        bootstrap=bootstrap,
-        ingestion_time=retrieved_at,
-        prior_failures=fetch["failed_locations"],
-        provider_model=provider_model,
-        provider_endpoint=endpoint,
-    )
-    event_build_seconds = time.perf_counter() - build_started
+    if already_published:
+        fetch = {
+            "responses_by_id": {},
+            "failed_locations": {},
+            "retry_counts": {},
+            "retry_delays_seconds": {},
+            "api_request_count": 0,
+            "api_latencies_seconds": [],
+            "api_cycle_seconds": 0.0,
+        }
+        built = {
+            "safe_hour": format_utc_hour(desired_safe_hour),
+            "events": [],
+            "failed_locations": {},
+            "history_gap_locations": [],
+            "future_provider_rows_filtered": 0,
+            "provider_timestamps_per_location": {},
+            "coordinate_distances_km": {},
+            "provider_coordinates_by_location": {},
+        }
+        event_build_seconds = 0.0
+        skipped_same_hour = len(locations)
+    else:
+        next_safe_hour_at = desired_safe_hour + timedelta(hours=2)
+        retry_window_seconds = max(
+            0.0,
+            (next_safe_hour_at - current_time.astimezone(timezone.utc)).total_seconds(),
+        )
+        fetch = fetch_hourly_responses(
+            client,
+            locations,
+            history_hours=history_hours,
+            endpoint=endpoint,
+            batch_size=batch_size,
+            request_timeout_seconds=request_timeout_seconds,
+            max_retries=max_retries,
+            provider_model=provider_model,
+            sleep=sleep,
+            retry_deadline_monotonic=time.monotonic() + retry_window_seconds,
+        )
+        retrieved_at = datetime.now(timezone.utc) if provider_model else None
+        build_started = time.perf_counter()
+        built = build_hourly_events(
+            locations,
+            fetch["responses_by_id"],
+            now=current_time,
+            history_hours=history_hours,
+            bootstrap=bootstrap,
+            ingestion_time=retrieved_at,
+            prior_failures=fetch["failed_locations"],
+            provider_model=provider_model,
+            provider_endpoint=endpoint,
+        )
+        event_build_seconds = time.perf_counter() - build_started
+        skipped_same_hour = 0
     events = built["events"]
-    skipped_same_hour = 0
-    if cache is not None and not bootstrap:
+    if cache is not None and not bootstrap and not already_published:
         events, skipped_same_hour = cache.filter_new(events)
     publishing = publish_events(
         producer,
@@ -814,6 +925,7 @@ def run_cycle(
     }
     if (
         cache is not None
+        and events
         and publishing["events_delivered"] == len(events)
         and not publishing["delivery_failures"]
         and publishing["producer_flush_remaining"] == 0
@@ -858,6 +970,7 @@ def run_cycle(
         "kafka_publish_seconds": publishing["kafka_publish_seconds"],
         "full_cycle_seconds": time.perf_counter() - cycle_started,
         "retry_counts": fetch["retry_counts"],
+        "retry_delays_seconds": fetch["retry_delays_seconds"],
     }
 
 
@@ -927,7 +1040,11 @@ def main(argv: list[str] | None = None) -> int:
     process_started = time.perf_counter()
     process_cpu_started = time.process_time()
     history_hours_requested = history_hours
-    cache = PublishedHourCache() if args.mode == "daemon" else None
+    cache = (
+        PublishedHourCache(PROJECT_ROOT / "results" / "live_hourly_weather_producer" / "published_hours.json")
+        if args.mode == "daemon"
+        else None
+    )
     summaries: list[dict[str, Any]] = []
 
     try:
