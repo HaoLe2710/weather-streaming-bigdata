@@ -50,6 +50,27 @@ def iso(value: datetime) -> str:
     return value.isoformat().replace("+00:00", "Z")
 
 
+def start_request_for(run_id: str, contract_fingerprint: str) -> dict:
+    return {
+        "run_id": run_id,
+        "start_requested_at": iso(REQUESTED_AT),
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
+        "expected_target_hours": EXPECTED_TARGET_HOURS,
+        "expected_locations": len(LOCATION_IDS),
+        "expected_slots": EXPECTED_SLOTS,
+        "forecast_grace_period_seconds": 15 * 60,
+        "reference_grace_period_seconds": REFERENCE_GRACE_PERIOD_SECONDS,
+        "model_id": MODEL_ID,
+        "model_sha256": MODEL_SHA256,
+        "feature_set_id": FEATURE_SET_ID,
+        "feature_count": FEATURE_COUNT,
+        "feature_list_sha256": FEATURE_LIST_SHA256,
+        "provider_model": PROVIDER_MODEL,
+        "forecast_horizon_hours": FORECAST_HORIZON_HOURS,
+        "contract_fingerprint": contract_fingerprint,
+    }
+
+
 def forecast_for(location_id: str, *, target_time: datetime = TARGET_TIME) -> dict:
     feature_time = target_time - timedelta(hours=FORECAST_HORIZON_HOURS)
     inference_time = feature_time + timedelta(hours=1, minutes=1)
@@ -138,13 +159,7 @@ def run_state(tmp_path, *, now: datetime, include_target_reference: bool) -> tup
     state_dir = tmp_path / "prospective-run"
     state_dir.mkdir(parents=True, exist_ok=True)
     fingerprint = "frozen-test-contract-fingerprint"
-    request = {
-        "run_id": state_dir.name,
-        "start_requested_at": iso(REQUESTED_AT),
-        "forecast_grace_period_seconds": 15 * 60,
-        "reference_grace_period_seconds": REFERENCE_GRACE_PERIOD_SECONDS,
-        "contract_fingerprint": fingerprint,
-    }
+    request = start_request_for(state_dir.name, fingerprint)
     _atomic_json(state_dir / "start_request.json", request)
     forecasts = [forecast_for(location_id) for location_id in sorted(LOCATION_IDS)]
     receipts = [receipt_for(row) for row in forecasts]
@@ -205,13 +220,7 @@ def test_evaluated_reference_is_first_wins_across_restart_and_revision(tmp_path)
     fingerprint = "same-contract"
     _atomic_json(
         state_dir / "start_request.json",
-        {
-            "run_id": state_dir.name,
-            "start_requested_at": iso(REQUESTED_AT),
-            "forecast_grace_period_seconds": 15 * 60,
-            "reference_grace_period_seconds": REFERENCE_GRACE_PERIOD_SECONDS,
-            "contract_fingerprint": fingerprint,
-        },
+        start_request_for(state_dir.name, fingerprint),
     )
     forecasts = [forecast_for(location_id) for location_id in sorted(LOCATION_IDS)]
     receipts = [receipt_for(row) for row in forecasts]
@@ -432,6 +441,190 @@ def test_legacy_24_hour_manifest_is_rejected_without_mutating_cohort_state(tmp_p
     assert "INVALID_EXPECTED_TARGET_HOURS" in result["protocol_errors"]
     assert "INVALID_COHORT_PROTOCOL_ID" in result["protocol_errors"]
     assert state_path.read_bytes() == previous_state_bytes
+
+
+@pytest.mark.parametrize(
+    "drift",
+    ["legacy_24_hour", "missing_protocol_id", "wrong_target_hours", "wrong_locations", "wrong_slots"],
+)
+def test_start_request_protocol_drift_is_rejected_before_manifest_or_state_creation(tmp_path, drift):
+    run_dir = tmp_path / "prospective-run"
+    run_dir.mkdir()
+    request = start_request_for(run_dir.name, "frozen-test-contract-fingerprint")
+    if drift == "legacy_24_hour":
+        request.update(
+            cohort_protocol_id="T2H_LIVE_PROSPECTIVE_24H_V1",
+            expected_target_hours=24,
+            expected_slots=63 * 24,
+        )
+    elif drift == "missing_protocol_id":
+        request.pop("cohort_protocol_id")
+    elif drift == "wrong_target_hours":
+        request["expected_target_hours"] = 24
+    elif drift == "wrong_locations":
+        request["expected_locations"] = 62
+    elif drift == "wrong_slots":
+        request["expected_slots"] = 63 * 24
+    _atomic_json(run_dir / "start_request.json", request)
+    request_bytes = (run_dir / "start_request.json").read_bytes()
+
+    result = update_cohort_state(
+        state_dir=run_dir,
+        now=TARGET_TIME,
+        forecasts=[forecast_for(location_id) for location_id in sorted(LOCATION_IDS)],
+        receipts=[],
+        observations=[],
+        revisions=[],
+        rejected_observations=[],
+        known_location_ids=LOCATION_IDS,
+        runtime_contract={
+            "status": "PASS",
+            "contract_fingerprint": "frozen-test-contract-fingerprint",
+        },
+    )
+
+    assert result["status"] == "COHORT_PROTOCOL_DRIFT"
+    assert result["finalization_allowed"] is False
+    assert (run_dir / "start_request.json").read_bytes() == request_bytes
+    assert not (run_dir / "cohort_manifest.json").exists()
+    assert not (run_dir / "cohort_state.json").exists()
+    assert not (run_dir / "cohort_status.json").exists()
+
+
+def test_freeze_cohort_manifest_rejects_legacy_request_before_freezing():
+    request = start_request_for("legacy-run", "frozen-test-contract-fingerprint")
+    request.update(
+        cohort_protocol_id="T2H_LIVE_PROSPECTIVE_24H_V1",
+        expected_target_hours=24,
+        expected_slots=63 * 24,
+    )
+    forecasts = [forecast_for(location_id) for location_id in sorted(LOCATION_IDS)]
+
+    with pytest.raises(ValueError, match="COHORT_PROTOCOL_DRIFT"):
+        prospective.freeze_cohort_manifest(
+            forecasts,
+            [receipt_for(row) for row in forecasts],
+            request=request,
+            known_location_ids=LOCATION_IDS,
+            frozen_at=TARGET_TIME,
+        )
+
+
+@pytest.mark.parametrize(
+    "drift",
+    ["legacy_24_hour", "missing_protocol_id", "wrong_target_hours", "wrong_locations", "wrong_slots"],
+)
+def test_resume_rejects_start_request_protocol_drift_before_docker(tmp_path, monkeypatch, capsys, drift):
+    run_id = "prospective-run"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir()
+    request = start_request_for(run_id, "frozen-test-contract-fingerprint")
+    if drift == "legacy_24_hour":
+        request.update(
+            cohort_protocol_id="T2H_LIVE_PROSPECTIVE_24H_V1",
+            expected_target_hours=24,
+            expected_slots=63 * 24,
+        )
+    elif drift == "missing_protocol_id":
+        request.pop("cohort_protocol_id")
+    elif drift == "wrong_target_hours":
+        request["expected_target_hours"] = 24
+    elif drift == "wrong_locations":
+        request["expected_locations"] = 62
+    elif drift == "wrong_slots":
+        request["expected_slots"] = 63 * 24
+    _atomic_json(run_dir / "start_request.json", request)
+    _atomic_json(tmp_path / "active_run.json", {"run_id": run_id})
+    before = {path.name: path.read_bytes() for path in run_dir.iterdir()}
+    model_contract_calls = []
+    docker_calls = []
+    monkeypatch.setattr(prospective, "_default_model_contract", lambda: model_contract_calls.append(True))
+    monkeypatch.setattr(
+        prospective,
+        "_run_compose",
+        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
+    )
+
+    result = prospective._resume(Namespace(), tmp_path)
+
+    assert result == 2
+    assert "COHORT_PROTOCOL_DRIFT" in capsys.readouterr().err
+    assert model_contract_calls == []
+    assert docker_calls == []
+    assert {path.name: path.read_bytes() for path in run_dir.iterdir()} == before
+    assert not (run_dir / "cohort_manifest.json").exists()
+    assert not (run_dir / "cohort_state.json").exists()
+
+
+@pytest.mark.parametrize("manifest_drift", ["wrong_expected_slots", "empty_manifest"])
+def test_resume_rejects_manifest_drift_before_docker(tmp_path, monkeypatch, capsys, manifest_drift):
+    run_id = "prospective-run"
+    run_state(tmp_path, now=TARGET_TIME - timedelta(minutes=30), include_target_reference=False)
+    run_dir = tmp_path / run_id
+    manifest_path = run_dir / "cohort_manifest.json"
+    manifest = _read_json(manifest_path)
+    if manifest_drift == "wrong_expected_slots":
+        manifest["expected_slots"] = 63 * 24
+    else:
+        manifest = {}
+    _atomic_json(manifest_path, manifest)
+    _atomic_json(tmp_path / "active_run.json", {"run_id": run_id})
+    manifest_bytes = manifest_path.read_bytes()
+    docker_calls = []
+    monkeypatch.setattr(
+        prospective,
+        "_run_compose",
+        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
+    )
+    monkeypatch.setattr(prospective, "_default_model_contract", lambda: {
+        "status": "PASS",
+        "contract_fingerprint": "frozen-test-contract-fingerprint",
+    })
+
+    result = prospective._resume(Namespace(), tmp_path)
+
+    assert result == 2
+    assert "COHORT_PROTOCOL_DRIFT" in capsys.readouterr().err
+    assert docker_calls == []
+    assert manifest_path.read_bytes() == manifest_bytes
+
+
+def test_valid_resume_preserves_168_hour_window_and_canonical_state(tmp_path, monkeypatch):
+    initial_time = TARGET_TIME - timedelta(minutes=30)
+    status, state, _ = run_state(
+        tmp_path,
+        now=initial_time,
+        include_target_reference=False,
+    )
+    run_id = "prospective-run"
+    run_dir = tmp_path / run_id
+    _atomic_json(tmp_path / "active_run.json", {"run_id": run_id})
+    monkeypatch.setattr(prospective, "utc_now", lambda: initial_time)
+    monkeypatch.setattr(prospective, "_default_model_contract", lambda: {
+        "status": "PASS",
+        "contract_fingerprint": state["manifest"]["contract_fingerprint"],
+    })
+    docker_calls = []
+    monkeypatch.setattr(
+        prospective,
+        "_run_compose",
+        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="resumed", stderr=""),
+    )
+    paths = [
+        run_dir / "start_request.json",
+        run_dir / "cohort_manifest.json",
+        run_dir / "cohort_state.json",
+        run_dir / "cohort_status.json",
+        tmp_path / "active_run.json",
+    ]
+    before = {path: path.read_bytes() for path in paths if path.exists()}
+
+    assert prospective._resume(Namespace(), tmp_path) == 0
+
+    assert status["status"] == "COLLECTING"
+    assert docker_calls == [run_id]
+    assert {path: path.read_bytes() for path in before} == before
+    assert not (run_dir / "resume_events.jsonl").exists()
 
 
 def test_resume_preserves_168_hour_manifest_and_accepted_forecast(tmp_path):

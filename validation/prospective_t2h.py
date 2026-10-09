@@ -108,6 +108,116 @@ def _cohort_protocol_errors(manifest: Mapping[str, Any]) -> list[str]:
     return errors
 
 
+def _start_request_protocol_errors(
+    request: Mapping[str, Any],
+    *,
+    expected_run_id: str | None = None,
+) -> list[str]:
+    """Reject legacy or inconsistent start requests before freezing a cohort."""
+    if not isinstance(request, Mapping):
+        return ["INVALID_START_REQUEST"]
+    errors: list[str] = []
+    expected_fields = {
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
+        "expected_target_hours": EXPECTED_TARGET_HOURS,
+        "expected_locations": MAX_EXPECTED_LOCATIONS,
+        "expected_slots": EXPECTED_SLOTS,
+    }
+    for field, expected in expected_fields.items():
+        if request.get(field) != expected:
+            errors.append(f"INVALID_START_REQUEST_{field.upper()}")
+
+    request_run_id = request.get("run_id")
+    if not isinstance(request_run_id, str) or not request_run_id.strip():
+        errors.append("INVALID_START_REQUEST_RUN_ID")
+    elif expected_run_id is not None and request_run_id != expected_run_id:
+        errors.append("START_REQUEST_RUN_ID_MISMATCH")
+    return errors
+
+
+def _start_request_contract_errors(request: Mapping[str, Any]) -> list[str]:
+    """Check the immutable model/provider contract recorded at cohort start."""
+    if not isinstance(request, Mapping):
+        return ["INVALID_START_REQUEST"]
+    expected_fields = {
+        "model_id": MODEL_ID,
+        "model_sha256": MODEL_SHA256,
+        "feature_set_id": FEATURE_SET_ID,
+        "feature_count": FEATURE_COUNT,
+        "feature_list_sha256": FEATURE_LIST_SHA256,
+        "provider_model": PROVIDER_MODEL,
+        "forecast_horizon_hours": FORECAST_HORIZON_HOURS,
+    }
+    errors = [
+        f"INVALID_START_REQUEST_{field.upper()}"
+        for field, expected in expected_fields.items()
+        if request.get(field) != expected
+    ]
+    if not isinstance(request.get("contract_fingerprint"), str) or not request.get("contract_fingerprint"):
+        errors.append("INVALID_START_REQUEST_CONTRACT_FINGERPRINT")
+    return errors
+
+
+def _manifest_request_protocol_errors(
+    request: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    *,
+    expected_run_id: str | None = None,
+) -> list[str]:
+    errors = _cohort_protocol_errors(manifest)
+    request_run_id = request.get("run_id")
+    manifest_run_id = manifest.get("run_id")
+    if manifest_run_id != request_run_id:
+        errors.append("START_REQUEST_MANIFEST_RUN_ID_MISMATCH")
+    if expected_run_id is not None and (request_run_id != expected_run_id or manifest_run_id != expected_run_id):
+        errors.append("ACTIVE_RUN_ID_MISMATCH")
+    for field in ("cohort_protocol_id", "expected_target_hours", "expected_locations", "expected_slots"):
+        if manifest.get(field) != request.get(field):
+            errors.append(f"START_REQUEST_MANIFEST_{field.upper()}_MISMATCH")
+    try:
+        start = parse_utc_hour(manifest["cohort_start_target_time"], assume_naive_utc=True)
+        expected_cohort_id = f"prospective-t2h-{start.strftime('%Y%m%dT%H%M%SZ')}"
+        if manifest.get("cohort_id") != expected_cohort_id:
+            errors.append("INVALID_COHORT_ID_FOR_TARGET_WINDOW")
+    except (KeyError, TypeError, ValueError):
+        pass  # _cohort_protocol_errors already reports an invalid target window.
+    return errors
+
+
+def _manifest_request_contract_errors(
+    request: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+) -> list[str]:
+    errors = _start_request_contract_errors(request)
+    for field in (
+        "model_id",
+        "model_sha256",
+        "feature_set_id",
+        "feature_count",
+        "feature_list_sha256",
+        "provider_model",
+        "forecast_horizon_hours",
+        "contract_fingerprint",
+    ):
+        if manifest.get(field) != request.get(field):
+            errors.append(f"START_REQUEST_MANIFEST_{field.upper()}_MISMATCH")
+    expected_fields = {
+        "model_id": MODEL_ID,
+        "model_sha256": MODEL_SHA256,
+        "feature_set_id": FEATURE_SET_ID,
+        "feature_count": FEATURE_COUNT,
+        "feature_list_sha256": FEATURE_LIST_SHA256,
+        "provider_model": PROVIDER_MODEL,
+        "forecast_horizon_hours": FORECAST_HORIZON_HOURS,
+    }
+    for field, expected in expected_fields.items():
+        if manifest.get(field) != expected:
+            errors.append(f"INVALID_MANIFEST_{field.upper()}")
+    if not isinstance(manifest.get("contract_fingerprint"), str) or not manifest.get("contract_fingerprint"):
+        errors.append("INVALID_MANIFEST_CONTRACT_FINGERPRINT")
+    return errors
+
+
 def _jsonable(value: Any) -> Any:
     if isinstance(value, datetime):
         return iso_utc(value)
@@ -415,6 +525,12 @@ def freeze_cohort_manifest(
     known_location_ids: set[str] | frozenset[str],
     frozen_at: datetime | None = None,
 ) -> dict[str, Any] | None:
+    request_protocol_errors = _start_request_protocol_errors(request)
+    if request_protocol_errors:
+        raise ValueError(f"COHORT_PROTOCOL_DRIFT: {', '.join(request_protocol_errors)}")
+    request_contract_errors = _start_request_contract_errors(request)
+    if request_contract_errors:
+        raise ValueError(f"COHORT_CONTRACT_DRIFT: {', '.join(request_contract_errors)}")
     if len(known_location_ids) != MAX_EXPECTED_LOCATIONS:
         raise ValueError(f"canonical location set must contain exactly {MAX_EXPECTED_LOCATIONS} locations")
     requested_at = _request_time(request)
@@ -1098,10 +1214,119 @@ def update_cohort_state(
     request = _read_json(state_root / "start_request.json")
     if not request:
         return {"status": "NO_COHORT_REQUEST", "run_id": state_root.name}
+
+    request_protocol_errors = _start_request_protocol_errors(request, expected_run_id=state_root.name)
+    if request_protocol_errors:
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "expected_cohort_protocol_id": COHORT_PROTOCOL_ID,
+            "protocol_errors": request_protocol_errors,
+            "finalization_allowed": False,
+        }
+    request_contract_errors = _start_request_contract_errors(request)
+    if request_contract_errors:
+        return {
+            "status": "COHORT_CONTRACT_DRIFT",
+            "run_id": state_root.name,
+            "contract_errors": request_contract_errors,
+            "finalization_allowed": False,
+        }
+
     now = parse_utc_timestamp(now, assume_naive_utc=True)
     old_state = _read_json(state_root / "cohort_state.json", {}) or {}
-    manifest = _read_json(state_root / "cohort_manifest.json")
-    if not manifest:
+    prior_status = _read_json(state_root / "cohort_status.json", {}) or {}
+    if not isinstance(old_state, Mapping) or not isinstance(prior_status, Mapping):
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "protocol_errors": ["INVALID_COHORT_STATE_OR_STATUS"],
+            "finalization_allowed": False,
+        }
+    manifest_path = state_root / "cohort_manifest.json"
+    manifest_exists = manifest_path.exists()
+    manifest = _read_json(manifest_path)
+    if manifest_exists and not isinstance(manifest, Mapping):
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "protocol_errors": ["INVALID_FROZEN_COHORT_MANIFEST"],
+            "finalization_allowed": False,
+        }
+
+    if manifest_exists:
+        protocol_errors = _manifest_request_protocol_errors(
+            request,
+            manifest,
+            expected_run_id=state_root.name,
+        )
+        if old_state.get("manifest") is not None and old_state.get("manifest") != manifest:
+            protocol_errors.append("COHORT_STATE_MANIFEST_MISMATCH")
+        if prior_status.get("run_id") not in (None, state_root.name):
+            protocol_errors.append("COHORT_STATUS_RUN_ID_MISMATCH")
+        if prior_status.get("cohort_id") not in (None, manifest.get("cohort_id")):
+            protocol_errors.append("COHORT_STATUS_COHORT_ID_MISMATCH")
+        if protocol_errors:
+            drift = {
+                "status": "COHORT_PROTOCOL_DRIFT",
+                "cohort_id": manifest.get("cohort_id"),
+                "run_id": state_root.name,
+                "last_update_at": iso_utc(now),
+                "expected_cohort_protocol_id": COHORT_PROTOCOL_ID,
+                "protocol_errors": sorted(set(protocol_errors)),
+                "finalization_allowed": False,
+            }
+            _atomic_json(state_root / "protocol_drift.json", drift)
+            _atomic_json(state_root / "cohort_status.json", drift)
+            return drift
+        contract_errors = _manifest_request_contract_errors(request, manifest)
+        if contract_errors:
+            drift = {
+                "status": "COHORT_CONTRACT_DRIFT",
+                "cohort_id": manifest.get("cohort_id"),
+                "run_id": state_root.name,
+                "last_update_at": iso_utc(now),
+                "contract_errors": sorted(set(contract_errors)),
+                "finalization_allowed": False,
+            }
+            _atomic_json(state_root / "cohort_status.json", drift)
+            return drift
+    elif (state_root / "cohort_state.json").exists():
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "protocol_errors": ["COHORT_STATE_EXISTS_WITHOUT_FROZEN_MANIFEST"],
+            "finalization_allowed": False,
+        }
+    elif prior_status.get("run_id") not in (None, state_root.name):
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "protocol_errors": ["COHORT_STATUS_RUN_ID_MISMATCH"],
+            "finalization_allowed": False,
+        }
+    elif prior_status.get("cohort_id") is not None or prior_status.get("target_hours_frozen") is True:
+        return {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": state_root.name,
+            "protocol_errors": ["COHORT_STATUS_HAS_FROZEN_WINDOW_WITHOUT_MANIFEST"],
+            "finalization_allowed": False,
+        }
+
+    if runtime_contract.get("status") != "PASS" or runtime_contract.get("contract_fingerprint") != request.get("contract_fingerprint"):
+        drift = {
+            "status": "COHORT_CONTRACT_DRIFT",
+            "cohort_id": (manifest or {}).get("cohort_id"),
+            "run_id": state_root.name,
+            "last_update_at": iso_utc(now),
+            "expected_fingerprint": request.get("contract_fingerprint"),
+            "actual_contract": dict(runtime_contract),
+            "finalization_allowed": False,
+        }
+        _atomic_json(state_root / "cohort_status.json", drift)
+        return drift
+
+    if not manifest_exists:
         manifest = freeze_cohort_manifest(
             forecasts,
             receipts,
@@ -1123,34 +1348,6 @@ def update_cohort_state(
             _atomic_json(state_root / "cohort_status.json", pending)
             return pending
         _atomic_json(state_root / "cohort_manifest.json", manifest)
-
-    protocol_errors = _cohort_protocol_errors(manifest)
-    if protocol_errors:
-        drift = {
-            "status": "COHORT_PROTOCOL_DRIFT",
-            "cohort_id": manifest.get("cohort_id"),
-            "run_id": request.get("run_id"),
-            "last_update_at": iso_utc(now),
-            "expected_cohort_protocol_id": COHORT_PROTOCOL_ID,
-            "protocol_errors": protocol_errors,
-            "finalization_allowed": False,
-        }
-        _atomic_json(state_root / "protocol_drift.json", drift)
-        _atomic_json(state_root / "cohort_status.json", drift)
-        return drift
-
-    if runtime_contract.get("status") != "PASS" or runtime_contract.get("contract_fingerprint") != manifest.get("contract_fingerprint"):
-        drift = {
-            "status": "COHORT_CONTRACT_DRIFT",
-            "cohort_id": manifest["cohort_id"],
-            "run_id": manifest["run_id"],
-            "last_update_at": iso_utc(now),
-            "expected_fingerprint": manifest.get("contract_fingerprint"),
-            "actual_contract": dict(runtime_contract),
-            "finalization_allowed": False,
-        }
-        _atomic_json(state_root / "cohort_status.json", drift)
-        return drift
     if old_state.get("status") == "FINALIZED":
         if spark is not None:
             results_path = Path(results_root) / str(manifest["run_id"])
@@ -2047,6 +2244,12 @@ def _write_start_request(
         },
         "training_performed": False,
     }
+    protocol_errors = _start_request_protocol_errors(request, expected_run_id=run_id)
+    if protocol_errors:
+        raise ValueError(f"COHORT_PROTOCOL_DRIFT: {', '.join(protocol_errors)}")
+    contract_errors = _start_request_contract_errors(request)
+    if contract_errors:
+        raise ValueError(f"COHORT_CONTRACT_DRIFT: {', '.join(contract_errors)}")
     _atomic_json(run_state / "start_request.json", request)
     return run_state
 
@@ -2251,21 +2454,103 @@ def _resume(args: argparse.Namespace, state_root: Path) -> int:
     if not request:
         print("The active cohort request is missing; refusing to create a new cohort.", file=sys.stderr)
         return 1
+
+    request_protocol_errors = _start_request_protocol_errors(request, expected_run_id=run_id)
+    if request_protocol_errors:
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": request_protocol_errors,
+        }, indent=2), file=sys.stderr)
+        return 2
+    request_contract_errors = _start_request_contract_errors(request)
+    if request_contract_errors:
+        print(json.dumps({
+            "status": "COHORT_CONTRACT_DRIFT",
+            "run_id": run_id,
+            "contract_errors": request_contract_errors,
+        }, indent=2), file=sys.stderr)
+        return 1
+
+    manifest_path = run_state / "cohort_manifest.json"
+    manifest_exists = manifest_path.exists()
+    manifest = _read_json(manifest_path)
+    cohort_state_path = run_state / "cohort_state.json"
+    cohort_state = _read_json(cohort_state_path, {}) or {}
+    prior_status = _read_json(run_state / "cohort_status.json", {}) or {}
+    if not isinstance(cohort_state, Mapping) or not isinstance(prior_status, Mapping):
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": ["INVALID_COHORT_STATE_OR_STATUS"],
+        }, indent=2), file=sys.stderr)
+        return 2
+    if manifest_exists and not isinstance(manifest, Mapping):
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": ["INVALID_FROZEN_COHORT_MANIFEST"],
+        }, indent=2), file=sys.stderr)
+        return 2
+    if manifest_exists:
+        protocol_errors = _manifest_request_protocol_errors(
+            request,
+            manifest,
+            expected_run_id=run_id,
+        )
+        if cohort_state_path.exists():
+            frozen_state_manifest = cohort_state.get("manifest")
+            if frozen_state_manifest is None:
+                protocol_errors.append("COHORT_STATE_MISSING_FROZEN_MANIFEST")
+            elif frozen_state_manifest != manifest:
+                protocol_errors.append("COHORT_STATE_MANIFEST_MISMATCH")
+        if prior_status.get("run_id") not in (None, run_id):
+            protocol_errors.append("COHORT_STATUS_RUN_ID_MISMATCH")
+        if prior_status.get("cohort_id") not in (None, manifest.get("cohort_id")):
+            protocol_errors.append("COHORT_STATUS_COHORT_ID_MISMATCH")
+        if protocol_errors:
+            print(json.dumps({
+                "status": "COHORT_PROTOCOL_DRIFT",
+                "run_id": run_id,
+                "protocol_errors": sorted(set(protocol_errors)),
+            }, indent=2), file=sys.stderr)
+            return 2
+        contract_errors = _manifest_request_contract_errors(request, manifest)
+        if contract_errors:
+            print(json.dumps({
+                "status": "COHORT_CONTRACT_DRIFT",
+                "run_id": run_id,
+                "contract_errors": sorted(set(contract_errors)),
+            }, indent=2), file=sys.stderr)
+            return 1
+    elif cohort_state_path.exists():
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": ["COHORT_STATE_EXISTS_WITHOUT_FROZEN_MANIFEST"],
+        }, indent=2), file=sys.stderr)
+        return 2
+    elif prior_status.get("run_id") not in (None, run_id):
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": ["COHORT_STATUS_RUN_ID_MISMATCH"],
+        }, indent=2), file=sys.stderr)
+        return 2
+    elif prior_status.get("cohort_id") is not None or prior_status.get("target_hours_frozen") is True:
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": ["COHORT_STATUS_HAS_FROZEN_WINDOW_WITHOUT_MANIFEST"],
+        }, indent=2), file=sys.stderr)
+        return 2
+
     contract = _default_model_contract()
     if contract.get("status") != "PASS" or contract.get("contract_fingerprint") != request.get("contract_fingerprint"):
         drift = {"status": "COHORT_CONTRACT_DRIFT", "expected": request.get("contract_fingerprint"), "actual": contract}
         _atomic_json(run_state / "contract_drift.json", drift)
         print(json.dumps(drift, indent=2), file=sys.stderr)
         return 1
-    manifest = _read_json(run_state / "cohort_manifest.json")
-    if manifest and (protocol_errors := _cohort_protocol_errors(manifest)):
-        print(json.dumps({
-            "status": "COHORT_PROTOCOL_DRIFT",
-            "run_id": run_id,
-            "protocol_errors": protocol_errors,
-        }, indent=2), file=sys.stderr)
-        return 2
-    prior_status = _read_json(run_state / "cohort_status.json", {}) or {}
     last_update = prior_status.get("last_update_at")
     if last_update:
         try:
