@@ -54,8 +54,10 @@ REFERENCE_GRACE_PERIOD_SECONDS = 2 * 60 * 60
 READINESS_MAX_AGE_SECONDS = 6 * 60 * 60
 READINESS_POLL_SECONDS = 10
 MAX_EXPECTED_LOCATIONS = 63
-EXPECTED_TARGET_HOURS = 24
+EXPECTED_TARGET_HOURS = 168  # Seven consecutive UTC target days.
 EXPECTED_SLOTS = MAX_EXPECTED_LOCATIONS * EXPECTED_TARGET_HOURS
+COHORT_PROTOCOL_ID = "T2H_LIVE_PROSPECTIVE_168H_V1"
+COMPLETE_COHORT_LABEL = f"COMPLETE_{EXPECTED_SLOTS}"
 TERMINAL_SLOT_STATES = frozenset(
     {"EVALUATED", "FORECAST_MISSING", "MISSING_REFERENCE", "REFERENCE_CONFLICT", "INVALID"}
 )
@@ -74,6 +76,36 @@ def iso_utc(value: datetime | Any) -> str:
 
 def _hour_text(value: Any) -> str:
     return parse_utc_hour(value, assume_naive_utc=True).strftime("%Y-%m-%dT%H:00:00Z")
+
+
+def _cohort_protocol_errors(manifest: Mapping[str, Any]) -> list[str]:
+    """Reject incompatible or noncontiguous cohort manifests before state mutation."""
+    errors: list[str] = []
+    expected_fields = {
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
+        "expected_target_hours": EXPECTED_TARGET_HOURS,
+        "expected_locations": MAX_EXPECTED_LOCATIONS,
+        "expected_forecasts": EXPECTED_SLOTS,
+        "expected_slots": EXPECTED_SLOTS,
+    }
+    for field, expected in expected_fields.items():
+        if manifest.get(field) != expected:
+            errors.append(f"INVALID_{field.upper()}")
+
+    locations = manifest.get("canonical_locations")
+    if not isinstance(locations, list) or len(locations) != MAX_EXPECTED_LOCATIONS or len(set(locations)) != MAX_EXPECTED_LOCATIONS:
+        errors.append("INVALID_CANONICAL_LOCATIONS")
+
+    try:
+        first = parse_utc_hour(manifest["cohort_start_target_time"], assume_naive_utc=True)
+        expected_times = [_hour_text(first + timedelta(hours=offset)) for offset in range(EXPECTED_TARGET_HOURS)]
+        if manifest.get("target_times") != expected_times:
+            errors.append("NONCONTIGUOUS_TARGET_WINDOW")
+        if _hour_text(manifest["cohort_end_target_time"]) != expected_times[-1]:
+            errors.append("INVALID_END_TARGET_TIME")
+    except (KeyError, TypeError, ValueError):
+        errors.append("INVALID_TARGET_WINDOW")
+    return errors
 
 
 def _jsonable(value: Any) -> Any:
@@ -407,7 +439,7 @@ def freeze_cohort_manifest(
     if not eligible:
         return None
     t0 = min(eligible)
-    t23 = t0 + timedelta(hours=EXPECTED_TARGET_HOURS - 1)
+    last_target = t0 + timedelta(hours=EXPECTED_TARGET_HOURS - 1)
     freeze_time = (frozen_at or utc_now()).astimezone(timezone.utc)
     cohort_id = f"prospective-t2h-{t0.strftime('%Y%m%dT%H%M%SZ')}"
     return {
@@ -418,8 +450,9 @@ def freeze_cohort_manifest(
         "cohort_frozen_at": iso_utc(freeze_time),
         "start_requested_at": iso_utc(requested_at),
         "cohort_start_target_time": _hour_text(t0),
-        "cohort_end_target_time": _hour_text(t23),
+        "cohort_end_target_time": _hour_text(last_target),
         "target_times": [_hour_text(t0 + timedelta(hours=index)) for index in range(EXPECTED_TARGET_HOURS)],
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
         "expected_target_hours": EXPECTED_TARGET_HOURS,
         "expected_locations": MAX_EXPECTED_LOCATIONS,
         "expected_forecasts": EXPECTED_SLOTS,
@@ -778,7 +811,7 @@ def _final_artifacts(
     forecast_completeness = valid_forecasts / expected_count * 100.0 if expected_count else 0.0
     evaluation_completeness = len(evaluated) / expected_count * 100.0 if expected_count else 0.0
     if valid_forecasts == expected_count and len(evaluated) == expected_count:
-        completeness = "COMPLETE_1512"
+        completeness = COMPLETE_COHORT_LABEL
     elif terminal_count == expected_count:
         completeness = "COMPLETE_WINDOW_WITH_MISSINGNESS"
     else:
@@ -917,7 +950,7 @@ def _final_artifacts(
         "target_hours_better_equal_worse": hours,
         "reference_semantics": manifest["prospective_reference"],
         "offline_target_semantics": manifest["offline_target"],
-        "statistical_scope": "24 target hours across one short weather regime; not a long-term nationwide guarantee",
+        "statistical_scope": "168 consecutive UTC target hours over seven days; not a long-term nationwide guarantee",
         "duplicate_validation": duplicate_info,
         "provenance_validation": provenance,
     }
@@ -1090,6 +1123,21 @@ def update_cohort_state(
             _atomic_json(state_root / "cohort_status.json", pending)
             return pending
         _atomic_json(state_root / "cohort_manifest.json", manifest)
+
+    protocol_errors = _cohort_protocol_errors(manifest)
+    if protocol_errors:
+        drift = {
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "cohort_id": manifest.get("cohort_id"),
+            "run_id": request.get("run_id"),
+            "last_update_at": iso_utc(now),
+            "expected_cohort_protocol_id": COHORT_PROTOCOL_ID,
+            "protocol_errors": protocol_errors,
+            "finalization_allowed": False,
+        }
+        _atomic_json(state_root / "protocol_drift.json", drift)
+        _atomic_json(state_root / "cohort_status.json", drift)
+        return drift
 
     if runtime_contract.get("status") != "PASS" or runtime_contract.get("contract_fingerprint") != manifest.get("contract_fingerprint"):
         drift = {
@@ -1468,7 +1516,7 @@ def update_cohort_state(
     if status_text == "FINALIZED":
         status["finalized_at"] = now_text
         if all(slot.get("status") == "EVALUATED" for slot in slot_rows):
-            status["cohort_completeness_classification"] = "COMPLETE_1512"
+            status["cohort_completeness_classification"] = COMPLETE_COHORT_LABEL
         else:
             status["cohort_completeness_classification"] = "COMPLETE_WINDOW_WITH_MISSINGNESS"
 
@@ -1958,6 +2006,7 @@ def _write_start_request(
     request = {
         "run_id": run_id,
         "start_requested_at": iso_utc(requested_at or utc_now()),
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
         "expected_target_hours": EXPECTED_TARGET_HOURS,
         "expected_locations": MAX_EXPECTED_LOCATIONS,
         "expected_slots": EXPECTED_SLOTS,
@@ -2040,6 +2089,7 @@ def _preflight(args: argparse.Namespace, state_root: Path) -> int:
         "commands": records,
         "pytest_counts": pytest_counts,
         "model_training_performed": False,
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
     }
     _atomic_json(state_root / "preflight_test_results.json", summary)
     print(json.dumps(_jsonable(summary), ensure_ascii=False, indent=2))
@@ -2058,6 +2108,7 @@ def _readiness(args: argparse.Namespace, state_root: Path) -> int:
         "run_id": run_id,
         "requested_at": iso_utc(utc_now()),
         "contract_fingerprint": contract["contract_fingerprint"],
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
         "status": "WAITING",
     }
     _atomic_json(run_state / "readiness_request.json", request)
@@ -2075,6 +2126,7 @@ def _readiness(args: argparse.Namespace, state_root: Path) -> int:
         readiness = _read_json(run_state / "readiness.json")
         if readiness and readiness.get("status") == "PASS":
             readiness["contract_fingerprint"] = contract["contract_fingerprint"]
+            readiness["cohort_protocol_id"] = COHORT_PROTOCOL_ID
             readiness["run_id"] = run_id
             stopped = _stop_readiness_services()
             readiness["readiness_services_stopped"] = stopped.returncode == 0
@@ -2108,7 +2160,7 @@ def _start(args: argparse.Namespace, state_root: Path) -> int:
     preflight = _read_json(state_root / "preflight_test_results.json")
     readiness = _read_json(state_root / "readiness.json")
     contract = _default_model_contract()
-    if not preflight or preflight.get("status") != "PASS":
+    if not preflight or preflight.get("status") != "PASS" or preflight.get("cohort_protocol_id") != COHORT_PROTOCOL_ID:
         print("Run preflight and pass all blocking checks before starting the official cohort.", file=sys.stderr)
         return 2
     readiness_age: float | None = None
@@ -2122,6 +2174,7 @@ def _start(args: argparse.Namespace, state_root: Path) -> int:
     readiness_passes = bool(
         readiness
         and readiness.get("status") == "PASS"
+        and readiness.get("cohort_protocol_id") == COHORT_PROTOCOL_ID
         and readiness.get("contract_fingerprint") == contract.get("contract_fingerprint")
         and readiness_age is not None
         and 0 <= readiness_age <= READINESS_MAX_AGE_SECONDS
@@ -2204,6 +2257,14 @@ def _resume(args: argparse.Namespace, state_root: Path) -> int:
         _atomic_json(run_state / "contract_drift.json", drift)
         print(json.dumps(drift, indent=2), file=sys.stderr)
         return 1
+    manifest = _read_json(run_state / "cohort_manifest.json")
+    if manifest and (protocol_errors := _cohort_protocol_errors(manifest)):
+        print(json.dumps({
+            "status": "COHORT_PROTOCOL_DRIFT",
+            "run_id": run_id,
+            "protocol_errors": protocol_errors,
+        }, indent=2), file=sys.stderr)
+        return 2
     prior_status = _read_json(run_state / "cohort_status.json", {}) or {}
     last_update = prior_status.get("last_update_at")
     if last_update:
@@ -2270,7 +2331,7 @@ def build_parser() -> argparse.ArgumentParser:
     status.set_defaults(handler=_status)
     resume = subparsers.add_parser("resume", help="resume the same cohort ID, window, and model contract")
     resume.set_defaults(handler=_resume)
-    finalize = subparsers.add_parser("finalize", help="verify that all 1,512 slots are terminal")
+    finalize = subparsers.add_parser("finalize", help=f"verify that all {EXPECTED_SLOTS:,} slots are terminal")
     finalize.set_defaults(handler=_finalize)
     return parser
 
