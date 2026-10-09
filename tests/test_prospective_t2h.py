@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from argparse import Namespace
 from datetime import datetime, timedelta, timezone
 import pytest
 
@@ -16,9 +17,13 @@ from ml.streaming_inference.t2h_contract import (
     PROVIDER_NAME,
 )
 from ml.streaming_inference.t2h_runtime import deterministic_t2h_forecast_id
+import validation.prospective_t2h as prospective
 from monitoring.evaluation_contract import LIVE_REFERENCE_SOURCE
 from validation.prospective_t2h import (
     EXPECTED_SLOTS,
+    EXPECTED_TARGET_HOURS,
+    COHORT_PROTOCOL_ID,
+    COMPLETE_COHORT_LABEL,
     REFERENCE_GRACE_PERIOD_SECONDS,
     _append_jsonl_once,
     _atomic_json,
@@ -177,8 +182,15 @@ def test_target_window_freezes_on_first_complete_live_cycle_and_tracks_pending_t
 
     manifest = state["manifest"]
     assert manifest["cohort_start_target_time"] == iso(TARGET_TIME)
-    assert len(manifest["target_times"]) == 24
-    assert manifest["target_times"] == [iso(TARGET_TIME + timedelta(hours=i)) for i in range(24)]
+    assert EXPECTED_TARGET_HOURS == 168
+    assert EXPECTED_SLOTS == 10_584
+    assert COMPLETE_COHORT_LABEL == "COMPLETE_10584"
+    assert manifest["cohort_protocol_id"] == COHORT_PROTOCOL_ID
+    assert len(manifest["target_times"]) == 168
+    assert manifest["target_times"] == [iso(TARGET_TIME + timedelta(hours=i)) for i in range(168)]
+    assert manifest["cohort_end_target_time"] == iso(TARGET_TIME + timedelta(hours=167))
+    assert manifest["expected_slots"] == 10_584
+    assert len(state["slots"]) == 10_584
     assert status["status"] == "COLLECTING"
     assert status["pending_target"] >= 63
     assert status["valid_evaluation_count"] == 0
@@ -347,3 +359,145 @@ def test_record_reference_revisions_from_spark_qualifies_same_lineage_join(tmp_p
         assert revision["target_time"] == iso(FEATURE_TIME)
     finally:
         spark.stop()
+
+
+def test_seven_day_window_does_not_finalize_after_first_day(tmp_path):
+    status, state, _ = run_state(
+        tmp_path,
+        now=TARGET_TIME + timedelta(hours=24),
+        include_target_reference=False,
+    )
+    assert state["manifest"]["expected_target_hours"] == 168
+    assert status["status"] == "COLLECTING"
+    assert status["expected_slots"] == 10_584
+    assert status["terminal_slots"] < 10_584
+    assert status["completed_target_hours"] < 168
+    assert status["finalization_allowed"] is False
+
+
+def test_seven_day_window_finalizes_with_missingness_after_all_deadlines(tmp_path):
+    status, state, _ = run_state(
+        tmp_path,
+        now=TARGET_TIME + timedelta(hours=168),
+        include_target_reference=False,
+    )
+    assert status["status"] == "FINALIZED"
+    assert status["expected_slots"] == 10_584
+    assert status["terminal_slots"] == 10_584
+    assert status["completed_target_hours"] == 168
+    assert status["finalization_allowed"] is True
+    assert status["cohort_completeness_classification"] == "COMPLETE_WINDOW_WITH_MISSINGNESS"
+    assert status["missing_forecasts"] == 10_584 - 63
+    assert status["missing_references"] == 63
+    assert len(state["slots"]) == 10_584
+
+
+def test_legacy_24_hour_manifest_is_rejected_without_mutating_cohort_state(tmp_path):
+    _, state, _ = run_state(
+        tmp_path,
+        now=TARGET_TIME - timedelta(minutes=30),
+        include_target_reference=False,
+    )
+    run_dir = tmp_path / "prospective-run"
+    state_path = run_dir / "cohort_state.json"
+    previous_state_bytes = state_path.read_bytes()
+    manifest = state["manifest"]
+    legacy = {
+        **manifest,
+        "cohort_protocol_id": "T2H_LIVE_PROSPECTIVE_24H_V1",
+        "target_times": manifest["target_times"][:24],
+        "cohort_end_target_time": manifest["target_times"][23],
+        "expected_target_hours": 24,
+        "expected_forecasts": 63 * 24,
+        "expected_slots": 63 * 24,
+    }
+    _atomic_json(run_dir / "cohort_manifest.json", legacy)
+
+    result = update_cohort_state(
+        state_dir=run_dir,
+        now=TARGET_TIME + timedelta(hours=1),
+        forecasts=[],
+        receipts=[],
+        observations=[],
+        revisions=[],
+        rejected_observations=[],
+        known_location_ids=LOCATION_IDS,
+        runtime_contract={
+            "status": "PASS",
+            "contract_fingerprint": "frozen-test-contract-fingerprint",
+        },
+    )
+    assert result["status"] == "COHORT_PROTOCOL_DRIFT"
+    assert result["finalization_allowed"] is False
+    assert "INVALID_EXPECTED_TARGET_HOURS" in result["protocol_errors"]
+    assert "INVALID_COHORT_PROTOCOL_ID" in result["protocol_errors"]
+    assert state_path.read_bytes() == previous_state_bytes
+
+
+def test_resume_preserves_168_hour_manifest_and_accepted_forecast(tmp_path):
+    status, state, forecasts = run_state(
+        tmp_path,
+        now=TARGET_TIME - timedelta(minutes=30),
+        include_target_reference=False,
+    )
+    original_manifest = state["manifest"]
+    run_dir = tmp_path / "prospective-run"
+    updated = update_cohort_state(
+        state_dir=run_dir,
+        now=TARGET_TIME + timedelta(hours=12),
+        forecasts=forecasts,
+        receipts=[receipt_for(row) for row in forecasts],
+        observations=observations_for(forecasts, target_reference=False),
+        revisions=[],
+        rejected_observations=[],
+        known_location_ids=LOCATION_IDS,
+        runtime_contract={
+            "status": "PASS",
+            "contract_fingerprint": "frozen-test-contract-fingerprint",
+        },
+    )
+    persisted = _read_json(run_dir / "cohort_state.json")
+    assert status["cohort_id"] == updated["cohort_id"]
+    assert updated["status"] == "COLLECTING"
+    assert persisted["manifest"] == original_manifest
+    assert len(persisted["slots"]) == 10_584
+    first_key = f"{iso(TARGET_TIME)}|{forecasts[0]['location_id']}"
+    assert persisted["slots"][first_key]["forecast"]["forecast_id"] == forecasts[0]["forecast_id"]
+
+
+def test_official_start_requires_new_protocol_preflight_and_readiness(tmp_path, monkeypatch):
+    monkeypatch.setattr(prospective, "_default_model_contract", lambda: {
+        "status": "PASS",
+        "contract_fingerprint": "frozen-test-contract-fingerprint",
+    })
+    monkeypatch.setattr(prospective, "utc_now", lambda: TARGET_TIME)
+    _atomic_json(tmp_path / "preflight_test_results.json", {
+        "status": "PASS",
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
+    })
+    readiness = {
+        "status": "PASS",
+        "checked_at": iso(TARGET_TIME),
+        "contract_fingerprint": "frozen-test-contract-fingerprint",
+        "forecast_count": 63,
+        "positive_lead_count": 63,
+        "target_offset_violations": 0,
+        "monitoring_status": "PASS",
+        "provider_model": PROVIDER_MODEL,
+    }
+    _atomic_json(tmp_path / "readiness.json", readiness)
+    args = Namespace(
+        run_id="must-not-start",
+        forecast_grace_seconds=900,
+        reference_grace_seconds=7200,
+    )
+    assert prospective._start(args, tmp_path) == 2
+    assert not (tmp_path / "active_run.json").exists()
+
+    readiness["cohort_protocol_id"] = COHORT_PROTOCOL_ID
+    _atomic_json(tmp_path / "readiness.json", readiness)
+    _atomic_json(tmp_path / "preflight_test_results.json", {
+        "status": "PASS",
+    })
+    assert prospective._start(args, tmp_path) == 2
+    assert not (tmp_path / "active_run.json").exists()
