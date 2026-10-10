@@ -378,8 +378,8 @@ def test_record_reference_revisions_from_spark_qualifies_same_lineage_join(tmp_p
         assert revision["new_payload_hash"] == "new-payload"
         assert revision["old_temperature_c"] == 22.0
         assert revision["new_temperature_c"] == 23.5
-        assert revision["old_retrieved_at"] == iso(retrieved_at)
-        assert revision["new_retrieved_at"] == iso(retrieved_at + timedelta(minutes=5))
+        assert revision["old_retrieved_at"] == prospective.iso_utc(retrieved_at)
+        assert revision["new_retrieved_at"] == prospective.iso_utc(retrieved_at + timedelta(minutes=5))
         assert revision["location_id"] == "VN_TEST_00"
         assert revision["target_time"] == iso(FEATURE_TIME)
     finally:
