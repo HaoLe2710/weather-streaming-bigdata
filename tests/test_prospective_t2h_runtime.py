@@ -13,6 +13,12 @@ RUN_ID = "20261010T120000Z-prospective-live-t2h-v1"
 TOPIC = f"weather.hourly.observations.t2h.prospective.{RUN_ID}.v1"
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tmp_repository_tests_from_deployment_environment(monkeypatch):
+    monkeypatch.delenv("WEATHER_AZURE_RUNTIME", raising=False)
+    monkeypatch.delenv("COMPOSE_FILE", raising=False)
+
+
 def bootstrap_summary(topic: str = TOPIC, *, hours: int = 49, cache_seeded: bool = True) -> dict:
     rows = 63 * hours
     return {
