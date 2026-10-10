@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -51,6 +52,34 @@ INFRA_RETRY_MARKERS = (
     "context deadline exceeded",
     "temporary failure in name resolution",
 )
+RECOVERY_POLICY_ID = "T2H_INFRA_RECOVERY_ELIGIBILITY_V1"
+CONTAINER_AUDIT_SUPERVISOR_PATH = "/opt/project/spark/jobs/container_audit_process.py"
+# Keep aligned with verify_t2h_forecast_delta.TRANSIENT_STATE_ROWS_PER_LOCATION.
+TRANSIENT_RETENTION_ROWS_PER_LOCATION = 50
+RECOVERABLE_CARRIED_STATE_AUDIT_CLASSIFICATIONS = frozenset({
+    "TRANSIENT_STATE_WINDOW_TIMEOUT",
+    "TRANSIENT_RETRY_LIMIT_EXCEEDED",
+})
+TRANSIENT_RETENTION_ATTEMPT_CLASSIFICATION = "TRANSIENT_MERGE_BEFORE_RETENTION_DELETE"
+HOURLY_AUDIT_FORECAST_CHECKS = frozenset({
+    "forecast_id_duplicates_zero",
+    "logical_forecast_duplicates_zero",
+    "target_offset_violations_zero",
+    "contract_violations_zero",
+    "provider_contract_violations_zero",
+    "live_nonpositive_leads_zero",
+    "replay_location_coverage_valid",
+    "replay_rows_match_expected",
+    "live_rows_match_expected",
+    "persistence_receipts_match_forecast_snapshot",
+})
+HOURLY_AUDIT_STATE_CHECKS = frozenset({
+    "state_has_63_locations",
+    "state_location_ids_non_null",
+    "state_history_is_49_rows_per_location",
+    "state_duplicate_location_hours_zero",
+    "state_history_is_hourly_contiguous",
+})
 
 
 def _read_json(path: Path) -> Any:
@@ -80,6 +109,52 @@ def _append_jsonl(path: Path, row: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
         handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True, allow_nan=False) + "\n")
+
+
+@contextmanager
+def _exclusive_audit_lock(path: Path):
+    """Hold a non-blocking process lock; the OS releases it on exit or crash."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handle = path.open("a+b")
+    except OSError:
+        yield False
+        return
+    locked = False
+    lock_module: Any = None
+    try:
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+
+            lock_module = msvcrt
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                locked = True
+            except OSError:
+                locked = False
+        else:
+            import fcntl
+
+            lock_module = fcntl
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locked = True
+            except OSError:
+                locked = False
+        yield locked
+    finally:
+        if locked and lock_module is not None:
+            handle.seek(0)
+            if os.name == "nt":
+                lock_module.locking(handle.fileno(), lock_module.LK_UNLCK, 1)
+            else:
+                lock_module.flock(handle.fileno(), lock_module.LOCK_UN)
+        handle.close()
 
 
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -277,6 +352,13 @@ def _data_findings(
             errors.append("COHORT_STATUS_RUN_ID_MISMATCH")
         if cohort_status.get("expected_slots") != EXPECTED_SLOTS:
             errors.append("COHORT_STATUS_EXPECTED_SLOT_COUNT_MISMATCH")
+        prospective_count = cohort_status.get("prospective_forecast_count")
+        if cohort_status.get("status") == "COLLECTING" and (
+            isinstance(prospective_count, bool)
+            or not isinstance(prospective_count, int)
+            or prospective_count < 0
+        ):
+            errors.append("COHORT_PROSPECTIVE_FORECAST_COUNT_INVALID")
         if manifest and cohort_status.get("cohort_id") not in (None, manifest.get("cohort_id")):
             errors.append("COHORT_STATUS_COHORT_ID_MISMATCH")
         # Preserve the incident counter as collected evidence; never reset it here.
@@ -358,20 +440,25 @@ def _delta_audit(
     run_id: str,
     runtime_configuration: Mapping[str, Any],
     *,
-    expected_live_forecasts: int,
+    expected_live_forecasts: int | None,
     audit_path: Path,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    cohort_id: str | None = None,
+    audit_timeout_seconds: float = 900.0,
+    termination_grace_seconds: float = 20.0,
+    poll_interval_seconds: float = 2.0,
+    sleep: Callable[[float], None] = time.sleep,
+    monotonic: Callable[[], float] = time.monotonic,
 ) -> dict[str, Any]:
     env = _compose_environment(repository_root, run_id, runtime_configuration)
     container_audit_path = f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops/{audit_path.name}"
-    command = [
-        "docker",
-        "compose",
-        "--profile",
-        "t2h-live",
-        "exec",
-        "-T",
-        "streaming-inference-t2h-live",
+    container_ops_dir = f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops"
+    container_attempt_log = f"{container_ops_dir}/delta_audit_attempts.jsonl"
+    container_checkpoint_path = f"/opt/project/data/checkpoints/t2h_v1_1/{run_id}/live"
+    audit_id = audit_path.stem
+    container_status_path = f"/opt/project/prospective-runtime/{run_id}/cohort_status.json"
+    container_receipts_path = f"/opt/project/results/streaming-inference-t2h/{run_id}/spark_live/forecast_persistence_receipts.jsonl"
+    spark_command = [
         "/opt/spark/bin/spark-submit",
         "--master",
         "local[2]",
@@ -386,28 +473,264 @@ def _delta_audit(
         f"/opt/project/data/streaming/t2h_v1_1/{run_id}/forecasts",
         "--state-path",
         f"/opt/project/data/streaming/t2h_v1_1/{run_id}/state_live",
+        "--checkpoint-path",
+        container_checkpoint_path,
         "--output-json",
         container_audit_path,
-        "--expected-live-forecasts",
-        str(expected_live_forecasts),
+        "--attempt-log-jsonl",
+        container_attempt_log,
     ]
-    completed = runner(
-        command,
-        cwd=repository_root,
-        env=env,
-        text=True,
-        capture_output=True,
-        check=False,
-        timeout=900,
+    if expected_live_forecasts is not None:
+        spark_command.extend(["--expected-live-forecasts", str(expected_live_forecasts)])
+    # Watchdog audits always use live status/receipt snapshots. The scalar is
+    # retained only as supplementary evidence and is never the count authority.
+    spark_command.extend([
+        "--cohort-status-path",
+        container_status_path,
+        "--expected-run-id",
+        run_id,
+        "--receipts-path",
+        container_receipts_path,
+    ])
+    if cohort_id:
+        spark_command.extend(["--expected-cohort-id", cohort_id])
+    command = [
+        "docker",
+        "compose",
+        "--profile",
+        "t2h-live",
+        "exec",
+        "-T",
+        "-d",
+        "streaming-inference-t2h-live",
+        "/usr/local/bin/python3.12",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
+        "run",
+        "--state-dir",
+        container_ops_dir,
+        "--audit-id",
+        audit_id,
+        "--timeout-seconds",
+        str(audit_timeout_seconds),
+        "--termination-grace-seconds",
+        str(termination_grace_seconds),
+        "--",
+        *spark_command,
+    ]
+    host_job_path = audit_path.parent / "delta_audit_processes" / f"{audit_id}.json"
+    host_active_path = audit_path.parent / "delta_audit_process_active.json"
+    host_lifecycle_path = audit_path.parent / "delta_audit_host_lifecycle.jsonl"
+
+    def process_command(operation: str, *, timeout: float) -> tuple[subprocess.CompletedProcess[str] | None, str | None]:
+        control_command = [
+            "docker", "compose", "--profile", "t2h-live", "exec", "-T",
+            "streaming-inference-t2h-live",
+            "/usr/local/bin/python3.12",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
+            operation,
+            "--state-dir",
+            container_ops_dir,
+        ]
+        if operation in {"terminate"}:
+            control_command.extend(["--audit-id", audit_id, "--termination-grace-seconds", str(termination_grace_seconds)])
+        try:
+            result = runner(
+                control_command,
+                cwd=repository_root,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=timeout,
+            )
+            return result, None
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            return None, f"{type(exc).__name__}: {exc}"
+
+    def append_lifecycle(event: str, payload: Mapping[str, Any]) -> None:
+        _append_jsonl(host_lifecycle_path, {"event": event, "at": datetime.now(timezone.utc).isoformat(), "run_id": run_id, **dict(payload)})
+
+    def result_from_process_record(job: Mapping[str, Any]) -> dict[str, Any] | None:
+        status = job.get("status")
+        if status == "BLOCKED_ACTIVE_AUDIT":
+            return {
+                "status": "FAIL",
+                "classification": "AUDIT_ALREADY_RUNNING",
+                "reason": job.get("reason"),
+                "returncode": None,
+                "evidence_path": str(audit_path),
+                "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+                "checks": None,
+                "process_status": status,
+                "process_identity": job.get("active_process_identity"),
+                "active_audit_id": job.get("active_audit_id"),
+            }
+        if status == "UNRESOLVED":
+            return {
+                "status": "FAIL",
+                "classification": "AUDIT_PROCESS_CLEANUP_UNCONFIRMED",
+                "reason": job.get("classification") or "audit process termination could not be confirmed",
+                "returncode": job.get("returncode"),
+                "evidence_path": str(audit_path),
+                "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+                "checks": None,
+                "process_status": status,
+                "process_identity": job.get("process_identity"),
+                "process_cleanup": job.get("cleanup"),
+            }
+        if status == "TIMED_OUT":
+            return {
+                "status": "FAIL",
+                "classification": "AUDIT_PROCESS_TIMEOUT",
+                "reason": "container-side Spark audit exceeded its timeout and was terminated",
+                "returncode": job.get("returncode"),
+                "evidence_path": str(audit_path),
+                "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+                "checks": None,
+                "process_status": status,
+                "process_identity": job.get("process_identity"),
+                "process_cleanup": job.get("cleanup"),
+                "timeout_seconds": job.get("timeout_seconds"),
+            }
+        if status not in {"SUCCEEDED", "FAILED", "CANCELLED", "ORPHAN_TERMINATED", "ORPHAN_CLEANED"}:
+            return None
+        evidence = _read_json(audit_path)
+        count_audit = evidence.get("forecast_count_snapshot_audit") if isinstance(evidence, Mapping) else None
+        state_classification = evidence.get("state_audit_classification") if isinstance(evidence, Mapping) else None
+        classification = (
+            count_audit.get("classification")
+            if isinstance(count_audit, Mapping) and count_audit.get("status") != "PASS"
+            else state_classification
+        )
+        if not isinstance(evidence, Mapping):
+            classification = "AUDIT_EVIDENCE_MISSING_OR_INVALID"
+        return {
+            "status": "PASS" if job.get("returncode") == 0 and isinstance(evidence, Mapping) and evidence.get("status") == "PASS" else "FAIL",
+            "classification": classification,
+            "returncode": job.get("returncode"),
+            "evidence_path": str(audit_path),
+            "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+            "checks": evidence.get("checks") if isinstance(evidence, Mapping) else None,
+            "state": evidence.get("state") if isinstance(evidence, Mapping) else None,
+            "state_audit_attempts": evidence.get("state_audit_attempts") if isinstance(evidence, Mapping) else None,
+            "checkpoint_progress": evidence.get("checkpoint_progress") if isinstance(evidence, Mapping) else None,
+            "forecast_count_snapshot_audit": count_audit,
+            "process_status": job.get("status"),
+            "process_identity": job.get("process_identity"),
+            "process_cleanup": job.get("cleanup"),
+            "process_log_path": job.get("log_path"),
+            "process_event_path": str(audit_path.parent / "delta_audit_process_events.jsonl"),
+            "stdout_tail": "",
+            "stderr_tail": "",
+        }
+
+    try:
+        completed = runner(
+            command,
+            cwd=repository_root,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+    except subprocess.TimeoutExpired as exc:
+        append_lifecycle("AUDIT_DISPATCH_TIMEOUT", {"audit_id": audit_id, "timeout_seconds": 30, "message": str(exc)})
+        completed = None
+    except OSError as exc:
+        append_lifecycle("AUDIT_DISPATCH_FAILED", {"audit_id": audit_id, "error": f"{type(exc).__name__}: {exc}"})
+        return {
+            "status": "FAIL",
+            "classification": "AUDIT_PROCESS_DISPATCH_FAILED",
+            "reason": f"Could not dispatch isolated container audit: {type(exc).__name__}: {exc}",
+            "returncode": None,
+            "evidence_path": str(audit_path),
+            "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+            "checks": None,
+            "stdout_tail": "",
+            "stderr_tail": str(exc)[-2000:],
+        }
+    if completed is not None and completed.returncode != 0:
+        append_lifecycle("AUDIT_DISPATCH_REJECTED", {"audit_id": audit_id, "returncode": completed.returncode, "stdout_tail": completed.stdout[-1000:], "stderr_tail": completed.stderr[-1000:]})
+
+    # Detached Docker exec survives loss of this host-side CLI connection.
+    # Poll the shared bind-mounted job record even when the Docker CLI reports
+    # a disconnect; the detached supervisor may have started before it did.
+    # Keep the host audit lock held during this poll and timeout cleanup.
+    wait_deadline = monotonic() + audit_timeout_seconds + termination_grace_seconds + 30.0
+    start_deadline = monotonic() + 30.0
+    job: Mapping[str, Any] | None = None
+    while monotonic() < wait_deadline:
+        current = _read_json(host_job_path)
+        if isinstance(current, Mapping):
+            job = current
+            result = result_from_process_record(current)
+            if result is not None:
+                append_lifecycle("AUDIT_PROCESS_COMPLETED", {"audit_id": audit_id, "process_status": current.get("status"), "process_identity": current.get("process_identity"), "cleanup": current.get("cleanup")})
+                return result
+        elif monotonic() >= start_deadline:
+            break
+        sleep(min(poll_interval_seconds, max(0.0, wait_deadline - monotonic())))
+
+    append_lifecycle("AUDIT_PROCESS_HOST_WAIT_TIMEOUT", {"audit_id": audit_id, "process_record": dict(job) if isinstance(job, Mapping) else None})
+    cleanup_result, cleanup_error = process_command("terminate", timeout=30.0)
+    cleanup_record = _read_json(host_job_path)
+    if isinstance(cleanup_record, Mapping):
+        terminal_result = result_from_process_record(cleanup_record)
+        if terminal_result is not None:
+            append_lifecycle("AUDIT_PROCESS_TERMINAL_RECORD_OBSERVED_DURING_CLEANUP", {
+                "audit_id": audit_id,
+                "process_status": cleanup_record.get("status"),
+                "process_identity": cleanup_record.get("process_identity"),
+                "cleanup": cleanup_record.get("cleanup"),
+            })
+            return terminal_result
+    cleanup_verified = isinstance(cleanup_record, Mapping) and (
+        cleanup_record.get("status") in {"TIMED_OUT", "CANCELLED", "FAILED", "SUCCEEDED", "ORPHAN_TERMINATED", "ORPHAN_CLEANED"}
+        and isinstance(cleanup_record.get("cleanup"), Mapping)
+        and cleanup_record["cleanup"].get("confirmed_terminated") is True
     )
-    evidence = _read_json(audit_path)
+    if cleanup_result is not None:
+        try:
+            cleanup_json = json.loads(cleanup_result.stdout.strip().splitlines()[-1]) if cleanup_result.stdout.strip() else None
+        except (json.JSONDecodeError, IndexError):
+            cleanup_json = None
+        cleanup_verified = cleanup_verified or (isinstance(cleanup_json, Mapping) and cleanup_json.get("status") == "TERMINATED")
+    if cleanup_verified:
+        append_lifecycle("AUDIT_PROCESS_TIMEOUT_CLEANUP_CONFIRMED", {"audit_id": audit_id, "process_identity": (cleanup_record or {}).get("process_identity") if isinstance(cleanup_record, Mapping) else None, "cleanup": (cleanup_record or {}).get("cleanup") if isinstance(cleanup_record, Mapping) else cleanup_json})
+        return {
+            "status": "FAIL",
+            "classification": "AUDIT_PROCESS_TIMEOUT",
+            "reason": "host wait expired; the exact detached Spark audit process group was terminated and verified",
+            "returncode": None,
+            "evidence_path": str(audit_path),
+            "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+            "checks": None,
+            "process_status": "TIMED_OUT",
+            "process_identity": (cleanup_record or {}).get("process_identity") if isinstance(cleanup_record, Mapping) else None,
+            "process_cleanup": (cleanup_record or {}).get("cleanup") if isinstance(cleanup_record, Mapping) else cleanup_json,
+            "timeout_seconds": audit_timeout_seconds,
+        }
+    active = _read_json(host_active_path)
+    append_lifecycle("AUDIT_PROCESS_TIMEOUT_CLEANUP_UNCONFIRMED", {
+        "audit_id": audit_id,
+        "process_identity": active.get("process_identity") if isinstance(active, Mapping) else None,
+        "cleanup_command_error": cleanup_error,
+        "cleanup_command_returncode": cleanup_result.returncode if cleanup_result is not None else None,
+        "cleanup_record": dict(cleanup_record) if isinstance(cleanup_record, Mapping) else None,
+    })
     return {
-        "status": "PASS" if completed.returncode == 0 and isinstance(evidence, Mapping) and evidence.get("status") == "PASS" else "FAIL",
-        "returncode": completed.returncode,
+        "status": "FAIL",
+        "classification": "AUDIT_PROCESS_CLEANUP_UNCONFIRMED",
+        "reason": "host wait expired and the watchdog could not confirm termination of the recorded isolated Spark process",
+        "returncode": None,
         "evidence_path": str(audit_path),
-        "checks": evidence.get("checks") if isinstance(evidence, Mapping) else None,
-        "stdout_tail": completed.stdout[-2000:],
-        "stderr_tail": completed.stderr[-2000:],
+        "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+        "checks": None,
+        "process_status": "UNRESOLVED",
+        "process_identity": active.get("process_identity") if isinstance(active, Mapping) else None,
+        "process_cleanup": cleanup_error,
+        "timeout_seconds": audit_timeout_seconds,
     }
 
 
@@ -519,6 +842,122 @@ def recover_infrastructure(
     return records
 
 
+def _audit_process_guard(
+    repository_root: Path,
+    run_id: str,
+    runtime_configuration: Mapping[str, Any],
+    containers: Mapping[str, Mapping[str, Any]],
+    *,
+    ops_dir: Path,
+    now: datetime,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> dict[str, Any]:
+    """Verify a prior detached Spark audit is done before starting or recovery."""
+    active_path = ops_dir / "delta_audit_process_active.json"
+    if not active_path.exists():
+        return {"status": "IDLE", "classification": "NO_PRIOR_CONTAINER_AUDIT_PROCESS"}
+    active = _read_json(active_path)
+    if not isinstance(active, Mapping):
+        return {"status": "UNVERIFIED", "classification": "AUDIT_PROCESS_EVIDENCE_INVALID"}
+    if active.get("status") in {
+        "SUCCEEDED", "FAILED", "TIMED_OUT", "CANCELLED", "ORPHAN_TERMINATED", "ORPHAN_CLEANED", "TERMINATED_BY_CONTAINER_EXIT",
+    }:
+        return {"status": "IDLE", "classification": "PRIOR_AUDIT_PROCESS_TERMINAL", "audit_id": active.get("audit_id")}
+
+    inference = containers.get("streaming-inference-t2h-live", {})
+    inference_status = str(inference.get("status", "unknown"))
+    if inference_status in {"exited", "dead", "missing"}:
+        resolved = {
+            **dict(active),
+            "status": "TERMINATED_BY_CONTAINER_EXIT",
+            "classification": "CONTAINER_STOPPED_KILLS_EXEC_PROCESSES",
+            "finished_at": now.isoformat(),
+            "termination_confirmation": {
+                "confirmed_terminated": True,
+                "reason": f"inference container status is {inference_status}",
+                "process_identity": active.get("process_identity"),
+            },
+        }
+        _atomic_json(active_path, resolved)
+        _append_jsonl(ops_dir / "delta_audit_host_lifecycle.jsonl", {
+            "event": "AUDIT_PROCESS_TERMINATED_WITH_CONTAINER",
+            "at": now.isoformat(),
+            "run_id": run_id,
+            "audit_id": active.get("audit_id"),
+            "process_identity": active.get("process_identity"),
+            "container_status": inference_status,
+        })
+        return {"status": "IDLE", "classification": "AUDIT_PROCESS_TERMINATED_WITH_CONTAINER", "audit_id": active.get("audit_id")}
+    if inference_status != "running":
+        return {
+            "status": "UNVERIFIED",
+            "classification": "AUDIT_PROCESS_STATE_UNVERIFIED",
+            "audit_id": active.get("audit_id"),
+            "container_status": inference_status,
+        }
+
+    env = _compose_environment(repository_root, run_id, runtime_configuration)
+    command = [
+        "docker", "compose", "--profile", "t2h-live", "exec", "-T",
+        "streaming-inference-t2h-live",
+        "/usr/local/bin/python3.12",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
+        "inspect",
+        "--state-dir",
+        f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops",
+    ]
+    try:
+        completed = runner(
+            command,
+            cwd=repository_root,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=20,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return {
+            "status": "UNVERIFIED",
+            "classification": "AUDIT_PROCESS_INSPECTION_FAILED",
+            "audit_id": active.get("audit_id"),
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    try:
+        inspected = json.loads(completed.stdout.strip().splitlines()[-1])
+    except (json.JSONDecodeError, IndexError):
+        inspected = None
+    if completed.returncode != 0 or not isinstance(inspected, Mapping):
+        return {
+            "status": "UNVERIFIED",
+            "classification": "AUDIT_PROCESS_INSPECTION_FAILED",
+            "audit_id": active.get("audit_id"),
+            "returncode": completed.returncode,
+            "stderr_tail": completed.stderr[-1000:],
+        }
+    if inspected.get("status") == "RUNNING":
+        return {
+            "status": "ACTIVE",
+            "classification": "AUDIT_PROCESS_STILL_RUNNING",
+            "audit_id": inspected.get("active_audit_id"),
+            "process_identity": inspected.get("process_identity"),
+            "supervisor_alive": inspected.get("supervisor_alive"),
+        }
+    if inspected.get("status") in {"IDLE", "TERMINATED"}:
+        return {
+            "status": "IDLE",
+            "classification": "AUDIT_PROCESS_TERMINATION_CONFIRMED",
+            "audit_id": inspected.get("active_audit_id"),
+            "cleanup": inspected.get("cleanup"),
+        }
+    return {
+        "status": "UNVERIFIED",
+        "classification": "AUDIT_PROCESS_IDENTITY_UNVERIFIED",
+        "audit_id": inspected.get("active_audit_id"),
+        "process_state": dict(inspected),
+    }
+
+
 def _load_active_run(state_root: Path, requested_run_id: str | None) -> str | None:
     if requested_run_id:
         run_id = requested_run_id
@@ -577,6 +1016,228 @@ def _update_alert_evidence(ops_dir: Path, report: Mapping[str, Any]) -> None:
     })
 
 
+def _latest_hourly_delta_audit(hourly_reports: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    for row in reversed(hourly_reports):
+        audit = row.get("hourly_delta_audit")
+        if not isinstance(audit, Mapping):
+            continue
+        status = audit.get("status")
+        if status == "UNRESOLVED":
+            status = audit.get("last_status", "FAIL")
+        if status in {"PASS", "FAIL"}:
+            return {
+                **audit,
+                "status": status,
+                "checked_at": audit.get("checked_at") or audit.get("last_checked_at"),
+            }
+    return None
+
+
+def _carry_unresolved_hourly_delta_audit(
+    report: dict[str, Any],
+    prior_audit: Mapping[str, Any] | None,
+) -> None:
+    if not isinstance(prior_audit, Mapping) or prior_audit.get("status") == "PASS":
+        return
+    report["hourly_delta_audit"] = {
+        "status": "UNRESOLVED",
+        "origin": "CARRIED_FORWARD",
+        "last_status": prior_audit.get("status", "FAIL"),
+        "last_checked_at": prior_audit.get("checked_at"),
+        "classification": prior_audit.get("classification"),
+        "evidence_path": prior_audit.get("evidence_path"),
+        "attempt_log_path": prior_audit.get("attempt_log_path"),
+        "reason": prior_audit.get("reason"),
+        "checks": prior_audit.get("checks"),
+        "state": prior_audit.get("state"),
+        "state_audit_attempts": prior_audit.get("state_audit_attempts"),
+        "checkpoint_progress": prior_audit.get("checkpoint_progress"),
+        "forecast_count_snapshot_audit": prior_audit.get("forecast_count_snapshot_audit"),
+        "process_identity": prior_audit.get("process_identity"),
+        "process_cleanup": prior_audit.get("process_cleanup"),
+        "timeout_seconds": prior_audit.get("timeout_seconds"),
+        "latest_attempt": prior_audit.get("latest_attempt"),
+    }
+    if prior_audit.get("checks") is not None:
+        report["data_errors"] = sorted(set([*report.get("data_errors", []), "HOURLY_DELTA_AUDIT_FAILED"]))
+    else:
+        report["infrastructure_errors"] = sorted(set([*report.get("infrastructure_errors", []), "HOURLY_DELTA_AUDIT_COULD_NOT_RUN"]))
+    report["status"] = "FAIL"
+
+
+def _exact_transient_retention_state(state: Any) -> bool:
+    expected = {
+        "rows": EXPECTED_LOCATIONS * TRANSIENT_RETENTION_ROWS_PER_LOCATION,
+        "locations": EXPECTED_LOCATIONS,
+        "null_location_rows": 0,
+        "rows_per_location_values": [TRANSIENT_RETENTION_ROWS_PER_LOCATION],
+        "duplicate_location_hours": 0,
+        "hourly_gap_rows": 0,
+    }
+    return (
+        isinstance(state, Mapping)
+        and set(state) == set(expected)
+        and all(type(state[name]) is int for name in (
+            "rows", "locations", "null_location_rows", "duplicate_location_hours", "hourly_gap_rows",
+        ))
+        and type(state.get("rows_per_location_values")) is list
+        and all(type(value) is int for value in state["rows_per_location_values"])
+        and dict(state) == expected
+    )
+
+
+def _pending_retention_checkpoint(checkpoint: Any) -> bool:
+    if (
+        not isinstance(checkpoint, Mapping)
+        or checkpoint.get("status") != "PENDING"
+        or checkpoint.get("in_flight") is not True
+    ):
+        return False
+    offset = checkpoint.get("latest_offset_batch_id")
+    committed = checkpoint.get("latest_committed_batch_id")
+    pending = checkpoint.get("pending_batch_id")
+    return (
+        type(offset) is int
+        and offset >= 0
+        and pending == offset
+        and type(pending) is int
+        and (committed is None or (type(committed) is int and committed < pending))
+    )
+
+
+def _valid_transient_retention_attempt(attempt: Any, expected_state: Mapping[str, Any]) -> bool:
+    expected_state_checks = {
+        "state_has_63_locations": True,
+        "state_location_ids_non_null": True,
+        "state_history_is_49_rows_per_location": False,
+        "state_duplicate_location_hours_zero": True,
+        "state_history_is_hourly_contiguous": True,
+    }
+    if not isinstance(attempt, Mapping):
+        return False
+    checks = attempt.get("checks")
+    if (
+        attempt.get("event") != "STATE_AUDIT_ATTEMPT"
+        or attempt.get("status") != "TRANSIENT_CANDIDATE"
+        or attempt.get("classification") != TRANSIENT_RETENTION_ATTEMPT_CLASSIFICATION
+        or attempt.get("reason") != "checkpoint_has_uncommitted_batch_during_exact_50_row_retention_window"
+        or not isinstance(attempt.get("audit_id"), str)
+        or not attempt.get("audit_id")
+        or type(attempt.get("attempt_number")) is not int
+        or attempt["attempt_number"] < 1
+        or not _exact_transient_retention_state(attempt.get("state"))
+        or dict(attempt["state"]) != dict(expected_state)
+        or not isinstance(checks, Mapping)
+        or set(checks) != set(expected_state_checks)
+        or any(type(value) is not bool for value in checks.values())
+        or dict(checks) != expected_state_checks
+    ):
+        return False
+    return any(
+        _pending_retention_checkpoint(attempt.get(name))
+        for name in ("checkpoint_before", "checkpoint_after")
+    )
+
+
+def _has_transient_retention_attempt_history(audit: Mapping[str, Any], classification: str) -> bool:
+    expected_state = audit.get("state")
+    attempts = audit.get("state_audit_attempts")
+    checkpoint_progress = audit.get("checkpoint_progress")
+    if not _exact_transient_retention_state(expected_state) or not isinstance(attempts, list) or not attempts:
+        return False
+
+    if classification == "TRANSIENT_STATE_WINDOW_TIMEOUT":
+        candidates, terminal = attempts[:-1], attempts[-1]
+        if not candidates or not isinstance(terminal, Mapping):
+            return False
+        if (
+            terminal.get("event") != "STATE_AUDIT_RETRY_WAIT"
+            or terminal.get("status") != "FAIL"
+            or terminal.get("classification") != classification
+            or terminal.get("reason") != "checkpoint_batch_did_not_commit_before_retry_deadline"
+            or not _exact_transient_retention_state(terminal.get("state"))
+            or dict(terminal["state"]) != dict(expected_state)
+            or not _pending_retention_checkpoint(terminal.get("checkpoint_after"))
+            or checkpoint_progress != terminal.get("checkpoint_after")
+        ):
+            return False
+        timeout_number = terminal.get("attempt_number")
+        if type(timeout_number) is not int or timeout_number < 1:
+            return False
+        valid_candidates = all(_valid_transient_retention_attempt(row, expected_state) for row in candidates)
+        candidate_numbers = [row.get("attempt_number") for row in candidates if isinstance(row, Mapping)]
+        return (
+            valid_candidates
+            and candidate_numbers == list(range(1, len(candidates) + 1))
+            and timeout_number == len(candidates)
+        )
+
+    if classification == "TRANSIENT_RETRY_LIMIT_EXCEEDED":
+        # The verifier currently caps this retry loop at two attempts. If that
+        # contract changes, fail closed until this evidence check is reviewed.
+        return (
+            len(attempts) == 2
+            and all(_valid_transient_retention_attempt(row, expected_state) for row in attempts)
+            and [row.get("attempt_number") for row in attempts] == [1, 2]
+            and checkpoint_progress == attempts[-1].get("checkpoint_after")
+        )
+    return False
+
+
+def _carried_audit_recovery_decision(audit: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Allow recovery past only a fully evidenced transient retention-window race."""
+    if not isinstance(audit, Mapping):
+        return {"eligible": False, "reason": "hourly_audit_evidence_missing"}
+    if (
+        audit.get("status") != "UNRESOLVED"
+        or audit.get("origin") != "CARRIED_FORWARD"
+        or audit.get("last_status") != "FAIL"
+    ):
+        return {"eligible": False, "reason": "hourly_audit_lifecycle_evidence_missing_or_ambiguous"}
+    classification = audit.get("classification")
+    if classification not in RECOVERABLE_CARRIED_STATE_AUDIT_CLASSIFICATIONS:
+        return {"eligible": False, "reason": "hourly_audit_classification_missing_or_ambiguous"}
+    checks = audit.get("checks")
+    if not isinstance(checks, Mapping):
+        return {"eligible": False, "reason": "hourly_audit_checks_missing_or_ambiguous"}
+    check_names = frozenset(checks)
+    required_schema = HOURLY_AUDIT_FORECAST_CHECKS | HOURLY_AUDIT_STATE_CHECKS
+    if check_names != required_schema or any(type(value) is not bool for value in checks.values()):
+        return {"eligible": False, "reason": "hourly_audit_check_schema_missing_or_ambiguous"}
+    if any(checks[name] is not True for name in HOURLY_AUDIT_FORECAST_CHECKS):
+        return {"eligible": False, "reason": "carried_forecast_or_contract_check_failed"}
+    failed_state_checks = sorted(name for name in HOURLY_AUDIT_STATE_CHECKS if checks[name] is not True)
+    if failed_state_checks != ["state_history_is_49_rows_per_location"]:
+        return {"eligible": False, "reason": "classification_conflicts_with_audit_checks"}
+    count_audit = audit.get("forecast_count_snapshot_audit")
+    receipt_integrity = count_audit.get("receipt_integrity") if isinstance(count_audit, Mapping) else None
+    receipt_counts = ("missing", "extra", "duplicates", "mismatched", "invalid")
+    if (
+        not isinstance(count_audit, Mapping)
+        or count_audit.get("status") != "PASS"
+        or count_audit.get("classification") != "FORECAST_COUNT_SNAPSHOT_CONSISTENT"
+        or type(count_audit.get("expected_live_forecasts")) is not int
+        or count_audit.get("expected_live_forecasts") < 0
+        or type(count_audit.get("observed_live_forecasts")) is not int
+        or count_audit.get("observed_live_forecasts") != count_audit.get("expected_live_forecasts")
+        or type(count_audit.get("delta_version")) is not int
+        or count_audit.get("delta_version") < 0
+        or count_audit.get("hard_failures") != []
+        or not isinstance(receipt_integrity, Mapping)
+        or receipt_integrity.get("status") != "PASS"
+        or any(type(receipt_integrity.get(name)) is not int or receipt_integrity.get(name) != 0 for name in receipt_counts)
+    ):
+        return {"eligible": False, "reason": "forecast_or_receipt_snapshot_evidence_missing_or_ambiguous"}
+    if not _has_transient_retention_attempt_history(audit, classification):
+        return {"eligible": False, "reason": "transient_retention_evidence_missing_or_ambiguous"}
+    return {
+        "eligible": True,
+        "reason": "evidenced_transient_retention_window_only",
+        "classification": classification,
+        "failed_state_checks": failed_state_checks,
+    }
+
+
 def monitor_once(
     repository_root: Path,
     state_root: Path,
@@ -623,6 +1284,7 @@ def monitor_once(
         producer_runtime=producer_runtime if isinstance(producer_runtime, Mapping) else None,
         now=instant,
     )
+    current_data_errors = list(errors)
     producer_runtime_age_seconds: float | None = None
     producer_summary_path = result_dir / "runtime" / "producer_runtime.json"
     if producer_runtime is None:
@@ -700,6 +1362,7 @@ def monitor_once(
         "latest_inference_batch": _latest(batches),
         "persistence_receipt_count": len(receipts),
         "container_states": containers,
+        "current_data_errors": current_data_errors,
         "data_errors": errors,
         "infrastructure_errors": infra_errors,
         "warnings": warnings,
@@ -710,6 +1373,7 @@ def monitor_once(
     ops_dir.mkdir(parents=True, exist_ok=True)
     hourly_path = ops_dir / "hourly_reports.jsonl"
     prior_hourly = _read_jsonl(hourly_path)
+    prior_delta_audit = _latest_hourly_delta_audit(prior_hourly)
     hour_key = instant.strftime("%Y-%m-%dT%H:00Z")
     previous_hourly = _latest(prior_hourly)
     hourly_entry_due = previous_hourly is None or previous_hourly.get("hour_key") != hour_key
@@ -719,24 +1383,104 @@ def monitor_once(
         and isinstance(cohort_status, Mapping)
         and (hourly_entry_due or not previous_hourly.get("hourly_delta_audit"))
     )
+    audit_lock_busy = False
+    audit_process_guard = _audit_process_guard(
+        repository_root,
+        selected_run_id,
+        runtime_configuration,
+        containers,
+        ops_dir=ops_dir,
+        now=instant,
+        runner=runner,
+    )
+    report["audit_process_guard"] = {"before_audit": audit_process_guard}
     if hourly_entry_due or delta_audit_due:
         if delta_audit_due:
             audit_path = ops_dir / f"delta_audit_{instant.strftime('%Y%m%dT%H%M%SZ')}.json"
-            audit = _delta_audit(
-                repository_root,
-                selected_run_id,
-                runtime_configuration,
-                expected_live_forecasts=int(cohort_status.get("prospective_forecast_count", 0) or 0),
-                audit_path=audit_path,
-                runner=runner,
-            )
-            report["hourly_delta_audit"] = audit
-            if audit["status"] != "PASS":
+            inference_status = str(containers.get("streaming-inference-t2h-live", {}).get("status", "unknown"))
+            if audit_process_guard.get("status") in {"ACTIVE", "UNVERIFIED"}:
+                audit = {
+                    "status": "FAIL",
+                    "classification": audit_process_guard.get("classification", "AUDIT_PROCESS_STATE_UNVERIFIED"),
+                    "reason": "a prior container-side Spark audit is active or its termination cannot be verified",
+                    "returncode": None,
+                    "evidence_path": str(audit_path),
+                    "attempt_log_path": str(ops_dir / "delta_audit_attempts.jsonl"),
+                    "checks": None,
+                    "process_identity": audit_process_guard.get("process_identity"),
+                    "origin": "CURRENT_ATTEMPT",
+                }
+            elif inference_status != "running":
+                audit = {
+                    "status": "SKIPPED",
+                    "classification": "AUDIT_SKIPPED_INFERENCE_UNAVAILABLE",
+                    "reason": f"Spark audit cannot run while inference container status is {inference_status}",
+                    "evidence_path": str(audit_path),
+                    "attempt_log_path": str(ops_dir / "delta_audit_attempts.jsonl"),
+                    "checks": None,
+                    "origin": "INFRASTRUCTURE_UNAVAILABLE",
+                }
+            else:
+                with _exclusive_audit_lock(ops_dir / "delta_audit.lock") as lock_acquired:
+                    if lock_acquired:
+                        unique_audit_path = audit_path
+                        collision = 2
+                        while (
+                            unique_audit_path.exists()
+                            or (ops_dir / "delta_audit_processes" / f"{unique_audit_path.stem}.json").exists()
+                        ):
+                            unique_audit_path = audit_path.with_name(
+                                f"{audit_path.stem}_attempt{collision}{audit_path.suffix}"
+                            )
+                            collision += 1
+                        audit = _delta_audit(
+                            repository_root,
+                            selected_run_id,
+                            runtime_configuration,
+                            expected_live_forecasts=(
+                                cohort_status.get("prospective_forecast_count")
+                                if isinstance(cohort_status.get("prospective_forecast_count"), int)
+                                and not isinstance(cohort_status.get("prospective_forecast_count"), bool)
+                                and cohort_status.get("prospective_forecast_count") >= 0
+                                else None
+                            ),
+                            audit_path=unique_audit_path,
+                            runner=runner,
+                            cohort_id=(manifest or {}).get("cohort_id") if isinstance(manifest, Mapping) else None,
+                        )
+                        audit["origin"] = "CURRENT_ATTEMPT"
+                    else:
+                        audit_lock_busy = True
+                        audit = {
+                            "status": "FAIL",
+                            "classification": "AUDIT_ALREADY_RUNNING",
+                            "reason": "exclusive hourly Delta audit lock is held by another process",
+                            "returncode": None,
+                            "evidence_path": str(audit_path),
+                            "attempt_log_path": str(ops_dir / "delta_audit_attempts.jsonl"),
+                            "checks": None,
+                            "origin": "CURRENT_ATTEMPT",
+                        }
+            if audit.get("origin") == "CURRENT_ATTEMPT" and audit.get("status") != "PASS":
                 if audit.get("checks") is not None:
                     report["data_errors"] = sorted(set([*report["data_errors"], "HOURLY_DELTA_AUDIT_FAILED"]))
                 else:
                     report["infrastructure_errors"] = sorted(set([*report["infrastructure_errors"], "HOURLY_DELTA_AUDIT_COULD_NOT_RUN"]))
                 report["status"] = "FAIL"
+            if (
+                audit.get("origin") == "INFRASTRUCTURE_UNAVAILABLE"
+                and prior_delta_audit is not None
+                and prior_delta_audit.get("status") != "PASS"
+            ):
+                _carry_unresolved_hourly_delta_audit(report, prior_delta_audit)
+                report["hourly_delta_audit"]["latest_attempt"] = audit
+            else:
+                report["hourly_delta_audit"] = audit
+        elif prior_delta_audit is not None and prior_delta_audit.get("status") != "PASS":
+            _carry_unresolved_hourly_delta_audit(report, prior_delta_audit)
+    if "hourly_delta_audit" not in report and prior_delta_audit is not None and prior_delta_audit.get("status") != "PASS":
+        _carry_unresolved_hourly_delta_audit(report, prior_delta_audit)
+    if hourly_entry_due or delta_audit_due:
         hourly = {
             "report_type": "HOURLY_DATA_AUDIT",
             "hour_key": hour_key,
@@ -748,21 +1492,96 @@ def monitor_once(
             "persistence_receipt_count": report["persistence_receipt_count"],
             "latest_inference_batch": report["latest_inference_batch"],
             "hourly_delta_audit": report.get("hourly_delta_audit"),
+            "audit_process_guard": report.get("audit_process_guard"),
             "restart_count": report["restart_count"],
         }
         _append_jsonl(hourly_path, hourly)
 
     action_log = ops_dir / "restart_actions.jsonl"
-    report["recovery_actions"] = recover_infrastructure(
-        repository_root,
-        selected_run_id,
-        runtime_configuration,
-        containers,
-        data_errors=report["data_errors"],
-        action_log=action_log,
-        now=instant,
-        runner=runner,
-    )
+    recovery_errors = list(current_data_errors)
+    recovery_decisions: list[dict[str, Any]] = []
+    current_audit = report.get("hourly_delta_audit")
+    if isinstance(current_audit, Mapping):
+        if current_audit.get("origin") == "CURRENT_ATTEMPT" and current_audit.get("status") != "PASS":
+            recovery_errors.append("CURRENT_HOURLY_DELTA_AUDIT_FAILURE")
+            recovery_decisions.append({
+                "source": "CURRENT_HOURLY_DELTA_AUDIT",
+                "eligible": False,
+                "reason": "a failed or incomplete audit from this monitoring attempt is a recovery blocker",
+                "classification": current_audit.get("classification"),
+            })
+        elif current_audit.get("origin") == "CARRIED_FORWARD" and current_audit.get("status") == "UNRESOLVED":
+            carried_decision = _carried_audit_recovery_decision(current_audit)
+            recovery_decisions.append({
+                "source": "CARRIED_HOURLY_DELTA_AUDIT",
+                **carried_decision,
+            })
+            if not carried_decision.get("eligible"):
+                recovery_errors.append("HOURLY_DELTA_AUDIT_CLASSIFICATION_UNVERIFIED")
+    if audit_lock_busy:
+        recovery_errors.append("AUDIT_LOCK_HELD")
+        recovery_decisions.append({
+            "source": "AUDIT_PROCESS_LOCK",
+            "eligible": False,
+            "reason": "the exclusive audit lock is held by another process",
+        })
+    recovery_actions: list[dict[str, Any]] = []
+    recovery_lock_busy = False
+    recovery_guard: dict[str, Any]
+    with _exclusive_audit_lock(ops_dir / "delta_audit.lock") as recovery_lock_acquired:
+        if not recovery_lock_acquired:
+            recovery_lock_busy = True
+            recovery_errors.append("AUDIT_LOCK_HELD")
+            recovery_decisions.append({
+                "source": "AUDIT_PROCESS_LOCK",
+                "eligible": False,
+                "reason": "the audit lock was held at the recovery decision boundary",
+            })
+            recovery_guard = {"status": "NOT_CHECKED_LOCK_HELD", "classification": "AUDIT_LOCK_HELD"}
+        else:
+            recovery_guard = _audit_process_guard(
+                repository_root,
+                selected_run_id,
+                runtime_configuration,
+                containers,
+                ops_dir=ops_dir,
+                now=instant,
+                runner=runner,
+            )
+            if recovery_guard.get("status") in {"ACTIVE", "UNVERIFIED"}:
+                recovery_errors.append("AUDIT_PROCESS_ACTIVE_OR_UNVERIFIED")
+                recovery_decisions.append({
+                    "source": "CONTAINER_AUDIT_PROCESS",
+                    "eligible": False,
+                    "reason": "a container-side Spark audit remains active or its termination cannot be verified",
+                    "classification": recovery_guard.get("classification"),
+                    "audit_id": recovery_guard.get("audit_id"),
+                    "process_identity": recovery_guard.get("process_identity"),
+                })
+            else:
+                recovery_errors = sorted(set(recovery_errors))
+                if not recovery_errors:
+                    recovery_actions = recover_infrastructure(
+                        repository_root,
+                        selected_run_id,
+                        runtime_configuration,
+                        containers,
+                        data_errors=recovery_errors,
+                        action_log=action_log,
+                        now=instant,
+                        runner=runner,
+                    )
+    report["audit_process_guard"]["before_recovery"] = recovery_guard
+    if recovery_lock_busy:
+        report["audit_process_guard"]["recovery_lock"] = "HELD_BY_OTHER_AUDIT"
+    recovery_errors = sorted(set(recovery_errors))
+    report["recovery_eligibility"] = {
+        "policy_id": RECOVERY_POLICY_ID,
+        "eligible": not recovery_errors,
+        "blocking_reasons": recovery_errors,
+        "decisions": recovery_decisions,
+    }
+    report["recovery_actions"] = recovery_actions
     if report["recovery_actions"]:
         report["warnings"] = sorted(set([*report["warnings"], "INFRASTRUCTURE_RECOVERY_ACTION_RECORDED"]))
 
