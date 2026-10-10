@@ -613,7 +613,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2 if result.get("status") == "UNVERIFIED" else 0
     result = terminate_active_process(args.state_dir, args.audit_id, termination_grace_seconds=args.termination_grace_seconds)
     print(json.dumps(result, sort_keys=True))
-    return 0 if result.get("status") == "TERMINATED" else 2
+    return 0 if result.get("status") in {"TERMINATED", "ALREADY_TERMINAL"} else 2
 
 
 if __name__ == "__main__":

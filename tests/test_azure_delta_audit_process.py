@@ -169,6 +169,6 @@ def test_terminate_does_not_overwrite_a_terminal_audit_record(tmp_path):
         timeout=5,
     )
 
-    assert terminate.returncode != 0
+    assert terminate.returncode == 0
     assert json.loads(terminate.stdout)["status"] == "ALREADY_TERMINAL"
     assert job_path.read_bytes() == original_job
