@@ -1,0 +1,70 @@
+name: T2H readiness gates
+
+on:
+  pull_request:
+    branches:
+      - deploy/azure-phase17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: t2h-readiness-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ubuntu-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out PR revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-ml.txt
+            spark/requirements-inference.txt
+            spark/requirements-benchmark.txt
+            producer/requirements.txt
+
+      - name: Set up Java for Spark tests
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install test and project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest \
+            -r requirements-ml.txt \
+            -r spark/requirements-inference.txt \
+            -r spark/requirements-benchmark.txt \
+            -r producer/requirements.txt
+
+      - name: Verify systemd can enable installed units offline
+        run: |
+          command -v systemctl
+          python -m pytest -q tests/test_azure_systemd_units.py
+
+      - name: Run readiness and Azure runtime regressions
+        run: >-
+          python -m pytest -q
+          tests/test_prospective_t2h.py
+          tests/test_prospective_t2h_runtime.py
+          tests/test_azure_compose.py
+          tests/test_azure_t2h_watchdog.py
+          tests/test_azure_systemd_units.py
+
+      - name: Run full test suite
+        run: python -m pytest -q
+
+      - name: Compile Python modules and validate shell syntax
+        run: |
+          python -m compileall -q validation spark tests
+          for script in ops/azure_t2h/*.sh; do bash -n "$script"; done

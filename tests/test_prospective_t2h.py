@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from argparse import Namespace
 from datetime import datetime, timedelta, timezone
+import multiprocessing
+import os
 import pytest
 
 from ml.streaming_inference.t2h_contract import (
@@ -44,6 +46,20 @@ TARGET_TIME = FEATURE_TIME + timedelta(hours=FORECAST_HORIZON_HOURS)
 REQUESTED_AT = FEATURE_TIME + timedelta(minutes=30)
 INFERENCE_TIME = FEATURE_TIME + timedelta(hours=1, minutes=1)
 RETRIEVED_FEATURE_AT = FEATURE_TIME + timedelta(hours=1, seconds=30)
+
+
+def _hold_readiness_lock(lock_path, acquired_queue, release_event):
+    with prospective._exclusive_process_lock(lock_path) as acquired:
+        acquired_queue.put(acquired)
+        if acquired:
+            release_event.wait(timeout=15)
+
+
+def _crash_while_holding_readiness_lock(lock_path, acquired_event):
+    lock_context = prospective._exclusive_process_lock(lock_path)
+    acquired = lock_context.__enter__()
+    acquired_event.set()
+    os._exit(23 if acquired else 24)
 
 
 def iso(value: datetime) -> str:
@@ -812,6 +828,107 @@ def test_success_then_failed_readiness_invalidates_readiness_pass_and_denies_sta
         expected_status="FAIL",
         expected_result=1,
     )
+
+
+def test_concurrent_readiness_fails_closed_without_mutating_first_attempt(tmp_path, monkeypatch):
+    context = multiprocessing.get_context("spawn")
+    state_root = tmp_path / "shared-readiness-state"
+    state_root.mkdir()
+    protected_attempt_id = "first-active-attempt"
+    protected_attempt_dir = state_root / "readiness_attempts" / protected_attempt_id
+    protected_attempt_dir.mkdir(parents=True)
+    evidence = {
+        state_root / "readiness.json": {
+            "status": "IN_PROGRESS",
+            "run_id": "first-active-run",
+            "attempt_id": protected_attempt_id,
+        },
+        state_root / "readiness_latest_attempt.json": {
+            "status": "IN_PROGRESS",
+            "run_id": "first-active-run",
+            "attempt_id": protected_attempt_id,
+        },
+        protected_attempt_dir / "request.json": {
+            "run_id": "first-active-run",
+            "attempt_id": protected_attempt_id,
+        },
+        protected_attempt_dir / "result.json": {
+            "status": "IN_PROGRESS",
+            "run_id": "first-active-run",
+            "attempt_id": protected_attempt_id,
+        },
+    }
+    for path, record in evidence.items():
+        _atomic_json(path, record)
+    evidence_bytes_before = {path: path.read_bytes() for path in evidence}
+    attempt_dirs_before = sorted(path.name for path in (state_root / "readiness_attempts").iterdir())
+
+    acquired_queue = context.Queue()
+    release_event = context.Event()
+    first_process = context.Process(
+        target=_hold_readiness_lock,
+        args=(prospective._fresh_readiness_lock_path(state_root), acquired_queue, release_event),
+    )
+    first_process.start()
+    try:
+        assert acquired_queue.get(timeout=10) is True
+
+        def unexpected_side_effect(*_args, **_kwargs):
+            pytest.fail("A readiness attempt ran despite another process holding the lock")
+
+        monkeypatch.setattr(prospective, "_default_model_contract", unexpected_side_effect)
+        monkeypatch.setattr(prospective, "_begin_readiness_attempt", unexpected_side_effect)
+        monkeypatch.setattr(prospective, "_run_compose", unexpected_side_effect)
+        monkeypatch.setattr(prospective, "_stop_readiness_services", unexpected_side_effect)
+
+        result = prospective._readiness(
+            Namespace(run_id="second-contending-run", wait_seconds=1),
+            state_root,
+        )
+
+        assert result == 2
+        assert {path: path.read_bytes() for path in evidence} == evidence_bytes_before
+        assert sorted(path.name for path in (state_root / "readiness_attempts").iterdir()) == attempt_dirs_before
+        assert not (state_root / "second-contending-run").exists()
+    finally:
+        release_event.set()
+        first_process.join(timeout=10)
+        if first_process.is_alive():
+            first_process.terminate()
+            first_process.join(timeout=5)
+        acquired_queue.close()
+        acquired_queue.join_thread()
+    assert first_process.exitcode == 0
+
+
+def test_readiness_process_lock_is_shared_across_azure_state_roots(tmp_path, monkeypatch):
+    monkeypatch.setattr(prospective, "is_azure_runtime", lambda *_args: True)
+
+    first = prospective._fresh_readiness_lock_path(tmp_path / "one")
+    second = prospective._fresh_readiness_lock_path(tmp_path / "two")
+
+    assert first == second
+    assert first == prospective.DEFAULT_STATE_ROOT / prospective.FRESH_READINESS_LOCK_NAME
+
+
+def test_readiness_process_lock_is_released_after_process_crash(tmp_path):
+    context = multiprocessing.get_context("spawn")
+    lock_path = tmp_path / "readiness.lock"
+    acquired_event = context.Event()
+    crashed_process = context.Process(
+        target=_crash_while_holding_readiness_lock,
+        args=(lock_path, acquired_event),
+    )
+    crashed_process.start()
+    assert acquired_event.wait(timeout=10)
+    crashed_process.join(timeout=10)
+    if crashed_process.is_alive():
+        crashed_process.terminate()
+        crashed_process.join(timeout=5)
+
+    assert crashed_process.exitcode == 23
+    with prospective._exclusive_process_lock(lock_path) as acquired:
+        assert acquired is True
 
 
 def test_success_then_failed_model_contract_preflight_invalidates_readiness_pass(tmp_path, monkeypatch):

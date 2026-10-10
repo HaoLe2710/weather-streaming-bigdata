@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -13,7 +14,7 @@ import subprocess
 import sys
 import time
 import uuid
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Iterator, Mapping, Sequence
 
 from ml.streaming_inference.t2h_contract import (
     FEATURE_COUNT,
@@ -74,6 +75,68 @@ TERMINAL_SLOT_STATES = frozenset(
 )
 REFERENCE_PENDING_STATES = frozenset({"PENDING_TARGET_TIME", "PENDING_BASELINE", "PENDING_REFERENCE"})
 PROCESS_STARTED_AT = datetime.now(timezone.utc)
+FRESH_READINESS_LOCK_NAME = ".fresh-formal-readiness.lock"
+
+
+def _fresh_readiness_lock_path(state_root: Path) -> Path:
+    """Return one lock path for the shared Azure Compose stack."""
+    if is_azure_runtime(REPOSITORY_ROOT, os.environ):
+        return DEFAULT_STATE_ROOT / FRESH_READINESS_LOCK_NAME
+    return state_root / FRESH_READINESS_LOCK_NAME
+
+
+@contextmanager
+def _exclusive_process_lock(lock_path: Path) -> Iterator[bool]:
+    """Try an OS-managed exclusive lock that is released automatically on process exit."""
+    stream = None
+    try:
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o660)
+        stream = os.fdopen(descriptor, "r+b", buffering=0)
+    except OSError:
+        if stream is not None:
+            stream.close()
+        yield False
+        return
+
+    acquired = False
+    try:
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                stream.seek(0, os.SEEK_END)
+                if stream.tell() == 0:
+                    stream.write(b"\0")
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            acquired = True
+        except (ImportError, OSError):
+            yield False
+            return
+
+        yield True
+    finally:
+        if acquired and stream is not None:
+            try:
+                if os.name == "nt":
+                    import msvcrt
+
+                    stream.seek(0)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            except (ImportError, OSError):
+                # Closing the descriptor still releases the kernel-managed lock.
+                pass
+        if stream is not None:
+            stream.close()
 
 
 def utc_now() -> datetime:
@@ -2463,7 +2526,23 @@ def _preflight(args: argparse.Namespace, state_root: Path) -> int:
     return 0 if summary["status"] == "PASS" else 1
 
 
-def _readiness(args: argparse.Namespace, state_root: Path) -> int:
+def _readiness(
+    args: argparse.Namespace,
+    state_root: Path,
+    *,
+    _lock_acquired: bool = False,
+) -> int:
+    if not _lock_acquired:
+        lock_path = _fresh_readiness_lock_path(state_root)
+        with _exclusive_process_lock(lock_path) as acquired:
+            if not acquired:
+                print(
+                    "Fresh Formal Readiness is already running or its process lock is unavailable; refusing to proceed.",
+                    file=sys.stderr,
+                )
+                return 2
+            return _readiness(args, state_root, _lock_acquired=True)
+
     run_id = args.run_id or _timestamp_run_id("prospective-readiness-t2h-v1")
     requested_at = iso_utc(utc_now())
     request = {
