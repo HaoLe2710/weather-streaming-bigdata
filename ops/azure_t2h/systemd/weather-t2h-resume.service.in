@@ -17,3 +17,6 @@ ExecStart=/bin/bash @REPO_ROOT@/ops/azure_t2h/resume-existing-cohort.sh
 TimeoutStartSec=30min
 Restart=on-failure
 RestartSec=5min
+
+[Install]
+WantedBy=multi-user.target

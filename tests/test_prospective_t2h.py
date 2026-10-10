@@ -696,6 +696,248 @@ def test_official_start_requires_new_protocol_preflight_and_readiness(tmp_path, 
     assert not (tmp_path / "active_run.json").exists()
 
 
+def _create_passed_readiness_attempt(state_root, monkeypatch):
+    contract_fingerprint = "frozen-test-contract-fingerprint"
+    readiness_run_id = "readiness-success-attempt"
+    _atomic_json(state_root / "preflight_test_results.json", {
+        "status": "PASS",
+        "cohort_protocol_id": COHORT_PROTOCOL_ID,
+    })
+    monkeypatch.setattr(prospective, "_default_model_contract", lambda: {
+        "status": "PASS",
+        "contract_fingerprint": contract_fingerprint,
+    })
+    monkeypatch.setattr(prospective, "utc_now", lambda: TARGET_TIME)
+    monkeypatch.setattr(
+        prospective,
+        "_stop_readiness_services",
+        lambda: prospective.subprocess.CompletedProcess(["docker", "compose", "stop"], 0, "", ""),
+    )
+
+    def pass_readiness(run_id, *, state_root, bootstrap=False, services=None):
+        assert run_id == readiness_run_id
+        assert bootstrap is True
+        request = _read_json(state_root / run_id / "readiness_request.json")
+        _atomic_json(state_root / run_id / "readiness.json", {
+            "status": "PASS",
+            "run_id": run_id,
+            "requested_at": request["requested_at"],
+            "attempt_id": request["attempt_id"],
+            "checked_at": iso(TARGET_TIME),
+            "forecast_count": 63,
+            "positive_lead_count": 63,
+            "target_offset_violations": 0,
+            "monitoring_status": "PASS",
+            "provider_model": PROVIDER_MODEL,
+        })
+        return prospective.subprocess.CompletedProcess(["docker", "compose"], 0, "ready", "")
+
+    monkeypatch.setattr(prospective, "_run_compose", pass_readiness)
+    assert prospective._readiness(Namespace(run_id=readiness_run_id, wait_seconds=1), state_root) == 0
+    attempt_id = _read_json(state_root / "readiness_latest_attempt.json")["attempt_id"]
+    start_args = Namespace(
+        run_id="must-not-start",
+        forecast_grace_seconds=900,
+        reference_grace_seconds=7200,
+    )
+    return attempt_id, start_args
+
+
+def _assert_new_readiness_failure_invalidates_previous_pass(
+    state_root,
+    monkeypatch,
+    *,
+    failure_kind,
+    expected_status,
+    expected_result,
+):
+    previous_attempt_id, start_args = _create_passed_readiness_attempt(state_root, monkeypatch)
+    second_run_id = f"readiness-{failure_kind}-attempt"
+    in_progress_start_results = []
+
+    def fail_followup(run_id, *, state_root, bootstrap=False, services=None):
+        assert run_id == second_run_id
+        assert bootstrap is True
+        in_progress_start_results.append(prospective._start(start_args, state_root))
+        if failure_kind == "bootstrap":
+            return prospective.subprocess.CompletedProcess(["docker", "compose"], 1, "", "bootstrap failed")
+        if failure_kind == "readiness":
+            request = _read_json(state_root / run_id / "readiness_request.json")
+            _atomic_json(state_root / run_id / "readiness.json", {
+                "status": "FAIL",
+                "reason": "READINESS_CYCLE_REJECTED",
+                "run_id": run_id,
+                "requested_at": request["requested_at"],
+                "attempt_id": request["attempt_id"],
+            })
+        return prospective.subprocess.CompletedProcess(["docker", "compose"], 0, "started", "")
+
+    monkeypatch.setattr(prospective, "_run_compose", fail_followup)
+    wait_seconds = 0 if failure_kind == "incomplete" else 1
+    result = prospective._readiness(Namespace(run_id=second_run_id, wait_seconds=wait_seconds), state_root)
+
+    assert result == expected_result
+    assert in_progress_start_results == [2]
+    previous_result = _read_json(state_root / "readiness_attempts" / previous_attempt_id / "result.json")
+    latest = _read_json(state_root / "readiness_latest_attempt.json")
+    current = _read_json(state_root / "readiness.json")
+    latest_result = _read_json(state_root / "readiness_attempts" / latest["attempt_id"] / "result.json")
+    assert previous_result["status"] == "PASS"
+    assert latest["attempt_id"] != previous_attempt_id
+    assert current["attempt_id"] == latest["attempt_id"]
+    assert current["status"] == expected_status
+    assert latest_result["status"] == expected_status
+    assert prospective._start(start_args, state_root) == 2
+    assert not (state_root / "active_run.json").exists()
+    assert not (state_root / start_args.run_id).exists()
+
+
+def test_success_then_failed_bootstrap_invalidates_readiness_pass_and_denies_start(tmp_path, monkeypatch):
+    _assert_new_readiness_failure_invalidates_previous_pass(
+        tmp_path,
+        monkeypatch,
+        failure_kind="bootstrap",
+        expected_status="FAIL",
+        expected_result=1,
+    )
+    current = _read_json(tmp_path / "readiness.json")
+    assert current["reason"] == "BOOTSTRAP_FAILED"
+
+
+def test_success_then_failed_readiness_invalidates_readiness_pass_and_denies_start(tmp_path, monkeypatch):
+    _assert_new_readiness_failure_invalidates_previous_pass(
+        tmp_path,
+        monkeypatch,
+        failure_kind="readiness",
+        expected_status="FAIL",
+        expected_result=1,
+    )
+
+
+def test_success_then_failed_model_contract_preflight_invalidates_readiness_pass(tmp_path, monkeypatch):
+    _, start_args = _create_passed_readiness_attempt(tmp_path, monkeypatch)
+    contract_fingerprint = "frozen-test-contract-fingerprint"
+    calls = iter(("FAIL", "PASS"))
+
+    def contract_status_changes():
+        return {
+            "status": next(calls),
+            "contract_fingerprint": contract_fingerprint,
+            "reason": "test preflight failure",
+        }
+
+    monkeypatch.setattr(prospective, "_default_model_contract", contract_status_changes)
+    result = prospective._readiness(
+        Namespace(run_id="readiness-contract-failure-attempt", wait_seconds=1),
+        tmp_path,
+    )
+
+    latest = _read_json(tmp_path / "readiness_latest_attempt.json")
+    current = _read_json(tmp_path / "readiness.json")
+    latest_result = _read_json(tmp_path / "readiness_attempts" / latest["attempt_id"] / "result.json")
+    assert result == 1
+    assert current["status"] == "FAIL"
+    assert current["reason"] == "MODEL_CONTRACT_PREFLIGHT_FAILED"
+    assert latest_result["status"] == "FAIL"
+    assert prospective._start(start_args, tmp_path) == 2
+    assert not (tmp_path / "active_run.json").exists()
+
+
+def test_success_then_incomplete_readiness_invalidates_readiness_pass_and_denies_start(tmp_path, monkeypatch):
+    _assert_new_readiness_failure_invalidates_previous_pass(
+        tmp_path,
+        monkeypatch,
+        failure_kind="incomplete",
+        expected_status="READINESS_INCOMPLETE",
+        expected_result=2,
+    )
+
+
+def test_official_start_accepts_only_a_passed_latest_readiness_attempt(tmp_path, monkeypatch):
+    _create_passed_readiness_attempt(tmp_path, monkeypatch)
+
+    def no_op_compose(run_id, *, state_root, bootstrap=False, services=None):
+        assert bootstrap is True
+        return prospective.subprocess.CompletedProcess(["docker", "compose"], 0, "started", "")
+
+    def write_test_start_request(*, state_root, run_id, **kwargs):
+        run_state = state_root / run_id
+        run_state.mkdir(parents=True, exist_ok=False)
+        _atomic_json(run_state / "start_request.json", {"run_id": run_id})
+        return run_state
+
+    monkeypatch.setattr(prospective, "_run_compose", no_op_compose)
+    monkeypatch.setattr(prospective, "_write_start_request", write_test_start_request)
+    args = Namespace(run_id="test-only-start", forecast_grace_seconds=900, reference_grace_seconds=7200)
+
+    assert prospective._start(args, tmp_path) == 0
+    assert _read_json(tmp_path / "active_run.json")["run_id"] == "test-only-start"
+
+
+def test_official_start_rejects_pass_from_mismatched_attempt_contract(tmp_path, monkeypatch):
+    attempt_id, start_args = _create_passed_readiness_attempt(tmp_path, monkeypatch)
+    result_path = tmp_path / "readiness_attempts" / attempt_id / "result.json"
+    attempt_result = _read_json(result_path)
+    attempt_result["cohort_protocol_id"] = "different-protocol"
+    _atomic_json(result_path, attempt_result)
+
+    assert prospective._start(start_args, tmp_path) == 2
+    assert not (tmp_path / "active_run.json").exists()
+
+
+def test_new_readiness_attempt_invalidates_previous_pass_before_archiving(tmp_path, monkeypatch):
+    _, start_args = _create_passed_readiness_attempt(tmp_path, monkeypatch)
+    original_archive = prospective._archive_current_readiness
+    concurrent_start_results = []
+    monkeypatch.setattr(
+        prospective,
+        "_archive_current_readiness",
+        lambda state_root: (
+            concurrent_start_results.append(prospective._start(start_args, state_root)),
+            original_archive(state_root),
+        ),
+    )
+
+    request = {
+        "run_id": "readiness-in-progress-attempt",
+        "requested_at": iso(TARGET_TIME),
+        "attempt_id": "b" * 32,
+        "contract_fingerprint": "frozen-test-contract-fingerprint",
+    }
+    prospective._begin_readiness_attempt(tmp_path, request)
+
+    assert concurrent_start_results == [2]
+    assert _read_json(tmp_path / "readiness.json")["status"] == "IN_PROGRESS"
+
+
+def test_streaming_readiness_result_preserves_attempt_identity(tmp_path):
+    state_dir = tmp_path / "streaming-readiness-attempt"
+    state_dir.mkdir()
+    request = {
+        "run_id": "streaming-readiness-attempt",
+        "attempt_id": "a" * 32,
+        "requested_at": iso(REQUESTED_AT),
+    }
+    _atomic_json(state_dir / "readiness_request.json", request)
+
+    result = prospective._readiness_update(
+        state_dir=state_dir,
+        forecasts=[],
+        receipts=[],
+        observations=[],
+        known_location_ids=LOCATION_IDS,
+        runtime_contract={"status": "PASS"},
+        startup_validation_path=tmp_path / "startup_validation.json",
+    )
+
+    assert result is not None
+    assert result["status"] == "WAITING"
+    assert result["run_id"] == request["run_id"]
+    assert result["attempt_id"] == request["attempt_id"]
+    assert result["requested_at"] == request["requested_at"]
+    assert _read_json(state_dir / "readiness.json") == result
+
+
 def test_new_start_request_freezes_isolated_topic_cache_and_bootstrap_plan(tmp_path):
     run_id = "20261010T120000Z-prospective-live-t2h-v1"
     run_state = prospective._write_start_request(
