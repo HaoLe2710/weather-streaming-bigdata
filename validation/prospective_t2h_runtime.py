@@ -9,6 +9,13 @@ import subprocess
 import time
 from typing import Any, Mapping, Sequence
 
+from validation.azure_compose import (
+    AzureComposeConfigurationError,
+    azure_compose_environment,
+    is_azure_runtime,
+    validate_azure_compose_configuration,
+)
+
 
 EXPECTED_LOCATIONS = 63
 DEFAULT_BOOTSTRAP_HISTORY_HOURS = 48
@@ -54,6 +61,17 @@ def _compose_prefix() -> list[str]:
     return ["docker", "compose", "--profile", "t2h-live"]
 
 
+def _compose_environment(
+    repository_root: Path,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    return azure_compose_environment(
+        repository_root,
+        environ,
+        required=is_azure_runtime(repository_root, environ),
+    )
+
+
 def _run(
     repository_root: Path,
     env: Mapping[str, str],
@@ -61,10 +79,11 @@ def _run(
     *,
     timeout: int | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    compose_env = _compose_environment(repository_root, env)
     return subprocess.run(
         [*_compose_prefix(), *arguments],
         cwd=repository_root,
-        env=dict(env),
+        env=compose_env,
         text=True,
         capture_output=True,
         check=False,
@@ -442,7 +461,17 @@ def run_prospective_compose(
     sleep=time.sleep,
 ) -> subprocess.CompletedProcess[str]:
     """Start/resume T2H services without reusing another run's topic or producer cache."""
-    env = os.environ.copy()
+    env = _compose_environment(repository_root)
+    if is_azure_runtime(repository_root, env):
+        try:
+            env = validate_azure_compose_configuration(repository_root, env)
+        except AzureComposeConfigurationError as exc:
+            return subprocess.CompletedProcess(
+                ["docker", "compose", "config", "--quiet"],
+                2,
+                "",
+                str(exc),
+            )
     env["WEATHER_INFERENCE_RUN_ID"] = run_id
     topic = runtime_configuration.get("input_topic")
     if isinstance(topic, str) and topic:

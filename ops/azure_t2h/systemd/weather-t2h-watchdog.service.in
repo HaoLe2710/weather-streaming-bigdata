@@ -9,6 +9,7 @@ User=@DEPLOY_USER@
 Group=@DEPLOY_GROUP@
 SupplementaryGroups=docker
 EnvironmentFile=-/etc/weather-streaming-t2h.env
+EnvironmentFile=/etc/weather-streaming-t2h-compose.env
 WorkingDirectory=@REPO_ROOT@
 ExecStart=/usr/bin/python3 @REPO_ROOT@/ops/azure_t2h/watchdog.py --repo-root @REPO_ROOT@ --state-root @REPO_ROOT@/data/runtime/prospective-live-t2h-168h-v1
 TimeoutStartSec=20min

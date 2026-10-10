@@ -27,6 +27,14 @@ if [[ -f /etc/weather-streaming-t2h.env ]]; then
 else
   export WEATHER_RUNTIME_GID="$(id -g)"
 fi
+if [[ -f /etc/weather-streaming-t2h-compose.env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source /etc/weather-streaming-t2h-compose.env
+  set +a
+fi
+source ops/azure_t2h/compose-env.sh
+set_weather_azure_compose_environment "$REPO_ROOT"
 
 if [[ "$APPLY" == true ]]; then
   if ! git diff --quiet || ! git diff --cached --quiet; then

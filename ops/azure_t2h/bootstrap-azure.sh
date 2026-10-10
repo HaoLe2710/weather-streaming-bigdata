@@ -20,6 +20,20 @@ if [[ "$FRESH_READINESS" == true && "$APPLY" != true ]]; then
 fi
 cd "$REPO_ROOT"
 
+AZURE_COMPOSE_FILE='docker-compose.yml:compose.azure.yaml:compose.azure.resources.yaml'
+if [[ -n "${COMPOSE_FILE:-}" && "$COMPOSE_FILE" != "$AZURE_COMPOSE_FILE" ]]; then
+  echo "COMPOSE_FILE is not the required Azure stack: $COMPOSE_FILE" >&2
+  exit 3
+fi
+export COMPOSE_FILE="$AZURE_COMPOSE_FILE"
+export WEATHER_AZURE_RUNTIME=1
+for compose_file in docker-compose.yml compose.azure.yaml compose.azure.resources.yaml; do
+  if [[ ! -f "$compose_file" ]]; then
+    echo "Required Azure Compose file is missing: $REPO_ROOT/$compose_file. Refusing fallback." >&2
+    exit 3
+  fi
+done
+
 if [[ "$APPLY" == true ]]; then
   if [[ "$(git branch --show-current)" != "$REF" ]]; then
     echo "Remote checkout branch must exactly match requested ref '$REF'. No branch switch was attempted." >&2

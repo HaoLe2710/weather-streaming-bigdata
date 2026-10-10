@@ -10,6 +10,9 @@ if [[ $EUID -ne 0 ]]; then
   echo "Run this installer through sudo. It only installs systemd units and permissions." >&2
   exit 2
 fi
+cd "$REPO_ROOT"
+source ops/azure_t2h/compose-env.sh
+set_weather_azure_compose_environment "$REPO_ROOT"
 
 DEPLOY_USER=${SUDO_USER:-$(stat -c '%U' "$REPO_ROOT")}
 if [[ -z "$DEPLOY_USER" || "$DEPLOY_USER" == root ]]; then
@@ -30,10 +33,13 @@ if ! id -nG "$DEPLOY_USER" | tr ' ' '\n' | grep -qx docker; then
   exit 2
 fi
 
-env_tmp=$(mktemp)
-printf 'WEATHER_RUNTIME_GID=%s\n' "$DEPLOY_GID" > "$env_tmp"
-install -o root -g "$DEPLOY_GROUP" -m 0640 "$env_tmp" /etc/weather-streaming-t2h.env
-rm -f "$env_tmp"
+compose_env_tmp=$(mktemp)
+trap 'rm -f "$compose_env_tmp"' EXIT
+printf 'WEATHER_RUNTIME_GID=%s\nWEATHER_AZURE_RUNTIME=1\nCOMPOSE_FILE=%s\n' \
+  "$DEPLOY_GID" "$COMPOSE_FILE" > "$compose_env_tmp"
+install -o root -g "$DEPLOY_GROUP" -m 0640 "$compose_env_tmp" /etc/weather-streaming-t2h-compose.env
+rm -f "$compose_env_tmp"
+trap - EXIT
 
 render_unit() {
   local input=$1 output=$2

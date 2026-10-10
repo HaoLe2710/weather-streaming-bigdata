@@ -43,6 +43,12 @@ from monitoring.evaluation_contract import (
 from monitoring.forecast_evaluator import evaluate_forecasts
 from monitoring.hourly_archive import revision_record
 from monitoring.metrics import calculate_metrics, distribution_stats
+from validation.azure_compose import (
+    AzureComposeConfigurationError,
+    azure_compose_environment,
+    is_azure_runtime,
+    validate_azure_compose_configuration,
+)
 from validation.runtime_stabilization_t2h import classify_hourly_cycle_gap
 from validation.prospective_t2h_runtime import (
     cohort_runtime_configuration,
@@ -2187,17 +2193,28 @@ def _run_compose(
 
 
 def _stop_readiness_services() -> subprocess.CompletedProcess[str]:
+    command = [
+        "docker",
+        "compose",
+        "--profile",
+        "t2h-live",
+        "stop",
+        "live-hourly-producer-t2h",
+        "streaming-inference-t2h-live",
+    ]
+    env = os.environ.copy()
+    try:
+        env = azure_compose_environment(
+            REPOSITORY_ROOT,
+            env,
+            required=is_azure_runtime(REPOSITORY_ROOT, env),
+        )
+    except AzureComposeConfigurationError as exc:
+        return subprocess.CompletedProcess(command, 2, "", str(exc))
     return subprocess.run(
-        [
-            "docker",
-            "compose",
-            "--profile",
-            "t2h-live",
-            "stop",
-            "live-hourly-producer-t2h",
-            "streaming-inference-t2h-live",
-        ],
+        command,
         cwd=REPOSITORY_ROOT,
+        env=env,
         text=True,
         capture_output=True,
         check=False,
@@ -2285,16 +2302,40 @@ def _default_model_contract() -> dict[str, Any]:
 
 
 def _preflight(args: argparse.Namespace, state_root: Path) -> int:
+    azure_runtime = is_azure_runtime(REPOSITORY_ROOT, os.environ)
+    try:
+        command_env = azure_compose_environment(
+            REPOSITORY_ROOT,
+            os.environ,
+            required=azure_runtime,
+        )
+    except AzureComposeConfigurationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     commands = [
         ("compileall", [sys.executable, "-m", "compileall", "."]),
         ("pytest", [sys.executable, "-m", "pytest", "-q"]),
         ("git_diff_check", ["git", "diff", "--check"]),
-        ("docker_compose_config", ["docker", "compose", "--profile", "t2h-live", "config", "--quiet"]),
+        ("docker_compose_config", ["docker", "compose", "config", "--quiet"]),
     ]
     records: dict[str, Any] = {}
     for name, command in commands:
         started = time.perf_counter()
-        completed = subprocess.run(command, cwd=REPOSITORY_ROOT, text=True, capture_output=True, check=False)
+        if name == "docker_compose_config" and azure_runtime:
+            try:
+                validate_azure_compose_configuration(REPOSITORY_ROOT, command_env)
+                completed = subprocess.CompletedProcess(command, 0, "", "")
+            except AzureComposeConfigurationError as exc:
+                completed = subprocess.CompletedProcess(command, 1, "", str(exc))
+        else:
+            completed = subprocess.run(
+                command,
+                cwd=REPOSITORY_ROOT,
+                env=command_env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
         records[name] = {
             "status": "PASS" if completed.returncode == 0 else "FAIL",
             "returncode": completed.returncode,
@@ -2653,6 +2694,22 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command in {"preflight", "readiness", "start", "resume"} and is_azure_runtime(
+        REPOSITORY_ROOT,
+        os.environ,
+    ):
+        try:
+            compose_env = azure_compose_environment(
+                REPOSITORY_ROOT,
+                os.environ,
+                required=True,
+            )
+            if args.command != "preflight":
+                compose_env = validate_azure_compose_configuration(REPOSITORY_ROOT, compose_env)
+        except AzureComposeConfigurationError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        os.environ.update(compose_env)
     state_root = Path(args.state_root).resolve()
     state_root.mkdir(parents=True, exist_ok=True)
     return int(args.handler(args, state_root))

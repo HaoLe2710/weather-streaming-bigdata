@@ -16,6 +16,17 @@ import sys
 import time
 from typing import Any, Callable, Mapping, Sequence
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from validation.azure_compose import (
+    AzureComposeConfigurationError,
+    azure_compose_environment,
+    is_azure_runtime,
+    validate_azure_compose_configuration,
+)
+
 
 PROTOCOL_ID = "T2H_LIVE_PROSPECTIVE_168H_V1"
 EXPECTED_LOCATIONS = 63
@@ -97,8 +108,18 @@ def _parse_timestamp(value: Any) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
-def _compose_environment(run_id: str, runtime_configuration: Mapping[str, Any]) -> dict[str, str]:
-    env = os.environ.copy()
+def _compose_environment(
+    repository_root: Path,
+    run_id: str,
+    runtime_configuration: Mapping[str, Any],
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    source = os.environ if environ is None else environ
+    env = azure_compose_environment(
+        repository_root,
+        source,
+        required=is_azure_runtime(repository_root, source),
+    )
     env["WEATHER_INFERENCE_RUN_ID"] = run_id
     topic = runtime_configuration.get("input_topic")
     if isinstance(topic, str) and topic:
@@ -116,7 +137,7 @@ def collect_container_states(
     *,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> dict[str, dict[str, Any]]:
-    env = _compose_environment(run_id, runtime_configuration)
+    env = _compose_environment(repository_root, run_id, runtime_configuration)
     states: dict[str, dict[str, Any]] = {}
     for service in SERVICES:
         try:
@@ -341,7 +362,7 @@ def _delta_audit(
     audit_path: Path,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> dict[str, Any]:
-    env = _compose_environment(run_id, runtime_configuration)
+    env = _compose_environment(repository_root, run_id, runtime_configuration)
     container_audit_path = f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops/{audit_path.name}"
     command = [
         "docker",
@@ -448,7 +469,7 @@ def recover_infrastructure(
 ) -> list[dict[str, Any]]:
     """Restart only existing unhealthy/stopped services, never after a data-contract error."""
     actions = _read_jsonl(action_log)
-    env = _compose_environment(run_id, runtime_configuration)
+    env = _compose_environment(repository_root, run_id, runtime_configuration)
     records: list[dict[str, Any]] = []
     if data_errors:
         return records
@@ -789,6 +810,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     repo_root = args.repo_root.resolve()
     state_root = (args.state_root or repo_root / "data" / "runtime" / "prospective-live-t2h-168h-v1").resolve()
+    try:
+        compose_env = validate_azure_compose_configuration(repo_root, os.environ, runner=subprocess.run)
+    except AzureComposeConfigurationError as exc:
+        print(json.dumps({
+            "status": "FAIL",
+            "reason": "AZURE_COMPOSE_CONFIGURATION_INVALID",
+            "detail": str(exc),
+        }, ensure_ascii=False, sort_keys=True))
+        return 2
+    os.environ.update(compose_env)
     report = monitor_once(
         repo_root,
         state_root,

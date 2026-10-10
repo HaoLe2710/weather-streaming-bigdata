@@ -23,6 +23,8 @@ The incident values `duplicate_conflict_keys=567` and `gap_in_history_rows=1575`
 - Windows OpenSSH has the Azure host key already in `known_hosts`. The host wrapper sets `StrictHostKeyChecking=yes` and `BatchMode=yes`.
 - Keep the private SSH key outside the repository. Use an external key path or the SSH agent; the wrapper only passes the path to OpenSSH.
 - `sudo -n` must be allowed for the unit installer, or installation stops without prompting from a noninteractive SSH session.
+- The Azure checkout must already contain `docker-compose.yml`, `compose.azure.yaml`, and `compose.azure.resources.yaml`. These Azure overlays are host-local inputs and are not created or replaced by this repository.
+- Every Azure Compose entrypoint uses `COMPOSE_FILE=docker-compose.yml:compose.azure.yaml:compose.azure.resources.yaml` from the repository working directory and runs `docker compose config --quiet`. Missing files or a conflicting `COMPOSE_FILE` stop deployment, readiness, resume, or watchdog execution; the scripts never fall back to the base Compose file.
 
 ## Windows-to-Azure deployment
 
@@ -42,7 +44,7 @@ To fast-forward the Azure checkout from GitHub and install the systemd monitor/r
   -Apply
 ```
 
-The remote bootstrap requires the working tree's tracked files to be clean, the checkout branch to match `-Ref`, and no unfinished official cohort. It runs `git fetch` and `git merge --ff-only`; it does not switch branches, force-push, reset, clean, or run `docker compose down`. Untracked/ignored Azure-local files remain in place. Fast-forward is refused if the incoming commit changes a recognized Azure-local Compose overlay.
+The remote bootstrap requires the working tree's tracked files to be clean, the checkout branch to match `-Ref`, the three required Compose files to exist, the exact Compose stack to pass `docker compose config --quiet`, and no unfinished official cohort. It runs `git fetch` and `git merge --ff-only`; it does not switch branches, force-push, reset, clean, or run `docker compose down`. Untracked/ignored Azure-local files remain in place. Fast-forward is refused if the incoming commit changes a recognized Azure-local Compose overlay.
 
 Fresh Formal Readiness is a separate explicit option. It creates an isolated readiness run/topic, tests the actual provider and runtime, and stops readiness services afterward. It is not an official cohort:
 
@@ -71,7 +73,7 @@ The `start` command itself rechecks the persisted preflight, Fresh Formal Readin
 
 ## Systemd operation and evidence
 
-`weather-t2h-resume.service` runs after Docker/network on boot. It resumes only the run ID in `active_run.json`, verifies that run's existing start request and protocol, exits for a finalized cohort, and does nothing when there is no official cohort. It calls `resume`; it cannot create a new run or choose a new T0.
+`weather-t2h-resume.service` runs after Docker/network on boot. Both systemd services require `/etc/weather-streaming-t2h-compose.env`, installed only after overlay and Compose validation. It carries the exact `COMPOSE_FILE` list and runtime GID separately from `/etc/weather-streaming-t2h.env`, which may contain host-managed credentials. Resume revalidates the overlays/configuration, then resumes only the run ID in `active_run.json`, verifies that run's existing start request and protocol, exits for a finalized cohort, and does nothing when there is no official cohort. It calls `resume`; it cannot create a new run or choose a new T0.
 
 `weather-t2h-watchdog.timer` runs every five minutes. Each sample records cohort/run IDs, frozen hashes/provider/horizon, progress counters, cohort `restart_count`, Docker `RestartCount`s, latest inference batch, persistence receipt count, and service state. Every UTC hour it runs the Spark/Delta audit for persisted forecasts and state. Hourly and daily summaries and alert-open/resolved transitions append under `results/prospective-live-t2h/<run_id>/runtime/ops/`.
 
@@ -93,7 +95,7 @@ The run is blocked for duplicate conflict keys, history gaps, invalid provenance
 ### Before deployment
 
 - Azure branch is the expected Git ref; tracked working tree is clean; protected Azure-local Compose overlays are untouched.
-- `python -m validation.prospective_t2h preflight` passes compile, regression tests, diff check, and `docker compose --profile t2h-live config --quiet`.
+- `python -m validation.prospective_t2h preflight` passes compile, regression tests, diff check, and `docker compose config --quiet` using the exact three-file Azure stack.
 - Runtime model contract reports the required model SHA, feature-list SHA, provider `ecmwf_ifs`, and two-hour horizon.
 - Fresh Formal Readiness is current and passes 63/63 live forecasts, 63/63 positive leads, zero target-offset violations, the frozen provider/model contract, monitoring PASS, and readiness-service cleanup.
 - Deployment and readiness do not write an official `active_run.json` entry.
