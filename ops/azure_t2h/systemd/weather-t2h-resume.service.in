@@ -1,0 +1,22 @@
+[Unit]
+Description=Resume the existing T2H prospective cohort after host or container recovery
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+User=@DEPLOY_USER@
+Group=@DEPLOY_GROUP@
+SupplementaryGroups=docker
+EnvironmentFile=-/etc/weather-streaming-t2h.env
+EnvironmentFile=/etc/weather-streaming-t2h-compose.env
+WorkingDirectory=@REPO_ROOT@
+ExecStart=/bin/bash @REPO_ROOT@/ops/azure_t2h/resume-existing-cohort.sh
+TimeoutStartSec=30min
+Restart=on-failure
+RestartSec=5min
+
+[Install]
+WantedBy=multi-user.target

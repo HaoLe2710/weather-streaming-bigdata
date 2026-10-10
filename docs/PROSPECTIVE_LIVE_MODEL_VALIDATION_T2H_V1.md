@@ -81,7 +81,7 @@ flowchart LR
 
 ## Persistence, restart, and outage handling
 
-The official request, frozen manifest, slot matrix, status, outage estimates, contract checks, and preflight result live outside Git at `data/runtime/prospective-live-t2h/<RUN_ID>/`. Forecasts, Spark checkpoint, state Delta, persistence receipts, and revision records are isolated by the same run ID. Restarting the runner or Docker services resumes that ID and checkpoint; it cannot silently create a new T0.
+The official request, frozen manifest, slot matrix, status, outage estimates, contract checks, and preflight result live outside Git at `data/runtime/prospective-live-t2h-168h-v1/<RUN_ID>/`. Forecasts, Spark checkpoint, state Delta, persistence receipts, and revision records are isolated by the same run ID. Restarting the runner or Docker services resumes that ID and checkpoint; it cannot silently create a new T0.
 
 Immediately after the forecast Delta MERGE, the inference job records an idempotent receipt with the contract-record SHA and UTC completion time. If a driver stops after the Delta commit but before the receipt append, a later replay records a conservative post-MERGE confirmation time and marks it `RECOVERED_POST_MERGE_CONFIRMATION`; this is an upper-bound confirmation for issuance latency. The receipt is not inferred from `inference_time`.
 

@@ -1,0 +1,80 @@
+name: T2H readiness gates
+
+on:
+  pull_request:
+    branches:
+      - deploy/azure-phase17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: t2h-readiness-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ubuntu-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out PR revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements-ml.txt
+            spark/requirements-inference.txt
+            spark/requirements-benchmark.txt
+            producer/requirements.txt
+
+      - name: Set up Java for Spark tests
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install test and project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest \
+            -r requirements-ml.txt \
+            -r spark/requirements-inference.txt \
+            -r spark/requirements-benchmark.txt \
+            -r producer/requirements.txt
+
+      - name: Verify systemd can enable installed units offline
+        run: |
+          command -v systemctl
+          python -m pytest -q tests/test_azure_systemd_units.py
+
+      - name: Run readiness and Azure runtime regressions
+        run: |
+          bash .github/scripts/run-pytest-with-annotation.sh "Readiness regressions" \
+            -q --tb=short -ra \
+            tests/test_prospective_t2h.py \
+            tests/test_prospective_t2h_runtime.py \
+            tests/test_azure_compose.py \
+            tests/test_azure_t2h_watchdog.py \
+            tests/test_azure_systemd_units.py
+
+      - name: Run full test suite
+        run: |
+          frozen_model=data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json
+          if [[ -f "$frozen_model" ]]; then
+            bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite" -q --tb=short -ra
+          else
+            echo "::notice title=Frozen model artifact unavailable::Running all available tests; deselecting only the two FrozenModelTests that require the git-ignored V1 model at $frozen_model."
+            bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite (without unavailable model artifact)" \
+              -q --tb=short -ra \
+              -k 'not test_invalid_model_digest_is_rejected and not test_model_hash_and_cpu_prediction_are_cached_per_process'
+          fi
+
+      - name: Compile Python modules and validate shell syntax
+        run: |
+          python -m compileall -q validation spark tests
+          for script in ops/azure_t2h/*.sh .github/scripts/*.sh; do bash -n "$script"; done

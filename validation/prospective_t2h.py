@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -12,7 +13,8 @@ import re
 import subprocess
 import sys
 import time
-from typing import Any, Iterable, Mapping, Sequence
+import uuid
+from typing import Any, Iterable, Iterator, Mapping, Sequence
 
 from ml.streaming_inference.t2h_contract import (
     FEATURE_COUNT,
@@ -43,11 +45,21 @@ from monitoring.evaluation_contract import (
 from monitoring.forecast_evaluator import evaluate_forecasts
 from monitoring.hourly_archive import revision_record
 from monitoring.metrics import calculate_metrics, distribution_stats
+from validation.azure_compose import (
+    AzureComposeConfigurationError,
+    azure_compose_environment,
+    is_azure_runtime,
+    validate_azure_compose_configuration,
+)
 from validation.runtime_stabilization_t2h import classify_hourly_cycle_gap
+from validation.prospective_t2h_runtime import (
+    cohort_runtime_configuration,
+    run_prospective_compose,
+)
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STATE_ROOT = REPOSITORY_ROOT / "data" / "runtime" / "prospective-live-t2h"
+DEFAULT_STATE_ROOT = REPOSITORY_ROOT / "data" / "runtime" / "prospective-live-t2h-168h-v1"
 DEFAULT_RESULTS_ROOT = REPOSITORY_ROOT / "results" / "prospective-live-t2h"
 FORECAST_GRACE_PERIOD_SECONDS = 15 * 60
 REFERENCE_GRACE_PERIOD_SECONDS = 2 * 60 * 60
@@ -63,6 +75,68 @@ TERMINAL_SLOT_STATES = frozenset(
 )
 REFERENCE_PENDING_STATES = frozenset({"PENDING_TARGET_TIME", "PENDING_BASELINE", "PENDING_REFERENCE"})
 PROCESS_STARTED_AT = datetime.now(timezone.utc)
+FRESH_READINESS_LOCK_NAME = ".fresh-formal-readiness.lock"
+
+
+def _fresh_readiness_lock_path(state_root: Path) -> Path:
+    """Return one lock path for the shared Azure Compose stack."""
+    if is_azure_runtime(REPOSITORY_ROOT, os.environ):
+        return DEFAULT_STATE_ROOT / FRESH_READINESS_LOCK_NAME
+    return state_root / FRESH_READINESS_LOCK_NAME
+
+
+@contextmanager
+def _exclusive_process_lock(lock_path: Path) -> Iterator[bool]:
+    """Try an OS-managed exclusive lock that is released automatically on process exit."""
+    stream = None
+    try:
+        lock_path.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o660)
+        stream = os.fdopen(descriptor, "r+b", buffering=0)
+    except OSError:
+        if stream is not None:
+            stream.close()
+        yield False
+        return
+
+    acquired = False
+    try:
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                stream.seek(0, os.SEEK_END)
+                if stream.tell() == 0:
+                    stream.write(b"\0")
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            acquired = True
+        except (ImportError, OSError):
+            yield False
+            return
+
+        yield True
+    finally:
+        if acquired and stream is not None:
+            try:
+                if os.name == "nt":
+                    import msvcrt
+
+                    stream.seek(0)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            except (ImportError, OSError):
+                # Closing the descriptor still releases the kernel-managed lock.
+                pass
+        if stream is not None:
+            stream.close()
 
 
 def utc_now() -> datetime:
@@ -1925,6 +1999,101 @@ def _runtime_contract_from_environment() -> dict[str, Any]:
     )
 
 
+def _readiness_result_for_request(
+    result: Mapping[str, Any], request: Mapping[str, Any]
+) -> dict[str, Any]:
+    tagged = dict(result)
+    for key in ("run_id", "requested_at", "attempt_id"):
+        if request.get(key) is not None:
+            tagged[key] = request[key]
+    return tagged
+
+
+def _readiness_attempt_id_is_valid(attempt_id: Any) -> bool:
+    return isinstance(attempt_id, str) and re.fullmatch(r"[0-9a-f]{32}", attempt_id) is not None
+
+
+def _readiness_attempt_dir(state_root: Path, attempt_id: str) -> Path:
+    if not _readiness_attempt_id_is_valid(attempt_id):
+        raise ValueError("invalid readiness attempt id")
+    return state_root / "readiness_attempts" / attempt_id
+
+
+def _archive_current_readiness(state_root: Path) -> None:
+    current = _read_json(state_root / "readiness.json")
+    if not isinstance(current, Mapping) or not current:
+        return
+    existing_id = current.get("attempt_id")
+    if _readiness_attempt_id_is_valid(existing_id):
+        existing_result = _read_json(_readiness_attempt_dir(state_root, existing_id) / "result.json")
+        if existing_result == dict(current):
+            return
+    archive_id = existing_id if _readiness_attempt_id_is_valid(existing_id) else f"legacy-{uuid.uuid4().hex}"
+    archive_dir = state_root / "readiness_attempts" / archive_id
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    request_path = archive_dir / "request.json"
+    if not request_path.exists():
+        _atomic_json(
+            request_path,
+            {
+                "attempt_id": archive_id,
+                "run_id": current.get("run_id"),
+                "requested_at": current.get("requested_at") or current.get("checked_at"),
+                "historical_only": True,
+            },
+        )
+    result_path = archive_dir / "result.json"
+    if not result_path.exists():
+        archived = dict(current)
+        archived["historical_only"] = True
+        archived["archived_at"] = iso_utc(utc_now())
+        _atomic_json(result_path, archived)
+
+
+def _begin_readiness_attempt(state_root: Path, request: Mapping[str, Any]) -> dict[str, Any]:
+    attempt_id = request.get("attempt_id")
+    if not _readiness_attempt_id_is_valid(attempt_id):
+        raise ValueError("readiness request requires a valid attempt id")
+    _atomic_json(
+        state_root / "readiness_latest_attempt.json",
+        {
+            "attempt_id": attempt_id,
+            "run_id": request.get("run_id"),
+            "requested_at": request.get("requested_at"),
+        },
+    )
+    _archive_current_readiness(state_root)
+    attempt_dir = _readiness_attempt_dir(state_root, attempt_id)
+    attempt_dir.mkdir(parents=True, exist_ok=False)
+    _atomic_json(attempt_dir / "request.json", dict(request))
+    pending = _readiness_result_for_request(
+        {
+            "status": "IN_PROGRESS",
+            "phase": "BOOTSTRAP",
+            "contract_fingerprint": request.get("contract_fingerprint"),
+            "cohort_protocol_id": request.get("cohort_protocol_id"),
+        },
+        request,
+    )
+    _atomic_json(attempt_dir / "result.json", pending)
+    _atomic_json(state_root / "readiness.json", pending)
+    return pending
+
+
+def _record_readiness_attempt(
+    state_root: Path, request: Mapping[str, Any], result: Mapping[str, Any]
+) -> dict[str, Any]:
+    tagged = _readiness_result_for_request(result, request)
+    attempt_id = request.get("attempt_id")
+    if not _readiness_attempt_id_is_valid(attempt_id):
+        raise ValueError("readiness request requires a valid attempt id")
+    _atomic_json(_readiness_attempt_dir(state_root, attempt_id) / "result.json", tagged)
+    latest = _read_json(state_root / "readiness_latest_attempt.json", {}) or {}
+    if latest.get("attempt_id") == attempt_id:
+        _atomic_json(state_root / "readiness.json", tagged)
+    return tagged
+
+
 def record_startup_contract_validation(state_dir: str | Path) -> dict[str, Any]:
     """Persist contract validation before the Spark stream starts processing."""
     state_root = Path(state_dir)
@@ -1950,14 +2119,17 @@ def record_startup_contract_validation(state_dir: str | Path) -> dict[str, Any]:
         )
     readiness_request = _read_json(state_root / "readiness_request.json", {}) or {}
     if readiness_request:
-        _atomic_json(
-            state_root / "readiness.json",
+        readiness_failure = _readiness_result_for_request(
             {
                 "status": "FAIL",
                 "reason": "CANONICAL_CONTRACT_INVALID",
-                "run_id": readiness_request.get("run_id"),
                 "contract": contract,
             },
+            readiness_request,
+        )
+        _atomic_json(
+            state_root / "readiness.json",
+            readiness_failure,
         )
     return contract
 
@@ -1982,9 +2154,13 @@ def record_startup_model_failure(state_dir: str | Path, error: BaseException) ->
         )
     readiness_request = _read_json(state_root / "readiness_request.json", {}) or {}
     if readiness_request:
+        readiness_failure = _readiness_result_for_request(
+            {**failure, "status": "FAIL", "reason": failure["status"]},
+            readiness_request,
+        )
         _atomic_json(
             state_root / "readiness.json",
-            {"status": "FAIL", "reason": failure["status"], **failure, "run_id": readiness_request.get("run_id")},
+            readiness_failure,
         )
 
 
@@ -2001,10 +2177,14 @@ def _readiness_update(
     request = _read_json(state_dir / "readiness_request.json")
     if not request:
         return None
+
+    def persist(result: Mapping[str, Any]) -> dict[str, Any]:
+        tagged = _readiness_result_for_request(result, request)
+        _atomic_json(state_dir / "readiness.json", tagged)
+        return tagged
+
     if runtime_contract.get("status") != "PASS":
-        result = {"status": "FAIL", "reason": "CANONICAL_CONTRACT_INVALID", "contract": dict(runtime_contract)}
-        _atomic_json(state_dir / "readiness.json", result)
-        return result
+        return persist({"status": "FAIL", "reason": "CANONICAL_CONTRACT_INVALID", "contract": dict(runtime_contract)})
     requested_at = parse_utc_timestamp(request["requested_at"], assume_naive_utc=True)
     groups = _cycle_groups(forecasts, receipts, location_ids=known_location_ids, requested_at=requested_at)
     full_cycle = None
@@ -2014,22 +2194,16 @@ def _readiness_update(
             full_cycle = [by_location[key] for key in sorted(by_location)]
             break
     if full_cycle is None:
-        result = {
+        return persist({
             "status": "WAITING",
-            "run_id": request.get("run_id"),
-            "requested_at": request.get("requested_at"),
             "expected_locations": len(known_location_ids),
             "complete_cycles_observed": sorted(groups),
             "last_checked_at": iso_utc(utc_now()),
-        }
-        _atomic_json(state_dir / "readiness.json", result)
-        return result
+        })
     startup_rows = _read_jsonl(startup_validation_path)
     startup = startup_rows[-1] if startup_rows else (_read_json(startup_validation_path, {}) or {})
     if startup.get("status") != "PASS" or startup.get("model_sha256") != MODEL_SHA256:
-        result = {"status": "FAIL", "reason": "MODEL_STARTUP_VALIDATION_FAILED", "startup": startup}
-        _atomic_json(state_dir / "readiness.json", result)
-        return result
+        return persist({"status": "FAIL", "reason": "MODEL_STARTUP_VALIDATION_FAILED", "startup": startup})
     now = utc_now()
     monitoring = evaluate_forecasts(
         full_cycle,
@@ -2088,8 +2262,7 @@ def _readiness_update(
         "errors": sorted(set(errors)),
         "status_scope": "readiness cycle is isolated from the official cohort",
     }
-    _atomic_json(state_dir / "readiness.json", result)
-    return result
+    return persist(result)
 
 
 def update_from_spark(
@@ -2151,31 +2324,60 @@ def update_from_spark(
     )
 
 
-def _run_compose(run_id: str, *, services: Sequence[str] | None = None) -> subprocess.CompletedProcess[str]:
-    env = os.environ.copy()
-    env["WEATHER_INFERENCE_RUN_ID"] = run_id
-    cmd = ["docker", "compose", "--profile", "t2h-live", "up", "-d"]
-    if services:
-        cmd.extend(services)
-    else:
-        cmd.extend(
-            ["broker", "spark-master", "spark-worker", "live-hourly-producer-t2h", "streaming-inference-t2h-live"]
-        )
-    return subprocess.run(cmd, cwd=REPOSITORY_ROOT, env=env, text=True, capture_output=True, check=False)
+def _run_compose(
+    run_id: str,
+    *,
+    services: Sequence[str] | None = None,
+    state_root: Path = DEFAULT_STATE_ROOT,
+    bootstrap: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    """Start this run's isolated runtime; bootstrap only for a new readiness/cohort run."""
+    state_root = Path(state_root)
+    run_state = state_root / run_id
+    runtime_configuration: Mapping[str, Any] | None = None
+    for request_path in (run_state / "start_request.json", run_state / "readiness_request.json"):
+        request = _read_json(request_path, {}) or {}
+        candidate = request.get("runtime_configuration")
+        if isinstance(candidate, Mapping):
+            runtime_configuration = candidate
+            break
+    if runtime_configuration is None:
+        # A legacy request has no per-run topic/cache. Keep Compose defaults
+        # during resume instead of silently changing its source identity.
+        runtime_configuration = {}
+    return run_prospective_compose(
+        repository_root=REPOSITORY_ROOT,
+        state_root=state_root,
+        run_id=run_id,
+        runtime_configuration=runtime_configuration,
+        services=services,
+        bootstrap=bootstrap,
+    )
 
 
 def _stop_readiness_services() -> subprocess.CompletedProcess[str]:
+    command = [
+        "docker",
+        "compose",
+        "--profile",
+        "t2h-live",
+        "stop",
+        "live-hourly-producer-t2h",
+        "streaming-inference-t2h-live",
+    ]
+    env = os.environ.copy()
+    try:
+        env = azure_compose_environment(
+            REPOSITORY_ROOT,
+            env,
+            required=is_azure_runtime(REPOSITORY_ROOT, env),
+        )
+    except AzureComposeConfigurationError as exc:
+        return subprocess.CompletedProcess(command, 2, "", str(exc))
     return subprocess.run(
-        [
-            "docker",
-            "compose",
-            "--profile",
-            "t2h-live",
-            "stop",
-            "live-hourly-producer-t2h",
-            "streaming-inference-t2h-live",
-        ],
+        command,
         cwd=REPOSITORY_ROOT,
+        env=env,
         text=True,
         capture_output=True,
         check=False,
@@ -2197,6 +2399,7 @@ def _write_start_request(
 ) -> Path:
     if forecast_grace_period_seconds <= 0 or reference_grace_period_seconds <= 0:
         raise ValueError("forecast and reference grace periods must be positive")
+    runtime_configuration = cohort_runtime_configuration(run_id)
     run_state = state_root / run_id
     if (run_state / "start_request.json").exists() or (run_state / "cohort_manifest.json").exists():
         raise FileExistsError(f"prospective run state already exists: {run_state}")
@@ -2228,7 +2431,7 @@ def _write_start_request(
                 "live-hourly-producer-t2h",
                 "streaming-inference-t2h-live",
             ],
-            "input_topic": "weather.hourly.observations.t2h.live.v1",
+            **runtime_configuration,
             "producer_poll_interval_seconds": 300,
             "producer_history_hours": 48,
             "provider": PROVIDER_NAME,
@@ -2262,16 +2465,40 @@ def _default_model_contract() -> dict[str, Any]:
 
 
 def _preflight(args: argparse.Namespace, state_root: Path) -> int:
+    azure_runtime = is_azure_runtime(REPOSITORY_ROOT, os.environ)
+    try:
+        command_env = azure_compose_environment(
+            REPOSITORY_ROOT,
+            os.environ,
+            required=azure_runtime,
+        )
+    except AzureComposeConfigurationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     commands = [
         ("compileall", [sys.executable, "-m", "compileall", "."]),
         ("pytest", [sys.executable, "-m", "pytest", "-q"]),
         ("git_diff_check", ["git", "diff", "--check"]),
-        ("docker_compose_config", ["docker", "compose", "--profile", "t2h-live", "config", "--quiet"]),
+        ("docker_compose_config", ["docker", "compose", "config", "--quiet"]),
     ]
     records: dict[str, Any] = {}
     for name, command in commands:
         started = time.perf_counter()
-        completed = subprocess.run(command, cwd=REPOSITORY_ROOT, text=True, capture_output=True, check=False)
+        if name == "docker_compose_config" and azure_runtime:
+            try:
+                validate_azure_compose_configuration(REPOSITORY_ROOT, command_env)
+                completed = subprocess.CompletedProcess(command, 0, "", "")
+            except AzureComposeConfigurationError as exc:
+                completed = subprocess.CompletedProcess(command, 1, "", str(exc))
+        else:
+            completed = subprocess.run(
+                command,
+                cwd=REPOSITORY_ROOT,
+                env=command_env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
         records[name] = {
             "status": "PASS" if completed.returncode == 0 else "FAIL",
             "returncode": completed.returncode,
@@ -2299,73 +2526,218 @@ def _preflight(args: argparse.Namespace, state_root: Path) -> int:
     return 0 if summary["status"] == "PASS" else 1
 
 
-def _readiness(args: argparse.Namespace, state_root: Path) -> int:
-    contract = _default_model_contract()
-    if contract.get("status") != "PASS":
-        print(json.dumps(contract, indent=2))
-        return 1
+def _readiness(
+    args: argparse.Namespace,
+    state_root: Path,
+    *,
+    _lock_acquired: bool = False,
+) -> int:
+    if not _lock_acquired:
+        lock_path = _fresh_readiness_lock_path(state_root)
+        with _exclusive_process_lock(lock_path) as acquired:
+            if not acquired:
+                print(
+                    "Fresh Formal Readiness is already running or its process lock is unavailable; refusing to proceed.",
+                    file=sys.stderr,
+                )
+                return 2
+            return _readiness(args, state_root, _lock_acquired=True)
+
     run_id = args.run_id or _timestamp_run_id("prospective-readiness-t2h-v1")
-    run_state = state_root / run_id
-    run_state.mkdir(parents=True, exist_ok=False)
+    requested_at = iso_utc(utc_now())
     request = {
         "run_id": run_id,
-        "requested_at": iso_utc(utc_now()),
-        "contract_fingerprint": contract["contract_fingerprint"],
+        "requested_at": requested_at,
+        "attempt_id": uuid.uuid4().hex,
         "cohort_protocol_id": COHORT_PROTOCOL_ID,
-        "status": "WAITING",
     }
+    contract = _default_model_contract()
+    request["contract_fingerprint"] = contract.get("contract_fingerprint")
+    _begin_readiness_attempt(state_root, request)
+    if contract.get("status") != "PASS":
+        failure = _record_readiness_attempt(
+            state_root,
+            request,
+            {
+                "status": "FAIL",
+                "reason": "MODEL_CONTRACT_PREFLIGHT_FAILED",
+                "contract": contract,
+            },
+        )
+        print(json.dumps(failure, indent=2), file=sys.stderr)
+        return 1
+
+    try:
+        runtime_configuration = cohort_runtime_configuration(run_id)
+    except Exception as exc:
+        failure = _record_readiness_attempt(
+            state_root,
+            request,
+            {
+                "status": "FAIL",
+                "reason": "READINESS_RUNTIME_CONFIGURATION_FAILED",
+                "error": repr(exc),
+            },
+        )
+        print(json.dumps(failure, indent=2), file=sys.stderr)
+        return 1
+
+    request["runtime_configuration"] = runtime_configuration
+    run_state = state_root / run_id
+    try:
+        run_state.mkdir(parents=True, exist_ok=False)
+    except FileExistsError:
+        failure = _record_readiness_attempt(
+            state_root,
+            request,
+            {
+                "status": "FAIL",
+                "reason": "READINESS_RUN_ID_ALREADY_EXISTS",
+                "failure_phase": "REQUEST_INITIALIZATION",
+            },
+        )
+        print(json.dumps(failure, indent=2), file=sys.stderr)
+        return 1
+    _atomic_json(_readiness_attempt_dir(state_root, request["attempt_id"]) / "request.json", request)
+    request["status"] = "WAITING"
     _atomic_json(run_state / "readiness_request.json", request)
-    completed = _run_compose(run_id)
-    if completed.returncode:
+
+    def current_attempt_result(result: Mapping[str, Any]) -> dict[str, Any]:
+        tagged = _readiness_result_for_request(result, request)
+        tagged["contract_fingerprint"] = contract["contract_fingerprint"]
+        tagged["cohort_protocol_id"] = COHORT_PROTOCOL_ID
+        return tagged
+
+    def stop_and_record(result: Mapping[str, Any]) -> dict[str, Any]:
         stopped = _stop_readiness_services()
+        tagged = current_attempt_result(result)
+        tagged["readiness_services_stopped"] = stopped.returncode == 0
+        if stopped.returncode:
+            if tagged.get("status") == "PASS":
+                tagged["status"] = "FAIL"
+                tagged["reason"] = "READINESS_CLEANUP_FAILED"
+            tagged["cleanup_error"] = stopped.stderr[-4000:]
+        return _record_readiness_attempt(state_root, request, tagged)
+
+    completed = _run_compose(run_id, state_root=state_root, bootstrap=True)
+    if completed.returncode:
+        failure = stop_and_record(
+            {
+                "status": "FAIL",
+                "reason": "BOOTSTRAP_FAILED",
+                "failure_phase": "BOOTSTRAP",
+                "bootstrap_returncode": completed.returncode,
+                "bootstrap_stdout_tail": completed.stdout[-4000:],
+                "bootstrap_stderr_tail": completed.stderr[-4000:],
+            }
+        )
         print(completed.stdout)
         print(completed.stderr, file=sys.stderr)
-        if stopped.returncode:
-            print(stopped.stderr, file=sys.stderr)
+        if not failure.get("readiness_services_stopped"):
+            print(failure.get("cleanup_error", "readiness service cleanup failed"), file=sys.stderr)
         return completed.returncode
     print(completed.stdout)
     deadline = time.monotonic() + max(0, int(args.wait_seconds))
     while time.monotonic() < deadline:
         readiness = _read_json(run_state / "readiness.json")
-        if readiness and readiness.get("status") == "PASS":
-            readiness["contract_fingerprint"] = contract["contract_fingerprint"]
-            readiness["cohort_protocol_id"] = COHORT_PROTOCOL_ID
-            readiness["run_id"] = run_id
-            stopped = _stop_readiness_services()
-            readiness["readiness_services_stopped"] = stopped.returncode == 0
-            if stopped.returncode:
-                readiness["status"] = "FAIL"
-                readiness["cleanup_error"] = stopped.stderr[-4000:]
-            _atomic_json(state_root / "readiness.json", readiness)
-            print(json.dumps(readiness, indent=2))
-            return 0 if readiness["status"] == "PASS" else 1
-        if readiness and readiness.get("status") == "FAIL":
-            stopped = _stop_readiness_services()
-            readiness["readiness_services_stopped"] = stopped.returncode == 0
-            if stopped.returncode:
-                readiness["cleanup_error"] = stopped.stderr[-4000:]
-            print(json.dumps(readiness, indent=2))
-            return 1
+        if isinstance(readiness, Mapping):
+            if readiness.get("attempt_id") != request["attempt_id"] or readiness.get("run_id") != run_id:
+                failure = stop_and_record(
+                    {
+                        "status": "FAIL",
+                        "reason": "READINESS_ATTEMPT_IDENTITY_MISMATCH",
+                        "observed_attempt_id": readiness.get("attempt_id"),
+                        "observed_run_id": readiness.get("run_id"),
+                    }
+                )
+                print(json.dumps(failure, indent=2), file=sys.stderr)
+                return 1
+            readiness = current_attempt_result(readiness)
+            status = readiness.get("status")
+            if status == "PASS":
+                recorded = stop_and_record(readiness)
+                print(json.dumps(recorded, indent=2))
+                return 0 if recorded["status"] == "PASS" else 1
+            if status == "FAIL":
+                recorded = stop_and_record(readiness)
+                print(json.dumps(recorded, indent=2))
+                return 1
+            if status in {"INCOMPLETE", "READINESS_INCOMPLETE"}:
+                readiness["status"] = "READINESS_INCOMPLETE"
+                recorded = stop_and_record(readiness)
+                print(json.dumps(recorded, indent=2))
+                return 2
+            if status == "WAITING":
+                _record_readiness_attempt(state_root, request, readiness)
+            else:
+                failure = stop_and_record(
+                    {
+                        "status": "FAIL",
+                        "reason": "READINESS_STATUS_INVALID",
+                        "observed_status": status,
+                    }
+                )
+                print(json.dumps(failure, indent=2), file=sys.stderr)
+                return 1
         time.sleep(READINESS_POLL_SECONDS)
-    result = _read_json(run_state / "readiness.json", {"status": "WAITING", "run_id": run_id})
-    result["status"] = "READINESS_INCOMPLETE"
+    result = _read_json(run_state / "readiness.json")
+    if result is None:
+        result = {
+            "status": "READINESS_INCOMPLETE",
+            "run_id": run_id,
+            "requested_at": request["requested_at"],
+            "attempt_id": request["attempt_id"],
+        }
+    elif not isinstance(result, Mapping) or result.get("attempt_id") != request["attempt_id"] or result.get("run_id") != run_id:
+        result = {
+            "status": "FAIL",
+            "reason": "READINESS_ATTEMPT_IDENTITY_MISMATCH",
+            "observed_attempt_id": result.get("attempt_id") if isinstance(result, Mapping) else None,
+            "observed_run_id": result.get("run_id") if isinstance(result, Mapping) else None,
+        }
+    else:
+        result["status"] = "READINESS_INCOMPLETE"
     result["waited_seconds"] = int(args.wait_seconds)
-    stopped = _stop_readiness_services()
-    result["readiness_services_stopped"] = stopped.returncode == 0
-    if stopped.returncode:
-        result["cleanup_error"] = stopped.stderr[-4000:]
-    _atomic_json(state_root / "readiness.json", result)
-    print(json.dumps(result, indent=2))
-    return 2
+    recorded = stop_and_record(result)
+    print(json.dumps(recorded, indent=2))
+    return 1 if recorded.get("reason") == "READINESS_ATTEMPT_IDENTITY_MISMATCH" else 2
 
 
 def _start(args: argparse.Namespace, state_root: Path) -> int:
     preflight = _read_json(state_root / "preflight_test_results.json")
-    readiness = _read_json(state_root / "readiness.json")
+    readiness_record = _read_json(state_root / "readiness.json", {}) or {}
+    readiness = readiness_record if isinstance(readiness_record, Mapping) else {}
+    latest_attempt_record = _read_json(state_root / "readiness_latest_attempt.json", {}) or {}
+    latest_readiness_attempt = latest_attempt_record if isinstance(latest_attempt_record, Mapping) else {}
     contract = _default_model_contract()
     if not preflight or preflight.get("status") != "PASS" or preflight.get("cohort_protocol_id") != COHORT_PROTOCOL_ID:
         print("Run preflight and pass all blocking checks before starting the official cohort.", file=sys.stderr)
         return 2
+    readiness_attempt_id = readiness.get("attempt_id") if isinstance(readiness, Mapping) else None
+    readiness_attempt_request: Mapping[str, Any] = {}
+    readiness_attempt_result: Mapping[str, Any] = {}
+    if _readiness_attempt_id_is_valid(readiness_attempt_id):
+        attempt_dir = _readiness_attempt_dir(state_root, readiness_attempt_id)
+        readiness_attempt_request = _read_json(attempt_dir / "request.json", {}) or {}
+        readiness_attempt_result = _read_json(attempt_dir / "result.json", {}) or {}
+    readiness_attempt_is_latest = bool(
+        isinstance(readiness, Mapping)
+        and _readiness_attempt_id_is_valid(readiness_attempt_id)
+        and latest_readiness_attempt.get("attempt_id") == readiness_attempt_id
+        and readiness_attempt_request.get("attempt_id") == readiness_attempt_id
+        and readiness_attempt_result.get("attempt_id") == readiness_attempt_id
+        and readiness_attempt_request.get("run_id") == latest_readiness_attempt.get("run_id") == readiness.get("run_id")
+        and readiness_attempt_result.get("run_id") == readiness.get("run_id")
+        and readiness_attempt_request.get("requested_at") == latest_readiness_attempt.get("requested_at")
+        and readiness_attempt_result.get("requested_at") == readiness_attempt_request.get("requested_at")
+        and readiness.get("requested_at") == readiness_attempt_request.get("requested_at")
+        and readiness_attempt_request.get("contract_fingerprint") == contract.get("contract_fingerprint")
+        and readiness_attempt_request.get("cohort_protocol_id") == COHORT_PROTOCOL_ID
+        and readiness_attempt_result.get("status") == "PASS"
+        and readiness_attempt_result.get("contract_fingerprint") == contract.get("contract_fingerprint")
+        and readiness_attempt_result.get("cohort_protocol_id") == COHORT_PROTOCOL_ID
+        and readiness_attempt_result.get("checked_at") == readiness.get("checked_at")
+    )
     readiness_age: float | None = None
     if readiness and readiness.get("checked_at"):
         try:
@@ -2376,6 +2748,7 @@ def _start(args: argparse.Namespace, state_root: Path) -> int:
             readiness_age = None
     readiness_passes = bool(
         readiness
+        and readiness_attempt_is_latest
         and readiness.get("status") == "PASS"
         and readiness.get("cohort_protocol_id") == COHORT_PROTOCOL_ID
         and readiness.get("contract_fingerprint") == contract.get("contract_fingerprint")
@@ -2410,7 +2783,7 @@ def _start(args: argparse.Namespace, state_root: Path) -> int:
         reference_grace_period_seconds=args.reference_grace_seconds,
     )
     _atomic_json(state_root / "active_run.json", {"run_id": run_id, "started_at": iso_utc(utc_now())})
-    completed = _run_compose(run_id)
+    completed = _run_compose(run_id, state_root=state_root, bootstrap=True)
     if completed.returncode:
         _atomic_json(run_state / "compose_start_error.json", {"returncode": completed.returncode, "stdout": completed.stdout, "stderr": completed.stderr})
         print(completed.stdout)
@@ -2570,7 +2943,12 @@ def _resume(args: argparse.Namespace, state_root: Path) -> int:
                 )
         except (TypeError, ValueError):
             pass
-    completed = _run_compose(run_id)
+    runtime_configuration = request.get("runtime_configuration", {})
+    completed = _run_compose(
+        run_id,
+        state_root=state_root,
+        bootstrap=bool(runtime_configuration.get("bootstrap_required")),
+    )
     print(completed.stdout)
     if completed.returncode:
         print(completed.stderr, file=sys.stderr)
@@ -2623,6 +3001,22 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command in {"preflight", "readiness", "start", "resume"} and is_azure_runtime(
+        REPOSITORY_ROOT,
+        os.environ,
+    ):
+        try:
+            compose_env = azure_compose_environment(
+                REPOSITORY_ROOT,
+                os.environ,
+                required=True,
+            )
+            if args.command != "preflight":
+                compose_env = validate_azure_compose_configuration(REPOSITORY_ROOT, compose_env)
+        except AzureComposeConfigurationError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        os.environ.update(compose_env)
     state_root = Path(args.state_root).resolve()
     state_root.mkdir(parents=True, exist_ok=True)
     return int(args.handler(args, state_root))
