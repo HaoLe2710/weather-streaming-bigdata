@@ -327,13 +327,44 @@ def test_watchdog_audit_command_is_read_only_and_uses_run_checkpoint_and_attempt
         captured["kwargs"] = kwargs
         audit_path.write_text(json.dumps({
             "status": "PASS",
-            "checks": {"state_history_is_49_rows_per_location": True},
+            "checks": {
+                "forecast_id_duplicates_zero": True,
+                "logical_forecast_duplicates_zero": True,
+                "target_offset_violations_zero": True,
+                "contract_violations_zero": True,
+                "provider_contract_violations_zero": True,
+                "live_nonpositive_leads_zero": True,
+                "replay_location_coverage_valid": True,
+                "replay_rows_match_expected": True,
+                "live_rows_match_expected": True,
+                "persistence_receipts_match_forecast_snapshot": True,
+                "state_has_63_locations": True,
+                "state_location_ids_non_null": True,
+                "state_history_is_49_rows_per_location": True,
+                "state_duplicate_location_hours_zero": True,
+                "state_history_is_hourly_contiguous": True,
+            },
             "state_audit_classification": "STATE_HISTORY_VALID",
             "state": _state_report(),
             "state_audit_attempts": [{"status": "PASS"}],
             "checkpoint_progress": _checkpoint("SETTLED"),
+            "forecast_count_snapshot_audit": {"status": "PASS", "classification": "FORECAST_COUNT_SNAPSHOT_CONSISTENT"},
         }), encoding="utf-8")
-        return subprocess.CompletedProcess(command, 0, "PASS", "")
+        audit_id = command[command.index("--audit-id") + 1]
+        state_dir = Path(command[command.index("--state-dir") + 1])
+        job_path = audit_path.parent / "delta_audit_processes" / f"{audit_id}.json"
+        job_path.parent.mkdir(parents=True)
+        job_path.write_text(json.dumps({
+            "audit_id": audit_id,
+            "status": "SUCCEEDED",
+            "returncode": 0,
+            "process_identity": {"pid": 11, "process_group_id": 11, "session_id": 11, "start_time_ticks": 123},
+            "cleanup": {"confirmed_terminated": True},
+            "log_path": str(state_dir / "delta_audit_processes" / f"{audit_id}.log"),
+        }), encoding="utf-8")
+        # A detached exec can launch the process and then lose its host-side
+        # client; persisted, run-unique supervisor evidence remains authoritative.
+        return subprocess.CompletedProcess(command, 1, "", "client disconnected after detach")
 
     result = watchdog._delta_audit(
         tmp_path,
@@ -342,15 +373,27 @@ def test_watchdog_audit_command_is_read_only_and_uses_run_checkpoint_and_attempt
         expected_live_forecasts=63,
         audit_path=audit_path,
         runner=runner,
+        cohort_id=COHORT_ID,
     )
 
     command = captured["command"]
     assert result["status"] == "PASS"
+    assert command[command.index("exec") + 1:command.index("exec") + 3] == ["-T", "-d"]
+    supervisor_index = command.index("/opt/project/ops/azure_t2h/container_audit_process.py")
+    assert command[supervisor_index + 1] == "run"
+    assert command[supervisor_index + 2] == "--state-dir"
+    assert command[command.index("--timeout-seconds") + 1] == "900.0"
+    assert command[command.index("--cohort-status-path") + 1] == f"/opt/project/prospective-runtime/{RUN_ID}/cohort_status.json"
+    assert command[command.index("--expected-cohort-id") + 1] == COHORT_ID
     assert command[command.index("--checkpoint-path") + 1] == f"/opt/project/data/checkpoints/t2h_v1_1/{RUN_ID}/live"
     assert command[command.index("--attempt-log-jsonl") + 1].endswith("/delta_audit_attempts.jsonl")
     assert any("spark-submit" in part for part in command)
     assert not any(value in {"start", "restart", "up", "down", "resume"} for value in command)
-    assert captured["kwargs"]["timeout"] == 900
+    assert captured["kwargs"]["timeout"] == 30
+    assert result["process_cleanup"]["confirmed_terminated"] is True
+    lifecycle = [json.loads(line) for line in (audit_path.parent / "delta_audit_host_lifecycle.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert any(row["event"] == "AUDIT_DISPATCH_REJECTED" for row in lifecycle)
+    assert any(row["event"] == "AUDIT_PROCESS_COMPLETED" for row in lifecycle)
 
 
 def _write_monitor_fixture(tmp_path: Path, now: datetime = NOW) -> tuple[Path, Path, dict[str, bytes]]:
@@ -581,11 +624,11 @@ def test_monitor_lock_contention_does_not_run_audit_or_recover_services(tmp_path
 
     monkeypatch.setattr(watchdog, "_exclusive_audit_lock", lock_denied)
     monkeypatch.setattr(watchdog, "_delta_audit", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("lock loser must not run Spark")))
-    recovery_findings = []
+    recovery_calls = []
     monkeypatch.setattr(
         watchdog,
         "recover_infrastructure",
-        lambda *args, **kwargs: recovery_findings.extend(kwargs["data_errors"]) or [],
+        lambda *args, **kwargs: recovery_calls.append(kwargs["data_errors"]) or [],
     )
 
     report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=True)
@@ -594,5 +637,278 @@ def test_monitor_lock_contention_does_not_run_audit_or_recover_services(tmp_path
     assert report["status"] == "FAIL"
     assert report["hourly_delta_audit"]["classification"] == "AUDIT_ALREADY_RUNNING"
     assert "HOURLY_DELTA_AUDIT_COULD_NOT_RUN" in report["infrastructure_errors"]
-    assert "AUDIT_LOCK_HELD" in recovery_findings
+    assert "AUDIT_LOCK_HELD" in report["recovery_eligibility"]["blocking_reasons"]
+    assert recovery_calls == []
     assert not (ops_dir / "delta_audit_attempts.jsonl").exists()
+
+
+def _write_prior_failed_hourly_audit(tmp_path, result_root, *, classification="STATE_HISTORY_CONTRACT_FAILED", checks=None):
+    ops_dir = result_root / "runtime" / "ops"
+    ops_dir.mkdir(parents=True, exist_ok=True)
+    (ops_dir / "hourly_reports.jsonl").write_text(json.dumps({
+        "hour_key": NOW.strftime("%Y-%m-%dT%H:00Z"),
+        "checked_at": NOW.isoformat(),
+        "run_id": RUN_ID,
+        "status": "FAIL",
+        "hourly_delta_audit": {
+            "status": "FAIL",
+            "checked_at": NOW.isoformat(),
+            "classification": classification,
+            "evidence_path": "delta_audit_20261010T120000Z.json",
+            "checks": checks or {
+                "forecast_id_duplicates_zero": True,
+                "logical_forecast_duplicates_zero": True,
+                "target_offset_violations_zero": True,
+                "contract_violations_zero": True,
+                "provider_contract_violations_zero": True,
+                "live_nonpositive_leads_zero": True,
+                "replay_location_coverage_valid": True,
+                "replay_rows_match_expected": True,
+                "live_rows_match_expected": True,
+                "state_has_63_locations": True,
+                "state_location_ids_non_null": True,
+                "state_history_is_49_rows_per_location": False,
+                "state_duplicate_location_hours_zero": True,
+                "state_history_is_hourly_contiguous": True,
+            },
+        },
+    }) + "\n", encoding="utf-8")
+    return ops_dir
+
+
+def _patch_monitor_states(monkeypatch, states):
+    monkeypatch.setattr(watchdog, "collect_container_states", lambda *args, **kwargs: states)
+
+
+def test_historical_hourly_failure_remains_alerted_but_does_not_restart_healthy_services(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    _patch_monitor_states(monkeypatch, states)
+    ops_dir = _write_prior_failed_hourly_audit(tmp_path, result_root)
+    calls = []
+
+    report = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(minutes=5),
+        run_delta_audit=False,
+        runner=lambda command, **kwargs: calls.append(command) or subprocess.CompletedProcess(command, 0, "", ""),
+    )
+
+    assert report["hourly_delta_audit"]["status"] == "UNRESOLVED"
+    assert "HOURLY_DELTA_AUDIT_FAILED" in report["data_errors"]
+    assert report["recovery_actions"] == []
+    assert calls == []
+    assert len((ops_dir / "alerts.jsonl").read_text(encoding="utf-8").splitlines()) == 1
+
+
+@pytest.mark.parametrize(
+    ("service", "state"),
+    [
+        ("live-hourly-producer-t2h", {"status": "exited", "health": None, "restart_count": 0}),
+        ("streaming-inference-t2h-live", {"status": "running", "health": "unhealthy", "restart_count": 1}),
+    ],
+)
+def test_historical_hourly_failure_allows_eligible_infrastructure_recovery(tmp_path, monkeypatch, service, state):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    states = {name: {"status": "running", "health": "healthy", "restart_count": 0} for name in watchdog.SERVICES}
+    states[service] = state
+    _patch_monitor_states(monkeypatch, states)
+    _write_prior_failed_hourly_audit(tmp_path, result_root)
+    commands = []
+
+    report = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(minutes=5),
+        run_delta_audit=False,
+        runner=lambda command, **kwargs: commands.append(command) or subprocess.CompletedProcess(command, 0, "started", ""),
+    )
+
+    assert "HOURLY_DELTA_AUDIT_FAILED" in report["data_errors"]
+    assert report["recovery_eligibility"]["eligible"] is True
+    assert report["recovery_actions"][0]["service"] == service
+    assert report["recovery_actions"][0]["status"] == "PASS"
+    assert len(commands) == 1
+
+
+def test_current_data_integrity_violation_blocks_recovery_despite_historical_audit_failure(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    status_path = state_root / RUN_ID / "cohort_status.json"
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    status["reference_conflicts"] = 1
+    status_path.write_text(json.dumps(status), encoding="utf-8")
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "running", "health": "unhealthy", "restart_count": 0}
+    _patch_monitor_states(monkeypatch, states)
+    _write_prior_failed_hourly_audit(tmp_path, result_root)
+    calls = []
+
+    report = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(minutes=5),
+        run_delta_audit=False,
+        runner=lambda command, **kwargs: calls.append(command) or subprocess.CompletedProcess(command, 0, "", ""),
+    )
+
+    assert any(error.startswith("COHORT_REFERENCE_CONFLICTS_NONZERO:") for error in report["current_data_errors"])
+    assert report["recovery_eligibility"]["eligible"] is False
+    assert report["recovery_actions"] == []
+    assert calls == []
+
+
+def test_invalid_live_forecast_counter_is_a_current_blocking_data_error(tmp_path, monkeypatch):
+    state_root, _, _ = _write_monitor_fixture(tmp_path)
+    status_path = state_root / RUN_ID / "cohort_status.json"
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    status["prospective_forecast_count"] = True
+    status_path.write_text(json.dumps(status), encoding="utf-8")
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "running", "health": "unhealthy", "restart_count": 0}
+    _patch_monitor_states(monkeypatch, states)
+    recovery_calls = []
+    monkeypatch.setattr(
+        watchdog,
+        "recover_infrastructure",
+        lambda *args, **kwargs: recovery_calls.append(kwargs["data_errors"]) or [],
+    )
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=False)
+
+    assert "COHORT_PROSPECTIVE_FORECAST_COUNT_INVALID" in report["current_data_errors"]
+    assert report["recovery_eligibility"]["eligible"] is False
+    assert "COHORT_PROSPECTIVE_FORECAST_COUNT_INVALID" in report["recovery_eligibility"]["blocking_reasons"]
+    assert report["recovery_actions"] == []
+    assert recovery_calls == []
+
+
+def test_unresolved_audit_with_unknown_classification_blocks_recovery(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["live-hourly-producer-t2h"] = {"status": "exited", "health": None, "restart_count": 0}
+    _patch_monitor_states(monkeypatch, states)
+    _write_prior_failed_hourly_audit(tmp_path, result_root, classification=None)
+    calls = []
+
+    report = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(minutes=5),
+        run_delta_audit=False,
+        runner=lambda command, **kwargs: calls.append(command) or subprocess.CompletedProcess(command, 0, "", ""),
+    )
+
+    assert report["recovery_eligibility"]["eligible"] is False
+    assert "HOURLY_DELTA_AUDIT_CLASSIFICATION_UNVERIFIED" in report["recovery_eligibility"]["blocking_reasons"]
+    assert report["recovery_actions"] == []
+    assert calls == []
+
+
+def test_audit_lock_contention_blocks_unhealthy_service_recovery(tmp_path, monkeypatch):
+    state_root, _, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "running", "health": "unhealthy", "restart_count": 0}
+    _patch_monitor_states(monkeypatch, states)
+
+    @contextmanager
+    def lock_denied(_path):
+        yield False
+
+    monkeypatch.setattr(watchdog, "_exclusive_audit_lock", lock_denied)
+    monkeypatch.setattr(watchdog, "_delta_audit", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("lock loser must not run Spark")))
+    calls = []
+    report = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW,
+        runner=lambda command, **kwargs: calls.append(command) or subprocess.CompletedProcess(command, 0, "", ""),
+    )
+
+    assert "AUDIT_LOCK_HELD" in report["recovery_eligibility"]["blocking_reasons"]
+    assert report["recovery_actions"] == []
+    assert calls == []
+
+
+@pytest.mark.parametrize("guard_status", ["ACTIVE", "UNVERIFIED"])
+def test_container_audit_process_active_or_unverified_blocks_infrastructure_recovery(tmp_path, monkeypatch, guard_status):
+    state_root, _, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "running", "health": "unhealthy", "restart_count": 1}
+    _patch_monitor_states(monkeypatch, states)
+    guard = {
+        "status": guard_status,
+        "classification": "AUDIT_PROCESS_STILL_RUNNING" if guard_status == "ACTIVE" else "AUDIT_PROCESS_IDENTITY_UNVERIFIED",
+        "audit_id": "delta_audit_active",
+        "process_identity": {"pid": 1234, "process_group_id": 1234, "session_id": 1234},
+    }
+    monkeypatch.setattr(watchdog, "_audit_process_guard", lambda *args, **kwargs: dict(guard))
+    recovery_calls = []
+    monkeypatch.setattr(
+        watchdog,
+        "recover_infrastructure",
+        lambda *args, **kwargs: recovery_calls.append(kwargs["data_errors"]) or [],
+    )
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=False)
+
+    assert report["recovery_eligibility"]["eligible"] is False
+    assert "AUDIT_PROCESS_ACTIVE_OR_UNVERIFIED" in report["recovery_eligibility"]["blocking_reasons"]
+    assert report["audit_process_guard"]["before_recovery"]["status"] == guard_status
+    assert report["recovery_actions"] == []
+    assert recovery_calls == []
+
+
+def test_inference_unavailable_skips_delta_audit_without_turning_infra_failure_into_data_blocker(tmp_path, monkeypatch):
+    state_root, _, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "exited", "health": None, "restart_count": 1}
+    _patch_monitor_states(monkeypatch, states)
+    monkeypatch.setattr(
+        watchdog,
+        "_delta_audit",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("cannot execute spark-submit in a stopped inference container")),
+    )
+    recovery_calls = []
+    monkeypatch.setattr(
+        watchdog,
+        "recover_infrastructure",
+        lambda *args, **kwargs: recovery_calls.append(kwargs["data_errors"]) or [],
+    )
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=True)
+
+    assert report["hourly_delta_audit"]["status"] == "SKIPPED"
+    assert report["hourly_delta_audit"]["origin"] == "INFRASTRUCTURE_UNAVAILABLE"
+    assert report["recovery_eligibility"]["eligible"] is True
+    assert recovery_calls == [[]]
+
+
+def test_skipped_audit_keeps_previous_hourly_failure_visible_and_append_only(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    states = {service: {"status": "running", "health": "healthy", "restart_count": 0} for service in watchdog.SERVICES}
+    states["streaming-inference-t2h-live"] = {"status": "exited", "health": None, "restart_count": 1}
+    _patch_monitor_states(monkeypatch, states)
+    ops_dir = _write_prior_failed_hourly_audit(tmp_path, result_root)
+    rows = [json.loads(line) for line in (ops_dir / "hourly_reports.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows[0]["hour_key"] = (NOW - timedelta(hours=1)).strftime("%Y-%m-%dT%H:00Z")
+    rows[0]["checked_at"] = (NOW - timedelta(hours=1)).isoformat()
+    (ops_dir / "hourly_reports.jsonl").write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
+    recovery_calls = []
+    monkeypatch.setattr(
+        watchdog,
+        "recover_infrastructure",
+        lambda *args, **kwargs: recovery_calls.append(kwargs["data_errors"]) or [],
+    )
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=True)
+
+    assert report["hourly_delta_audit"]["status"] == "UNRESOLVED"
+    assert report["hourly_delta_audit"]["origin"] == "CARRIED_FORWARD"
+    assert report["hourly_delta_audit"]["latest_attempt"]["origin"] == "INFRASTRUCTURE_UNAVAILABLE"
+    assert "HOURLY_DELTA_AUDIT_FAILED" in report["data_errors"]
+    assert report["recovery_eligibility"]["eligible"] is True
+    assert recovery_calls == [[]]
+    saved = [json.loads(line) for line in (ops_dir / "hourly_reports.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert len(saved) == 2
+    assert saved[-1]["hourly_delta_audit"]["latest_attempt"]["status"] == "SKIPPED"

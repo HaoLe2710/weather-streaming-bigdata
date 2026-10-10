@@ -61,6 +61,8 @@ jobs:
             tests/test_azure_compose.py \
             tests/test_azure_t2h_watchdog.py \
             tests/test_hourly_delta_audit.py \
+            tests/test_delta_audit_snapshot_consistency.py \
+            tests/test_azure_delta_audit_process.py \
             tests/test_azure_systemd_units.py
 
       - name: Run full test suite
@@ -77,5 +79,5 @@ jobs:
 
       - name: Compile Python modules and validate shell syntax
         run: |
-          python -m compileall -q validation spark tests
+          python -m compileall -q validation spark ops tests
           for script in ops/azure_t2h/*.sh .github/scripts/*.sh; do bash -n "$script"; done
