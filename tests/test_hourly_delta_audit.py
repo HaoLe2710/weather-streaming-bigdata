@@ -379,7 +379,7 @@ def test_watchdog_audit_command_is_read_only_and_uses_run_checkpoint_and_attempt
     command = captured["command"]
     assert result["status"] == "PASS"
     assert command[command.index("exec") + 1:command.index("exec") + 3] == ["-T", "-d"]
-    supervisor_index = command.index("/opt/project/ops/azure_t2h/container_audit_process.py")
+    supervisor_index = command.index(watchdog.CONTAINER_AUDIT_SUPERVISOR_PATH)
     assert command[supervisor_index + 1] == "run"
     assert command[supervisor_index + 2] == "--state-dir"
     assert command[command.index("--timeout-seconds") + 1] == "900.0"
@@ -642,38 +642,168 @@ def test_monitor_lock_contention_does_not_run_audit_or_recover_services(tmp_path
     assert not (ops_dir / "delta_audit_attempts.jsonl").exists()
 
 
-def _write_prior_failed_hourly_audit(tmp_path, result_root, *, classification="STATE_HISTORY_CONTRACT_FAILED", checks=None):
+def _transient_retention_audit(classification="TRANSIENT_STATE_WINDOW_TIMEOUT"):
+    state = _state_report(50)
+    state_checks = audit._state_history_checks(state)
+    checkpoint = _checkpoint("PENDING", 16, 15)
+    audit_id = "delta_audit_20261010T120000Z"
+
+    def candidate(attempt_number):
+        return {
+            "event": "STATE_AUDIT_ATTEMPT",
+            "audit_id": audit_id,
+            "attempt_number": attempt_number,
+            "status": "TRANSIENT_CANDIDATE",
+            "classification": "TRANSIENT_MERGE_BEFORE_RETENTION_DELETE",
+            "reason": "checkpoint_has_uncommitted_batch_during_exact_50_row_retention_window",
+            "state": dict(state),
+            "checks": dict(state_checks),
+            "checkpoint_before": dict(checkpoint),
+            "checkpoint_after": dict(checkpoint),
+        }
+
+    if classification == "TRANSIENT_RETRY_LIMIT_EXCEEDED":
+        attempts = [candidate(1), candidate(2)]
+    else:
+        attempts = [
+            candidate(1),
+            {
+                "event": "STATE_AUDIT_RETRY_WAIT",
+                "audit_id": audit_id,
+                "attempt_number": 1,
+                "status": "FAIL",
+                "classification": "TRANSIENT_STATE_WINDOW_TIMEOUT",
+                "reason": "checkpoint_batch_did_not_commit_before_retry_deadline",
+                "state": dict(state),
+                "checks": dict(state_checks),
+                "checkpoint_after": dict(checkpoint),
+            },
+        ]
+
+    checks = {name: True for name in watchdog.HOURLY_AUDIT_FORECAST_CHECKS}
+    checks.update(state_checks)
+    return {
+        "status": "FAIL",
+        "checked_at": NOW.isoformat(),
+        "classification": classification,
+        "evidence_path": "delta_audit_20261010T120000Z.json",
+        "attempt_log_path": "delta_audit_attempts.jsonl",
+        "checks": checks,
+        "state": state,
+        "state_audit_attempts": attempts,
+        "checkpoint_progress": dict(checkpoint),
+        "forecast_count_snapshot_audit": {
+            "status": "PASS",
+            "classification": "FORECAST_COUNT_SNAPSHOT_CONSISTENT",
+            "expected_live_forecasts": 441,
+            "observed_live_forecasts": 441,
+            "delta_version": 21,
+            "hard_failures": [],
+            "receipt_integrity": {
+                "status": "PASS",
+                "missing": 0,
+                "extra": 0,
+                "duplicates": 0,
+                "mismatched": 0,
+                "invalid": 0,
+            },
+        },
+    }
+
+
+def _write_prior_failed_hourly_audit(
+    tmp_path,
+    result_root,
+    *,
+    classification="TRANSIENT_STATE_WINDOW_TIMEOUT",
+    checks=None,
+    audit_evidence=None,
+):
     ops_dir = result_root / "runtime" / "ops"
     ops_dir.mkdir(parents=True, exist_ok=True)
+    historical_audit = dict(audit_evidence or _transient_retention_audit())
+    historical_audit["classification"] = classification
+    if checks is not None:
+        historical_audit["checks"] = checks
     (ops_dir / "hourly_reports.jsonl").write_text(json.dumps({
         "hour_key": NOW.strftime("%Y-%m-%dT%H:00Z"),
         "checked_at": NOW.isoformat(),
         "run_id": RUN_ID,
         "status": "FAIL",
-        "hourly_delta_audit": {
-            "status": "FAIL",
-            "checked_at": NOW.isoformat(),
-            "classification": classification,
-            "evidence_path": "delta_audit_20261010T120000Z.json",
-            "checks": checks or {
-                "forecast_id_duplicates_zero": True,
-                "logical_forecast_duplicates_zero": True,
-                "target_offset_violations_zero": True,
-                "contract_violations_zero": True,
-                "provider_contract_violations_zero": True,
-                "live_nonpositive_leads_zero": True,
-                "replay_location_coverage_valid": True,
-                "replay_rows_match_expected": True,
-                "live_rows_match_expected": True,
-                "state_has_63_locations": True,
-                "state_location_ids_non_null": True,
-                "state_history_is_49_rows_per_location": False,
-                "state_duplicate_location_hours_zero": True,
-                "state_history_is_hourly_contiguous": True,
-            },
-        },
+        "hourly_delta_audit": historical_audit,
     }) + "\n", encoding="utf-8")
     return ops_dir
+
+
+def _carried_audit(audit_evidence):
+    report = {"data_errors": [], "infrastructure_errors": [], "status": "PASS"}
+    watchdog._carry_unresolved_hourly_delta_audit(report, audit_evidence)
+    return report["hourly_delta_audit"]
+
+
+@pytest.mark.parametrize(
+    "classification",
+    ["TRANSIENT_STATE_WINDOW_TIMEOUT", "TRANSIENT_RETRY_LIMIT_EXCEEDED"],
+)
+def test_carried_audit_allows_only_fully_evidenced_transient_retention(classification):
+    carried = _carried_audit(_transient_retention_audit(classification))
+
+    decision = watchdog._carried_audit_recovery_decision(carried)
+
+    assert carried["state"] == _state_report(50)
+    assert len(carried["state_audit_attempts"]) >= 2
+    assert decision["eligible"] is True
+    assert decision["reason"] == "evidenced_transient_retention_window_only"
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    [
+        "duplicate_location_hours",
+        "missing_location",
+        "null_location_id",
+        "history_gap",
+        "forecast_contract_violation",
+        "duplicate_forecast_key",
+        "receipt_integrity_failure",
+        "missing_current_check",
+        "missing_attempt_evidence",
+        "unknown_classification",
+        "state_contract_failure_classification",
+    ],
+)
+def test_carried_audit_rejects_all_non_transient_or_malformed_evidence(corruption):
+    evidence = _transient_retention_audit()
+    if corruption == "duplicate_location_hours":
+        evidence["state"]["duplicate_location_hours"] = 1
+        evidence["checks"]["state_duplicate_location_hours_zero"] = False
+    elif corruption == "missing_location":
+        evidence["state"].update({"locations": 62, "rows": 3_100})
+        evidence["checks"]["state_has_63_locations"] = False
+    elif corruption == "null_location_id":
+        evidence["state"]["null_location_rows"] = 1
+        evidence["checks"]["state_location_ids_non_null"] = False
+    elif corruption == "history_gap":
+        evidence["state"]["hourly_gap_rows"] = 1
+        evidence["checks"]["state_history_is_hourly_contiguous"] = False
+    elif corruption == "forecast_contract_violation":
+        evidence["checks"]["contract_violations_zero"] = False
+    elif corruption == "duplicate_forecast_key":
+        evidence["checks"]["logical_forecast_duplicates_zero"] = False
+    elif corruption == "receipt_integrity_failure":
+        evidence["forecast_count_snapshot_audit"]["receipt_integrity"]["duplicates"] = 1
+    elif corruption == "missing_current_check":
+        evidence["checks"].pop("persistence_receipts_match_forecast_snapshot")
+    elif corruption == "missing_attempt_evidence":
+        evidence.pop("state_audit_attempts")
+    elif corruption == "unknown_classification":
+        evidence["classification"] = "UNRECOGNIZED_STATE_CLASSIFICATION"
+    elif corruption == "state_contract_failure_classification":
+        evidence["classification"] = "STATE_HISTORY_CONTRACT_FAILED"
+
+    decision = watchdog._carried_audit_recovery_decision(_carried_audit(evidence))
+
+    assert decision["eligible"] is False
 
 
 def _patch_monitor_states(monkeypatch, states):

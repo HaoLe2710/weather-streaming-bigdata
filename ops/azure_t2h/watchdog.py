@@ -53,11 +53,14 @@ INFRA_RETRY_MARKERS = (
     "temporary failure in name resolution",
 )
 RECOVERY_POLICY_ID = "T2H_INFRA_RECOVERY_ELIGIBILITY_V1"
+CONTAINER_AUDIT_SUPERVISOR_PATH = "/opt/project/spark/jobs/container_audit_process.py"
+# Keep aligned with verify_t2h_forecast_delta.TRANSIENT_STATE_ROWS_PER_LOCATION.
+TRANSIENT_RETENTION_ROWS_PER_LOCATION = 50
 RECOVERABLE_CARRIED_STATE_AUDIT_CLASSIFICATIONS = frozenset({
-    "STATE_HISTORY_CONTRACT_FAILED",
     "TRANSIENT_STATE_WINDOW_TIMEOUT",
     "TRANSIENT_RETRY_LIMIT_EXCEEDED",
 })
+TRANSIENT_RETENTION_ATTEMPT_CLASSIFICATION = "TRANSIENT_MERGE_BEFORE_RETENTION_DELETE"
 HOURLY_AUDIT_FORECAST_CHECKS = frozenset({
     "forecast_id_duplicates_zero",
     "logical_forecast_duplicates_zero",
@@ -77,7 +80,6 @@ HOURLY_AUDIT_STATE_CHECKS = frozenset({
     "state_duplicate_location_hours_zero",
     "state_history_is_hourly_contiguous",
 })
-HOURLY_AUDIT_LEGACY_CHECKS = (HOURLY_AUDIT_FORECAST_CHECKS - {"persistence_receipts_match_forecast_snapshot"}) | HOURLY_AUDIT_STATE_CHECKS
 
 
 def _read_json(path: Path) -> Any:
@@ -502,7 +504,7 @@ def _delta_audit(
         "-d",
         "streaming-inference-t2h-live",
         "/usr/local/bin/python3.12",
-        "/opt/project/ops/azure_t2h/container_audit_process.py",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
         "run",
         "--state-dir",
         container_ops_dir,
@@ -524,7 +526,7 @@ def _delta_audit(
             "docker", "compose", "--profile", "t2h-live", "exec", "-T",
             "streaming-inference-t2h-live",
             "/usr/local/bin/python3.12",
-            "/opt/project/ops/azure_t2h/container_audit_process.py",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
             operation,
             "--state-dir",
             container_ops_dir,
@@ -899,7 +901,7 @@ def _audit_process_guard(
         "docker", "compose", "--profile", "t2h-live", "exec", "-T",
         "streaming-inference-t2h-live",
         "/usr/local/bin/python3.12",
-        "/opt/project/ops/azure_t2h/container_audit_process.py",
+        CONTAINER_AUDIT_SUPERVISOR_PATH,
         "inspect",
         "--state-dir",
         f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops",
@@ -1047,6 +1049,9 @@ def _carry_unresolved_hourly_delta_audit(
         "attempt_log_path": prior_audit.get("attempt_log_path"),
         "reason": prior_audit.get("reason"),
         "checks": prior_audit.get("checks"),
+        "state": prior_audit.get("state"),
+        "state_audit_attempts": prior_audit.get("state_audit_attempts"),
+        "checkpoint_progress": prior_audit.get("checkpoint_progress"),
         "forecast_count_snapshot_audit": prior_audit.get("forecast_count_snapshot_audit"),
         "process_identity": prior_audit.get("process_identity"),
         "process_cleanup": prior_audit.get("process_cleanup"),
@@ -1060,15 +1065,135 @@ def _carry_unresolved_hourly_delta_audit(
     report["status"] = "FAIL"
 
 
-def _carried_audit_recovery_decision(audit: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Allow recovery past only a known historical state-history alert.
+def _exact_transient_retention_state(state: Any) -> bool:
+    expected = {
+        "rows": EXPECTED_LOCATIONS * TRANSIENT_RETENTION_ROWS_PER_LOCATION,
+        "locations": EXPECTED_LOCATIONS,
+        "null_location_rows": 0,
+        "rows_per_location_values": [TRANSIENT_RETENTION_ROWS_PER_LOCATION],
+        "duplicate_location_hours": 0,
+        "hourly_gap_rows": 0,
+    }
+    return (
+        isinstance(state, Mapping)
+        and set(state) == set(expected)
+        and all(type(state[name]) is int for name in (
+            "rows", "locations", "null_location_rows", "duplicate_location_hours", "hourly_gap_rows",
+        ))
+        and type(state.get("rows_per_location_values")) is list
+        and all(type(value) is int for value in state["rows_per_location_values"])
+        and dict(state) == expected
+    )
 
-    Forecast, provider, model, receipt, and count failures remain blockers. The
-    carried audit must include the complete current check schema and show that
-    the only failed checks were the explicitly classified state-history checks.
-    """
+
+def _pending_retention_checkpoint(checkpoint: Any) -> bool:
+    if (
+        not isinstance(checkpoint, Mapping)
+        or checkpoint.get("status") != "PENDING"
+        or checkpoint.get("in_flight") is not True
+    ):
+        return False
+    offset = checkpoint.get("latest_offset_batch_id")
+    committed = checkpoint.get("latest_committed_batch_id")
+    pending = checkpoint.get("pending_batch_id")
+    return (
+        type(offset) is int
+        and offset >= 0
+        and pending == offset
+        and type(pending) is int
+        and (committed is None or (type(committed) is int and committed < pending))
+    )
+
+
+def _valid_transient_retention_attempt(attempt: Any, expected_state: Mapping[str, Any]) -> bool:
+    expected_state_checks = {
+        "state_has_63_locations": True,
+        "state_location_ids_non_null": True,
+        "state_history_is_49_rows_per_location": False,
+        "state_duplicate_location_hours_zero": True,
+        "state_history_is_hourly_contiguous": True,
+    }
+    if not isinstance(attempt, Mapping):
+        return False
+    checks = attempt.get("checks")
+    if (
+        attempt.get("event") != "STATE_AUDIT_ATTEMPT"
+        or attempt.get("status") != "TRANSIENT_CANDIDATE"
+        or attempt.get("classification") != TRANSIENT_RETENTION_ATTEMPT_CLASSIFICATION
+        or attempt.get("reason") != "checkpoint_has_uncommitted_batch_during_exact_50_row_retention_window"
+        or not isinstance(attempt.get("audit_id"), str)
+        or not attempt.get("audit_id")
+        or type(attempt.get("attempt_number")) is not int
+        or attempt["attempt_number"] < 1
+        or not _exact_transient_retention_state(attempt.get("state"))
+        or dict(attempt["state"]) != dict(expected_state)
+        or not isinstance(checks, Mapping)
+        or set(checks) != set(expected_state_checks)
+        or any(type(value) is not bool for value in checks.values())
+        or dict(checks) != expected_state_checks
+    ):
+        return False
+    return any(
+        _pending_retention_checkpoint(attempt.get(name))
+        for name in ("checkpoint_before", "checkpoint_after")
+    )
+
+
+def _has_transient_retention_attempt_history(audit: Mapping[str, Any], classification: str) -> bool:
+    expected_state = audit.get("state")
+    attempts = audit.get("state_audit_attempts")
+    checkpoint_progress = audit.get("checkpoint_progress")
+    if not _exact_transient_retention_state(expected_state) or not isinstance(attempts, list) or not attempts:
+        return False
+
+    if classification == "TRANSIENT_STATE_WINDOW_TIMEOUT":
+        candidates, terminal = attempts[:-1], attempts[-1]
+        if not candidates or not isinstance(terminal, Mapping):
+            return False
+        if (
+            terminal.get("event") != "STATE_AUDIT_RETRY_WAIT"
+            or terminal.get("status") != "FAIL"
+            or terminal.get("classification") != classification
+            or terminal.get("reason") != "checkpoint_batch_did_not_commit_before_retry_deadline"
+            or not _exact_transient_retention_state(terminal.get("state"))
+            or dict(terminal["state"]) != dict(expected_state)
+            or not _pending_retention_checkpoint(terminal.get("checkpoint_after"))
+            or checkpoint_progress != terminal.get("checkpoint_after")
+        ):
+            return False
+        timeout_number = terminal.get("attempt_number")
+        if type(timeout_number) is not int or timeout_number < 1:
+            return False
+        valid_candidates = all(_valid_transient_retention_attempt(row, expected_state) for row in candidates)
+        candidate_numbers = [row.get("attempt_number") for row in candidates if isinstance(row, Mapping)]
+        return (
+            valid_candidates
+            and candidate_numbers == list(range(1, len(candidates) + 1))
+            and timeout_number == len(candidates)
+        )
+
+    if classification == "TRANSIENT_RETRY_LIMIT_EXCEEDED":
+        # The verifier currently caps this retry loop at two attempts. If that
+        # contract changes, fail closed until this evidence check is reviewed.
+        return (
+            len(attempts) == 2
+            and all(_valid_transient_retention_attempt(row, expected_state) for row in attempts)
+            and [row.get("attempt_number") for row in attempts] == [1, 2]
+            and checkpoint_progress == attempts[-1].get("checkpoint_after")
+        )
+    return False
+
+
+def _carried_audit_recovery_decision(audit: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Allow recovery past only a fully evidenced transient retention-window race."""
     if not isinstance(audit, Mapping):
         return {"eligible": False, "reason": "hourly_audit_evidence_missing"}
+    if (
+        audit.get("status") != "UNRESOLVED"
+        or audit.get("origin") != "CARRIED_FORWARD"
+        or audit.get("last_status") != "FAIL"
+    ):
+        return {"eligible": False, "reason": "hourly_audit_lifecycle_evidence_missing_or_ambiguous"}
     classification = audit.get("classification")
     if classification not in RECOVERABLE_CARRIED_STATE_AUDIT_CLASSIFICATIONS:
         return {"eligible": False, "reason": "hourly_audit_classification_missing_or_ambiguous"}
@@ -1076,22 +1201,38 @@ def _carried_audit_recovery_decision(audit: Mapping[str, Any] | None) -> dict[st
     if not isinstance(checks, Mapping):
         return {"eligible": False, "reason": "hourly_audit_checks_missing_or_ambiguous"}
     check_names = frozenset(checks)
-    full_schema = HOURLY_AUDIT_FORECAST_CHECKS | HOURLY_AUDIT_STATE_CHECKS
-    if check_names not in {full_schema, HOURLY_AUDIT_LEGACY_CHECKS} or any(type(value) is not bool for value in checks.values()):
+    required_schema = HOURLY_AUDIT_FORECAST_CHECKS | HOURLY_AUDIT_STATE_CHECKS
+    if check_names != required_schema or any(type(value) is not bool for value in checks.values()):
         return {"eligible": False, "reason": "hourly_audit_check_schema_missing_or_ambiguous"}
-    required_forecast_checks = (
-        HOURLY_AUDIT_FORECAST_CHECKS
-        if check_names == full_schema
-        else HOURLY_AUDIT_FORECAST_CHECKS - {"persistence_receipts_match_forecast_snapshot"}
-    )
-    if any(checks[name] is not True for name in required_forecast_checks):
+    if any(checks[name] is not True for name in HOURLY_AUDIT_FORECAST_CHECKS):
         return {"eligible": False, "reason": "carried_forecast_or_contract_check_failed"}
     failed_state_checks = sorted(name for name in HOURLY_AUDIT_STATE_CHECKS if checks[name] is not True)
-    if not failed_state_checks:
+    if failed_state_checks != ["state_history_is_49_rows_per_location"]:
         return {"eligible": False, "reason": "classification_conflicts_with_audit_checks"}
+    count_audit = audit.get("forecast_count_snapshot_audit")
+    receipt_integrity = count_audit.get("receipt_integrity") if isinstance(count_audit, Mapping) else None
+    receipt_counts = ("missing", "extra", "duplicates", "mismatched", "invalid")
+    if (
+        not isinstance(count_audit, Mapping)
+        or count_audit.get("status") != "PASS"
+        or count_audit.get("classification") != "FORECAST_COUNT_SNAPSHOT_CONSISTENT"
+        or type(count_audit.get("expected_live_forecasts")) is not int
+        or count_audit.get("expected_live_forecasts") < 0
+        or type(count_audit.get("observed_live_forecasts")) is not int
+        or count_audit.get("observed_live_forecasts") != count_audit.get("expected_live_forecasts")
+        or type(count_audit.get("delta_version")) is not int
+        or count_audit.get("delta_version") < 0
+        or count_audit.get("hard_failures") != []
+        or not isinstance(receipt_integrity, Mapping)
+        or receipt_integrity.get("status") != "PASS"
+        or any(type(receipt_integrity.get(name)) is not int or receipt_integrity.get(name) != 0 for name in receipt_counts)
+    ):
+        return {"eligible": False, "reason": "forecast_or_receipt_snapshot_evidence_missing_or_ambiguous"}
+    if not _has_transient_retention_attempt_history(audit, classification):
+        return {"eligible": False, "reason": "transient_retention_evidence_missing_or_ambiguous"}
     return {
         "eligible": True,
-        "reason": "known_carried_state_history_alert_only",
+        "reason": "evidenced_transient_retention_window_only",
         "classification": classification,
         "failed_state_checks": failed_state_checks,
     }

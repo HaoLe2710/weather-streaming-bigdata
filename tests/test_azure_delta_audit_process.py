@@ -12,7 +12,7 @@ import pytest
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-AUDIT_PROCESS_SCRIPT = REPOSITORY_ROOT / "ops" / "azure_t2h" / "container_audit_process.py"
+AUDIT_PROCESS_SCRIPT = REPOSITORY_ROOT / "spark" / "jobs" / "container_audit_process.py"
 
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="container audit process control uses Linux process groups and flock")
