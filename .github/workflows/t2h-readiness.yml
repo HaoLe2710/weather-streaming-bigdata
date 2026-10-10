@@ -63,7 +63,16 @@ jobs:
             tests/test_azure_systemd_units.py
 
       - name: Run full test suite
-        run: bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite" -q --tb=short -ra
+        run: |
+          frozen_model=data/models/weather_forecast_xgboost_v1/weather_forecast_xgboost_v1.json
+          if [[ -f "$frozen_model" ]]; then
+            bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite" -q --tb=short -ra
+          else
+            echo "::notice title=Frozen model artifact unavailable::Running all available tests; deselecting only the two FrozenModelTests that require the git-ignored V1 model at $frozen_model."
+            bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite (without unavailable model artifact)" \
+              -q --tb=short -ra \
+              -k 'not test_invalid_model_digest_is_rejected and not test_model_hash_and_cpu_prediction_are_cached_per_process'
+          fi
 
       - name: Compile Python modules and validate shell syntax
         run: |
