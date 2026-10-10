@@ -53,18 +53,19 @@ jobs:
           python -m pytest -q tests/test_azure_systemd_units.py
 
       - name: Run readiness and Azure runtime regressions
-        run: >-
-          python -m pytest -q
-          tests/test_prospective_t2h.py
-          tests/test_prospective_t2h_runtime.py
-          tests/test_azure_compose.py
-          tests/test_azure_t2h_watchdog.py
-          tests/test_azure_systemd_units.py
+        run: |
+          bash .github/scripts/run-pytest-with-annotation.sh "Readiness regressions" \
+            -q --tb=short -ra \
+            tests/test_prospective_t2h.py \
+            tests/test_prospective_t2h_runtime.py \
+            tests/test_azure_compose.py \
+            tests/test_azure_t2h_watchdog.py \
+            tests/test_azure_systemd_units.py
 
       - name: Run full test suite
-        run: python -m pytest -q
+        run: bash .github/scripts/run-pytest-with-annotation.sh "Full pytest suite" -q --tb=short -ra
 
       - name: Compile Python modules and validate shell syntax
         run: |
           python -m compileall -q validation spark tests
-          for script in ops/azure_t2h/*.sh; do bash -n "$script"; done
+          for script in ops/azure_t2h/*.sh .github/scripts/*.sh; do bash -n "$script"; done
