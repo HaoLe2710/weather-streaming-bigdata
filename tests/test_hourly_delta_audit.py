@@ -1,0 +1,598 @@
+from __future__ import annotations
+
+from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
+import json
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+import pytest
+
+from ops.azure_t2h import watchdog
+from spark.jobs import verify_t2h_forecast_delta as audit
+
+
+RUN_ID = "20261010T111433Z-prospective-live-t2h-v1"
+COHORT_ID = "prospective-t2h-20261010T120000Z"
+NOW = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
+
+
+def _state_report(
+    rows_per_location: int = 49,
+    *,
+    duplicate_hours: int = 0,
+    hourly_gaps: int = 0,
+    locations: int = 63,
+    null_location_rows: int = 0,
+):
+    return {
+        "rows": locations * rows_per_location,
+        "locations": locations,
+        "null_location_rows": null_location_rows,
+        "rows_per_location_values": [rows_per_location],
+        "duplicate_location_hours": duplicate_hours,
+        "hourly_gap_rows": hourly_gaps,
+    }
+
+
+def _checkpoint(status: str, offset: int | None = 15, commit: int | None = 15):
+    pending = offset if status == "PENDING" else None
+    return {
+        "status": status,
+        "latest_offset_batch_id": offset,
+        "latest_committed_batch_id": commit,
+        "pending_batch_id": pending,
+        "in_flight": pending is not None,
+    }
+
+
+def test_checkpoint_progress_detects_uncommitted_batch_without_mutating_checkpoint(tmp_path):
+    checkpoint = tmp_path / "checkpoint"
+    (checkpoint / "offsets").mkdir(parents=True)
+    (checkpoint / "commits").mkdir()
+    (checkpoint / "offsets" / "16").write_text("offset", encoding="utf-8")
+    (checkpoint / "commits" / "15").write_text("commit", encoding="utf-8")
+
+    progress = audit._checkpoint_progress(checkpoint)
+
+    assert progress["status"] == "PENDING"
+    assert progress["pending_batch_id"] == 16
+    assert (checkpoint / "offsets" / "16").read_text(encoding="utf-8") == "offset"
+    assert sorted(path.name for path in (checkpoint / "offsets").iterdir()) == ["16"]
+    assert sorted(path.name for path in (checkpoint / "commits").iterdir()) == ["15"]
+
+
+def test_checkpoint_progress_recognizes_compacted_log_ids(tmp_path):
+    checkpoint = tmp_path / "checkpoint"
+    (checkpoint / "offsets").mkdir(parents=True)
+    (checkpoint / "commits").mkdir()
+    (checkpoint / "offsets" / "20.compact").write_text("offsets", encoding="utf-8")
+    (checkpoint / "commits" / "20").write_text("commits", encoding="utf-8")
+
+    assert audit._checkpoint_progress(checkpoint)["status"] == "SETTLED"
+
+
+def test_49_row_bootstrap_passes_without_checkpoint_evidence():
+    report = audit._audit_state_history(
+        lambda: _state_report(),
+        lambda: audit._checkpoint_progress(None),
+        audit_id="bootstrap",
+        sleep=lambda _: None,
+    )
+
+    assert report["status"] == "PASS"
+    assert report["classification"] == "STATE_HISTORY_VALID"
+    assert report["checks"] == {
+        "state_has_63_locations": True,
+        "state_location_ids_non_null": True,
+        "state_history_is_49_rows_per_location": True,
+        "state_duplicate_location_hours_zero": True,
+        "state_history_is_hourly_contiguous": True,
+    }
+    assert len(report["attempts"]) == 1
+
+
+def test_stable_49_row_history_passes_with_settled_checkpoint():
+    report = audit._audit_state_history(
+        lambda: _state_report(),
+        lambda: _checkpoint("SETTLED"),
+        audit_id="stable-49",
+        sleep=lambda _: None,
+    )
+
+    assert report["status"] == "PASS"
+    assert report["checkpoint_progress"]["status"] == "SETTLED"
+
+
+def test_exact_50_row_inflight_shape_is_classified_as_transient_candidate():
+    state = _state_report(50)
+    checks = audit._state_history_checks(state)
+
+    assert audit._retryable_retention_window(state, checks, [_checkpoint("PENDING", 16, 15)]) is True
+    assert audit._retryable_retention_window(state, checks, [_checkpoint("SETTLED")]) is False
+
+
+def test_state_retry_does_not_override_frozen_forecast_and_provenance_checks():
+    checks = {
+        "state_history_is_49_rows_per_location": True,
+        "logical_forecast_duplicates_zero": False,
+        "target_offset_violations_zero": False,
+        "contract_violations_zero": False,
+        "provider_contract_violations_zero": False,
+    }
+
+    assert audit._audit_status(checks) == "FAIL"
+
+
+def test_transient_50_rows_then_49_passes_and_first_failed_attempt_is_appended(tmp_path):
+    attempt_log = tmp_path / "delta_audit_attempts.jsonl"
+    historical_failure = {"audit_id": "prior-hour", "attempt_number": 1, "status": "FAIL", "reason": "old evidence"}
+    attempt_log.write_text(json.dumps(historical_failure) + "\n", encoding="utf-8")
+    states = iter([_state_report(50), _state_report(49)])
+    progress = iter([
+        _checkpoint("PENDING", 16, 15),
+        _checkpoint("PENDING", 16, 15),
+        _checkpoint("PENDING", 16, 15),
+        _checkpoint("SETTLED", 16, 16),
+        _checkpoint("SETTLED", 16, 16),
+        _checkpoint("SETTLED", 16, 16),
+    ])
+    timestamps = iter(f"2026-10-10T12:00:0{n}Z" for n in range(6))
+
+    result = audit._audit_state_history(
+        lambda: next(states),
+        lambda: next(progress),
+        audit_id="hour-12",
+        attempt_log_path=attempt_log,
+        sleep=lambda _: None,
+        timestamp=lambda: next(timestamps),
+    )
+
+    rows = [json.loads(line) for line in attempt_log.read_text(encoding="utf-8").splitlines()]
+    assert result["status"] == "PASS"
+    assert result["state"]["rows_per_location_values"] == [49]
+    assert [row["status"] for row in rows] == ["FAIL", "TRANSIENT_CANDIDATE", "PASS"]
+    assert rows[0] == historical_failure
+    assert rows[1]["state"]["rows"] == 3_150
+    assert rows[1]["checkpoint_before"]["pending_batch_id"] == 16
+    assert rows[2]["checks"]["state_history_is_49_rows_per_location"] is True
+
+
+def test_stable_50_rows_fail_without_retry():
+    state_reads = []
+    result = audit._audit_state_history(
+        lambda: state_reads.append(1) or _state_report(50),
+        lambda: _checkpoint("SETTLED"),
+        audit_id="stable-50",
+        sleep=lambda _: None,
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["classification"] == "STATE_HISTORY_CONTRACT_FAILED"
+    assert len(state_reads) == 1
+
+
+def test_50_rows_that_remain_after_pending_batch_commits_are_final_failure():
+    states = iter([_state_report(50), _state_report(50)])
+    progress = iter([
+        _checkpoint("PENDING", 16, 15),
+        _checkpoint("PENDING", 16, 15),
+        _checkpoint("SETTLED", 16, 16),
+        _checkpoint("SETTLED", 16, 16),
+        _checkpoint("SETTLED", 16, 16),
+    ])
+
+    result = audit._audit_state_history(
+        lambda: next(states),
+        lambda: next(progress),
+        audit_id="settled-still-50",
+        sleep=lambda _: None,
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["classification"] == "STATE_HISTORY_CONTRACT_FAILED"
+    assert [attempt["status"] for attempt in result["attempts"]] == ["TRANSIENT_CANDIDATE", "FAIL"]
+
+
+def test_pending_50_rows_timeout_as_fail_with_bounded_polling():
+    elapsed = [0.0]
+    state_reads = []
+    result = audit._audit_state_history(
+        lambda: state_reads.append(1) or _state_report(50),
+        lambda: _checkpoint("PENDING", 16, 15),
+        audit_id="timeout-50",
+        deadline_seconds=2,
+        poll_interval_seconds=1,
+        sleep=lambda seconds: elapsed.__setitem__(0, elapsed[0] + seconds),
+        monotonic=lambda: elapsed[0],
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["classification"] == "TRANSIENT_STATE_WINDOW_TIMEOUT"
+    assert len(state_reads) == 1
+    assert len(result["attempts"]) == 2
+    assert result["attempts"][-1]["reason"] == "checkpoint_batch_did_not_commit_before_retry_deadline"
+
+
+def test_pending_checkpoint_polling_uses_capped_exponential_backoff():
+    elapsed = [0.0]
+    waits = []
+    result = audit._audit_state_history(
+        lambda: _state_report(50),
+        lambda: _checkpoint("PENDING", 16, 15),
+        audit_id="backoff-50",
+        deadline_seconds=40,
+        poll_interval_seconds=5,
+        max_poll_interval_seconds=30,
+        sleep=lambda seconds: waits.append(seconds) or elapsed.__setitem__(0, elapsed[0] + seconds),
+        monotonic=lambda: elapsed[0],
+    )
+
+    assert result["classification"] == "TRANSIENT_STATE_WINDOW_TIMEOUT"
+    assert waits == [5, 10, 20, 5]
+    assert sum(waits) == 40
+    assert max(waits) <= 30
+
+
+def test_duplicate_keys_block_retry_even_if_checkpoint_is_pending():
+    state_reads = []
+    result = audit._audit_state_history(
+        lambda: state_reads.append(1) or _state_report(50, duplicate_hours=1),
+        lambda: _checkpoint("PENDING", 16, 15),
+        audit_id="duplicate-50",
+        sleep=lambda _: None,
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["classification"] == "STATE_HISTORY_CONTRACT_FAILED"
+    assert len(state_reads) == 1
+
+
+def test_missing_location_fails_closed():
+    result = audit._audit_state_history(
+        lambda: _state_report(49, locations=62),
+        lambda: _checkpoint("PENDING", 16, 15),
+        audit_id="missing-location",
+        sleep=lambda _: None,
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["checks"]["state_has_63_locations"] is False
+
+
+def test_missing_hour_and_null_location_fail_and_cannot_be_retried_as_retention_window():
+    gap_report = _state_report(hourly_gaps=1)
+    gap_checks = audit._state_history_checks(gap_report)
+    null_report = _state_report(null_location_rows=1)
+    null_checks = audit._state_history_checks(null_report)
+
+    assert gap_checks["state_history_is_hourly_contiguous"] is False
+    assert audit._retryable_retention_window(
+        {**gap_report, "rows": 3_150, "rows_per_location_values": [50]},
+        {**gap_checks, "state_history_is_49_rows_per_location": False},
+        [_checkpoint("PENDING", 16, 15)],
+    ) is False
+    assert null_checks["state_location_ids_non_null"] is False
+
+
+@pytest.fixture(scope="module")
+def local_spark():
+    pytest.importorskip("pyspark.sql")
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StringType, StructField, StructType, TimestampType
+
+    session = (
+        SparkSession.builder.master("local[2]")
+        .appName("hourly-delta-audit-state-history-regression")
+        .config("spark.ui.enabled", "false")
+        .config("spark.sql.session.timeZone", "UTC")
+        .config("spark.sql.shuffle.partitions", "2")
+        .getOrCreate()
+    )
+    session.sparkContext.setLogLevel("ERROR")
+    yield session, StructType([
+        StructField("location_id", StringType(), False),
+        StructField("event_time", TimestampType(), True),
+    ])
+    session.stop()
+
+
+def test_spark_state_history_requires_49_contiguous_hourly_rows_per_location(local_spark):
+    spark, schema = local_spark
+    base = datetime(2026, 10, 1, tzinfo=timezone.utc).replace(tzinfo=None)
+    rows = [
+        (f"VN_{location:02}", base + timedelta(hours=hour))
+        for location in range(63)
+        for hour in range(49)
+        if not (location == 0 and hour == 24)
+    ]
+    state = audit._state_history_report(spark.createDataFrame(rows, schema))
+    checks = audit._state_history_checks(state)
+
+    assert state["locations"] == 63
+    assert state["rows_per_location_values"] == [48, 49]
+    assert state["hourly_gap_rows"] == 1
+    assert checks["state_history_is_hourly_contiguous"] is False
+    assert checks["state_history_is_49_rows_per_location"] is False
+
+
+def test_watchdog_audit_command_is_read_only_and_uses_run_checkpoint_and_attempt_log(tmp_path):
+    captured = {}
+    audit_path = tmp_path / "delta_audit.json"
+
+    def runner(command, **kwargs):
+        captured["command"] = command
+        captured["kwargs"] = kwargs
+        audit_path.write_text(json.dumps({
+            "status": "PASS",
+            "checks": {"state_history_is_49_rows_per_location": True},
+            "state_audit_classification": "STATE_HISTORY_VALID",
+            "state": _state_report(),
+            "state_audit_attempts": [{"status": "PASS"}],
+            "checkpoint_progress": _checkpoint("SETTLED"),
+        }), encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "PASS", "")
+
+    result = watchdog._delta_audit(
+        tmp_path,
+        RUN_ID,
+        {},
+        expected_live_forecasts=63,
+        audit_path=audit_path,
+        runner=runner,
+    )
+
+    command = captured["command"]
+    assert result["status"] == "PASS"
+    assert command[command.index("--checkpoint-path") + 1] == f"/opt/project/data/checkpoints/t2h_v1_1/{RUN_ID}/live"
+    assert command[command.index("--attempt-log-jsonl") + 1].endswith("/delta_audit_attempts.jsonl")
+    assert any("spark-submit" in part for part in command)
+    assert not any(value in {"start", "restart", "up", "down", "resume"} for value in command)
+    assert captured["kwargs"]["timeout"] == 900
+
+
+def _write_monitor_fixture(tmp_path: Path, now: datetime = NOW) -> tuple[Path, Path, dict[str, bytes]]:
+    state_root = tmp_path / "state"
+    run_state = state_root / RUN_ID
+    run_state.mkdir(parents=True)
+    (state_root / "active_run.json").write_text(json.dumps({"run_id": RUN_ID}), encoding="utf-8")
+    request = {
+        "run_id": RUN_ID,
+        "cohort_protocol_id": watchdog.PROTOCOL_ID,
+        "expected_target_hours": 168,
+        "expected_locations": 63,
+        "expected_slots": 10_584,
+        "model_sha256": watchdog.MODEL_SHA256,
+        "feature_list_sha256": watchdog.FEATURE_LIST_SHA256,
+        "provider_model": "ecmwf_ifs",
+        "forecast_horizon_hours": 2,
+        "runtime_configuration": {
+            "bootstrap_required": True,
+            "input_topic": f"weather.hourly.observations.t2h.prospective.{RUN_ID}.v1",
+            "producer_cache_path": f"/opt/project/results/prospective-live-t2h/{RUN_ID}/runtime/producer_cache/published_hours.json",
+        },
+    }
+    manifest = {**request, "cohort_id": COHORT_ID, "cohort_start_target_time": "2026-10-10T12:00:00Z", "cohort_end_target_time": "2026-10-17T11:00:00Z"}
+    status = {
+        "run_id": RUN_ID,
+        "cohort_id": COHORT_ID,
+        "status": "COLLECTING",
+        "expected_slots": 10_584,
+        "microbatch_update_count": 7,
+        "last_update_at": now.isoformat(),
+        "prospective_forecast_count": 441,
+        "valid_evaluation_count": 315,
+        "restart_count": 0,
+        "reference_conflicts": 0,
+        "reference_conflict_key_count": 0,
+        "invalid_provenance": 0,
+        "duplicate_validation": {"status": "PASS"},
+        "provenance_validation": {"blocking_violations": []},
+    }
+    for name, value in (("start_request.json", request), ("cohort_manifest.json", manifest), ("cohort_status.json", status)):
+        (run_state / name).write_text(json.dumps(value), encoding="utf-8")
+    result_dir = tmp_path / "results" / "prospective-live-t2h" / RUN_ID / "runtime"
+    result_dir.mkdir(parents=True)
+    producer_path = result_dir / "producer_runtime.json"
+    producer_path.write_text(json.dumps({"status": "PASS", "poll_results": [{"delivery_failures": [], "producer_flush_remaining": 0}]}), encoding="utf-8")
+    snapshots = {path.name: path.read_bytes() for path in [run_state / "start_request.json", run_state / "cohort_manifest.json", run_state / "cohort_status.json"]}
+    return state_root, result_dir.parent, snapshots
+
+
+def _patch_healthy_monitor(monkeypatch):
+    monkeypatch.setattr(watchdog, "collect_container_states", lambda *args, **kwargs: {
+        service: {"status": "running", "health": "healthy", "restart_count": 0}
+        for service in watchdog.SERVICES
+    })
+    monkeypatch.setattr(watchdog, "recover_infrastructure", lambda *args, **kwargs: [])
+
+
+def test_5_minute_monitor_keeps_failed_hourly_audit_visible(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    _patch_healthy_monitor(monkeypatch)
+    ops_dir = result_root / "runtime" / "ops"
+    ops_dir.mkdir(parents=True)
+    prior_audit = {
+        "status": "FAIL",
+        "checked_at": NOW.isoformat(),
+        "classification": "STATE_HISTORY_CONTRACT_FAILED",
+        "evidence_path": "delta_audit_20261010T120000Z.json",
+        "checks": {"state_history_is_49_rows_per_location": False},
+    }
+    (ops_dir / "hourly_reports.jsonl").write_text(json.dumps({
+        "hour_key": NOW.strftime("%Y-%m-%dT%H:00Z"),
+        "checked_at": NOW.isoformat(),
+        "run_id": RUN_ID,
+        "status": "FAIL",
+        "hourly_delta_audit": prior_audit,
+    }) + "\n", encoding="utf-8")
+    monkeypatch.setattr(watchdog, "_delta_audit", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("5-minute cycle must not rerun Spark audit")))
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW + timedelta(minutes=5), run_delta_audit=True)
+    next_hour_skipped = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(hours=1),
+        run_delta_audit=False,
+    )
+    next_five_minute = watchdog.monitor_once(
+        tmp_path,
+        state_root,
+        now=NOW + timedelta(hours=1, minutes=5),
+        run_delta_audit=True,
+    )
+
+    assert report["status"] == "FAIL"
+    assert "HOURLY_DELTA_AUDIT_FAILED" in report["data_errors"]
+    assert report["hourly_delta_audit"]["status"] == "UNRESOLVED"
+    assert next_hour_skipped["status"] == "FAIL"
+    assert "HOURLY_DELTA_AUDIT_FAILED" in next_hour_skipped["data_errors"]
+    assert next_five_minute["status"] == "FAIL"
+    assert "HOURLY_DELTA_AUDIT_FAILED" in next_five_minute["data_errors"]
+    saved = [json.loads(line) for line in (ops_dir / "monitor.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert all(item["status"] == "FAIL" for item in saved)
+    hourly = [json.loads(line) for line in (ops_dir / "hourly_reports.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert hourly[-1]["hourly_delta_audit"]["status"] == "UNRESOLVED"
+    assert not (ops_dir / "delta_audit_attempts.jsonl").exists()
+
+
+def test_new_hourly_pass_resolves_but_does_not_delete_prior_audit_failure(tmp_path, monkeypatch):
+    state_root, result_root, immutable_inputs = _write_monitor_fixture(tmp_path)
+    _patch_healthy_monitor(monkeypatch)
+    ops_dir = result_root / "runtime" / "ops"
+    ops_dir.mkdir(parents=True)
+    prior_audit = {
+        "status": "FAIL",
+        "checked_at": NOW.isoformat(),
+        "classification": "TRANSIENT_STATE_WINDOW_TIMEOUT",
+        "evidence_path": "delta_audit_20261010T120000Z.json",
+        "checks": {"state_history_is_49_rows_per_location": False},
+    }
+    (ops_dir / "hourly_reports.jsonl").write_text(json.dumps({
+        "hour_key": NOW.strftime("%Y-%m-%dT%H:00Z"),
+        "checked_at": NOW.isoformat(),
+        "run_id": RUN_ID,
+        "status": "FAIL",
+        "hourly_delta_audit": prior_audit,
+    }) + "\n", encoding="utf-8")
+    monkeypatch.setattr(watchdog, "_delta_audit", lambda *args, **kwargs: {
+        "status": "PASS",
+        "classification": "STATE_HISTORY_VALID",
+        "checked_at": (NOW + timedelta(hours=1)).isoformat(),
+        "evidence_path": "delta_audit_20261010T130000Z.json",
+        "checks": {"state_history_is_49_rows_per_location": True},
+    })
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW + timedelta(hours=1), run_delta_audit=True)
+
+    assert report["status"] == "PASS"
+    assert report["hourly_delta_audit"]["status"] == "PASS"
+    assert report["run_id"] == RUN_ID
+    assert report["cohort_id"] == COHORT_ID
+    assert report["restart_count"] == 0
+    assert report["model_sha256"] == "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a"
+    assert report["feature_list_sha256"] == "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2"
+    hourly = [json.loads(line) for line in (ops_dir / "hourly_reports.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [row["hourly_delta_audit"]["status"] for row in hourly] == ["FAIL", "PASS"]
+    run_state = state_root / RUN_ID
+    for filename, contents in immutable_inputs.items():
+        assert (run_state / filename).read_bytes() == contents
+
+
+def _hold_audit_lock(lock_path: str, ready_path: str, release_path: str) -> None:
+    with watchdog._exclusive_audit_lock(Path(lock_path)) as acquired:
+        Path(ready_path).write_text("1" if acquired else "0", encoding="utf-8")
+        while acquired and not Path(release_path).exists():
+            time.sleep(0.02)
+
+
+def test_audit_process_lock_rejects_concurrent_process_without_changing_attempt_log(tmp_path):
+    lock_path = tmp_path / "delta_audit.lock"
+    attempt_log = tmp_path / "delta_audit_attempts.jsonl"
+    attempt_log.write_text('{"status":"first-attempt"}\n', encoding="utf-8")
+    ready_path = tmp_path / "holder-ready"
+    release_path = tmp_path / "holder-release"
+    script = (
+        "from pathlib import Path\n"
+        "import sys,time\n"
+        "from ops.azure_t2h.watchdog import _exclusive_audit_lock\n"
+        "with _exclusive_audit_lock(Path(sys.argv[1])) as acquired:\n"
+        " Path(sys.argv[2]).write_text('1' if acquired else '0')\n"
+        " while acquired and not Path(sys.argv[3]).exists(): time.sleep(.02)\n"
+    )
+    process = subprocess.Popen([sys.executable, "-c", script, str(lock_path), str(ready_path), str(release_path)])
+    try:
+        deadline = time.monotonic() + 10
+        while not ready_path.exists() and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert ready_path.read_text(encoding="utf-8") == "1"
+        original_attempts = attempt_log.read_bytes()
+        with watchdog._exclusive_audit_lock(lock_path) as acquired:
+            assert acquired is False
+        assert attempt_log.read_bytes() == original_attempts
+    finally:
+        release_path.touch()
+        process.wait(timeout=10)
+
+
+def test_audit_process_lock_is_released_after_holder_crashes(tmp_path):
+    lock_path = tmp_path / "delta_audit.lock"
+    ready_path = tmp_path / "holder-ready"
+    release_path = tmp_path / "holder-release"
+    script = (
+        "from pathlib import Path\n"
+        "import sys,time\n"
+        "from ops.azure_t2h.watchdog import _exclusive_audit_lock\n"
+        "with _exclusive_audit_lock(Path(sys.argv[1])) as acquired:\n"
+        " Path(sys.argv[2]).write_text('1' if acquired else '0')\n"
+        " while acquired and not Path(sys.argv[3]).exists(): time.sleep(.02)\n"
+    )
+    process = subprocess.Popen([sys.executable, "-c", script, str(lock_path), str(ready_path), str(release_path)])
+    try:
+        deadline = time.monotonic() + 10
+        while not ready_path.exists() and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert ready_path.read_text(encoding="utf-8") == "1"
+        process.terminate()
+        process.wait(timeout=10)
+        deadline = time.monotonic() + 5
+        acquired = False
+        while time.monotonic() < deadline and not acquired:
+            with watchdog._exclusive_audit_lock(lock_path) as locked:
+                acquired = locked
+            if not acquired:
+                time.sleep(0.05)
+        assert acquired is True
+    finally:
+        if process.poll() is None:
+            release_path.touch()
+            process.wait(timeout=10)
+
+
+def test_monitor_lock_contention_does_not_run_audit_or_recover_services(tmp_path, monkeypatch):
+    state_root, result_root, _ = _write_monitor_fixture(tmp_path)
+    _patch_healthy_monitor(monkeypatch)
+
+    @contextmanager
+    def lock_denied(_path):
+        yield False
+
+    monkeypatch.setattr(watchdog, "_exclusive_audit_lock", lock_denied)
+    monkeypatch.setattr(watchdog, "_delta_audit", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("lock loser must not run Spark")))
+    recovery_findings = []
+    monkeypatch.setattr(
+        watchdog,
+        "recover_infrastructure",
+        lambda *args, **kwargs: recovery_findings.extend(kwargs["data_errors"]) or [],
+    )
+
+    report = watchdog.monitor_once(tmp_path, state_root, now=NOW, run_delta_audit=True)
+    ops_dir = result_root / "runtime" / "ops"
+
+    assert report["status"] == "FAIL"
+    assert report["hourly_delta_audit"]["classification"] == "AUDIT_ALREADY_RUNNING"
+    assert "HOURLY_DELTA_AUDIT_COULD_NOT_RUN" in report["infrastructure_errors"]
+    assert "AUDIT_LOCK_HELD" in recovery_findings
+    assert not (ops_dir / "delta_audit_attempts.jsonl").exists()

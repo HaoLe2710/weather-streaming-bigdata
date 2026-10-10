@@ -60,6 +60,7 @@ jobs:
             tests/test_prospective_t2h_runtime.py \
             tests/test_azure_compose.py \
             tests/test_azure_t2h_watchdog.py \
+            tests/test_hourly_delta_audit.py \
             tests/test_azure_systemd_units.py
 
       - name: Run full test suite

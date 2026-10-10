@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -80,6 +81,52 @@ def _append_jsonl(path: Path, row: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
         handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True, allow_nan=False) + "\n")
+
+
+@contextmanager
+def _exclusive_audit_lock(path: Path):
+    """Hold a non-blocking process lock; the OS releases it on exit or crash."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handle = path.open("a+b")
+    except OSError:
+        yield False
+        return
+    locked = False
+    lock_module: Any = None
+    try:
+        handle.seek(0, os.SEEK_END)
+        if handle.tell() == 0:
+            handle.write(b"\0")
+            handle.flush()
+        handle.seek(0)
+        if os.name == "nt":
+            import msvcrt
+
+            lock_module = msvcrt
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                locked = True
+            except OSError:
+                locked = False
+        else:
+            import fcntl
+
+            lock_module = fcntl
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                locked = True
+            except OSError:
+                locked = False
+        yield locked
+    finally:
+        if locked and lock_module is not None:
+            handle.seek(0)
+            if os.name == "nt":
+                lock_module.locking(handle.fileno(), lock_module.LK_UNLCK, 1)
+            else:
+                lock_module.flock(handle.fileno(), lock_module.LOCK_UN)
+        handle.close()
 
 
 def _atomic_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -364,6 +411,8 @@ def _delta_audit(
 ) -> dict[str, Any]:
     env = _compose_environment(repository_root, run_id, runtime_configuration)
     container_audit_path = f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops/{audit_path.name}"
+    container_attempt_log = f"/opt/project/results/prospective-live-t2h/{run_id}/runtime/ops/delta_audit_attempts.jsonl"
+    container_checkpoint_path = f"/opt/project/data/checkpoints/t2h_v1_1/{run_id}/live"
     command = [
         "docker",
         "compose",
@@ -386,26 +435,60 @@ def _delta_audit(
         f"/opt/project/data/streaming/t2h_v1_1/{run_id}/forecasts",
         "--state-path",
         f"/opt/project/data/streaming/t2h_v1_1/{run_id}/state_live",
+        "--checkpoint-path",
+        container_checkpoint_path,
         "--output-json",
         container_audit_path,
+        "--attempt-log-jsonl",
+        container_attempt_log,
         "--expected-live-forecasts",
         str(expected_live_forecasts),
     ]
-    completed = runner(
-        command,
-        cwd=repository_root,
-        env=env,
-        text=True,
-        capture_output=True,
-        check=False,
-        timeout=900,
-    )
+    try:
+        completed = runner(
+            command,
+            cwd=repository_root,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=900,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "status": "FAIL",
+            "classification": "AUDIT_PROCESS_TIMEOUT",
+            "reason": f"Spark audit exceeded 900 second process timeout: {exc}",
+            "returncode": None,
+            "evidence_path": str(audit_path),
+            "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+            "checks": None,
+            "stdout_tail": str(exc.stdout or "")[-2000:],
+            "stderr_tail": str(exc.stderr or "")[-2000:],
+        }
+    except OSError as exc:
+        return {
+            "status": "FAIL",
+            "classification": "AUDIT_PROCESS_START_FAILED",
+            "reason": f"Could not start Spark audit: {type(exc).__name__}: {exc}",
+            "returncode": None,
+            "evidence_path": str(audit_path),
+            "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
+            "checks": None,
+            "stdout_tail": "",
+            "stderr_tail": str(exc)[-2000:],
+        }
     evidence = _read_json(audit_path)
     return {
         "status": "PASS" if completed.returncode == 0 and isinstance(evidence, Mapping) and evidence.get("status") == "PASS" else "FAIL",
+        "classification": evidence.get("state_audit_classification") if isinstance(evidence, Mapping) else "AUDIT_EVIDENCE_MISSING_OR_INVALID",
         "returncode": completed.returncode,
         "evidence_path": str(audit_path),
+        "attempt_log_path": str(audit_path.parent / "delta_audit_attempts.jsonl"),
         "checks": evidence.get("checks") if isinstance(evidence, Mapping) else None,
+        "state": evidence.get("state") if isinstance(evidence, Mapping) else None,
+        "state_audit_attempts": evidence.get("state_audit_attempts") if isinstance(evidence, Mapping) else None,
+        "checkpoint_progress": evidence.get("checkpoint_progress") if isinstance(evidence, Mapping) else None,
         "stdout_tail": completed.stdout[-2000:],
         "stderr_tail": completed.stderr[-2000:],
     }
@@ -577,6 +660,46 @@ def _update_alert_evidence(ops_dir: Path, report: Mapping[str, Any]) -> None:
     })
 
 
+def _latest_hourly_delta_audit(hourly_reports: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    for row in reversed(hourly_reports):
+        audit = row.get("hourly_delta_audit")
+        if not isinstance(audit, Mapping):
+            continue
+        status = audit.get("status")
+        if status == "UNRESOLVED":
+            status = audit.get("last_status", "FAIL")
+        if status in {"PASS", "FAIL"}:
+            return {
+                **audit,
+                "status": status,
+                "checked_at": audit.get("checked_at") or audit.get("last_checked_at"),
+            }
+    return None
+
+
+def _carry_unresolved_hourly_delta_audit(
+    report: dict[str, Any],
+    prior_audit: Mapping[str, Any] | None,
+) -> None:
+    if not isinstance(prior_audit, Mapping) or prior_audit.get("status") == "PASS":
+        return
+    report["hourly_delta_audit"] = {
+        "status": "UNRESOLVED",
+        "last_status": prior_audit.get("status", "FAIL"),
+        "last_checked_at": prior_audit.get("checked_at"),
+        "classification": prior_audit.get("classification"),
+        "evidence_path": prior_audit.get("evidence_path"),
+        "attempt_log_path": prior_audit.get("attempt_log_path"),
+        "reason": prior_audit.get("reason"),
+        "checks": prior_audit.get("checks"),
+    }
+    if prior_audit.get("checks") is not None:
+        report["data_errors"] = sorted(set([*report.get("data_errors", []), "HOURLY_DELTA_AUDIT_FAILED"]))
+    else:
+        report["infrastructure_errors"] = sorted(set([*report.get("infrastructure_errors", []), "HOURLY_DELTA_AUDIT_COULD_NOT_RUN"]))
+    report["status"] = "FAIL"
+
+
 def monitor_once(
     repository_root: Path,
     state_root: Path,
@@ -710,6 +833,7 @@ def monitor_once(
     ops_dir.mkdir(parents=True, exist_ok=True)
     hourly_path = ops_dir / "hourly_reports.jsonl"
     prior_hourly = _read_jsonl(hourly_path)
+    prior_delta_audit = _latest_hourly_delta_audit(prior_hourly)
     hour_key = instant.strftime("%Y-%m-%dT%H:00Z")
     previous_hourly = _latest(prior_hourly)
     hourly_entry_due = previous_hourly is None or previous_hourly.get("hour_key") != hour_key
@@ -719,17 +843,38 @@ def monitor_once(
         and isinstance(cohort_status, Mapping)
         and (hourly_entry_due or not previous_hourly.get("hourly_delta_audit"))
     )
+    audit_lock_busy = False
     if hourly_entry_due or delta_audit_due:
         if delta_audit_due:
             audit_path = ops_dir / f"delta_audit_{instant.strftime('%Y%m%dT%H%M%SZ')}.json"
-            audit = _delta_audit(
-                repository_root,
-                selected_run_id,
-                runtime_configuration,
-                expected_live_forecasts=int(cohort_status.get("prospective_forecast_count", 0) or 0),
-                audit_path=audit_path,
-                runner=runner,
-            )
+            with _exclusive_audit_lock(ops_dir / "delta_audit.lock") as lock_acquired:
+                if lock_acquired:
+                    unique_audit_path = audit_path
+                    collision = 2
+                    while unique_audit_path.exists():
+                        unique_audit_path = audit_path.with_name(
+                            f"{audit_path.stem}_attempt{collision}{audit_path.suffix}"
+                        )
+                        collision += 1
+                    audit = _delta_audit(
+                        repository_root,
+                        selected_run_id,
+                        runtime_configuration,
+                        expected_live_forecasts=int(cohort_status.get("prospective_forecast_count", 0) or 0),
+                        audit_path=unique_audit_path,
+                        runner=runner,
+                    )
+                else:
+                    audit_lock_busy = True
+                    audit = {
+                        "status": "FAIL",
+                        "classification": "AUDIT_ALREADY_RUNNING",
+                        "reason": "exclusive hourly Delta audit lock is held by another process",
+                        "returncode": None,
+                        "evidence_path": str(audit_path),
+                        "attempt_log_path": str(ops_dir / "delta_audit_attempts.jsonl"),
+                        "checks": None,
+                    }
             report["hourly_delta_audit"] = audit
             if audit["status"] != "PASS":
                 if audit.get("checks") is not None:
@@ -737,6 +882,11 @@ def monitor_once(
                 else:
                     report["infrastructure_errors"] = sorted(set([*report["infrastructure_errors"], "HOURLY_DELTA_AUDIT_COULD_NOT_RUN"]))
                 report["status"] = "FAIL"
+        elif prior_delta_audit is not None and prior_delta_audit.get("status") != "PASS":
+            _carry_unresolved_hourly_delta_audit(report, prior_delta_audit)
+    if "hourly_delta_audit" not in report and prior_delta_audit is not None and prior_delta_audit.get("status") != "PASS":
+        _carry_unresolved_hourly_delta_audit(report, prior_delta_audit)
+    if hourly_entry_due or delta_audit_due:
         hourly = {
             "report_type": "HOURLY_DATA_AUDIT",
             "hour_key": hour_key,
@@ -753,12 +903,15 @@ def monitor_once(
         _append_jsonl(hourly_path, hourly)
 
     action_log = ops_dir / "restart_actions.jsonl"
+    recovery_errors = list(report["data_errors"])
+    if audit_lock_busy:
+        recovery_errors.append("AUDIT_LOCK_HELD")
     report["recovery_actions"] = recover_infrastructure(
         repository_root,
         selected_run_id,
         runtime_configuration,
         containers,
-        data_errors=report["data_errors"],
+        data_errors=recovery_errors,
         action_log=action_log,
         now=instant,
         runner=runner,
