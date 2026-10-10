@@ -4,11 +4,19 @@ from datetime import datetime, timedelta, timezone
 import json
 import subprocess
 
+import pytest
+
 from ops.azure_t2h import watchdog
 
 
 RUN_ID = "20261010T120000Z-prospective-live-t2h-v1"
 NOW = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_tmp_repository_tests_from_deployment_environment(monkeypatch):
+    monkeypatch.delenv("WEATHER_AZURE_RUNTIME", raising=False)
+    monkeypatch.delenv("COMPOSE_FILE", raising=False)
 
 
 def _contract(run_id: str = RUN_ID) -> dict:

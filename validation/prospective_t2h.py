@@ -2475,6 +2475,9 @@ def _preflight(args: argparse.Namespace, state_root: Path) -> int:
     except AzureComposeConfigurationError as exc:
         print(str(exc), file=sys.stderr)
         return 1
+    pytest_env = dict(command_env)
+    pytest_env.pop("WEATHER_AZURE_RUNTIME", None)
+    pytest_env.pop("COMPOSE_FILE", None)
     commands = [
         ("compileall", [sys.executable, "-m", "compileall", "."]),
         ("pytest", [sys.executable, "-m", "pytest", "-q"]),
@@ -2494,7 +2497,7 @@ def _preflight(args: argparse.Namespace, state_root: Path) -> int:
             completed = subprocess.run(
                 command,
                 cwd=REPOSITORY_ROOT,
-                env=command_env,
+                env=pytest_env if name == "pytest" else command_env,
                 text=True,
                 capture_output=True,
                 check=False,

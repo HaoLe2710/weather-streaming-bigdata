@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 
 import pytest
 
@@ -191,6 +193,53 @@ def test_azure_preflight_runs_compose_config_with_the_required_file_list(tmp_pat
     assert len(compose_calls) == 1
     assert compose_calls[0][1]["env"]["COMPOSE_FILE"] == AZURE_COMPOSE_FILE
     assert compose_calls[0][1]["cwd"] == tmp_path
+
+
+def test_azure_preflight_isolates_pytest_from_deployment_environment(tmp_path, monkeypatch):
+    _create_compose_files(tmp_path)
+    monkeypatch.setattr(prospective, "REPOSITORY_ROOT", tmp_path)
+    monkeypatch.setenv("WEATHER_AZURE_RUNTIME", "1")
+    monkeypatch.setenv("COMPOSE_FILE", AZURE_COMPOSE_FILE)
+    monkeypatch.setenv("T2H_PREFLIGHT_TEST_SENTINEL", "preserved")
+    real_run = subprocess.run
+    calls = []
+
+    def fake_run(command, **kwargs):
+        command = list(command)
+        calls.append((command, kwargs))
+        if command == [sys.executable, "-m", "pytest", "-q"]:
+            probe = (
+                "import os, sys; "
+                "sys.exit(1 if 'WEATHER_AZURE_RUNTIME' in os.environ "
+                "or 'COMPOSE_FILE' in os.environ "
+                "or os.environ.get('T2H_PREFLIGHT_TEST_SENTINEL') != 'preserved' else 0)"
+            )
+            child = real_run(
+                [sys.executable, "-c", probe],
+                cwd=kwargs["cwd"],
+                env=kwargs["env"],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            return subprocess.CompletedProcess(command, child.returncode, child.stdout, child.stderr)
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(prospective.subprocess, "run", fake_run)
+    result = prospective._preflight(None, tmp_path / "state")
+
+    assert result == 0
+    pytest_call = next(item for item in calls if item[0] == [sys.executable, "-m", "pytest", "-q"])
+    pytest_env = pytest_call[1]["env"]
+    assert "WEATHER_AZURE_RUNTIME" not in pytest_env
+    assert "COMPOSE_FILE" not in pytest_env
+    assert pytest_env["T2H_PREFLIGHT_TEST_SENTINEL"] == "preserved"
+    compose_call = next(item for item in calls if item[0] == ["docker", "compose", "config", "--quiet"])
+    assert compose_call[1]["env"]["WEATHER_AZURE_RUNTIME"] == "1"
+    assert compose_call[1]["env"]["COMPOSE_FILE"] == AZURE_COMPOSE_FILE
+    assert compose_call[1]["cwd"] == tmp_path
+    assert os.environ["WEATHER_AZURE_RUNTIME"] == "1"
+    assert os.environ["COMPOSE_FILE"] == AZURE_COMPOSE_FILE
 
 
 def test_watchdog_entrypoint_fails_closed_when_azure_overlay_is_missing(tmp_path, monkeypatch, capsys):
