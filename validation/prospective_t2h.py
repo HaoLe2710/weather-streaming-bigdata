@@ -44,10 +44,14 @@ from monitoring.forecast_evaluator import evaluate_forecasts
 from monitoring.hourly_archive import revision_record
 from monitoring.metrics import calculate_metrics, distribution_stats
 from validation.runtime_stabilization_t2h import classify_hourly_cycle_gap
+from validation.prospective_t2h_runtime import (
+    cohort_runtime_configuration,
+    run_prospective_compose,
+)
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STATE_ROOT = REPOSITORY_ROOT / "data" / "runtime" / "prospective-live-t2h"
+DEFAULT_STATE_ROOT = REPOSITORY_ROOT / "data" / "runtime" / "prospective-live-t2h-168h-v1"
 DEFAULT_RESULTS_ROOT = REPOSITORY_ROOT / "results" / "prospective-live-t2h"
 FORECAST_GRACE_PERIOD_SECONDS = 15 * 60
 REFERENCE_GRACE_PERIOD_SECONDS = 2 * 60 * 60
@@ -2151,17 +2155,35 @@ def update_from_spark(
     )
 
 
-def _run_compose(run_id: str, *, services: Sequence[str] | None = None) -> subprocess.CompletedProcess[str]:
-    env = os.environ.copy()
-    env["WEATHER_INFERENCE_RUN_ID"] = run_id
-    cmd = ["docker", "compose", "--profile", "t2h-live", "up", "-d"]
-    if services:
-        cmd.extend(services)
-    else:
-        cmd.extend(
-            ["broker", "spark-master", "spark-worker", "live-hourly-producer-t2h", "streaming-inference-t2h-live"]
-        )
-    return subprocess.run(cmd, cwd=REPOSITORY_ROOT, env=env, text=True, capture_output=True, check=False)
+def _run_compose(
+    run_id: str,
+    *,
+    services: Sequence[str] | None = None,
+    state_root: Path = DEFAULT_STATE_ROOT,
+    bootstrap: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    """Start this run's isolated runtime; bootstrap only for a new readiness/cohort run."""
+    state_root = Path(state_root)
+    run_state = state_root / run_id
+    runtime_configuration: Mapping[str, Any] | None = None
+    for request_path in (run_state / "start_request.json", run_state / "readiness_request.json"):
+        request = _read_json(request_path, {}) or {}
+        candidate = request.get("runtime_configuration")
+        if isinstance(candidate, Mapping):
+            runtime_configuration = candidate
+            break
+    if runtime_configuration is None:
+        # A legacy request has no per-run topic/cache. Keep Compose defaults
+        # during resume instead of silently changing its source identity.
+        runtime_configuration = {}
+    return run_prospective_compose(
+        repository_root=REPOSITORY_ROOT,
+        state_root=state_root,
+        run_id=run_id,
+        runtime_configuration=runtime_configuration,
+        services=services,
+        bootstrap=bootstrap,
+    )
 
 
 def _stop_readiness_services() -> subprocess.CompletedProcess[str]:
@@ -2197,6 +2219,7 @@ def _write_start_request(
 ) -> Path:
     if forecast_grace_period_seconds <= 0 or reference_grace_period_seconds <= 0:
         raise ValueError("forecast and reference grace periods must be positive")
+    runtime_configuration = cohort_runtime_configuration(run_id)
     run_state = state_root / run_id
     if (run_state / "start_request.json").exists() or (run_state / "cohort_manifest.json").exists():
         raise FileExistsError(f"prospective run state already exists: {run_state}")
@@ -2228,7 +2251,7 @@ def _write_start_request(
                 "live-hourly-producer-t2h",
                 "streaming-inference-t2h-live",
             ],
-            "input_topic": "weather.hourly.observations.t2h.live.v1",
+            **runtime_configuration,
             "producer_poll_interval_seconds": 300,
             "producer_history_hours": 48,
             "provider": PROVIDER_NAME,
@@ -2305,6 +2328,7 @@ def _readiness(args: argparse.Namespace, state_root: Path) -> int:
         print(json.dumps(contract, indent=2))
         return 1
     run_id = args.run_id or _timestamp_run_id("prospective-readiness-t2h-v1")
+    runtime_configuration = cohort_runtime_configuration(run_id)
     run_state = state_root / run_id
     run_state.mkdir(parents=True, exist_ok=False)
     request = {
@@ -2313,9 +2337,10 @@ def _readiness(args: argparse.Namespace, state_root: Path) -> int:
         "contract_fingerprint": contract["contract_fingerprint"],
         "cohort_protocol_id": COHORT_PROTOCOL_ID,
         "status": "WAITING",
+        "runtime_configuration": runtime_configuration,
     }
     _atomic_json(run_state / "readiness_request.json", request)
-    completed = _run_compose(run_id)
+    completed = _run_compose(run_id, state_root=state_root, bootstrap=True)
     if completed.returncode:
         stopped = _stop_readiness_services()
         print(completed.stdout)
@@ -2410,7 +2435,7 @@ def _start(args: argparse.Namespace, state_root: Path) -> int:
         reference_grace_period_seconds=args.reference_grace_seconds,
     )
     _atomic_json(state_root / "active_run.json", {"run_id": run_id, "started_at": iso_utc(utc_now())})
-    completed = _run_compose(run_id)
+    completed = _run_compose(run_id, state_root=state_root, bootstrap=True)
     if completed.returncode:
         _atomic_json(run_state / "compose_start_error.json", {"returncode": completed.returncode, "stdout": completed.stdout, "stderr": completed.stderr})
         print(completed.stdout)
@@ -2570,7 +2595,12 @@ def _resume(args: argparse.Namespace, state_root: Path) -> int:
                 )
         except (TypeError, ValueError):
             pass
-    completed = _run_compose(run_id)
+    runtime_configuration = request.get("runtime_configuration", {})
+    completed = _run_compose(
+        run_id,
+        state_root=state_root,
+        bootstrap=bool(runtime_configuration.get("bootstrap_required")),
+    )
     print(completed.stdout)
     if completed.returncode:
         print(completed.stderr, file=sys.stderr)

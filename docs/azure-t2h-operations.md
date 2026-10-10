@@ -1,0 +1,109 @@
+# Azure operations: T+2h prospective 168-hour cohort
+
+## Scope and immutable contracts
+
+This runbook supports protocol `T2H_LIVE_PROSPECTIVE_168H_V1`, 63 canonical locations, and 10,584 target slots. It keeps the deployed XGBoost model SHA-256 `bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a`, feature-list SHA-256 `20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2`, provider model `ecmwf_ifs`, and the two-hour forecast horizon fixed.
+
+The code does not train a model, move T0, repair conflicting weather payloads, reset Kafka offsets, remove checkpoints, prune volumes, or start an official cohort automatically. The deployment script refuses a fast-forward while an official cohort is unfinished. It also rejects a fetched change set that modifies an Azure-local Compose overlay.
+
+## Why the runtime is isolated
+
+The live producer and inference service previously defaulted to one shared hourly-observation topic and one shared producer cache. A new run now freezes its own Kafka topic, producer cache, and bootstrap receipt in `start_request.json`. The topic name includes the run ID. Legacy requests keep their recorded topic/cache when resumed; they are never silently migrated.
+
+Before a new isolated run starts, the producer publishes and validates a contiguous 49-hour history for all 63 locations (48 prior hours plus the current safe hour: 3,087 unique location-hour rows). The startup gate requires every row delivered and flushed, zero history gaps, and a seeded cache. If a failed attempt left Kafka records without a PASS receipt, startup stops and keeps the evidence; it never replays that topic to hide a partial publish. The daemon cache then suppresses a second publish of the bootstrap safe hour.
+
+The 168-hour Spark prospective state directory is bind-mounted at `data/runtime/prospective-live-t2h-168h-v1`, separate from the earlier 24-hour state root. The earlier finalized run and its `restart_count` remain intact. Kafka, Delta, checkpoint, result, and prior evidence paths are not deleted by these tools.
+
+The incident values `duplicate_conflict_keys=567` and `gap_in_history_rows=1575` came from the supplied incident description; this workspace does not contain the corresponding live batch record. Source/configuration tracing found the shared topic/cache path and the missing fresh-history bootstrap path. A future run reports and stops on conflict/gap/provenance errors instead of selecting or rewriting payloads.
+
+## Azure host prerequisites
+
+- Ubuntu VM path: `/opt/weather-streaming/weather-streaming-bigdata`.
+- The deployment account has GitHub read access, Docker access through the `docker` group, `sudo` for installing systemd units, and a working `.venv/bin/python`.
+- Windows OpenSSH has the Azure host key already in `known_hosts`. The host wrapper sets `StrictHostKeyChecking=yes` and `BatchMode=yes`.
+- Keep the private SSH key outside the repository. Use an external key path or the SSH agent; the wrapper only passes the path to OpenSSH.
+- `sudo -n` must be allowed for the unit installer, or installation stops without prompting from a noninteractive SSH session.
+
+## Windows-to-Azure deployment
+
+After this PR has been merged into the selected Azure checkout branch, run the PowerShell wrapper from Windows. Its default action is a remote preflight; it does not fetch code, enable services, or start a cohort. The preflight saves its result under `data/runtime/prospective-live-t2h-168h-v1/preflight_test_results.json` and Python may create ignored bytecode caches.
+
+```powershell
+.\ops\azure_t2h\deploy-azure.ps1 -SshHost 'azure-weather'
+```
+
+To fast-forward the Azure checkout from GitHub and install the systemd monitor/resume units, explicitly opt into deployment:
+
+```powershell
+.\ops\azure_t2h\deploy-azure.ps1 `
+  -SshHost 'azure-weather' `
+  -IdentityFile 'C:\Users\LEGION\.ssh\azure_weather_ed25519' `
+  -Ref 'deploy/azure-phase17' `
+  -Apply
+```
+
+The remote bootstrap requires the working tree's tracked files to be clean, the checkout branch to match `-Ref`, and no unfinished official cohort. It runs `git fetch` and `git merge --ff-only`; it does not switch branches, force-push, reset, clean, or run `docker compose down`. Untracked/ignored Azure-local files remain in place. Fast-forward is refused if the incoming commit changes a recognized Azure-local Compose overlay.
+
+Fresh Formal Readiness is a separate explicit option. It creates an isolated readiness run/topic, tests the actual provider and runtime, and stops readiness services afterward. It is not an official cohort:
+
+```powershell
+.\ops\azure_t2h\deploy-azure.ps1 `
+  -SshHost 'azure-weather' `
+  -IdentityFile 'C:\Users\LEGION\.ssh\azure_weather_ed25519' `
+  -Ref 'deploy/azure-phase17' `
+  -Apply `
+  -RunFreshReadiness
+```
+
+Do not pass `-Apply` or `-RunFreshReadiness` until the deployment window and Azure access are authorized. No Azure connection or deployment has been run as part of this repository change.
+
+## Starting an official cohort
+
+Official start remains a human action. First require all deployment/readiness gates below to pass. Then review `data/runtime/prospective-live-t2h-168h-v1/readiness.json`, `preflight_test_results.json`, the frozen contract, and the planned run ID. Only after approval, run the existing CLI `start` command once. Do not construct a replacement run ID after a failure; use `resume` for the active run. `T0` is frozen by the validation code only after the first complete valid forecast cycle.
+
+```bash
+source /etc/weather-streaming-t2h.env
+.venv/bin/python -m validation.prospective_t2h \
+  --state-root data/runtime/prospective-live-t2h-168h-v1 start
+```
+
+The `start` command itself rechecks the persisted preflight, Fresh Formal Readiness age/fingerprint, 63-location positive leads, provider model, protocol, and frozen model/feature contract. The watchdog and boot-resume service never call `start`.
+
+## Systemd operation and evidence
+
+`weather-t2h-resume.service` runs after Docker/network on boot. It resumes only the run ID in `active_run.json`, verifies that run's existing start request and protocol, exits for a finalized cohort, and does nothing when there is no official cohort. It calls `resume`; it cannot create a new run or choose a new T0.
+
+`weather-t2h-watchdog.timer` runs every five minutes. Each sample records cohort/run IDs, frozen hashes/provider/horizon, progress counters, cohort `restart_count`, Docker `RestartCount`s, latest inference batch, persistence receipt count, and service state. Every UTC hour it runs the Spark/Delta audit for persisted forecasts and state. Hourly and daily summaries and alert-open/resolved transitions append under `results/prospective-live-t2h/<run_id>/runtime/ops/`.
+
+The watchdog never restarts a container when data errors are present. For infrastructure-only incidents, it starts/restarts only an existing stopped/unhealthy service, retries transient Docker failures at most three times with exponential delay, and allows at most three recovery actions per service in a rolling 24 hours. It does not create missing containers or alter Kafka offsets. Inspect the failure report and fix a missing service as an operator. A failed watchdog invocation is visible in systemd/journal and `alerts.jsonl`.
+
+```bash
+systemctl status weather-t2h-resume.service weather-t2h-watchdog.timer
+journalctl -u weather-t2h-watchdog.service --since '2 hours ago'
+tail -n 20 results/prospective-live-t2h/<run_id>/runtime/ops/monitor.jsonl
+tail -n 20 results/prospective-live-t2h/<run_id>/runtime/ops/alerts.jsonl
+.venv/bin/python -m validation.prospective_t2h \
+  --state-root data/runtime/prospective-live-t2h-168h-v1 status
+```
+
+The run is blocked for duplicate conflict keys, history gaps, invalid provenance, duplicate persistence receipts, cohort reference conflicts, frozen-contract drift, a stale heartbeat, a nonzero hourly Delta audit, or batches with input but no ready feature/forecast rows. These values are reported; the watchdog never edits evidence to make them pass.
+
+## Validation gates
+
+### Before deployment
+
+- Azure branch is the expected Git ref; tracked working tree is clean; protected Azure-local Compose overlays are untouched.
+- `python -m validation.prospective_t2h preflight` passes compile, regression tests, diff check, and `docker compose --profile t2h-live config --quiet`.
+- Runtime model contract reports the required model SHA, feature-list SHA, provider `ecmwf_ifs`, and two-hour horizon.
+- Fresh Formal Readiness is current and passes 63/63 live forecasts, 63/63 positive leads, zero target-offset violations, the frozen provider/model contract, monitoring PASS, and readiness-service cleanup.
+- Deployment and readiness do not write an official `active_run.json` entry.
+
+### After official start
+
+- Cohort protocol, run ID, cohort ID, T0, model SHA, feature SHA, provider model, and checkpoint remain unchanged through recovery.
+- Every new run's isolated bootstrap confirms 63 locations × 49 contiguous hourly rows with unique keys and complete Kafka delivery/flush.
+- Duplicate/conflict, history-gap, invalid-provenance, and duplicate-receipt counts remain zero; `microbatch_update_count`, `last_update_at`, prospective forecasts, and valid evaluations advance.
+- Recovery preserves the cohort `restart_count`, existing checkpoints, Delta state, Kafka data, and all earlier evidence.
+- Finalize only when the existing frozen protocol marks all 10,584 slots terminal and its final artifact checks pass. No watchdog action finalizes a cohort.
+
+`READY_FOR_OFFICIAL_START` is reserved for an Azure run where both preflight and a fresh formal readiness check have actually passed on Azure. This repository work alone does not satisfy that gate.

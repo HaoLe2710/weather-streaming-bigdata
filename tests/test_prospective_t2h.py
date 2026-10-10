@@ -542,7 +542,7 @@ def test_resume_rejects_start_request_protocol_drift_before_docker(tmp_path, mon
     monkeypatch.setattr(
         prospective,
         "_run_compose",
-        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
+        lambda candidate, **kwargs: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
     )
 
     result = prospective._resume(Namespace(), tmp_path)
@@ -574,7 +574,7 @@ def test_resume_rejects_manifest_drift_before_docker(tmp_path, monkeypatch, caps
     monkeypatch.setattr(
         prospective,
         "_run_compose",
-        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
+        lambda candidate, **kwargs: docker_calls.append(candidate) or Namespace(returncode=0, stdout="", stderr=""),
     )
     monkeypatch.setattr(prospective, "_default_model_contract", lambda: {
         "status": "PASS",
@@ -608,7 +608,7 @@ def test_valid_resume_preserves_168_hour_window_and_canonical_state(tmp_path, mo
     monkeypatch.setattr(
         prospective,
         "_run_compose",
-        lambda candidate: docker_calls.append(candidate) or Namespace(returncode=0, stdout="resumed", stderr=""),
+        lambda candidate, **kwargs: docker_calls.append(candidate) or Namespace(returncode=0, stdout="resumed", stderr=""),
     )
     paths = [
         run_dir / "start_request.json",
@@ -694,3 +694,57 @@ def test_official_start_requires_new_protocol_preflight_and_readiness(tmp_path, 
     })
     assert prospective._start(args, tmp_path) == 2
     assert not (tmp_path / "active_run.json").exists()
+
+
+def test_new_start_request_freezes_isolated_topic_cache_and_bootstrap_plan(tmp_path):
+    run_id = "20261010T120000Z-prospective-live-t2h-v1"
+    run_state = prospective._write_start_request(
+        state_root=tmp_path,
+        run_id=run_id,
+        contract={"contract_fingerprint": "frozen-test-contract-fingerprint"},
+        requested_at=REQUESTED_AT,
+    )
+
+    request = _read_json(run_state / "start_request.json")
+    runtime_config = request["runtime_configuration"]
+    assert runtime_config["input_topic"] == f"weather.hourly.observations.t2h.prospective.{run_id}.v1"
+    assert run_id in runtime_config["producer_cache_path"]
+    assert runtime_config["producer_history_hours"] == 48
+    assert runtime_config["bootstrap_required"] is True
+    assert request["model_sha256"] == MODEL_SHA256
+    assert request["feature_list_sha256"] == FEATURE_LIST_SHA256
+    assert request["forecast_horizon_hours"] == 2
+    assert request["training_performed"] is False
+
+
+def test_default_state_root_is_versioned_away_from_prior_24_hour_cohort():
+    assert prospective.DEFAULT_STATE_ROOT.name == "prospective-live-t2h-168h-v1"
+    assert prospective.DEFAULT_STATE_ROOT != prospective.REPOSITORY_ROOT / "data" / "runtime" / "prospective-live-t2h"
+
+
+def test_resume_runtime_uses_saved_topic_and_cache_without_migrating_legacy_request(tmp_path, monkeypatch):
+    run_id = "prior-run"
+    run_dir = tmp_path / run_id
+    run_dir.mkdir()
+    _atomic_json(
+        run_dir / "start_request.json",
+        {
+            "run_id": run_id,
+            "runtime_configuration": {
+                "input_topic": "weather.hourly.observations.t2h.live.v1",
+                "producer_history_hours": 48,
+            },
+        },
+    )
+    captured = {}
+
+    def fake_compose(**kwargs):
+        captured.update(kwargs)
+        return Namespace(returncode=0, stdout="resumed", stderr="")
+
+    monkeypatch.setattr(prospective, "run_prospective_compose", fake_compose)
+    prospective._run_compose(run_id, state_root=tmp_path)
+
+    assert captured["runtime_configuration"]["input_topic"] == "weather.hourly.observations.t2h.live.v1"
+    assert "producer_cache_path" not in captured["runtime_configuration"]
+    assert captured["bootstrap"] is False

@@ -727,6 +727,29 @@ class PublishedHourCache:
             self._save()
 
 
+def seed_bootstrap_cache(
+    cache: PublishedHourCache,
+    locations: Sequence[Mapping[str, Any]],
+    safe_hour: datetime | str,
+) -> None:
+    """Remember each location's bootstrapped safe hour before starting the daemon."""
+    if not locations:
+        raise ValueError("cannot seed a bootstrap cache without locations")
+    if isinstance(safe_hour, datetime):
+        if safe_hour.tzinfo is None or safe_hour.utcoffset() is None:
+            raise ValueError("bootstrap safe hour must be timezone-aware")
+        safe_hour_value = safe_hour.astimezone(timezone.utc)
+    else:
+        safe_hour_value = parse_utc_hour(safe_hour)
+    safe_hour_text = format_utc_hour(safe_hour_value)
+    cache.mark_published(
+        [
+            {"location_id": str(location["location_id"]), "event_time": safe_hour_text}
+            for location in locations
+        ]
+    )
+
+
 def kafka_key(event: Mapping[str, Any]) -> str:
     """Unique deterministic location-hour key; partition is pinned by location."""
     return f"{event['location_id']}|{event['event_time']}"
@@ -1040,11 +1063,13 @@ def main(argv: list[str] | None = None) -> int:
     process_started = time.perf_counter()
     process_cpu_started = time.process_time()
     history_hours_requested = history_hours
-    cache = (
-        PublishedHourCache(PROJECT_ROOT / "results" / "live_hourly_weather_producer" / "published_hours.json")
-        if args.mode == "daemon"
-        else None
+    cache_path = Path(
+        os.getenv(
+            "WEATHER_LIVE_HOURLY_CACHE_PATH",
+            str(PROJECT_ROOT / "results" / "live_hourly_weather_producer" / "published_hours.json"),
+        )
     )
+    cache = PublishedHourCache(cache_path) if args.mode in {"daemon", "bootstrap"} else None
     summaries: list[dict[str, Any]] = []
 
     try:
@@ -1069,6 +1094,15 @@ def main(argv: list[str] | None = None) -> int:
                 summary["poll_index"] = poll_index
                 summary["mode"] = args.mode
                 summaries.append(summary)
+                if (
+                    args.mode == "bootstrap"
+                    and cache is not None
+                    and not summary["failed_locations"]
+                    and not summary["delivery_failures"]
+                    and summary["producer_flush_remaining"] == 0
+                ):
+                    seed_bootstrap_cache(cache, locations, summary["safe_hour"])
+                    summary["cache_seeded"] = True
                 if args.summary_json:
                     _write_summary(args.summary_json, {
                         "status": "PASS" if not summary["failed_locations"] and not summary["delivery_failures"] and summary["producer_flush_remaining"] == 0 else "PARTIAL_OR_FAILED",

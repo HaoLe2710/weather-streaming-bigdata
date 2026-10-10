@@ -42,9 +42,6 @@ services:
 
       KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
 
-    
-
-
   spark-master:
     image: weather-spark:4.0.4-delta4.0.0
     build:
@@ -52,6 +49,7 @@ services:
       dockerfile: spark/Dockerfile
     container_name: weather-spark-master
     hostname: spark-master
+    restart: unless-stopped
 
     command:
       - /opt/spark/bin/spark-class
@@ -70,6 +68,20 @@ services:
       - "7077:7077"
       - "8080:8080"
 
+    healthcheck:
+      test:
+        - CMD
+        - /usr/local/bin/python3.12
+        - -c
+        - >-
+          import json,urllib.request;
+          d=json.load(urllib.request.urlopen('http://127.0.0.1:8080/json/',timeout=3));
+          assert d.get('url') == 'spark://spark-master:7077'
+      interval: 15s
+      timeout: 8s
+      retries: 8
+      start_period: 45s
+
     volumes:
       - ./spark:/opt/project/spark
       - ./historical:/opt/project/historical
@@ -87,6 +99,7 @@ services:
     build:
       context: .
       dockerfile: spark/Dockerfile
+    restart: unless-stopped
     command:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.worker.Worker
@@ -103,7 +116,8 @@ services:
       PYSPARK_DRIVER_PYTHON: /usr/local/bin/python3.12
 
     depends_on:
-      - spark-master
+      spark-master:
+        condition: service_healthy
 
     volumes:
       - ./spark:/opt/project/spark
@@ -114,6 +128,20 @@ services:
       - ./monitoring:/opt/project/monitoring:ro
       - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
       - weather-data:/opt/project/data
+
+    healthcheck:
+      test:
+        - CMD
+        - /usr/local/bin/python3.12
+        - -c
+        - >-
+          import json,urllib.request;
+          d=json.load(urllib.request.urlopen('http://spark-master:8080/json/',timeout=3));
+          assert any(w.get('state') == 'ALIVE' for w in d.get('workers',[]))
+      interval: 15s
+      timeout: 8s
+      retries: 8
+      start_period: 45s
 
   historical-downloader:
     image: python:3.12-slim
@@ -326,7 +354,8 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
       WEATHER_LIVE_HOURLY_BOOTSTRAP_SERVERS: broker:19092
-      WEATHER_LIVE_HOURLY_TOPIC: weather.hourly.observations.t2h.live.v1
+      WEATHER_LIVE_HOURLY_TOPIC: ${WEATHER_PROSPECTIVE_INPUT_TOPIC:-weather.hourly.observations.t2h.live.v1}
+      WEATHER_LIVE_HOURLY_CACHE_PATH: ${WEATHER_PROSPECTIVE_PRODUCER_CACHE_PATH:-/opt/project/results/live_hourly_weather_producer/published_hours.json}
       WEATHER_LIVE_HOURLY_POLL_INTERVAL_SECONDS: "300"
       WEATHER_LIVE_HOURLY_HISTORY_HOURS: "48"
       WEATHER_LIVE_HOURLY_ENDPOINT: https://api.open-meteo.com/v1/forecast
@@ -343,6 +372,8 @@ services:
     command:
       - --mode
       - daemon
+      - --summary-json
+      - /opt/project/results/prospective-live-t2h/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/runtime/producer_runtime.json
 
   streaming-inference-t2h-live:
     image: weather-spark:4.0.4-delta4.0.0
@@ -350,16 +381,21 @@ services:
     profiles:
       - t2h-live
     restart: unless-stopped
+    group_add:
+      - "${WEATHER_RUNTIME_GID:-1000}"
     depends_on:
-      - broker
-      - spark-master
-      - spark-worker
+      broker:
+        condition: service_started
+      spark-master:
+        condition: service_healthy
+      spark-worker:
+        condition: service_healthy
     environment:
       HOME: /tmp
       SPARK_MASTER_HOST: spark-master
       WEATHER_INFERENCE_PROFILE: T2H
       WEATHER_INFERENCE_EXECUTION_ORIGIN: LIVE_PROSPECTIVE
-      WEATHER_INFERENCE_TOPIC: weather.hourly.observations.t2h.live.v1
+      WEATHER_INFERENCE_TOPIC: ${WEATHER_PROSPECTIVE_INPUT_TOPIC:-weather.hourly.observations.t2h.live.v1}
       WEATHER_INFERENCE_RUN_ID: ${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
       WEATHER_INFERENCE_OUTPUT_ROOT: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}
       WEATHER_INFERENCE_STATE_PATH: /opt/project/data/streaming/t2h_v1_1/${WEATHER_INFERENCE_RUN_ID:-local-streaming-inference-t2h-v1-1}/state_live
@@ -420,7 +456,7 @@ services:
       - ./ml:/opt/project/ml:ro
       - ./monitoring:/opt/project/monitoring:ro
       - ./validation:/opt/project/validation:ro
-      - ./data/runtime/prospective-live-t2h:/opt/project/prospective-runtime
+      - ./data/runtime/prospective-live-t2h-168h-v1:/opt/project/prospective-runtime
       - ./results/modeling-t2h/20261003T122405Z-xgb-t2h-v1-1-colab/weather_forecast_xgboost_t2h_v1_1.json:/opt/project/models/weather_forecast_xgboost_t2h_v1_1.json:ro
       - weather-data:/opt/project/data
 

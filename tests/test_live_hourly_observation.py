@@ -242,6 +242,33 @@ class LiveHourlyContractTests(unittest.TestCase):
         third, duplicates = cache.filter_new(next_events)
         self.assertEqual((len(third), duplicates), (63, 0))
 
+    def test_bootstrap_cache_seed_prevents_same_safe_hour_republish_after_restart(self):
+        with TemporaryDirectory() as temporary_directory:
+            state_path = Path(temporary_directory) / "published_hours.json"
+            bootstrap_cache = live.PublishedHourCache(state_path)
+            live.seed_bootstrap_cache(bootstrap_cache, self.locations, SAFE_HOUR)
+
+            restarted_cache = live.PublishedHourCache(state_path)
+            same_hour = [
+                {"location_id": item["location_id"], "event_time": live.format_utc_hour(SAFE_HOUR)}
+                for item in self.locations
+            ]
+            accepted, skipped = restarted_cache.filter_new(same_hour)
+            self.assertEqual((accepted, skipped), ([], 63))
+            self.assertTrue(
+                restarted_cache.has_completed(
+                    SAFE_HOUR,
+                    [item["location_id"] for item in self.locations],
+                )
+            )
+
+            next_hour = [
+                {"location_id": item["location_id"], "event_time": live.format_utc_hour(SAFE_HOUR + timedelta(hours=1))}
+                for item in self.locations
+            ]
+            accepted, skipped = restarted_cache.filter_new(next_hour)
+            self.assertEqual((len(accepted), skipped), (63, 0))
+
     def test_same_safe_hour_preflight_skips_provider_and_kafka(self):
         cache = live.PublishedHourCache()
         completed = live.build_hourly_events(self.locations, self.payloads, now=NOW, history_hours=24, bootstrap=False)["events"]
