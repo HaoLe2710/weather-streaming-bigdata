@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "10000000-0000-4000-8000-000000000001",
+  "timestamp": "2026-10-12T12:00:00.000Z",
+  "source": {
+    "environment": "local",
+    "agentVersion": "1.0.0-fixture",
+    "hostname": "phase2a-synthetic"
+  },
+  "cohort": {
+    "runId": "20261010T111433Z-prospective-live-t2h-v1",
+    "cohortId": "prospective-t2h-20261010T120000Z",
+    "protocolId": "T2H_LIVE_PROSPECTIVE_168H_V1",
+    "status": "COLLECTING",
+    "startsAt": "2026-10-10T12:00:00Z",
+    "endsAt": "2026-10-17T11:00:00Z",
+    "targetHours": 168,
+    "targetLocations": 63,
+    "targetForecastSlots": 10584,
+    "lastUpdateAt": "2026-10-12T12:00:00.000Z",
+    "statusFileUpdatedAt": "2026-10-12T12:00:00.000Z",
+    "identityValidation": "PASS",
+    "frozenContractValidation": "PASS",
+    "modelSha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+    "featureListSha256": "20a5d2fb56d9b7231f4c43b39ad7a833298d76b1bfd0f127b2b251c57e5d7fd2",
+    "providerModel": "ecmwf_ifs",
+    "forecastHorizonHours": 2
+  },
+  "progress": {
+    "microbatchUpdateCount": null,
+    "completedTargetHours": null,
+    "expectedTargetHours": null,
+    "expectedLocations": null,
+    "expectedForecastSlots": null,
+    "forecastsPersisted": null,
+    "validEvaluations": null,
+    "pendingTarget": null,
+    "pendingReference": null,
+    "missingForecasts": null,
+    "missingReferences": null,
+    "restartCount": null
+  },
+  "quality": {
+    "status": "PASS",
+    "pipelineDataErrors": [],
+    "duplicateConflictsLatestBatch": null,
+    "duplicateForecastIds": null,
+    "duplicateLogicalForecasts": null,
+    "duplicatePersistenceReceipts": null,
+    "duplicateEvaluationIds": null,
+    "referenceConflicts": null,
+    "invalidProvenance": null,
+    "provenanceBlockingViolations": null,
+    "historyGapRowsLatestBatch": null,
+    "rejectedRowsLatestBatch": null,
+    "latestAudit": null,
+    "auditHistory": {
+      "windowSeconds": 86400,
+      "passCount": 0,
+      "failCount": 0,
+      "recentFailures": []
+    },
+    "persistenceReceiptCount": null,
+    "persistenceReceiptAudit": null,
+    "unavailableReasonCodes": []
+  },
+  "inference": {
+    "latestBatchId": null,
+    "latestBatchAt": null,
+    "latestBatchObservedAt": null,
+    "modelSha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+    "expectedModelSha256": "bd5ee153b2709ac661557bdd11f8322b80de1264c65a27d1d6c79fbcf63ee66a",
+    "modelContractStatus": "PASS",
+    "modelStartupStatus": null,
+    "modelStartupObservedAt": null,
+    "durationMs": null,
+    "latestBatchMetrics": null,
+    "persistenceReceiptFile": {
+      "status": "x",
+      "modifiedAt": null,
+      "sizeBytes": null
+    }
+  },
+  "infrastructure": {
+    "host": {
+      "hostname": "phase2a-synthetic",
+      "uptimeSeconds": null,
+      "loadAverage": null,
+      "cpuUsagePercent": null,
+      "memory": {
+        "totalBytes": 0,
+        "usedBytes": 0,
+        "availableBytes": 0,
+        "usagePercent": 0
+      },
+      "disk": {
+        "path": "x",
+        "totalBytes": 0,
+        "usedBytes": 0,
+        "freeBytes": 0,
+        "availableBytes": 0,
+        "usagePercent": 50
+      },
+      "collectorDurationMs": 0
+    },
+    "docker": {
+      "status": "PASS",
+      "containers": []
+    },
+    "watchdog": {
+      "timer": {
+        "active": null,
+        "activeState": null,
+        "subState": null,
+        "lastTriggerAt": null,
+        "nextTriggerAt": null
+      },
+      "service": {
+        "activeState": null,
+        "subState": null,
+        "lastResult": null,
+        "exitStatus": null,
+        "lastStartedAt": null,
+        "lastExitedAt": null
+      },
+      "latestReport": {
+        "status": "PASS",
+        "checkedAt": "2026-10-12T12:00:00.000Z",
+        "cohortStatus": null,
+        "cohortRunId": "20261010T111433Z-prospective-live-t2h-v1",
+        "cohortId": "prospective-t2h-20261010T120000Z",
+        "microbatchUpdateCount": null,
+        "lastUpdateAt": null,
+        "forecastsPersisted": null,
+        "validEvaluations": null,
+        "restartCount": null,
+        "persistenceReceiptCount": null,
+        "currentDataErrors": [],
+        "infrastructureErrors": [],
+        "warnings": [],
+        "ageSeconds": null
+      },
+      "latestHourlyStatus": null,
+      "latestAudit": null,
+      "auditHistory": {
+        "windowSeconds": 86400,
+        "passCount": 0,
+        "failCount": 0,
+        "recentFailures": []
+      },
+      "failureHistory": {
+        "failedMonitorReportCount": 0,
+        "recentFailures": []
+      },
+      "persistenceReceiptCount": null,
+      "persistenceReceiptAudit": null,
+      "sourceFiles": {
+        "monitorLog": {
+          "status": "x",
+          "modifiedAt": null
+        },
+        "hourlyReports": {
+          "status": "x",
+          "modifiedAt": null
+        }
+      },
+      "collectorDurationMs": 0,
+      "monitorFreshness": "OBSERVED"
+    }
+  },
+  "pipeline": {
+    "status": "RUNNING",
+    "watchdogStatus": "x",
+    "monitorFreshness": "OBSERVED",
+    "latestHourlyStatus": "x",
+    "auditStatus": "x"
+  },
+  "collector": {
+    "status": "COMPLETE",
+    "durationMs": null,
+    "warnings": []
+  }
+}

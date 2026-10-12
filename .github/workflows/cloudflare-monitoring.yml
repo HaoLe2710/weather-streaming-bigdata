@@ -1,0 +1,66 @@
+name: Cloudflare monitoring backend Phase 2A
+
+on:
+  push:
+    paths:
+      - "monitoring/cloudflare/**"
+      - "monitoring/agent/schema/monitoring-snapshot-v1.schema.json"
+      - "monitoring/agent/src/normalize.mjs"
+      - "monitoring/agent/src/serializer.mjs"
+      - "monitoring/docs/MONITORING_CONTRACT_V1.md"
+      - "monitoring/docs/PHASE2A_*.md"
+      - "monitoring/docs/PHASE2B_*.md"
+      - ".github/workflows/cloudflare-monitoring.yml"
+  pull_request:
+    paths:
+      - "monitoring/cloudflare/**"
+      - "monitoring/agent/schema/monitoring-snapshot-v1.schema.json"
+      - "monitoring/agent/src/normalize.mjs"
+      - "monitoring/agent/src/serializer.mjs"
+      - "monitoring/docs/MONITORING_CONTRACT_V1.md"
+      - "monitoring/docs/PHASE2A_*.md"
+      - "monitoring/docs/PHASE2B_*.md"
+      - ".github/workflows/cloudflare-monitoring.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phase2a:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: monitoring/cloudflare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: monitoring/cloudflare/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: TypeScript strict typecheck
+        run: npm run typecheck
+      - name: Validate generated full JSON Schema validator
+        run: npm run validate-schema
+      - name: Check frozen Phase 1 contract drift
+        run: npm run check-contract
+      - name: Run Workers and local D1 integration/security suite
+        run: npm test
+      - name: Apply D1 migrations to local database
+        run: npm run migrate:local
+      - name: Verify local D1 migration registry
+        run: npx wrangler d1 migrations list DB --local --env local
+      - name: Exercise the Node.js synthetic HMAC signer
+        env:
+          MONITOR_HMAC_SECRET_PRIMARY: phase2a-ci-only-synthetic-secret-at-least-32-bytes
+          MONITOR_HMAC_KEY_ID_PRIMARY: agent-key-v1
+        run: npm run sign:fixture -- snapshot-healthy.json
+      - name: Build Worker without deploying
+        run: npm run build
+      - name: Run Phase 1 monitoring agent regression suite
+        working-directory: monitoring/agent
+        run: npm test

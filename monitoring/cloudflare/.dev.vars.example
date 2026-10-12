@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local development only. Use synthetic values.
+MONITOR_HMAC_SECRET_PRIMARY=replace-with-random-local-secret
+MONITOR_HMAC_SECRET_PREVIOUS=
+MONITOR_READ_API_TOKEN=replace-with-random-local-read-token
+MONITOR_HMAC_KEY_ID_PRIMARY=agent-key-v1
+MONITOR_HMAC_KEY_ID_PREVIOUS=
+TELEGRAM_ALERTS_ENABLED=false

@@ -1,0 +1,94 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "weather-monitoring-backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-12",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "triggers": {
+    "crons": ["*/5 * * * *", "17 3 * * *"]
+  },
+  "vars": {
+    "ALLOWED_ENVIRONMENTS": "azure-production",
+    "ALLOWED_SOURCE_HOSTNAMES": "",
+    "HMAC_TIMESTAMP_TOLERANCE_SECONDS": "300",
+    "MONITOR_HMAC_KEY_ID_PRIMARY": "agent-key-v1",
+    "MONITOR_HMAC_KEY_ID_PREVIOUS": "",
+    "MONITOR_DEFAULT_INTERVAL_SECONDS": "300",
+    "MONITOR_DEFAULT_HEARTBEAT_TIMEOUT_SECONDS": "900",
+    "MONITOR_DEFAULT_STARTUP_GRACE_SECONDS": "900",
+    "MONITOR_DEFAULT_DISK_THRESHOLD_PERCENT": "85",
+    "MONITOR_TARGET_SCAN_LIMIT": "5",
+    "MONITOR_RETENTION_SNAPSHOT_DAYS": "14",
+    "MONITOR_RETENTION_ALERT_DAYS": "90",
+    "MONITOR_RETENTION_BATCH_SIZE": "250",
+    "MONITOR_MAX_PARTIAL_STREAK": "3",
+    "TELEGRAM_ALERTS_ENABLED": "false"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "weather-monitoring-local",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "env": {
+    "staging": {
+      "name": "weather-monitoring-backend-staging",
+      "vars": {
+        "ALLOWED_ENVIRONMENTS": "azure-staging,local",
+        "ALLOWED_SOURCE_HOSTNAMES": "phase2a-synthetic",
+        "HMAC_TIMESTAMP_TOLERANCE_SECONDS": "300",
+        "MONITOR_HMAC_KEY_ID_PRIMARY": "agent-key-v1",
+        "MONITOR_HMAC_KEY_ID_PREVIOUS": "",
+        "MONITOR_DEFAULT_INTERVAL_SECONDS": "300",
+        "MONITOR_DEFAULT_HEARTBEAT_TIMEOUT_SECONDS": "900",
+        "MONITOR_DEFAULT_STARTUP_GRACE_SECONDS": "900",
+        "MONITOR_DEFAULT_DISK_THRESHOLD_PERCENT": "85",
+        "MONITOR_TARGET_SCAN_LIMIT": "5",
+        "MONITOR_RETENTION_SNAPSHOT_DAYS": "14",
+        "MONITOR_RETENTION_ALERT_DAYS": "90",
+        "MONITOR_RETENTION_BATCH_SIZE": "250",
+        "MONITOR_MAX_PARTIAL_STREAK": "3",
+        "TELEGRAM_ALERTS_ENABLED": "false"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "weather-monitoring-staging",
+          "database_id": "00000000-0000-0000-0000-000000000002",
+          "migrations_dir": "migrations"
+        }
+      ]
+    },
+    "local": {
+      "name": "weather-monitoring-backend-local",
+      "vars": {
+        "ALLOWED_ENVIRONMENTS": "local",
+        "ALLOWED_SOURCE_HOSTNAMES": "phase2a-synthetic",
+        "HMAC_TIMESTAMP_TOLERANCE_SECONDS": "300",
+        "MONITOR_HMAC_KEY_ID_PRIMARY": "agent-key-v1",
+        "MONITOR_HMAC_KEY_ID_PREVIOUS": "",
+        "MONITOR_DEFAULT_INTERVAL_SECONDS": "300",
+        "MONITOR_DEFAULT_HEARTBEAT_TIMEOUT_SECONDS": "900",
+        "MONITOR_DEFAULT_STARTUP_GRACE_SECONDS": "900",
+        "MONITOR_DEFAULT_DISK_THRESHOLD_PERCENT": "85",
+        "MONITOR_TARGET_SCAN_LIMIT": "5",
+        "MONITOR_RETENTION_SNAPSHOT_DAYS": "14",
+        "MONITOR_RETENTION_ALERT_DAYS": "90",
+        "MONITOR_RETENTION_BATCH_SIZE": "250",
+        "MONITOR_MAX_PARTIAL_STREAK": "3",
+        "TELEGRAM_ALERTS_ENABLED": "false"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "weather-monitoring-local",
+          "database_id": "00000000-0000-0000-0000-000000000003",
+          "migrations_dir": "migrations"
+        }
+      ]
+    }
+  }
+}
