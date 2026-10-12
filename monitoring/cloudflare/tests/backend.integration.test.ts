@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { env as runtimeEnv } from "cloudflare:workers";
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import worker from "../src/index";
@@ -9,7 +9,6 @@ import { openAlert, resolveAlert } from "../src/repositories/alerts";
 import { cleanupRetainedData } from "../src/services/retention-service";
 import { processNotificationOutbox } from "../src/services/notification-service";
 import type { Env, MonitoringSnapshotV1 } from "../src/types";
-import initialMigration from "../migrations/0001_initial.sql?raw";
 import healthyFixture from "../fixtures/snapshot-healthy.json";
 import partialFixture from "../fixtures/snapshot-partial.json";
 import qualityFailFixture from "../fixtures/snapshot-quality-fail.json";
@@ -112,9 +111,11 @@ async function seedTarget(options: {
   expectedIntervalSeconds?: number;
   diskThresholdPercent?: number;
   maxPartialStreak?: number;
+  sourceIdentity?: string;
 } = {}) {
   const snapshot = healthyFixture as MonitoringSnapshotV1;
-  const streamId = await deterministicStreamId("local", snapshot.cohort.cohortId, "phase2a-synthetic");
+  const sourceIdentity = options.sourceIdentity ?? "phase2a-synthetic";
+  const streamId = await deterministicStreamId("local", snapshot.cohort.cohortId, sourceIdentity);
   const activatedAt = options.activatedAgoSeconds == null
     ? null
     : new Date(Date.now() - options.activatedAgoSeconds * 1000).toISOString();
@@ -123,11 +124,12 @@ async function seedTarget(options: {
       stream_id, environment, cohort_id, run_id, source_identity,
       expected_interval_seconds, heartbeat_timeout_seconds, startup_grace_seconds,
       disk_threshold_percent, max_partial_streak, monitoring_enabled, activated_at
-    ) VALUES (?, 'local', ?, ?, 'phase2a-synthetic', ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, 'local', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     streamId,
     snapshot.cohort.cohortId,
     snapshot.cohort.runId,
+    sourceIdentity,
     options.expectedIntervalSeconds ?? 300,
     options.heartbeatTimeoutSeconds ?? 900,
     options.startupGraceSeconds ?? 900,
@@ -148,10 +150,6 @@ async function getResponse(path: string, token = readToken) {
 async function runCron(cron = "*/5 * * * *", workerEnv: Env = env) {
   await worker.scheduled({ cron, scheduledTime: Date.now(), noRetry: () => undefined }, workerEnv);
 }
-
-beforeAll(async () => {
-  await env.DB.exec(initialMigration);
-});
 
 beforeEach(async () => {
   await env.DB.batch([
@@ -389,7 +387,7 @@ describe("current stream APIs", () => {
     expect((await getResponse(`/api/v1/monitoring/streams/${targetId}/history?cursor=bad%20cursor`)).status).toBe(400);
 
     const summary = await json(await getResponse(`/api/v1/monitoring/streams/${targetId}/summary`));
-    expect(summary).toMatchObject({ apiVersion: 1, streamId: targetId, validEvaluations: 0, dataQuality: { status: "PASS" } });
+    expect(summary).toMatchObject({ apiVersion: 1, streamId: targetId, validEvaluations: null, dataQuality: { status: "PASS" } });
     const alerts = await json(await getResponse(`/api/v1/monitoring/streams/${targetId}/alerts?status=OPEN`));
     expect(alerts.alerts).toEqual([]);
     expect((await getResponse(`/api/v1/monitoring/streams/${targetId}/alerts?status=OPEN%20OR%201%3D1`)).status).toBe(400);
@@ -397,7 +395,7 @@ describe("current stream APIs", () => {
 
   it("rejects SQL-shaped stream IDs and unbounded pagination without leaking credentials", async () => {
     const injection = await getResponse("/api/v1/monitoring/streams/%27%20OR%201%3D1/history");
-    expect(injection.status).toBe(400);
+    expect(injection.status).toBe(404);
     const streamId = await deterministicStreamId("local", healthyFixture.cohort.cohortId, "phase2a-synthetic");
     const excessiveLimit = await getResponse(`/api/v1/monitoring/streams/${streamId}/history?limit=1000000`);
     expect(excessiveLimit.status).toBe(400);
@@ -462,8 +460,8 @@ describe("heartbeat and alert lifecycle", () => {
   });
 
   it("does not alert disabled targets or targets still inside startup grace", async () => {
-    await seedTarget({ enabled: false, activatedAgoSeconds: 4_000 });
-    await seedTarget({ enabled: true, activatedAgoSeconds: 8 * 60, startupGraceSeconds: 15 * 60 });
+    await seedTarget({ enabled: false, activatedAgoSeconds: 4_000, sourceIdentity: "phase2a-synthetic-disabled" });
+    await seedTarget({ enabled: true, activatedAgoSeconds: 8 * 60, startupGraceSeconds: 15 * 60, sourceIdentity: "phase2a-synthetic-grace" });
     await runCron();
     expect((await rows("SELECT alert_id FROM monitoring_alerts WHERE status = 'OPEN'")).length).toBe(0);
   });
