@@ -1,0 +1,37 @@
+[Unit]
+Description=Read-only Weather Streaming monitoring snapshot
+Documentation=file:/opt/weather-monitor-agent/monitoring/docs/PHASE1_DEPLOYMENT.md
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=weather-monitor-agent
+Group=weather-monitor-agent
+EnvironmentFile=/etc/weather-monitor-agent.env
+WorkingDirectory=/opt/weather-monitor-agent/monitoring/agent
+StateDirectory=weather-monitor-agent
+StateDirectoryMode=0750
+UMask=0077
+ExecStartPre=/usr/bin/env node /opt/weather-monitor-agent/monitoring/agent/src/cli.mjs --validate-config
+ExecStart=/usr/bin/env node /opt/weather-monitor-agent/monitoring/agent/src/cli.mjs --once
+TimeoutStartSec=45s
+MemoryMax=256M
+CPUQuota=20%
+TasksMax=32
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+LockPersonality=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+ReadWritePaths=/var/lib/weather-monitor-agent
+
+\n

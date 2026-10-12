@@ -1,0 +1,13 @@
+[Unit]
+Description=Collect read-only Weather Streaming metrics every five minutes
+
+[Timer]
+OnBootSec=4min
+OnUnitActiveSec=5min
+AccuracySec=30s
+RandomizedDelaySec=20s
+Persistent=true
+Unit=weather-monitor-agent.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,57 @@
+name: Weather monitor agent Phase 1
+
+on:
+  push:
+    branches: [feat/weather-monitoring-agent-phase1]
+    paths:
+      - "monitoring/agent/**"
+      - "monitoring/deployment/systemd/**"
+      - "monitoring/docs/**"
+      - ".github/workflows/weather-monitor-agent.yml"
+  pull_request:
+    branches: [deploy/azure-phase17]
+    paths:
+      - "monitoring/agent/**"
+      - "monitoring/deployment/systemd/**"
+      - "monitoring/docs/**"
+      - ".github/workflows/weather-monitor-agent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          while IFS= read -r -d '' file; do node --check "$file"; done \
+            < <(find monitoring/agent/src monitoring/agent/tests -type f -name '*.mjs' -print0)
+      - name: Validate monitoring schema JSON
+        run: python -m json.tool monitoring/agent/schema/monitoring-snapshot-v1.schema.json > /dev/null
+      - name: Run monitoring agent tests
+        working-directory: monitoring/agent
+        run: npm test
+      - name: Verify systemd units
+        shell: bash
+        run: |
+          sudo useradd --system --user-group --no-create-home --home-dir /nonexistent \
+            --shell /usr/sbin/nologin weather-monitor-agent
+          sudo install -D -m 0640 /dev/null /etc/weather-monitor-agent.env
+          sudo install -d -m 0755 /opt/weather-monitor-agent/monitoring
+          sudo cp -a monitoring/agent /opt/weather-monitor-agent/monitoring/agent
+          sudo cp -a monitoring/docs /opt/weather-monitor-agent/monitoring/docs
+          sudo install -D -m 0644 monitoring/deployment/systemd/weather-monitor-agent.service \
+            /etc/systemd/system/weather-monitor-agent.service
+          sudo install -D -m 0644 monitoring/deployment/systemd/weather-monitor-agent.timer \
+            /etc/systemd/system/weather-monitor-agent.timer
+          sudo systemd-analyze verify \
+            /etc/systemd/system/weather-monitor-agent.service \
+            /etc/systemd/system/weather-monitor-agent.timer

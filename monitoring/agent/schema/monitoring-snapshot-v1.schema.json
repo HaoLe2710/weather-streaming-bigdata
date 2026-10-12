@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weather-streaming-bigdata.invalid/monitoring/monitoring-snapshot-v1.schema.json",
+  "title": "Weather Streaming Monitoring Snapshot V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "snapshotId", "timestamp", "source", "cohort", "progress", "quality", "inference", "infrastructure", "pipeline", "collector"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "snapshotId": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "timestamp": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["environment", "agentVersion", "hostname"],
+      "properties": {
+        "environment": { "type": "string", "maxLength": 120 },
+        "agentVersion": { "type": "string", "maxLength": 40 },
+        "hostname": { "type": "string", "maxLength": 255 }
+      }
+    },
+    "cohort": {
+      "type": "object", "additionalProperties": false,
+      "required": ["runId", "cohortId", "protocolId", "status", "startsAt", "endsAt", "targetHours", "targetLocations", "targetForecastSlots", "lastUpdateAt", "statusFileUpdatedAt", "identityValidation", "frozenContractValidation", "modelSha256", "featureListSha256", "providerModel", "forecastHorizonHours"],
+      "properties": {
+        "runId": { "type": "string", "maxLength": 120 },
+        "cohortId": { "type": "string", "maxLength": 120 },
+        "protocolId": { "type": "string", "maxLength": 120 },
+        "status": { "type": "string", "maxLength": 40 },
+        "startsAt": { "$ref": "#/$defs/timestampOrNull" },
+        "endsAt": { "$ref": "#/$defs/timestampOrNull" },
+        "targetHours": { "$ref": "#/$defs/countOrNull" },
+        "targetLocations": { "$ref": "#/$defs/countOrNull" },
+        "targetForecastSlots": { "$ref": "#/$defs/countOrNull" },
+        "lastUpdateAt": { "$ref": "#/$defs/timestampOrNull" },
+        "statusFileUpdatedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "identityValidation": { "enum": ["PASS", "FAIL", "UNKNOWN", "UNKNOWN_OR_MISMATCH"] },
+        "frozenContractValidation": { "enum": ["PASS", "FAIL", "UNKNOWN", "UNKNOWN_OR_MISMATCH"] },
+        "modelSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "featureListSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "providerModel": { "type": ["string", "null"], "maxLength": 100 },
+        "forecastHorizonHours": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "progress": {
+      "type": "object", "additionalProperties": false,
+      "required": ["microbatchUpdateCount", "completedTargetHours", "expectedTargetHours", "expectedLocations", "expectedForecastSlots", "forecastsPersisted", "validEvaluations", "pendingTarget", "pendingReference", "missingForecasts", "missingReferences", "restartCount"],
+      "properties": {
+        "microbatchUpdateCount": { "$ref": "#/$defs/countOrNull" },
+        "completedTargetHours": { "$ref": "#/$defs/countOrNull" },
+        "expectedTargetHours": { "$ref": "#/$defs/countOrNull" },
+        "expectedLocations": { "$ref": "#/$defs/countOrNull" },
+        "expectedForecastSlots": { "$ref": "#/$defs/countOrNull" },
+        "forecastsPersisted": { "$ref": "#/$defs/countOrNull" },
+        "validEvaluations": { "$ref": "#/$defs/countOrNull" },
+        "pendingTarget": { "$ref": "#/$defs/countOrNull" },
+        "pendingReference": { "$ref": "#/$defs/countOrNull" },
+        "missingForecasts": { "$ref": "#/$defs/countOrNull" },
+        "missingReferences": { "$ref": "#/$defs/countOrNull" },
+        "restartCount": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "quality": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "pipelineDataErrors", "duplicateConflictsLatestBatch", "duplicateForecastIds", "duplicateLogicalForecasts", "duplicatePersistenceReceipts", "duplicateEvaluationIds", "referenceConflicts", "invalidProvenance", "provenanceBlockingViolations", "historyGapRowsLatestBatch", "rejectedRowsLatestBatch", "latestAudit", "auditHistory", "persistenceReceiptCount", "persistenceReceiptAudit", "unavailableReasonCodes"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL", "UNKNOWN"] },
+        "pipelineDataErrors": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 100 } },
+        "duplicateConflictsLatestBatch": { "$ref": "#/$defs/countOrNull" },
+        "duplicateForecastIds": { "$ref": "#/$defs/countOrNull" },
+        "duplicateLogicalForecasts": { "$ref": "#/$defs/countOrNull" },
+        "duplicatePersistenceReceipts": { "$ref": "#/$defs/countOrNull" },
+        "duplicateEvaluationIds": { "$ref": "#/$defs/countOrNull" },
+        "referenceConflicts": { "$ref": "#/$defs/countOrNull" },
+        "invalidProvenance": { "$ref": "#/$defs/countOrNull" },
+        "provenanceBlockingViolations": { "type": ["array", "null"], "maxItems": 20, "items": { "type": "string", "maxLength": 100 } },
+        "historyGapRowsLatestBatch": { "$ref": "#/$defs/countOrNull" },
+        "rejectedRowsLatestBatch": { "$ref": "#/$defs/countOrNull" },
+        "latestAudit": { "$ref": "#/$defs/auditOrNull" },
+        "auditHistory": { "$ref": "#/$defs/auditHistory" },
+        "persistenceReceiptCount": { "$ref": "#/$defs/countOrNull" },
+        "persistenceReceiptAudit": { "$ref": "#/$defs/persistenceAuditOrNull" },
+        "unavailableReasonCodes": { "type": "array", "maxItems": 60, "items": { "type": "string", "maxLength": 120 } }
+      }
+    },
+    "inference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["latestBatchId", "latestBatchAt", "latestBatchObservedAt", "modelSha256", "expectedModelSha256", "modelContractStatus", "modelStartupStatus", "modelStartupObservedAt", "durationMs", "latestBatchMetrics", "persistenceReceiptFile"],
+      "properties": {
+        "latestBatchId": { "$ref": "#/$defs/countOrNull" },
+        "latestBatchAt": { "$ref": "#/$defs/timestampOrNull" },
+        "latestBatchObservedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "modelSha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "expectedModelSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "modelContractStatus": { "enum": ["PASS", "FAIL", "UNKNOWN_OR_MISMATCH", "UNKNOWN"] },
+        "modelStartupStatus": { "type": ["string", "null"], "maxLength": 40 },
+        "modelStartupObservedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "durationMs": { "$ref": "#/$defs/countOrNull" },
+        "latestBatchMetrics": { "$ref": "#/$defs/batchMetricsOrNull" },
+        "persistenceReceiptFile": { "$ref": "#/$defs/receiptFile" }
+      }
+    },
+    "infrastructure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["host", "docker", "watchdog"],
+      "properties": {
+        "host": { "$ref": "#/$defs/hostOrNull" },
+        "docker": { "$ref": "#/$defs/docker" },
+        "watchdog": { "$ref": "#/$defs/watchdog" }
+      }
+    },
+    "pipeline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "watchdogStatus", "monitorFreshness", "latestHourlyStatus", "auditStatus"],
+      "properties": {
+        "status": { "type": "string", "maxLength": 40 },
+        "watchdogStatus": { "type": "string", "maxLength": 40 },
+        "monitorFreshness": { "enum": ["OBSERVED", "STALE", "UNKNOWN"] },
+        "latestHourlyStatus": { "type": "string", "maxLength": 40 },
+        "auditStatus": { "type": "string", "maxLength": 40 }
+      }
+    },
+    "collector": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "durationMs", "warnings"],
+      "properties": {
+        "status": { "enum": ["COMPLETE", "PARTIAL", "FAILED"] },
+        "durationMs": { "$ref": "#/$defs/countOrNull" },
+        "warnings": { "type": "array", "maxItems": 80, "items": { "$ref": "#/$defs/collectorWarning" } }
+      }
+    }
+  },
+  "$defs": {
+    "countOrNull": { "type": ["integer", "null"], "minimum": 0 },
+    "timestampOrNull": { "type": ["string", "null"], "format": "date-time" },
+    "auditOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["status", "effectiveStatus", "lastStatus", "classification", "checkedAt"],
+      "properties": {
+        "status": { "type": "string", "maxLength": 40 },
+        "effectiveStatus": { "type": "string", "maxLength": 40 },
+        "lastStatus": { "type": ["string", "null"], "maxLength": 40 },
+        "classification": { "type": ["string", "null"], "maxLength": 100 },
+        "checkedAt": { "$ref": "#/$defs/timestampOrNull" }
+      }
+    },
+    "auditHistory": {
+      "type": "object", "additionalProperties": false,
+      "required": ["windowSeconds", "passCount", "failCount", "recentFailures"],
+      "properties": {
+        "windowSeconds": { "const": 86400 },
+        "passCount": { "type": "integer", "minimum": 0 },
+        "failCount": { "type": "integer", "minimum": 0 },
+        "recentFailures": {
+          "type": "array", "maxItems": 10,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["checkedAt", "status", "classification"],
+            "properties": {
+              "checkedAt": { "$ref": "#/$defs/timestampOrNull" },
+              "status": { "const": "FAIL" },
+              "classification": { "type": ["string", "null"], "maxLength": 100 }
+            }
+          }
+        }
+      }
+    },
+    "persistenceAuditOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["status", "checkedAt", "receiptCount"],
+      "properties": {
+        "status": { "type": ["string", "null"], "maxLength": 40 },
+        "checkedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "receiptCount": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "batchMetricsOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "properties": {
+        "batch_id": { "$ref": "#/$defs/countOrNull" },
+        "source_rows": { "$ref": "#/$defs/countOrNull" },
+        "feature_ready_rows": { "$ref": "#/$defs/countOrNull" },
+        "new_forecast_rows": { "$ref": "#/$defs/countOrNull" },
+        "duplicate_conflict_keys": { "$ref": "#/$defs/countOrNull" },
+        "gap_in_history_rows": { "$ref": "#/$defs/countOrNull" },
+        "history_gap_rows": { "$ref": "#/$defs/countOrNull" },
+        "invalid_provenance_rows": { "$ref": "#/$defs/countOrNull" },
+        "rejected_rows": { "$ref": "#/$defs/countOrNull" },
+        "total_batch_seconds": { "type": "number", "minimum": 0 },
+        "execution_origin": { "type": "string", "maxLength": 80 },
+        "live_positive_lead_forecast_count": { "$ref": "#/$defs/countOrNull" },
+        "nonpositive_live_lead_rows": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "receiptFile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "modifiedAt", "sizeBytes"],
+      "properties": {
+        "status": { "type": "string", "maxLength": 40 },
+        "modifiedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "sizeBytes": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "hostOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["hostname", "uptimeSeconds", "loadAverage", "cpuUsagePercent", "memory", "disk", "collectorDurationMs"],
+      "properties": {
+        "hostname": { "type": "string", "maxLength": 255 },
+        "uptimeSeconds": { "$ref": "#/$defs/countOrNull" },
+        "loadAverage": { "type": ["array", "null"], "minItems": 3, "maxItems": 3, "items": { "type": "number", "minimum": 0 } },
+        "cpuUsagePercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "memory": { "$ref": "#/$defs/memory" },
+        "disk": { "$ref": "#/$defs/diskOrNull" },
+        "collectorDurationMs": { "type": "number", "minimum": 0 }
+      }
+    },
+    "memory": {
+      "type": "object", "additionalProperties": false,
+      "required": ["totalBytes", "usedBytes", "availableBytes", "usagePercent"],
+      "properties": {
+        "totalBytes": { "type": "integer", "minimum": 0 },
+        "usedBytes": { "type": "integer", "minimum": 0 },
+        "availableBytes": { "type": "integer", "minimum": 0 },
+        "usagePercent": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "diskOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["path", "totalBytes", "usedBytes", "freeBytes", "availableBytes", "usagePercent"],
+      "properties": {
+        "path": { "type": "string", "maxLength": 1024 },
+        "totalBytes": { "type": "integer", "minimum": 0 },
+        "usedBytes": { "type": "integer", "minimum": 0 },
+        "freeBytes": { "type": "integer", "minimum": 0 },
+        "availableBytes": { "type": "integer", "minimum": 0 },
+        "usagePercent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
+      }
+    },
+    "docker": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "containers"],
+      "properties": {
+        "status": { "enum": ["PASS", "PARTIAL", "UNAVAILABLE"] },
+        "project": { "type": "string", "maxLength": 63 },
+        "containers": { "type": "array", "maxItems": 5, "items": { "$ref": "#/$defs/container" } },
+        "missingServices": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 100 } },
+        "collectorDurationMs": { "type": "number", "minimum": 0 },
+        "reason": { "type": "string", "maxLength": 100 }
+      }
+    },
+    "container": {
+      "type": "object", "additionalProperties": false,
+      "required": ["service", "status", "health", "restartCount", "uptimeSeconds", "cpuPercent", "memoryUsageBytes", "memoryLimitBytes"],
+      "properties": {
+        "service": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 120 },
+        "status": { "type": "string", "maxLength": 40 },
+        "statusDetail": { "type": "string", "maxLength": 120 },
+        "health": { "type": ["string", "null"], "maxLength": 40 },
+        "restartCount": { "$ref": "#/$defs/countOrNull" },
+        "uptimeSeconds": { "$ref": "#/$defs/countOrNull" },
+        "cpuPercent": { "type": ["number", "null"], "minimum": 0 },
+        "memoryUsageBytes": { "$ref": "#/$defs/countOrNull" },
+        "memoryLimitBytes": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "watchdog": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timer", "service", "latestReport", "latestHourlyStatus", "latestAudit", "auditHistory", "failureHistory", "persistenceReceiptCount", "persistenceReceiptAudit", "sourceFiles", "collectorDurationMs", "monitorFreshness"],
+      "properties": {
+        "timer": {
+          "type": "object", "additionalProperties": false,
+          "required": ["active", "activeState", "subState", "lastTriggerAt", "nextTriggerAt"],
+          "properties": {
+            "active": { "type": ["boolean", "null"] },
+            "activeState": { "type": ["string", "null"], "maxLength": 40 },
+            "subState": { "type": ["string", "null"], "maxLength": 40 },
+            "lastTriggerAt": { "$ref": "#/$defs/timestampOrNull" },
+            "nextTriggerAt": { "$ref": "#/$defs/timestampOrNull" }
+          }
+        },
+        "service": {
+          "type": "object", "additionalProperties": false,
+          "required": ["activeState", "subState", "lastResult", "exitStatus", "lastStartedAt", "lastExitedAt"],
+          "properties": {
+            "activeState": { "type": ["string", "null"], "maxLength": 40 },
+            "subState": { "type": ["string", "null"], "maxLength": 40 },
+            "lastResult": { "type": ["string", "null"], "maxLength": 40 },
+            "exitStatus": { "type": ["integer", "null"] },
+            "lastStartedAt": { "$ref": "#/$defs/timestampOrNull" },
+            "lastExitedAt": { "$ref": "#/$defs/timestampOrNull" }
+          }
+        },
+        "latestReport": { "$ref": "#/$defs/watchdogReportOrNull" },
+        "latestHourlyStatus": { "type": ["string", "null"], "maxLength": 40 },
+        "latestAudit": { "$ref": "#/$defs/auditOrNull" },
+        "auditHistory": { "$ref": "#/$defs/auditHistory" },
+        "failureHistory": {
+          "type": "object", "additionalProperties": false,
+          "required": ["failedMonitorReportCount", "recentFailures"],
+          "properties": {
+            "failedMonitorReportCount": { "type": "integer", "minimum": 0 },
+            "recentFailures": {
+              "type": "array", "maxItems": 10,
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "required": ["checkedAt", "dataErrors", "infrastructureErrors"],
+                "properties": {
+                  "checkedAt": { "$ref": "#/$defs/timestampOrNull" },
+                  "dataErrors": { "type": "array", "maxItems": 12, "items": { "type": "string", "maxLength": 100 } },
+                  "infrastructureErrors": { "type": "array", "maxItems": 12, "items": { "type": "string", "maxLength": 100 } }
+                }
+              }
+            }
+          }
+        },
+        "persistenceReceiptCount": { "$ref": "#/$defs/countOrNull" },
+        "persistenceReceiptAudit": { "$ref": "#/$defs/persistenceAuditOrNull" },
+        "sourceFiles": {
+          "type": "object", "additionalProperties": false,
+          "required": ["monitorLog", "hourlyReports"],
+          "properties": {
+            "monitorLog": { "$ref": "#/$defs/sourceFile" },
+            "hourlyReports": { "$ref": "#/$defs/sourceFile" }
+          }
+        },
+        "collectorDurationMs": { "type": "number", "minimum": 0 },
+        "monitorFreshness": { "enum": ["OBSERVED", "STALE", "UNKNOWN"] }
+      }
+    },
+    "watchdogReportOrNull": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "required": ["status", "checkedAt", "cohortStatus", "cohortRunId", "cohortId", "microbatchUpdateCount", "lastUpdateAt", "forecastsPersisted", "validEvaluations", "restartCount", "persistenceReceiptCount", "currentDataErrors", "infrastructureErrors", "warnings", "ageSeconds"],
+      "properties": {
+        "status": { "type": ["string", "null"], "maxLength": 40 },
+        "checkedAt": { "$ref": "#/$defs/timestampOrNull" },
+        "cohortStatus": { "type": ["string", "null"], "maxLength": 40 },
+        "cohortRunId": { "type": ["string", "null"], "maxLength": 120 },
+        "cohortId": { "type": ["string", "null"], "maxLength": 120 },
+        "microbatchUpdateCount": { "$ref": "#/$defs/countOrNull" },
+        "lastUpdateAt": { "$ref": "#/$defs/timestampOrNull" },
+        "forecastsPersisted": { "$ref": "#/$defs/countOrNull" },
+        "validEvaluations": { "$ref": "#/$defs/countOrNull" },
+        "restartCount": { "$ref": "#/$defs/countOrNull" },
+        "persistenceReceiptCount": { "$ref": "#/$defs/countOrNull" },
+        "currentDataErrors": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 100 } },
+        "infrastructureErrors": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 100 } },
+        "warnings": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 100 } },
+        "ageSeconds": { "$ref": "#/$defs/countOrNull" }
+      }
+    },
+    "sourceFile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "modifiedAt"],
+      "properties": {
+        "status": { "type": "string", "maxLength": 40 },
+        "modifiedAt": { "$ref": "#/$defs/timestampOrNull" }
+      }
+    },
+    "collectorWarning": {
+      "type": "object", "additionalProperties": false,
+      "required": ["collector", "code"],
+      "properties": {
+        "collector": { "type": "string", "maxLength": 40 },
+        "code": { "type": "string", "maxLength": 120 }
+      }
+    }
+  }
+}

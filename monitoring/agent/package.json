@@ -1,0 +1,13 @@
+{
+  "name": "weather-streaming-monitor-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate-config": "node src/cli.mjs --validate-config"
+  }
+}
