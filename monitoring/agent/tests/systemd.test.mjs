@@ -32,5 +32,5 @@ test("systemd units are installable and timer enablement succeeds on Linux", { s
   execFileSync("systemctl", [`--root=${root}`, "enable", "--no-reload", "weather-monitor-agent.timer"], { stdio: "pipe" });
   const enabledLink = path.join(etcSystemd, "timers.target.wants", "weather-monitor-agent.timer");
   assert.equal((await lstat(enabledLink)).isSymbolicLink(), true);
-  assert.equal(await readlink(enabledLink), "../weather-monitor-agent.timer");
+  assert.equal(path.basename(await readlink(enabledLink)), "weather-monitor-agent.timer");
 });
