@@ -38,10 +38,25 @@ jobs:
         run: python -m json.tool monitoring/agent/schema/monitoring-snapshot-v1.schema.json > /dev/null
       - name: Run monitoring agent tests
         working-directory: monitoring/agent
-        run: npm test
+        shell: bash
+        run: |
+          set +e
+          npm test 2>&1 | tee "$RUNNER_TEMP/weather-monitor-agent-tests.tap"
+          test_status=${PIPESTATUS[0]}
+          set -e
+          if [[ "$test_status" -ne 0 ]]; then
+            failure=$(awk '/^not ok / { emit=1 } emit { print; if (/^  \.\.\.$/) exit }' \
+              "$RUNNER_TEMP/weather-monitor-agent-tests.tap" | tr '\n' ' ' | cut -c1-1000)
+            failure=${failure//'%'/'%25'}
+            failure=${failure//$'\r'/'%0D'}
+            failure=${failure//$'\n'/'%0A'}
+            echo "::error title=Monitoring agent test failure::$failure"
+          fi
+          exit "$test_status"
       - name: Verify systemd units
         shell: bash
         run: |
+          set -o pipefail
           sudo useradd --system --user-group --no-create-home --home-dir /nonexistent \
             --shell /usr/sbin/nologin weather-monitor-agent
           sudo install -D -m 0640 /dev/null /etc/weather-monitor-agent.env
@@ -52,6 +67,13 @@ jobs:
             /etc/systemd/system/weather-monitor-agent.service
           sudo install -D -m 0644 monitoring/deployment/systemd/weather-monitor-agent.timer \
             /etc/systemd/system/weather-monitor-agent.timer
-          sudo systemd-analyze verify \
+          if ! sudo systemd-analyze verify \
             /etc/systemd/system/weather-monitor-agent.service \
-            /etc/systemd/system/weather-monitor-agent.timer
+            /etc/systemd/system/weather-monitor-agent.timer 2>&1 | tee "$RUNNER_TEMP/weather-monitor-agent-systemd.log"; then
+            details=$(tr '\n' ' ' < "$RUNNER_TEMP/weather-monitor-agent-systemd.log" | cut -c1-1000)
+            details=${details//'%'/'%25'}
+            details=${details//$'\r'/'%0D'}
+            details=${details//$'\n'/'%0A'}
+            echo "::error title=systemd unit verification failure::$details"
+            exit 1
+          fi
