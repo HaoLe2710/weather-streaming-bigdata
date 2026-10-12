@@ -8,7 +8,7 @@ Schema file: `monitoring/agent/schema/monitoring-snapshot-v1.schema.json`.
 - `snapshotId`: UUID generated once per collection; use as a future ingestion idempotency key.
 - `timestamp`: collection time in ISO-8601 UTC (`Z`).
 - `source`: environment, agent version and host name; never credentials.
-- `cohort`: configured and observed run/cohort identities, protocol, collection window, frozen contract checks and validator status.
+- `cohort`: configured and observed run/cohort identities, protocol, collection window, frozen contract checks and validator status. The run request, manifest and status counts are checked against the pinned 168-hour × 63-location = 10,584-slot target and the official `2026-10-10T12:00:00Z` through `2026-10-17T11:00:00Z` window.
 - `progress`: exact prospective validator counts. `microbatchUpdateCount` is intentionally distinct from 168 expected target hours.
 - `quality`: cohort-level and latest-batch metrics, watchdog hourly-audit summary/history, persistence receipt summary and explicit unavailable-source codes.
 - `inference`: latest batch ID/time when source provides one, source-file observation time, frozen model identity, startup-validation status, duration and receipt file metadata.

@@ -39,8 +39,8 @@ export function validStatus(overrides = {}) {
     status: "COLLECTING",
     run_id: TEST_RUN_ID,
     cohort_id: TEST_COHORT_ID,
-    cohort_start_target_time: "2026-10-10T12:00:00Z",
-    cohort_end_target_time: "2026-10-17T11:00:00Z",
+    cohort_start_target_time: FROZEN_CONTRACT.cohortStartTargetTime,
+    cohort_end_target_time: FROZEN_CONTRACT.cohortEndTargetTime,
     expected_target_hours: 168,
     expected_locations: 63,
     expected_slots: 10584,
@@ -87,8 +87,9 @@ export function validManifest(overrides = {}) {
   return {
     ...validRequest(),
     cohort_id: TEST_COHORT_ID,
-    cohort_start_target_time: "2026-10-10T12:00:00Z",
-    cohort_end_target_time: "2026-10-17T11:00:00Z",
+    expected_forecasts: FROZEN_CONTRACT.targetSlots,
+    cohort_start_target_time: FROZEN_CONTRACT.cohortStartTargetTime,
+    cohort_end_target_time: FROZEN_CONTRACT.cohortEndTargetTime,
     ...overrides,
   };
 }

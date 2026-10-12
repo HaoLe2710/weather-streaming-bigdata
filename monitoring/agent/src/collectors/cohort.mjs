@@ -41,10 +41,31 @@ export async function collectCohort(config, { readJson = readJsonFile } = {}) {
     ["feature_list_sha256", config.contract.featureListSha256],
     ["provider_model", config.contract.providerModel],
     ["forecast_horizon_hours", config.contract.forecastHorizonHours],
+    ["expected_target_hours", config.contract.targetHours],
+    ["expected_locations", config.contract.targetLocations],
+    ["expected_slots", config.contract.targetSlots],
   ];
   const contractRecords = [request, manifest].filter(isRecord);
-  const contractMatches = contractRecords.length === 2
+  const requestManifestContractMatches = contractRecords.length === 2
     && contractFields.every(([field, expected]) => contractRecords.every((record) => record[field] === expected));
+  const manifestForecastSlotsMatch = isRecord(manifest) && manifest.expected_forecasts === config.contract.targetSlots;
+  const statusCountsMatch = isRecord(status)
+    && status.expected_target_hours === config.contract.targetHours
+    && status.expected_locations === config.contract.targetLocations
+    && status.expected_slots === config.contract.targetSlots;
+  const expectedCohortStart = utcTimestamp(config.contract.cohortStartTargetTime);
+  const expectedCohortEnd = utcTimestamp(config.contract.cohortEndTargetTime);
+  const targetWindowMatches = isRecord(manifest) && isRecord(status)
+    && expectedCohortStart !== null
+    && expectedCohortEnd !== null
+    && utcTimestamp(manifest.cohort_start_target_time) === expectedCohortStart
+    && utcTimestamp(manifest.cohort_end_target_time) === expectedCohortEnd
+    && utcTimestamp(status.cohort_start_target_time) === expectedCohortStart
+    && utcTimestamp(status.cohort_end_target_time) === expectedCohortEnd;
+  const contractMatches = requestManifestContractMatches
+    && manifestForecastSlotsMatch
+    && statusCountsMatch
+    && targetWindowMatches;
   if (!contractMatches) warnings.push("COHORT_FROZEN_CONTRACT_UNKNOWN_OR_MISMATCH");
 
   const progress = {

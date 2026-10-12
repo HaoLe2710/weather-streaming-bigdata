@@ -33,7 +33,7 @@ npm test
 - Host data uses Node OS metrics and `statfs(WEATHER_DATA_PATH)`.
 - Docker is queried using `execFile` argument arrays, fixed timeouts, expected Compose project label, and an exact service allowlist. No logs, secrets, or container environment are requested.
 - Watchdog state is read with `systemctl show`; the watchdog itself is never invoked. An inactive completed oneshot is interpreted using its last `Result` and exit code.
-- Cohort files are checked against configured run/cohort IDs and the frozen contract. No Python validation CLI is invoked.
+- Cohort files are checked against configured run/cohort IDs and the frozen contract, including 168 hours, 63 locations, 10,584 slots, and the pinned T0/end window. No Python validation CLI is invoked.
 - JSONL input is read as a bounded tail. Incomplete final writes are omitted; source files are never repaired.
 - `forecast_persistence_receipts.jsonl` contains raw forecast rows. The agent reads only file metadata and the watchdog's aggregate receipt/audit summary.
 - Missing or invalid values remain `null`; collector warning codes identify unavailable or malformed sources. Numeric zero is preserved.

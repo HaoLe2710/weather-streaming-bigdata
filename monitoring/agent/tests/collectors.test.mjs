@@ -42,6 +42,25 @@ test("cohort identity and frozen-contract drift are surfaced", async () => {
   assert.ok(result.warnings.includes("COHORT_FROZEN_CONTRACT_UNKNOWN_OR_MISMATCH"));
 });
 
+test("cohort frozen contract rejects target counts and window drift", async () => {
+  const cases = [
+    ["request target hours", { request: { expected_target_hours: 167 } }],
+    ["manifest location count", { manifest: { expected_locations: 62 } }],
+    ["status slot count", { status: validStatus({ expected_slots: 10583 }) }],
+    ["manifest forecast slot count", { manifest: { expected_forecasts: 10583 } }],
+    ["manifest T0", { manifest: { cohort_start_target_time: "2026-10-10T13:00:00Z" } }],
+    ["status cohort end", { status: validStatus({ cohort_end_target_time: "2026-10-17T10:00:00Z" }) }],
+  ];
+
+  for (const [label, overrides] of cases) {
+    const { config } = await makeEnvironment();
+    await seedCohort(config, overrides);
+    const result = await collectCohort(config);
+    assert.equal(result.data.cohort.frozenContractValidation, "UNKNOWN_OR_MISMATCH", label);
+    assert.ok(result.warnings.includes("COHORT_FROZEN_CONTRACT_UNKNOWN_OR_MISMATCH"), label);
+  }
+});
+
 test("inference collector exports allowlisted metrics and frozen model SHA only", async () => {
   const { config } = await makeEnvironment();
   await writeJsonl(config.paths.inferenceBatches, [{
