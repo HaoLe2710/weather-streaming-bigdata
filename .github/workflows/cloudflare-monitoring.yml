@@ -9,6 +9,7 @@ on:
       - "monitoring/agent/src/serializer.mjs"
       - "monitoring/docs/MONITORING_CONTRACT_V1.md"
       - "monitoring/docs/PHASE2A_*.md"
+      - "monitoring/docs/PHASE2A1_*.md"
       - "monitoring/docs/PHASE2B_*.md"
       - ".github/workflows/cloudflare-monitoring.yml"
   pull_request:
@@ -19,6 +20,7 @@ on:
       - "monitoring/agent/src/serializer.mjs"
       - "monitoring/docs/MONITORING_CONTRACT_V1.md"
       - "monitoring/docs/PHASE2A_*.md"
+      - "monitoring/docs/PHASE2A1_*.md"
       - "monitoring/docs/PHASE2B_*.md"
       - ".github/workflows/cloudflare-monitoring.yml"
   workflow_dispatch:

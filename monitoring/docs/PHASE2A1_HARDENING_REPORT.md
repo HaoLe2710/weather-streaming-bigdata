@@ -67,9 +67,9 @@ Local verification completed on Windows using Node 22:
 | Signer syntax and synthetic fixture | PASS; `node --check` and local-only fixture signing |
 | Phase 1 agent `npm test` | PASS; 22 passed, 4 Linux-only checks skipped on Windows, 0 failed |
 | `git diff --check` | PASS |
-| GitHub Actions | Pending push; verify terminal result before claiming CI PASS |
+| GitHub Actions | PASS on implementation commit `169e1f61562141e50a67993ce1101c2128cfc12e`; [run 38411227582](https://github.com/HaoLe2710/weather-streaming-bigdata/actions/runs/38411227582) completed successfully, including all 14 job steps |
 
-Passing local tests do not establish remote staging readiness. The Phase 1 skipped tests are Linux-specific flock/systemd checks and must be confirmed by the Ubuntu workflow. GitHub Actions must be observed to a terminal conclusion if the public repository API is reachable.
+Passing local tests do not establish remote staging readiness. The Phase 1 skipped tests are Linux-specific flock/systemd checks; they were exercised by the successful Ubuntu workflow. The CI path filter includes `PHASE2A1_*` hardening reports/checklists so documentation-only follow-ups in this phase also run the backend checks.
 
 ## Staging readiness
 
