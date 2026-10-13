@@ -24,13 +24,13 @@ function messageFor(row: PendingNotification): string {
   return `[${row.severity}] ${row.transition} ${row.alert_type} stream=${row.stream_id.slice(0, 12)} ${safeDetails}`.trim();
 }
 
-export async function processNotificationOutbox(db: D1Database, env: Env): Promise<void> {
-  if (env.TELEGRAM_ALERTS_ENABLED !== "true") return;
+export async function processNotificationOutbox(db: D1Database, env: Env): Promise<number> {
+  if (env.TELEGRAM_ALERTS_ENABLED !== "true") return 0;
   const token = env.TELEGRAM_BOT_TOKEN;
   const chatId = env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     console.error(JSON.stringify({ code: "TELEGRAM_CONFIGURATION_MISSING" }));
-    return;
+    throw new Error("TELEGRAM_CONFIGURATION_MISSING");
   }
 
   const now = await databaseNow(db);
@@ -46,6 +46,7 @@ export async function processNotificationOutbox(db: D1Database, env: Env): Promi
     ORDER BY n.next_attempt_at ASC, n.notification_id ASC LIMIT 1
   `).bind(now, now).all<PendingNotification>();
 
+  let processed = 0;
   for (const item of due.results) {
     const claimUntil = new Date(Date.parse(now) + 60_000).toISOString();
     const claimed = await db.prepare(`
@@ -58,6 +59,7 @@ export async function processNotificationOutbox(db: D1Database, env: Env): Promi
       RETURNING attempts
     `).bind(claimUntil, item.notification_id, now, now).first<{ attempts: number }>();
     if (!claimed) continue;
+    processed += 1;
 
     const sent = await sendTelegramAlert(token, chatId, messageFor(item));
     const nextAttempts = claimed.attempts;
@@ -107,4 +109,5 @@ export async function processNotificationOutbox(db: D1Database, env: Env): Promi
       ] : []),
     ]);
   }
+  return processed;
 }

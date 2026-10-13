@@ -12,6 +12,8 @@ export async function cleanupRetainedData(db: D1Database, env: Env): Promise<{ s
       WHERE rowid IN (
         SELECT s.rowid FROM monitoring_snapshots s
         WHERE s.received_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-' || ? || ' days')
+          AND NOT (s.validation_status = 'ACCEPTED' AND s.stream_applied = 0)
+          AND NOT (s.validation_status = 'QUARANTINED' AND s.quarantine_alert_state IN ('PENDING', 'PROCESSING', 'FAILED'))
           AND NOT EXISTS (
             SELECT 1 FROM monitoring_streams st
             WHERE st.environment = s.environment AND st.latest_snapshot_id = s.snapshot_id

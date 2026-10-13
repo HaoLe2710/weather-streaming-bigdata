@@ -6,6 +6,8 @@ import { deterministicStreamId } from "../security/stream-id";
 import { databaseNow, boundedInteger, compactJson } from "../repositories/database";
 import { currentSnapshotGuard, heartbeatFreshGuard, openAlert, resolveAlert } from "../repositories/alerts";
 import { getTarget, markSnapshotApplied, upsertStreamFromSnapshot } from "../repositories/streams";
+import { recordQuarantineAlert } from "./quarantine-service";
+import { isLiveHeartbeatCandidate } from "./heartbeat-status";
 import type { Env, MonitoringSnapshotV1 } from "../types";
 
 export type IngestionResult =
@@ -142,8 +144,9 @@ async function storeNewSnapshot(
     INSERT OR IGNORE INTO monitoring_snapshots (
       environment, snapshot_id, stream_id, cohort_id, run_id, source_identity,
       agent_version, schema_version, collected_at, received_at, collector_status,
-      pipeline_status, quality_status, validation_status, quarantine_reason, stream_applied, payload_sha256, payload_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      pipeline_status, quality_status, validation_status, quarantine_reason, stream_applied, payload_sha256, payload_json,
+      quarantine_alert_state, quarantine_alert_processed_at, stream_recovery_state
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     RETURNING snapshot_id
   `).bind(
     snapshot.source.environment,
@@ -163,6 +166,9 @@ async function storeNewSnapshot(
     admission.admitted ? 0 : 1,
     payloadHash,
     rawPayload,
+    admission.admitted ? "NOT_APPLICABLE" : admission.reason === "SOURCE_NOT_ALLOWLISTED" ? "PROCESSED" : "PENDING",
+    !admission.admitted && admission.reason === "SOURCE_NOT_ALLOWLISTED" ? receivedAt : null,
+    admission.admitted ? "PENDING" : "RECOVERED",
   ).first<{ snapshot_id: string }>();
 
   if (!inserted) {
@@ -177,12 +183,11 @@ async function storeNewSnapshot(
 
   if (!admission.admitted) {
     if (admission.reason !== "SOURCE_NOT_ALLOWLISTED") {
-      await openAlert(db, {
-        streamId,
-        alertType: admission.reason,
-        severity: "CRITICAL",
-        details: { reason: admission.reason, snapshotId: snapshot.snapshotId },
-        telegramEnabled: env.TELEGRAM_ALERTS_ENABLED === "true",
+      await recordQuarantineAlert(db, env, {
+        environment: snapshot.source.environment,
+        stream_id: streamId,
+        snapshot_id: snapshot.snapshotId,
+        quarantine_reason: admission.reason,
       });
     }
     return { status: "QUARANTINED", snapshotId: snapshot.snapshotId, reason: admission.reason };
@@ -191,8 +196,7 @@ async function storeNewSnapshot(
   const target = await getTarget(db, streamId);
   const intervalSeconds = target?.expected_interval_seconds ?? boundedInteger(env.MONITOR_DEFAULT_INTERVAL_SECONDS, 300, 60, 3600);
   const timeoutSeconds = target?.heartbeat_timeout_seconds ?? boundedInteger(env.MONITOR_DEFAULT_HEARTBEAT_TIMEOUT_SECONDS, 900, 60, 86400);
-  const ageSeconds = (Date.parse(receivedAt) - Date.parse(collectedAt)) / 1000;
-  const liveFresh = ageSeconds >= -60 && ageSeconds <= timeoutSeconds && ageSeconds <= intervalSeconds * 2;
+  const liveFresh = isLiveHeartbeatCandidate(collectedAt, receivedAt, intervalSeconds, timeoutSeconds);
 
   const { current, state } = await upsertStreamFromSnapshot(db, {
     streamId,
@@ -201,10 +205,10 @@ async function storeNewSnapshot(
     receivedAt,
     liveFresh,
   });
-  await markSnapshotApplied(db, snapshot.source.environment, snapshot.snapshotId);
   if (current && state) {
     await applyLiveRules(db, env, streamId, snapshot, liveFresh, state.incomplete_collector_streak);
   }
+  await markSnapshotApplied(db, snapshot.source.environment, snapshot.snapshotId);
 
   return { status: "ACCEPTED", snapshotId: snapshot.snapshotId, receivedAt, schemaVersion: 1 };
 }

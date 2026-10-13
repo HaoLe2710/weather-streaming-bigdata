@@ -4,6 +4,9 @@ import { readAuth } from "../security/read-auth";
 import { databaseNow } from "../repositories/database";
 import { latestSnapshot } from "../repositories/snapshots";
 import { listOpenAlerts } from "../repositories/alerts";
+import { getStreamState, getTarget } from "../repositories/streams";
+import { resolveHeartbeatState } from "../services/heartbeat-status";
+import type { MonitoringTargetRow, StreamStateRow } from "../repositories/streams";
 import type { AlertRow, AppEnv, StoredSnapshot } from "../types";
 
 const monitoring = new Hono<AppEnv>();
@@ -81,24 +84,22 @@ monitoring.get("/streams", async (ctx) => {
     return { streamId: item.streamId };
   });
   const now = await databaseNow(ctx.env.DB);
+  type StreamListRow = MonitoringTargetRow & Pick<StreamStateRow,
+    "latest_collected_at" | "latest_received_at" | "latest_collector_status" |
+    "latest_pipeline_status" | "last_live_heartbeat_at" | "last_live_received_at" |
+    "last_live_snapshot_id">;
   const result = await ctx.env.DB.prepare(`
     SELECT t.stream_id, t.environment, t.cohort_id, t.run_id, t.source_identity,
-      t.monitoring_enabled, t.activated_at, s.latest_snapshot_id,
+      t.expected_interval_seconds, t.heartbeat_timeout_seconds, t.startup_grace_seconds,
+      t.disk_threshold_percent, t.max_partial_streak, t.monitoring_enabled, t.activated_at,
       s.latest_collected_at, s.latest_received_at, s.latest_collector_status,
-      s.latest_pipeline_status, s.last_live_heartbeat_at,
-      CASE
-        WHEN t.monitoring_enabled = 0 THEN 'DISABLED'
-        WHEN s.last_live_heartbeat_at IS NULL AND t.activated_at IS NOT NULL
-          AND t.activated_at <= strftime('%Y-%m-%dT%H:%M:%fZ', ?, '-' || t.startup_grace_seconds || ' seconds') THEN 'OFFLINE'
-        WHEN s.last_live_heartbeat_at IS NULL THEN 'PENDING'
-        WHEN s.last_live_heartbeat_at <= strftime('%Y-%m-%dT%H:%M:%fZ', ?, '-' || t.heartbeat_timeout_seconds || ' seconds') THEN 'OFFLINE'
-        ELSE 'HEALTHY'
-      END AS heartbeat_state
+      s.latest_pipeline_status, s.last_live_heartbeat_at, s.last_live_received_at,
+      s.last_live_snapshot_id
     FROM monitoring_targets t
     LEFT JOIN monitoring_streams s ON s.stream_id = t.stream_id
     WHERE (? IS NULL OR t.stream_id > ?)
     ORDER BY t.stream_id ASC LIMIT ?
-  `).bind(now, now, cursor?.streamId ?? null, cursor?.streamId ?? null, limit + 1).all<Record<string, unknown>>();
+  `).bind(cursor?.streamId ?? null, cursor?.streamId ?? null, limit + 1).all<StreamListRow>();
   const rows = result.results;
   const hasMore = rows.length > limit;
   const data = rows.slice(0, limit).map((row) => ({
@@ -109,7 +110,7 @@ monitoring.get("/streams", async (ctx) => {
     collectorStatus: row.latest_collector_status,
     lastCollectedAt: row.latest_collected_at,
     lastReceivedAt: row.latest_received_at,
-    heartbeatState: row.heartbeat_state,
+    heartbeatState: resolveHeartbeatState(row, row, now),
     monitoringEnabled: row.monitoring_enabled === 1,
   }));
   return ctx.json({ apiVersion: 1, streams: data, nextCursor: hasMore && data.length ? encodeCursor({ streamId: data.at(-1)?.streamId }) : null });
@@ -171,10 +172,11 @@ monitoring.get("/streams/:streamId/history", async (ctx) => {
 
 monitoring.get("/streams/:streamId/summary", async (ctx) => {
   const streamId = streamParam(ctx.req.param("streamId"));
-  const [snapshotRow, streamRow, alerts] = await Promise.all([
+  const [snapshotRow, streamRow, target, now, alerts] = await Promise.all([
     latestSnapshot(ctx.env.DB, streamId),
-    ctx.env.DB.prepare("SELECT * FROM monitoring_streams WHERE stream_id = ? LIMIT 1")
-      .bind(streamId).first<Record<string, unknown>>(),
+    getStreamState(ctx.env.DB, streamId),
+    getTarget(ctx.env.DB, streamId),
+    databaseNow(ctx.env.DB),
     listOpenAlerts(ctx.env.DB, streamId, 100),
   ]);
   const snapshot = payload(snapshotRow) as Record<string, any> | null;
@@ -197,7 +199,7 @@ monitoring.get("/streams/:streamId/summary", async (ctx) => {
     hostMetrics: snapshot?.infrastructure?.host ?? null,
     activeAlerts: alerts.map(decodeAlert),
     lastHeartbeat: streamRow?.last_live_heartbeat_at ?? null,
-    heartbeatState: streamRow?.last_live_heartbeat_at ? "OBSERVED" : "UNKNOWN",
+    heartbeatState: resolveHeartbeatState(target, streamRow, now),
   });
 });
 

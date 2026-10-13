@@ -103,6 +103,119 @@ async function rows(sql: string, ...values: Array<string | number | null>) {
   return result.results;
 }
 
+async function hashHex(value: string): Promise<string> {
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", asArrayBuffer(new TextEncoder().encode(value))));
+  return Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function seedRecoveryRows(options: {
+  count: number;
+  kind: "accepted" | "quarantine";
+  reason?: "SOURCE_NOT_ALLOWLISTED" | "COHORT_CONTRACT_MISMATCH" | "MODEL_CONTRACT_MISMATCH";
+  sourceIdentity?: string;
+  fixture?: MonitoringSnapshotV1;
+  mutate?: (snapshot: MonitoringSnapshotV1, index: number) => void;
+  ageSeconds?: number;
+}) {
+  const reason = options.reason ?? "COHORT_CONTRACT_MISMATCH";
+  const sourceIdentity = options.sourceIdentity ?? "phase2a-synthetic";
+  const statements: D1PreparedStatement[] = [];
+  let streamId = "";
+  for (let index = 0; index < options.count; index += 1) {
+    const snapshot = liveSnapshot(options.fixture ?? healthyFixture as MonitoringSnapshotV1);
+    const rowIdentity = options.kind === "quarantine" && reason === "SOURCE_NOT_ALLOWLISTED"
+      ? `unapproved-source-${index}`
+      : sourceIdentity;
+    snapshot.source.hostname = rowIdentity;
+    snapshot.timestamp = new Date(Date.now() - (options.ageSeconds ?? 60 * 60) * 1000 + index * 1000).toISOString();
+    if (options.kind === "quarantine") {
+      if (reason === "COHORT_CONTRACT_MISMATCH") snapshot.cohort.protocolId = "synthetic-contract-mismatch";
+      if (reason === "MODEL_CONTRACT_MISMATCH") snapshot.cohort.modelSha256 = "0".repeat(64);
+    }
+    options.mutate?.(snapshot, index);
+    streamId = await deterministicStreamId("local", snapshot.cohort.cohortId, rowIdentity);
+    const body = JSON.stringify(snapshot);
+    const receivedAt = new Date().toISOString();
+    const quarantine = options.kind === "quarantine";
+    const state = quarantine
+      ? (reason === "SOURCE_NOT_ALLOWLISTED" ? "PROCESSED" : "PENDING")
+      : "NOT_APPLICABLE";
+    statements.push(env.DB.prepare(`
+      INSERT INTO monitoring_snapshots (
+        environment, snapshot_id, stream_id, cohort_id, run_id, source_identity,
+        agent_version, schema_version, collected_at, received_at, collector_status,
+        pipeline_status, quality_status, validation_status, quarantine_reason,
+        stream_applied, payload_sha256, payload_json, quarantine_alert_state,
+        quarantine_alert_processed_at, stream_recovery_state
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      "local", snapshot.snapshotId, streamId, snapshot.cohort.cohortId, snapshot.cohort.runId,
+      rowIdentity, snapshot.source.agentVersion, new Date(Date.parse(snapshot.timestamp)).toISOString(),
+      receivedAt, snapshot.collector.status, snapshot.pipeline.status, snapshot.quality.status,
+      quarantine ? "QUARANTINED" : "ACCEPTED", quarantine ? reason : null,
+      quarantine ? 1 : 0, await hashHex(body), body, state,
+      quarantine && reason === "SOURCE_NOT_ALLOWLISTED" ? receivedAt : null,
+      quarantine ? "RECOVERED" : "PENDING",
+    ));
+    if (statements.length === 20) {
+      await env.DB.batch(statements.splice(0));
+    }
+  }
+  if (statements.length) await env.DB.batch(statements);
+  return streamId;
+}
+
+async function forceSnapshotRecoveryDue(snapshotId: string) {
+  await env.DB.prepare(`
+    UPDATE monitoring_snapshots
+    SET stream_recovery_state = 'PENDING', stream_recovery_next_attempt_at = '2000-01-01T00:00:00.000Z',
+      stream_recovery_locked_until = NULL
+    WHERE snapshot_id = ?
+  `).bind(snapshotId).run();
+}
+
+async function forceQuarantineRecoveryDue(snapshotId: string) {
+  await env.DB.prepare(`
+    UPDATE monitoring_snapshots
+    SET quarantine_alert_state = 'PENDING', quarantine_alert_next_attempt_at = '2000-01-01T00:00:00.000Z',
+      quarantine_alert_locked_until = NULL
+    WHERE snapshot_id = ?
+  `).bind(snapshotId).run();
+}
+
+function failNextBatchMatching(db: D1Database, matches: (sql: string) => boolean): D1Database {
+  const failingStatements = new WeakSet<object>();
+  let failed = false;
+  return new Proxy(db, {
+    get(target, property) {
+      if (property === "prepare") {
+        return (sql: string) => {
+          const statement = target.prepare(sql);
+          if (!matches(sql)) return statement;
+          return {
+            bind: (...values: Array<unknown>) => {
+              const bound = Reflect.apply(statement.bind, statement, values) as D1PreparedStatement;
+              failingStatements.add(bound as object);
+              return bound;
+            },
+          } as D1PreparedStatement;
+        };
+      }
+      if (property === "batch") {
+        return (statements: D1PreparedStatement[]) => {
+          if (!failed && statements.some((statement) => failingStatements.has(statement as object))) {
+            failed = true;
+            throw new Error("synthetic D1 batch failure");
+          }
+          return target.batch(statements);
+        };
+      }
+      const value = Reflect.get(target, property, target) as unknown;
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
 async function seedTarget(options: {
   enabled?: boolean;
   activatedAgoSeconds?: number | null;
@@ -155,10 +268,10 @@ beforeEach(async () => {
   await env.DB.batch([
     env.DB.prepare("DELETE FROM monitoring_notification_outbox"),
     env.DB.prepare("DELETE FROM monitoring_alert_events"),
-    env.DB.prepare("DELETE FROM monitoring_alerts"),
     env.DB.prepare("DELETE FROM monitoring_streams"),
     env.DB.prepare("DELETE FROM monitoring_targets"),
     env.DB.prepare("DELETE FROM monitoring_snapshots"),
+    env.DB.prepare("DELETE FROM monitoring_alerts"),
   ]);
 });
 
@@ -423,25 +536,121 @@ describe("current stream APIs", () => {
 });
 
 describe("heartbeat and alert lifecycle", () => {
-  it("repairs one interrupted snapshot per Cron tick and defers routine heartbeat scanning", async () => {
+  it("scans heartbeat on every tick while repairing one interrupted snapshot per tick", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
     const first = liveSnapshot();
     const second = liveSnapshot();
-    second.timestamp = new Date(Date.now() + 1_000).toISOString();
+    first.timestamp = new Date(Date.now() - 61 * 60_000).toISOString();
+    second.timestamp = new Date(Date.now() - 60 * 60_000).toISOString();
     const firstPost = await postSnapshot(first);
     const secondPost = await postSnapshot(second);
     expect(firstPost.response.status).toBe(201);
     expect(secondPost.response.status).toBe(201);
-    const streamId = await deterministicStreamId("local", first.cohort.cohortId, first.source.hostname);
-    await env.DB.prepare("UPDATE monitoring_snapshots SET stream_applied = 0 WHERE snapshot_id IN (?, ?)")
+    await env.DB.prepare(`UPDATE monitoring_snapshots
+      SET stream_applied = 0, stream_recovery_state = 'PENDING', stream_recovery_next_attempt_at = NULL
+      WHERE snapshot_id IN (?, ?)`)
       .bind(first.snapshotId, second.snapshotId).run();
     await env.DB.prepare("DELETE FROM monitoring_streams WHERE stream_id = ?").bind(streamId).run();
 
     await runCron();
     expect((await rows("SELECT snapshot_id FROM monitoring_snapshots WHERE stream_applied = 0")).length).toBe(1);
     expect((await rows("SELECT latest_snapshot_id FROM monitoring_streams WHERE stream_id = ?", streamId)).length).toBe(1);
+    expect((await rows("SELECT alert_id FROM monitoring_alerts WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'", streamId)).length).toBe(1);
     await runCron();
     expect((await rows("SELECT snapshot_id FROM monitoring_snapshots WHERE stream_applied = 0")).length).toBe(0);
     expect((await rows("SELECT latest_snapshot_id FROM monitoring_streams WHERE stream_id = ?", streamId))[0].latest_snapshot_id).toBe(second.snapshotId);
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'OPENED'`)).length).toBe(1);
+  });
+
+  it.each([1, 20, 100])("checks missing heartbeat despite %i pending snapshot recoveries", async (count) => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    await seedRecoveryRows({ count, kind: "accepted" });
+
+    await runCron();
+
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows("SELECT snapshot_id FROM monitoring_snapshots WHERE validation_status = 'ACCEPTED' AND stream_applied = 0")))
+      .toHaveLength(count - 1);
+  });
+
+  it("continues checking heartbeat as new recovery work arrives each tick", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    for (let index = 0; index < 3; index += 1) {
+      await seedRecoveryRows({ count: 1, kind: "accepted" });
+      await runCron();
+      expect((await rows(`SELECT alert_id FROM monitoring_alerts
+        WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    }
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'OPENED'`))).toHaveLength(1);
+  });
+
+  it("records a recovery error but still performs heartbeat evaluation", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    await seedRecoveryRows({ count: 1, kind: "accepted" });
+    await env.DB.prepare("UPDATE monitoring_snapshots SET payload_json = '{' WHERE validation_status = 'ACCEPTED'").run();
+    const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    await expect(runCron()).rejects.toThrow("SCHEDULED_TASK_FAILED");
+
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows(`SELECT stream_recovery_attempts FROM monitoring_snapshots
+      WHERE validation_status = 'ACCEPTED'`))[0].stream_recovery_attempts).toBe(1);
+    expect(errors.mock.calls.some(([line]) => String(line).includes("SNAPSHOT_RECOVERY_FAILED"))).toBe(true);
+    errors.mockRestore();
+  });
+
+  it("caps malformed snapshot recovery attempts and keeps terminal evidence visible", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    await seedRecoveryRows({ count: 1, kind: "accepted" });
+    const pending = await env.DB.prepare("SELECT snapshot_id FROM monitoring_snapshots WHERE validation_status = 'ACCEPTED'")
+      .first<{ snapshot_id: string }>();
+    await env.DB.prepare("UPDATE monitoring_snapshots SET payload_json = '{' WHERE snapshot_id = ?")
+      .bind(pending!.snapshot_id).run();
+
+    for (let attempt = 1; attempt <= 5; attempt += 1) {
+      await expect(runCron()).rejects.toThrow("SCHEDULED_TASK_FAILED");
+      if (attempt < 5) await forceSnapshotRecoveryDue(pending!.snapshot_id);
+    }
+
+    expect((await rows(`SELECT stream_applied, stream_recovery_state, stream_recovery_attempts
+      FROM monitoring_snapshots WHERE snapshot_id = ?`, pending!.snapshot_id))[0])
+      .toMatchObject({ stream_applied: 0, stream_recovery_state: "FAILED", stream_recovery_attempts: 5 });
+    await expect(runCron()).rejects.toThrow("SCHEDULED_TASK_FAILED");
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows("SELECT stream_recovery_attempts FROM monitoring_snapshots WHERE snapshot_id = ?", pending!.snapshot_id))[0]
+      .stream_recovery_attempts).toBe(5);
+  });
+
+  it("replays alert rules after an interrupted current-state update and preserves snapshot ordering", async () => {
+    const snapshot = liveSnapshot(qualityFailFixture as MonitoringSnapshotV1);
+    const streamId = await seedTarget({ enabled: true, sourceIdentity: snapshot.source.hostname });
+    await seedRecoveryRows({ count: 1, kind: "accepted", fixture: qualityFailFixture as MonitoringSnapshotV1, ageSeconds: 0 });
+    const pending = await env.DB.prepare("SELECT snapshot_id FROM monitoring_snapshots WHERE validation_status = 'ACCEPTED'")
+      .first<{ snapshot_id: string }>();
+    expect(pending).not.toBeNull();
+    const failingDb = failNextBatchMatching(env.DB, (sql) => sql.includes("INSERT OR IGNORE INTO monitoring_alerts") &&
+      sql.includes("SELECT ?"));
+    await expect(runCron("*/5 * * * *", { ...env, DB: failingDb })).rejects.toThrow("SCHEDULED_TASK_FAILED");
+    expect((await rows("SELECT latest_snapshot_id FROM monitoring_streams WHERE stream_id = ?", streamId))[0].latest_snapshot_id)
+      .toBe(pending!.snapshot_id);
+    expect((await rows("SELECT stream_applied FROM monitoring_snapshots WHERE snapshot_id = ?", pending!.snapshot_id))[0].stream_applied).toBe(0);
+
+    await forceSnapshotRecoveryDue(pending!.snapshot_id);
+    await runCron();
+
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'PIPELINE_DATA_QUALITY_FAILED' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows("SELECT stream_applied, stream_recovery_state FROM monitoring_snapshots WHERE snapshot_id = ?", pending!.snapshot_id))[0])
+      .toMatchObject({ stream_applied: 1, stream_recovery_state: "RECOVERED" });
+    expect((await rows("SELECT latest_snapshot_id FROM monitoring_streams WHERE stream_id = ?", streamId))[0].latest_snapshot_id)
+      .toBe(pending!.snapshot_id);
   });
 
   it("fails closed when enabled targets exceed the configured scan budget", async () => {
@@ -460,10 +669,67 @@ describe("heartbeat and alert lifecycle", () => {
   });
 
   it("does not alert disabled targets or targets still inside startup grace", async () => {
-    await seedTarget({ enabled: false, activatedAgoSeconds: 4_000, sourceIdentity: "phase2a-synthetic-disabled" });
-    await seedTarget({ enabled: true, activatedAgoSeconds: 8 * 60, startupGraceSeconds: 15 * 60, sourceIdentity: "phase2a-synthetic-grace" });
+    const disabledId = await seedTarget({ enabled: false, activatedAgoSeconds: 4_000, sourceIdentity: "phase2a-synthetic-disabled" });
+    const graceId = await seedTarget({ enabled: true, activatedAgoSeconds: 8 * 60, startupGraceSeconds: 15 * 60, sourceIdentity: "phase2a-synthetic-grace" });
+    const missingActivationId = await seedTarget({ enabled: true, sourceIdentity: "phase2a-synthetic-no-activation" });
     await runCron();
     expect((await rows("SELECT alert_id FROM monitoring_alerts WHERE status = 'OPEN'")).length).toBe(0);
+    const streams = await json(await getResponse("/api/v1/monitoring/streams"));
+    expect(streams.streams).toEqual(expect.arrayContaining([
+      expect.objectContaining({ streamId: disabledId, heartbeatState: "DISABLED" }),
+      expect.objectContaining({ streamId: graceId, heartbeatState: "PENDING" }),
+      expect.objectContaining({ streamId: missingActivationId, heartbeatState: "UNKNOWN" }),
+    ]));
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${disabledId}/summary`))).heartbeatState).toBe("DISABLED");
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${graceId}/summary`))).heartbeatState).toBe("PENDING");
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${missingActivationId}/summary`))).heartbeatState).toBe("UNKNOWN");
+  });
+
+  it("uses the same heartbeat classification in Cron, stream list and summary", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    const list = await json(await getResponse("/api/v1/monitoring/streams"));
+    const listed = (list.streams as Array<Record<string, unknown>>).find((item) => item.streamId === streamId);
+    const summary = await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`));
+    expect(listed?.heartbeatState).toBe("OFFLINE");
+    expect(summary.heartbeatState).toBe("OFFLINE");
+
+    const logs: string[] = [];
+    const log = vi.spyOn(console, "log").mockImplementation((value) => { logs.push(String(value)); });
+    await runCron();
+    const cronSummary = logs.map((value) => { try { return JSON.parse(value); } catch { return null; } })
+      .find((value) => value?.code === "SCHEDULED_TASK_SUMMARY");
+    expect(cronSummary).toMatchObject({ heartbeatTargetsChecked: 1, offlineTargets: 1 });
+    log.mockRestore();
+
+    const fresh = liveSnapshot();
+    expect((await postSnapshot(fresh)).response.status).toBe(201);
+    const healthyList = await json(await getResponse("/api/v1/monitoring/streams"));
+    const healthyListed = (healthyList.streams as Array<Record<string, unknown>>).find((item) => item.streamId === streamId);
+    const healthySummary = await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`));
+    expect(healthyListed?.heartbeatState).toBe("HEALTHY");
+    expect(healthySummary.heartbeatState).toBe("HEALTHY");
+
+    const healthyLogs: string[] = [];
+    const healthyLog = vi.spyOn(console, "log").mockImplementation((value) => { healthyLogs.push(String(value)); });
+    await runCron();
+    const healthyCron = healthyLogs.map((value) => { try { return JSON.parse(value); } catch { return null; } })
+      .find((value) => value?.code === "SCHEDULED_TASK_SUMMARY");
+    expect(healthyCron).toMatchObject({ heartbeatTargetsChecked: 1, offlineTargets: 0 });
+    expect((await rows(`SELECT status FROM monitoring_alerts WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`, streamId))[0].status)
+      .toBe("RESOLVED");
+    healthyLog.mockRestore();
+  });
+
+  it.each(["PARTIAL", "FAILED"] as const)("treats a fresh %s collector result as an agent heartbeat", async (collectorStatus) => {
+    const streamId = await seedTarget({ enabled: true });
+    const snapshot = liveSnapshot(undefined, (value) => { value.collector.status = collectorStatus; });
+    expect((await postSnapshot(snapshot)).response.status).toBe(201);
+    const summary = await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`));
+    expect(summary.heartbeatState).toBe("HEALTHY");
+    expect(summary.collectorCompleteness.status).toBe(collectorStatus);
+    await runCron();
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(0);
   });
 
   it("opens missing-heartbeat after grace and resolves it only on a fresh accepted snapshot", async () => {
@@ -576,6 +842,119 @@ describe("heartbeat and alert lifecycle", () => {
     })));
     expect((await rows("SELECT alert_id FROM monitoring_alerts WHERE stream_id = ? AND status = 'OPEN'", streamId)).length).toBe(0);
     expect((await rows("SELECT event_id FROM monitoring_alert_events WHERE event_type = 'RESOLVED'")).length).toBe(1);
+  });
+});
+
+describe("durable quarantine alert recovery", () => {
+  it("links a single quarantine to its alert without changing the reason or reopening work", async () => {
+    const streamId = await seedRecoveryRows({ count: 1, kind: "quarantine", reason: "MODEL_CONTRACT_MISMATCH" });
+    const snapshot = await env.DB.prepare("SELECT snapshot_id FROM monitoring_snapshots WHERE validation_status = 'QUARANTINED'")
+      .first<{ snapshot_id: string }>();
+    await runCron();
+
+    expect((await rows("SELECT alert_type, status FROM monitoring_alerts WHERE stream_id = ?", streamId))
+      .map((row) => row)).toEqual([{ alert_type: "MODEL_CONTRACT_MISMATCH", status: "OPEN" }]);
+    expect((await rows(`SELECT quarantine_reason, quarantine_alert_state, quarantine_alert_id
+      FROM monitoring_snapshots WHERE snapshot_id = ?`, snapshot!.snapshot_id))[0])
+      .toMatchObject({ quarantine_reason: "MODEL_CONTRACT_MISMATCH", quarantine_alert_state: "PROCESSED" });
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events
+      WHERE alert_id = (SELECT alert_id FROM monitoring_alerts WHERE stream_id = ?)
+        AND event_type = 'OBSERVED_AGAIN'`, streamId))).toHaveLength(1);
+
+    await runCron();
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events
+      WHERE alert_id = (SELECT alert_id FROM monitoring_alerts WHERE stream_id = ?)
+        AND event_type = 'OBSERVED_AGAIN'`, streamId))).toHaveLength(1);
+  });
+
+  it("processes 100 same-fingerprint quarantines in bounded batches with one active alert", async () => {
+    const streamId = await seedRecoveryRows({ count: 100, kind: "quarantine", reason: "COHORT_CONTRACT_MISMATCH" });
+    const batchEnv = { ...env, MONITOR_RECOVERY_BATCH_SIZE: "10" };
+    for (let tick = 0; tick < 10; tick += 1) await runCron("*/5 * * * *", batchEnv);
+
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'COHORT_CONTRACT_MISMATCH' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows(`SELECT quarantine_alert_state, COUNT(*) AS count FROM monitoring_snapshots
+      WHERE validation_status = 'QUARANTINED' GROUP BY quarantine_alert_state`)))
+      .toEqual([{ quarantine_alert_state: "PROCESSED", count: 100 }]);
+    expect((await rows(`SELECT e.event_type, COUNT(*) AS count FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id WHERE a.stream_id = ? GROUP BY e.event_type`, streamId)))
+      .toEqual(expect.arrayContaining([
+        { event_type: "OPENED", count: 1 },
+        { event_type: "OBSERVED_AGAIN", count: 100 },
+      ]));
+
+    await runCron("*/5 * * * *", batchEnv);
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND e.event_type = 'OBSERVED_AGAIN'`, streamId))).toHaveLength(100);
+  }, 60_000);
+
+  it("links each pending quarantine to an already-open fingerprint instead of adding OPENED events", async () => {
+    const streamId = await seedRecoveryRows({ count: 1, kind: "quarantine", reason: "COHORT_CONTRACT_MISMATCH" });
+    await openAlert(env.DB, {
+      streamId,
+      alertType: "COHORT_CONTRACT_MISMATCH",
+      severity: "CRITICAL",
+      details: { reason: "COHORT_CONTRACT_MISMATCH", snapshotId: "prior-snapshot" },
+      telegramEnabled: false,
+    });
+
+    await runCron();
+
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND e.event_type = 'OPENED'`, streamId))).toHaveLength(1);
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND e.event_type = 'OBSERVED_AGAIN'`, streamId))).toHaveLength(1);
+  });
+
+  it("claims recovery work safely under concurrent Cron invocations", async () => {
+    const streamId = await seedRecoveryRows({ count: 1, kind: "quarantine", reason: "MODEL_CONTRACT_MISMATCH" });
+    await Promise.all([runCron(), runCron()]);
+
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'MODEL_CONTRACT_MISMATCH' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows("SELECT quarantine_alert_state FROM monitoring_snapshots WHERE validation_status = 'QUARANTINED'"))[0])
+      .toEqual({ quarantine_alert_state: "PROCESSED" });
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND e.event_type = 'OBSERVED_AGAIN'`, streamId))).toHaveLength(1);
+  });
+
+  it("retries a partial D1 failure with the same reason and without duplicate active alerts", async () => {
+    const streamId = await seedRecoveryRows({ count: 1, kind: "quarantine", reason: "MODEL_CONTRACT_MISMATCH" });
+    const item = await env.DB.prepare("SELECT snapshot_id FROM monitoring_snapshots WHERE validation_status = 'QUARANTINED'")
+      .first<{ snapshot_id: string }>();
+    const failingDb = failNextBatchMatching(env.DB, (sql) => sql.includes("UPDATE monitoring_snapshots") &&
+      sql.includes("quarantine_alert_state = 'PROCESSED'"));
+    await expect(runCron("*/5 * * * *", { ...env, DB: failingDb })).rejects.toThrow("SCHEDULED_TASK_FAILED");
+    expect((await rows(`SELECT quarantine_reason, quarantine_alert_state, quarantine_alert_attempts
+      FROM monitoring_snapshots WHERE snapshot_id = ?`, item!.snapshot_id))[0])
+      .toMatchObject({ quarantine_reason: "MODEL_CONTRACT_MISMATCH", quarantine_alert_state: "PENDING", quarantine_alert_attempts: 1 });
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'MODEL_CONTRACT_MISMATCH' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+
+    await forceQuarantineRecoveryDue(item!.snapshot_id);
+    await runCron();
+
+    expect((await rows(`SELECT quarantine_reason, quarantine_alert_state, quarantine_alert_id
+      FROM monitoring_snapshots WHERE snapshot_id = ?`, item!.snapshot_id))[0])
+      .toMatchObject({ quarantine_reason: "MODEL_CONTRACT_MISMATCH", quarantine_alert_state: "PROCESSED" });
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'MODEL_CONTRACT_MISMATCH' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND e.event_type = 'OPENED'`, streamId))).toHaveLength(1);
+  });
+
+  it("does not create an alert for source allowlist quarantines", async () => {
+    const streamId = await seedRecoveryRows({ count: 1, kind: "quarantine", reason: "SOURCE_NOT_ALLOWLISTED" });
+    await runCron();
+    expect((await rows("SELECT alert_id FROM monitoring_alerts WHERE stream_id = ?", streamId))).toHaveLength(0);
+    expect((await rows("SELECT quarantine_alert_state, quarantine_reason FROM monitoring_snapshots"))[0])
+      .toMatchObject({ quarantine_alert_state: "PROCESSED", quarantine_reason: "SOURCE_NOT_ALLOWLISTED" });
   });
 });
 

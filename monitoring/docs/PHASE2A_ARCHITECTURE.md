@@ -39,7 +39,7 @@ erDiagram
   monitoring_alerts ||--o{ monitoring_notification_outbox : "retryable delivery"
 ```
 
-`monitoring_snapshots` keeps schema-valid accepted and quarantined payloads (maximum 32 KiB) and a SHA-256 hash. Unique `(environment, snapshot_id)` is the idempotency gate. `monitoring_streams` points only to the newest accepted collection timestamp; a late historical sample cannot replace a newer one, and only a fresh delivery advances `last_live_heartbeat_at`. `monitoring_targets` are disabled until explicitly enabled and activated. Alert state is deduplicated by fingerprint; events and notification delivery are separate records.
+`monitoring_snapshots` keeps schema-valid accepted and quarantined payloads (maximum 32 KiB) and a SHA-256 hash. Unique `(environment, snapshot_id)` is the idempotency gate. `monitoring_streams` points only to the newest accepted collection timestamp; a late historical sample cannot replace a newer one, and only a fresh delivery advances the paired live heartbeat receipt/snapshot fields. `monitoring_targets` are disabled until explicitly enabled and activated. Alert state is deduplicated by fingerprint; events and notification delivery are separate records. Migration `0002_phase2a1_hardening.sql` adds durable per-snapshot recovery state and supporting indexes without rewriting frozen snapshot payloads.
 
 ## Ingestion state flow
 
@@ -65,11 +65,11 @@ sequenceDiagram
   end
 ```
 
-Collection freshness is derived from D1 receive time and `snapshot.timestamp`; a sample advances heartbeat only when delivery lag is nonnegative within clock tolerance, within the configured heartbeat timeout, and at most two expected intervals. Cron independently recomputes age against database time. `collector.PARTIAL`, pending T+2H references, and agent-reported `monitorFreshness` are not treated as proof of pipeline failure or Cloudflare arrival.
+Collection freshness is derived from D1 receive time and `snapshot.timestamp`; a sample advances heartbeat only when delivery lag is nonnegative within the configured clock-skew allowance and within the heartbeat/expected-interval bounds. Cron and both stream APIs use the same resolver semantics for activation grace, collection age, receipt age, and bounded clock skew. `collector.PARTIAL`, pending T+2H references, and agent-reported `monitorFreshness` are not treated as proof of pipeline failure or Cloudflare arrival. A duplicate, historical backlog, or quarantined snapshot cannot refresh the live heartbeat.
 
 ## Scheduled processing and alert state
 
-`*/5 * * * *` runs heartbeat checks, repairs at most one snapshot inserted before a partial D1 failure, recovers at most one missing quarantine alert event, and retries at most one due notification. Any repair consumes that tick and defers the routine target scan until the next five-minute tick. Quality/watchdog/disk/collector rules run when a new accepted snapshot is applied, not again for unchanged current evidence. `17 3 * * *` removes bounded batches past retention. Alert transitions use conditional SQL and a unique active fingerprint. Unknown metrics leave existing alerts sticky. Heartbeat recovery requires a newly accepted fresh snapshot; a duplicate or historical retry cannot resolve it. Telegram stays disabled unless an operator sets the enable flag and secrets.
+`*/5 * * * *` checks enabled heartbeat targets on every tick, then repairs at most one unapplied snapshot and one quarantine alert link, and retries at most one due notification. Recovery work is bounded and isolated: an individual repair failure is recorded while the heartbeat scan and independent work continue when D1 remains available. The invocation emits a structured summary with checked targets, processed recovery counts, backlog, and errors; terminal recovery backlog and step failures are surfaced to Cron rather than reported as success. Target scans are bounded by configuration and fail with a diagnostic when enabled targets exceed the cap. Quality/watchdog/disk/collector rules run when a new accepted snapshot is applied, not again for unchanged current evidence. `17 3 * * *` removes bounded batches past retention and retains pending/failed recovery evidence. Alert transitions use conditional SQL and a unique active fingerprint. Unknown metrics leave existing alerts sticky. Heartbeat recovery requires a newly accepted fresh snapshot; a duplicate or historical retry cannot resolve it. Telegram stays disabled unless an operator sets the enable flag and secrets.
 
 ## Trust boundaries
 

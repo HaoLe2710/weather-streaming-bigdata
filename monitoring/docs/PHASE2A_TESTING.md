@@ -14,9 +14,9 @@ npm run build
 npm run migrate:local
 ```
 
-`npm test` uses the Cloudflare Vitest plugin, Workers runtime, and local Miniflare D1. It covers the complete Phase 1 schema fixtures, request validation, HMAC, key rotation/replay window, idempotency/conflict, quarantine, out-of-order state, read auth and pagination, heartbeat freshness, alert lifecycle/races, Telegram retry, and retention. Synthetic fixtures are generated from the Phase 1 JSON Schema; no production snapshot is used. CI runs on Ubuntu because Workerd's Windows-backed Vitest pool currently fails before test discovery with `File path must be a file: URL` in this environment.
+`npm test` runs both the Cloudflare Vitest plugin/Workers runtime with isolated Miniflare D1 and the standalone migration upgrade suite. Coverage includes the complete Phase 1 schema fixtures, request validation, HMAC/key rotation/replay window, idempotency/conflict, quarantine, out-of-order state, read auth/pagination, shared heartbeat states, heartbeat scan under recovery backlog, bounded retries and terminal failure visibility, per-snapshot quarantine idempotency, concurrent alert/cron behavior, partial D1 batch recovery, API/Cron state parity, Telegram retry, and retention. Synthetic fixtures are generated from the Phase 1 JSON Schema; no production snapshot is used. The migration test applies both fresh-install and Phase 2A populated-database upgrade paths and asserts preservation/backfill/index constraints. CI runs on Ubuntu because Workerd's Windows-backed Vitest pool currently fails before test discovery with `File path must be a file: URL` in this environment.
 
-The migration command exercises Wrangler's local D1 migration registry. The integration harness also initializes its isolated in-memory D1 schema before each run. `.wrangler/state` is local-only and ignored.
+The migration command exercises Wrangler's local D1 migration registry. `npm run test:migrations` separately tests forward migration against fresh and populated SQLite databases. The integration harness initializes its isolated in-memory D1 schema before each run. `.wrangler/state` is local-only and ignored.
 
 ## Local end-to-end request
 

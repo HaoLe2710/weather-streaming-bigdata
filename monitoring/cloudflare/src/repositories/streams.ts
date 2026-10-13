@@ -28,6 +28,8 @@ export interface StreamStateRow {
   latest_pipeline_status: string | null;
   latest_quality_status: string | null;
   last_live_heartbeat_at: string | null;
+  last_live_received_at: string | null;
+  last_live_snapshot_id: string | null;
   incomplete_collector_streak: number;
   updated_at: string;
 }
@@ -54,8 +56,9 @@ export async function upsertStreamFromSnapshot(
       stream_id, environment, cohort_id, run_id, source_identity,
       latest_snapshot_id, latest_collected_at, latest_received_at,
       latest_collector_status, latest_pipeline_status, latest_quality_status,
-      last_live_heartbeat_at, incomplete_collector_streak, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      last_live_heartbeat_at, incomplete_collector_streak, updated_at,
+      last_live_received_at, last_live_snapshot_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(stream_id) DO UPDATE SET
       latest_snapshot_id = excluded.latest_snapshot_id,
       latest_collected_at = excluded.latest_collected_at,
@@ -65,6 +68,10 @@ export async function upsertStreamFromSnapshot(
       latest_quality_status = excluded.latest_quality_status,
       last_live_heartbeat_at = CASE WHEN ? = 1
         THEN excluded.latest_collected_at ELSE monitoring_streams.last_live_heartbeat_at END,
+      last_live_received_at = CASE WHEN ? = 1
+        THEN excluded.latest_received_at ELSE monitoring_streams.last_live_received_at END,
+      last_live_snapshot_id = CASE WHEN ? = 1
+        THEN excluded.latest_snapshot_id ELSE monitoring_streams.last_live_snapshot_id END,
       incomplete_collector_streak = CASE WHEN excluded.latest_collector_status = 'COMPLETE'
         THEN CASE WHEN ? = 1 THEN 0 ELSE monitoring_streams.incomplete_collector_streak END
         ELSE CASE WHEN ? = 1 THEN monitoring_streams.incomplete_collector_streak + 1
@@ -90,6 +97,10 @@ export async function upsertStreamFromSnapshot(
     liveFresh ? collectedAt : null,
     initialStreak,
     receivedAt,
+    liveFresh ? receivedAt : null,
+    liveFresh ? snapshot.snapshotId : null,
+    liveFresh ? 1 : 0,
+    liveFresh ? 1 : 0,
     liveFresh ? 1 : 0,
     liveFresh ? 1 : 0,
     liveFresh ? 1 : 0,
@@ -98,12 +109,14 @@ export async function upsertStreamFromSnapshot(
   if (row) return { current: row.latest_snapshot_id === snapshot.snapshotId, state: row };
   const current = await db.prepare("SELECT * FROM monitoring_streams WHERE stream_id = ? LIMIT 1")
     .bind(streamId).first<StreamStateRow>();
-  return { current: false, state: current };
+  return { current: current?.latest_snapshot_id === snapshot.snapshotId, state: current };
 }
 
 export async function markSnapshotApplied(db: D1Database, environment: string, snapshotId: string): Promise<void> {
   await db.prepare(`
-    UPDATE monitoring_snapshots SET stream_applied = 1
+    UPDATE monitoring_snapshots
+    SET stream_applied = 1, stream_recovery_state = 'RECOVERED',
+      stream_recovery_next_attempt_at = NULL, stream_recovery_error_code = NULL
     WHERE environment = ? AND snapshot_id = ? AND validation_status = 'ACCEPTED'
   `).bind(environment, snapshotId).run();
 }

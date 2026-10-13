@@ -1,6 +1,6 @@
 # Phase 2B Azure Agent Uploader Contract
 
-This document defines a future uploader only. Phase 2A does not implement one, and the Azure Agent must not send live data until staging and production policies are separately approved.
+This document defines a future uploader only. Phase 2A does not implement one, and the Azure Agent must not send live data until staging and production policies are separately approved. Phase 2A.1 leaves the Snapshot Contract V1 and HMAC wire contract unchanged. A `201 ACCEPTED` response means the Worker durably stored the accepted snapshot and will apply current-state/alert work idempotently; a later heartbeat Cron can repair an interrupted application. A `200 DUPLICATE` must not be treated as a new live heartbeat. A `202 QUARANTINED` is durable operator-review evidence and is not a heartbeat. The uploader must preserve these response semantics and must not rewrite quarantined payloads or assign a new snapshot ID to bypass admission.
 
 ## Endpoint and headers
 

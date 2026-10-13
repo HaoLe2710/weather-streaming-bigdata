@@ -19,6 +19,10 @@ When approved, operator steps:
 7. Run `wrangler deploy --env staging`, check `/healthz`, submit one signed synthetic fixture, and verify `latest`, `history`, and `alerts` plus D1 persistence.
 8. Verify Cron in staging and inspect CPU, D1 query, and storage metrics before any Phase 2B uploader is connected.
 
+## Phase 2A.1 hardening gate
+
+Before a staging deployment, run the Phase 2A.1 checklist in `PHASE2A1_STAGING_CHECKLIST.md`. It requires reviewing the forward-only `0002_phase2a1_hardening.sql` migration, confirming the Worker bindings and scan/recovery limits, applying migrations only to the explicitly selected staging database, and verifying heartbeat/API state parity plus recovery diagnostics with synthetic fixtures. Phase 2A.1 code and local/CI tests do not prove that a remote Cloudflare account, database, Worker, Cron trigger, Free-plan budget, or Telegram configuration is ready. Do not deploy from this task; obtain a separately approved staging window and account selection first.
+
 Do not run these remote steps from CI. No production alias, route, custom domain, Azure uploader, or live cohort is configured here. Telegram must remain disabled during first staging verification.
 
 ## Rollback

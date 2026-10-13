@@ -28,11 +28,25 @@ export function heartbeatMissingGuard(streamId: string): AlertGuard {
       LEFT JOIN monitoring_streams s ON s.stream_id = t.stream_id
       WHERE t.stream_id = ? AND t.monitoring_enabled = 1
         AND (
-          (s.last_live_heartbeat_at IS NULL AND t.activated_at IS NOT NULL
-            AND t.activated_at <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-' || t.startup_grace_seconds || ' seconds'))
+          (s.last_live_heartbeat_at IS NULL
+            AND s.last_live_received_at IS NULL AND s.last_live_snapshot_id IS NULL
+            AND t.activated_at IS NOT NULL AND julianday(t.activated_at) IS NOT NULL
+            AND julianday(t.activated_at) <= julianday('now') - (t.startup_grace_seconds / 86400.0))
           OR
-          (s.last_live_heartbeat_at IS NOT NULL
-            AND s.last_live_heartbeat_at <= strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-' || t.heartbeat_timeout_seconds || ' seconds'))
+          (
+            s.last_live_heartbeat_at IS NOT NULL
+            AND s.last_live_received_at IS NOT NULL
+            AND s.last_live_snapshot_id IS NOT NULL
+            AND julianday(s.last_live_heartbeat_at) IS NOT NULL
+            AND julianday(s.last_live_received_at) IS NOT NULL
+            AND julianday(s.last_live_heartbeat_at) >= julianday('now') - (60.0 / 86400.0)
+            AND julianday(s.last_live_heartbeat_at) <= julianday('now') + (60.0 / 86400.0)
+            AND julianday(s.last_live_received_at) <= julianday('now') + (60.0 / 86400.0)
+            AND julianday(s.last_live_received_at) >= julianday(s.last_live_heartbeat_at) - (60.0 / 86400.0)
+            AND julianday(s.last_live_received_at) <= julianday(s.last_live_heartbeat_at) + (t.expected_interval_seconds * 2.0 / 86400.0)
+            AND julianday(s.last_live_received_at) <= julianday(s.last_live_heartbeat_at) + (t.heartbeat_timeout_seconds / 86400.0)
+            AND julianday(s.last_live_heartbeat_at) <= julianday('now') - (t.heartbeat_timeout_seconds / 86400.0)
+          )
         )
     )`,
     values: [streamId],
@@ -46,7 +60,17 @@ export function heartbeatFreshGuard(streamId: string): AlertGuard {
       JOIN monitoring_streams s ON s.stream_id = t.stream_id
       WHERE t.stream_id = ? AND t.monitoring_enabled = 1
         AND s.last_live_heartbeat_at IS NOT NULL
-        AND s.last_live_heartbeat_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-' || t.heartbeat_timeout_seconds || ' seconds')
+        AND s.last_live_received_at IS NOT NULL
+        AND s.last_live_snapshot_id IS NOT NULL
+        AND julianday(s.last_live_heartbeat_at) IS NOT NULL
+        AND julianday(s.last_live_received_at) IS NOT NULL
+        AND julianday(s.last_live_heartbeat_at) >= julianday('now') - (60.0 / 86400.0)
+        AND julianday(s.last_live_heartbeat_at) > julianday('now') - (t.heartbeat_timeout_seconds / 86400.0)
+        AND julianday(s.last_live_heartbeat_at) <= julianday('now') + (60.0 / 86400.0)
+        AND julianday(s.last_live_received_at) <= julianday('now') + (60.0 / 86400.0)
+        AND julianday(s.last_live_received_at) >= julianday(s.last_live_heartbeat_at) - (60.0 / 86400.0)
+        AND julianday(s.last_live_received_at) <= julianday(s.last_live_heartbeat_at) + (t.expected_interval_seconds * 2.0 / 86400.0)
+        AND julianday(s.last_live_received_at) <= julianday(s.last_live_heartbeat_at) + (t.heartbeat_timeout_seconds / 86400.0)
     )`,
     values: [streamId],
   };
@@ -111,9 +135,11 @@ export async function openAlert(
 
   if (active.alert_id !== alertId) {
     const refreshed = await db.prepare(`
-      UPDATE monitoring_alerts SET last_observed_at = ?, details_json = ?
+      UPDATE monitoring_alerts
+      SET last_observed_at = MAX(last_observed_at, ?),
+        details_json = CASE WHEN last_observed_at <= ? THEN ? ELSE details_json END
       WHERE alert_id = ? AND status = 'OPEN' AND ${guard.sql}
-    `).bind(now, detailsJson, active.alert_id, ...(guard.values || [])).run();
+    `).bind(now, now, detailsJson, active.alert_id, ...(guard.values || [])).run();
     if ((refreshed.meta.changes || 0) === 0) return null;
   }
   return active;
@@ -133,33 +159,25 @@ export async function resolveAlert(
   const now = await databaseNow(db);
   const digest = await fingerprint(input.streamId, input.alertType);
   const detailsJson = compactJson(input.details || { resolved: true });
-  const alert = await db.prepare(
-    "SELECT alert_id FROM monitoring_alerts WHERE fingerprint = ? AND status = 'OPEN' LIMIT 1",
-  ).bind(digest).first<{ alert_id: string }>();
-  if (!alert) return false;
-
   const [update] = await db.batch([
     db.prepare(`
       UPDATE monitoring_alerts SET status = 'RESOLVED', resolved_at = ?, last_observed_at = ?,
         details_json = ?, notification_status = CASE WHEN ? = 1 THEN 'PENDING' ELSE notification_status END
-      WHERE alert_id = ? AND status = 'OPEN' AND ${guard.sql}
-    `).bind(now, now, detailsJson, input.telegramEnabled ? 1 : 0, alert.alert_id, ...(guard.values || [])),
+      WHERE fingerprint = ? AND status = 'OPEN' AND ${guard.sql}
+    `).bind(now, now, detailsJson, input.telegramEnabled ? 1 : 0, digest, ...(guard.values || [])),
     db.prepare(`
       INSERT OR IGNORE INTO monitoring_alert_events (event_id, alert_id, event_type, dedupe_key, occurred_at, details_json)
-      SELECT ?, ?, 'RESOLVED', 'RESOLVED', ?, ?
-      WHERE EXISTS (
-        SELECT 1 FROM monitoring_alerts WHERE alert_id = ? AND status = 'RESOLVED' AND resolved_at = ?
-      )
-    `).bind(crypto.randomUUID(), alert.alert_id, now, detailsJson, alert.alert_id, now),
+      SELECT ?, alert_id, 'RESOLVED', 'RESOLVED', ?, ?
+      FROM monitoring_alerts WHERE fingerprint = ? AND status = 'RESOLVED' AND resolved_at = ?
+    `).bind(crypto.randomUUID(), now, detailsJson, digest, now),
     db.prepare(`
       INSERT OR IGNORE INTO monitoring_notification_outbox (
         notification_id, alert_id, transition, state, attempts, next_attempt_at
       )
-      SELECT ?, ?, 'RESOLVED', 'PENDING', 0, ?
-      WHERE ? = 1 AND EXISTS (
-        SELECT 1 FROM monitoring_alerts WHERE alert_id = ? AND status = 'RESOLVED' AND resolved_at = ?
-      )
-    `).bind(crypto.randomUUID(), alert.alert_id, now, input.telegramEnabled ? 1 : 0, alert.alert_id, now),
+      SELECT ?, alert_id, 'RESOLVED', 'PENDING', 0, ?
+      FROM monitoring_alerts
+      WHERE ? = 1 AND fingerprint = ? AND status = 'RESOLVED' AND resolved_at = ?
+    `).bind(crypto.randomUUID(), now, input.telegramEnabled ? 1 : 0, digest, now),
   ]);
   return (update.meta.changes || 0) > 0;
 }

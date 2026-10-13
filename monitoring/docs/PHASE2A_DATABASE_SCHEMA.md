@@ -2,10 +2,12 @@
 
 Migration `monitoring/cloudflare/migrations/0001_initial.sql` creates the database from empty. Use prepared statements and apply future changes as new numbered migrations; never edit an applied migration for deployed databases.
 
+`0002_phase2a1_hardening.sql` is forward-only. It backfills live receipt identity from the existing stream/snapshot relationship, initializes durable recovery state for existing quarantined rows, and adds indexes for bounded pending/retry scans. It preserves all snapshot rows and payloads. Both fresh-install and populated-database upgrade paths are exercised by `npm run test:migrations` using Node's SQLite implementation; the Worker integration suite also runs against the complete migrated schema.
+
 | Table | Purpose and integrity controls |
 |---|---|
-| `monitoring_snapshots` | Accepted or quarantined V1 payload, raw-body SHA-256, source/cohort/status metadata, unique `(environment,snapshot_id)`, 32 KiB payload check, history and recovery indexes. |
-| `monitoring_streams` | Current monotonic snapshot pointer, statuses, last live heartbeat, and collector incompleteness streak; unique environment/cohort/source identity. |
+| `monitoring_snapshots` | Accepted or quarantined V1 payload, raw-body SHA-256, source/cohort/status metadata, unique `(environment,snapshot_id)`, 32 KiB payload check, paired live-receipt identity, per-snapshot quarantine recovery lease/attempt/backoff/error state, history and recovery indexes. |
+| `monitoring_streams` | Current monotonic snapshot pointer, statuses, paired last live heartbeat receipt and snapshot identity, and collector incompleteness streak; unique environment/cohort/source identity. |
 | `monitoring_targets` | Explicitly activated heartbeat targets, defaults disabled, validated interval/timeout/grace/disk/partial thresholds. |
 | `monitoring_alerts` | Current and historical alert records, unique partial index for one open fingerprint, bounded history indexes. |
 | `monitoring_alert_events` | Deduplicated append-only OPENED/RESOLVED/notification transitions. |
@@ -22,7 +24,7 @@ Migration `monitoring/cloudflare/migrations/0001_initial.sql` creates the databa
 
 ## Atomicity and recovery
 
-The unique snapshot constraint is the concurrency gate. D1 batches group alert state, transition evidence, and outbox creation. Since snapshot insertion and current-state application are separate, `stream_applied=0` marks accepted work that a later heartbeat Cron may replay idempotently. The repair scan is indexed and bounded. Quarantined evidence is durable; missing contract-alert events are recovered by a separate bounded scan. Neither repair changes frozen payload fields.
+The unique snapshot constraint is the concurrency gate. D1 batches group alert state, transition evidence, and outbox creation. Since snapshot insertion and current-state application are separate, `stream_applied=0` marks accepted work that a later heartbeat Cron may replay idempotently. The repair scan is indexed and bounded. Quarantined evidence is durable; each snapshot carries its own alert-recovery state, lease, attempt count, due time, and last error. Linking a quarantine to an already-open deduplicated alert completes that snapshot's processing without generating a redundant OPENED transition. Failure recovery is bounded with exponential backoff and a maximum attempt count; terminal failures remain visible and are not silently deleted. Neither repair changes frozen payload fields.
 
 ## Retention
 
