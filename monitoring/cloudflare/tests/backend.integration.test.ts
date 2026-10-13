@@ -5,7 +5,7 @@ import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test"
 import worker from "../src/index";
 import { validateSnapshot } from "../src/validation/snapshot";
 import { deterministicStreamId } from "../src/security/stream-id";
-import { openAlert, resolveAlert } from "../src/repositories/alerts";
+import { heartbeatFreshGuard, heartbeatMissingGuard, openAlert, resolveAlert } from "../src/repositories/alerts";
 import { cleanupRetainedData } from "../src/services/retention-service";
 import { processNotificationOutbox } from "../src/services/notification-service";
 import type { Env, MonitoringSnapshotV1 } from "../src/types";
@@ -718,6 +718,165 @@ describe("heartbeat and alert lifecycle", () => {
     expect((await rows(`SELECT status FROM monitoring_alerts WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`, streamId))[0].status)
       .toBe("RESOLVED");
     healthyLog.mockRestore();
+  });
+
+  it("resolves an existing heartbeat alert for a valid five-minute-old heartbeat through the D1 fresh SQL guard", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    await runCron();
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+
+    const collectedAt = new Date(Date.now() - 5 * 60_000).toISOString();
+    const snapshot = liveSnapshot(undefined, (value) => {
+      value.timestamp = collectedAt;
+      value.cohort.lastUpdateAt = collectedAt;
+      value.cohort.statusFileUpdatedAt = collectedAt;
+    });
+    expect((await postSnapshot(snapshot)).response.status).toBe(201);
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`))).heartbeatState).toBe("HEALTHY");
+
+    const alert = await env.DB.prepare(`SELECT status FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`).bind(streamId).first<{ status: string }>();
+    expect(alert?.status).toBe("RESOLVED");
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'RESOLVED'`, streamId))
+    ).toHaveLength(1);
+
+    await runCron();
+    expect((await rows(`SELECT event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'RESOLVED'`, streamId))
+    ).toHaveLength(1);
+  });
+
+  it("transitions a healthy heartbeat to offline at 20 minutes and resolves one alert exactly once", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    const first = liveSnapshot(undefined, (value) => {
+      const collectedAt = new Date(Date.now() - 60_000).toISOString();
+      value.timestamp = collectedAt;
+      value.cohort.lastUpdateAt = collectedAt;
+      value.cohort.statusFileUpdatedAt = collectedAt;
+    });
+    expect((await postSnapshot(first)).response.status).toBe(201);
+    await runCron();
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`))).heartbeatState).toBe("HEALTHY");
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`, streamId))).toHaveLength(0);
+
+    const expiredAt = new Date(Date.now() - 20 * 60_000).toISOString();
+    await env.DB.prepare(`UPDATE monitoring_streams
+      SET last_live_heartbeat_at = ?, last_live_received_at = ? WHERE stream_id = ?`)
+      .bind(expiredAt, expiredAt, streamId).run();
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`))).heartbeatState).toBe("OFFLINE");
+
+    await runCron();
+    await runCron();
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'OPENED'`, streamId))
+    ).toHaveLength(1);
+
+    const recovered = liveSnapshot();
+    expect((await postSnapshot(recovered)).response.status).toBe(201);
+    let alert = await env.DB.prepare(`SELECT status FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`).bind(streamId).first<{ status: string }>();
+    expect(alert?.status).toBe("RESOLVED");
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'RESOLVED'`, streamId))
+    ).toHaveLength(1);
+
+    await runCron();
+    alert = await env.DB.prepare(`SELECT status FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`).bind(streamId).first<{ status: string }>();
+    expect(alert?.status).toBe("RESOLVED");
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'RESOLVED'`, streamId))
+    ).toHaveLength(1);
+  });
+
+  it("does not let either heartbeat SQL guard classify incomplete evidence as offline or healthy", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    const snapshot = liveSnapshot();
+    expect((await postSnapshot(snapshot)).response.status).toBe(201);
+    const expiredAt = new Date(Date.now() - 20 * 60_000).toISOString();
+    await env.DB.prepare(`UPDATE monitoring_streams
+      SET last_live_heartbeat_at = ?, last_live_received_at = NULL WHERE stream_id = ?`)
+      .bind(expiredAt, streamId).run();
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`))).heartbeatState).toBe("UNKNOWN");
+
+    const deniedOpen = await openAlert(env.DB, {
+      streamId,
+      alertType: "AGENT_HEARTBEAT_MISSING",
+      severity: "CRITICAL",
+      details: { heartbeatState: "OFFLINE" },
+      telegramEnabled: false,
+      guard: heartbeatMissingGuard(streamId),
+    });
+    expect(deniedOpen).toBeNull();
+
+    const open = await openAlert(env.DB, {
+      streamId,
+      alertType: "AGENT_HEARTBEAT_MISSING",
+      severity: "CRITICAL",
+      details: { seededForGuardTest: true },
+      telegramEnabled: false,
+    });
+    expect(open).not.toBeNull();
+    const resolved = await resolveAlert(env.DB, {
+      streamId,
+      alertType: "AGENT_HEARTBEAT_MISSING",
+      details: { heartbeatState: "HEALTHY" },
+      telegramEnabled: false,
+      guard: heartbeatFreshGuard(streamId),
+    });
+    expect(resolved).toBe(false);
+    expect((await rows(`SELECT status FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`, streamId))[0].status).toBe("OPEN");
+  });
+
+  it("preserves the 60-second future skew and resolves correctly during concurrent Cron and ingestion", async () => {
+    const streamId = await seedTarget({ enabled: true, activatedAgoSeconds: 60 * 60 });
+    const first = liveSnapshot(undefined, (value) => {
+      const collectedAt = new Date(Date.now() - 60_000).toISOString();
+      value.timestamp = collectedAt;
+      value.cohort.lastUpdateAt = collectedAt;
+      value.cohort.statusFileUpdatedAt = collectedAt;
+    });
+    expect((await postSnapshot(first)).response.status).toBe(201);
+    const expiredAt = new Date(Date.now() - 20 * 60_000).toISOString();
+    await env.DB.prepare(`UPDATE monitoring_streams
+      SET last_live_heartbeat_at = ?, last_live_received_at = ? WHERE stream_id = ?`)
+      .bind(expiredAt, expiredAt, streamId).run();
+    await runCron();
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(1);
+
+    const futureAt = new Date(Date.now() + 30_000).toISOString();
+    const fresh = liveSnapshot(undefined, (value) => {
+      value.timestamp = futureAt;
+      value.cohort.lastUpdateAt = futureAt;
+      value.cohort.statusFileUpdatedAt = futureAt;
+    });
+    const [_, ingestion] = await Promise.all([runCron(), postSnapshot(fresh)]);
+    expect(ingestion.response.status).toBe(201);
+    expect((await json(await getResponse(`/api/v1/monitoring/streams/${streamId}/summary`))).heartbeatState).toBe("HEALTHY");
+    expect((await rows(`SELECT alert_id FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING' AND status = 'OPEN'`, streamId))).toHaveLength(0);
+    expect((await rows(`SELECT status FROM monitoring_alerts
+      WHERE stream_id = ? AND alert_type = 'AGENT_HEARTBEAT_MISSING'`, streamId))[0].status).toBe("RESOLVED");
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'OPENED'`, streamId))
+    ).toHaveLength(1);
+    expect((await rows(`SELECT e.event_id FROM monitoring_alert_events e
+      JOIN monitoring_alerts a ON a.alert_id = e.alert_id
+      WHERE a.stream_id = ? AND a.alert_type = 'AGENT_HEARTBEAT_MISSING' AND e.event_type = 'RESOLVED'`, streamId))
+    ).toHaveLength(1);
   });
 
   it.each(["PARTIAL", "FAILED"] as const)("treats a fresh %s collector result as an agent heartbeat", async (collectorStatus) => {

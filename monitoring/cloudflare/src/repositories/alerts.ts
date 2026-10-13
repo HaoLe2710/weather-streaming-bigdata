@@ -31,6 +31,7 @@ export function heartbeatMissingGuard(streamId: string): AlertGuard {
           (s.last_live_heartbeat_at IS NULL
             AND s.last_live_received_at IS NULL AND s.last_live_snapshot_id IS NULL
             AND t.activated_at IS NOT NULL AND julianday(t.activated_at) IS NOT NULL
+            AND t.startup_grace_seconds >= 0
             AND julianday(t.activated_at) <= julianday('now') - (t.startup_grace_seconds / 86400.0))
           OR
           (
@@ -39,7 +40,8 @@ export function heartbeatMissingGuard(streamId: string): AlertGuard {
             AND s.last_live_snapshot_id IS NOT NULL
             AND julianday(s.last_live_heartbeat_at) IS NOT NULL
             AND julianday(s.last_live_received_at) IS NOT NULL
-            AND julianday(s.last_live_heartbeat_at) >= julianday('now') - (60.0 / 86400.0)
+            AND t.heartbeat_timeout_seconds > 0
+            AND t.expected_interval_seconds > 0
             AND julianday(s.last_live_heartbeat_at) <= julianday('now') + (60.0 / 86400.0)
             AND julianday(s.last_live_received_at) <= julianday('now') + (60.0 / 86400.0)
             AND julianday(s.last_live_received_at) >= julianday(s.last_live_heartbeat_at) - (60.0 / 86400.0)
@@ -64,7 +66,8 @@ export function heartbeatFreshGuard(streamId: string): AlertGuard {
         AND s.last_live_snapshot_id IS NOT NULL
         AND julianday(s.last_live_heartbeat_at) IS NOT NULL
         AND julianday(s.last_live_received_at) IS NOT NULL
-        AND julianday(s.last_live_heartbeat_at) >= julianday('now') - (60.0 / 86400.0)
+        AND t.heartbeat_timeout_seconds > 0
+        AND t.expected_interval_seconds > 0
         AND julianday(s.last_live_heartbeat_at) > julianday('now') - (t.heartbeat_timeout_seconds / 86400.0)
         AND julianday(s.last_live_heartbeat_at) <= julianday('now') + (60.0 / 86400.0)
         AND julianday(s.last_live_received_at) <= julianday('now') + (60.0 / 86400.0)
